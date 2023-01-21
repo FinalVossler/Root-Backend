@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import express, { Response, Request } from "express";
 
 import ResponseDto from "../../globalTypes/ResponseDto";
 import UserLoginCommand from "./dtos/UserLoginCommand";
@@ -10,7 +10,7 @@ import { IUser } from "./user.model";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 
-const router = Router();
+const router = express.Router();
 
 router.get(
   "/",

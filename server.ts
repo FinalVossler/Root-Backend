@@ -1,5 +1,5 @@
-const express = require("express");
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
 import { config as dotenvConfig } from "dotenv";
 
 import mongoose from "./mongoose";
