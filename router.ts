@@ -1,8 +1,7 @@
-import express from "express";
-
+import { Router } from "express";
 import userRouter from "./elements/user/user.router";
 
-const router = express.Router();
+const router = Router();
 
 router.use("/users", userRouter);
 

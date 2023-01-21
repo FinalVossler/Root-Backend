@@ -1,6 +1,6 @@
-import express from "express";
-import dotenv from "dotenv";
-import cors from "cors";
+const express = require("express");
+const cors = require("cors");
+import { config } from "dotenv";
 
 import mongoose from "./mongoose";
 import router from "./router";
@@ -8,8 +8,7 @@ import errorMiddleware from "./middleware/errorMiddleware";
 import loggerMiddleware from "./middleware/loggerMiddleware";
 
 const app = express();
-
-dotenv.config();
+config();
 
 mongoose();
 

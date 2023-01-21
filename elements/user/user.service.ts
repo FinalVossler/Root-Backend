@@ -1,5 +1,5 @@
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import { decode, sign } from "jsonwebtoken";
+import { compare } from "bcrypt";
 
 import UserRegisterCommand from "./dtos/UserRegisterCommand";
 import UserLoginCommand from "./dtos/UserLoginCommand";
@@ -32,7 +32,7 @@ const userService = {
       throw new Error("User not found");
     }
 
-    const validPassword: boolean = await bcrypt.compare(
+    const validPassword: boolean = await compare(
       command.password,
       user.password
     );
@@ -51,7 +51,7 @@ const userService = {
     return user;
   },
   getByToken: async (token: string): Promise<IUser> => {
-    const signedUser: { _id: mongoose.ObjectId } = jwt.decode(token) as IUser;
+    const signedUser: { _id: mongoose.ObjectId } = decode(token) as IUser;
 
     const user: IUser = await userRepository.getbyId(signedUser._id);
 
@@ -67,7 +67,7 @@ const userService = {
     // @ts-ignore
     const secret: string = process.env.JWT_SECRET;
 
-    const token: string = jwt.sign(
+    const token: string = sign(
       // @ts-ignore
       toSign,
       secret,

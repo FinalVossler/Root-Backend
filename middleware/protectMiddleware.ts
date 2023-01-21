@@ -1,5 +1,5 @@
 import { Response, Request, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import { verify } from "jsonwebtoken";
 import { IUser } from "../elements/user/user.model";
 import userService from "../elements/user/user.service";
 import ConnectedRequest from "../globalTypes/ConnectedRequest";
@@ -22,7 +22,7 @@ const protectMiddleware = async (
     const secret: string = process.env.JWT_SECRET;
 
     try {
-      jwt.verify(token, secret);
+      verify(token, secret);
 
       const user: IUser = await userService.getByToken(token);
 

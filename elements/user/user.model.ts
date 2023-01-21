@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
+import { genSalt, hash } from "bcrypt";
 
 export enum Role {
   Admin = "Admin",
@@ -47,8 +47,8 @@ const userSchema = new mongoose.Schema<IUser>(
 );
 
 userSchema.pre("save", async function (next) {
-  const salt: string = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  const salt: string = await genSalt(10);
+  this.password = await hash(this.password, salt);
 
   next();
 });
