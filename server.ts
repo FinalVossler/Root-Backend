@@ -7,8 +7,9 @@ import router from "./router";
 import errorMiddleware from "./middleware/errorMiddleware";
 import loggerMiddleware from "./middleware/loggerMiddleware";
 
+if (process.env.NODE_ENV !== "production") require("dotenv").config();
+
 const app = express();
-dotenvConfig();
 
 mongoose();
 
