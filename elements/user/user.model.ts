@@ -43,7 +43,9 @@ const userSchema = new mongoose.Schema<IUser>(
       default: Role.Admin,
     },
   },
-  {}
+  {
+    timestamps: true,
+  }
 );
 
 userSchema.pre("save", async function (next) {
