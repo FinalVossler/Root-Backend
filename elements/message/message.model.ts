@@ -8,6 +8,8 @@ export interface IMessage {
   to: mongoose.ObjectId[];
   message: string;
   numberOfParticipants?: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface MessageModel extends mongoose.Model<IMessage> {}

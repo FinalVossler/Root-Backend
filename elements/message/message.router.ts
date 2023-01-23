@@ -34,13 +34,13 @@ router.post(
     res: Response<ResponseDto<MessageReadDto[]>>
   ) => {
     const command = req.body;
-    const message: IMessage[] = await messageService.getMessagesBetweenUsers(
+    const messages: IMessage[] = await messageService.getMessagesBetweenUsers(
       command
     );
 
     return res.status(200).json({
       success: true,
-      data: message.map((message) => toReadDto(message)),
+      data: messages.map((message) => toReadDto(message)),
     });
   }
 );
