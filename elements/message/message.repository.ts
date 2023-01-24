@@ -23,6 +23,16 @@ const messageRespository = {
 
     return messages.reverse();
   },
+  getTotalMessages: async (
+    command: MessageGetBetweenUsersCommand
+  ): Promise<number> => {
+    const count: number = await Message.find({
+      to: { $all: command.usersIds },
+      numberOfParticipants: command.usersIds.length,
+    }).count();
+
+    return count;
+  },
 };
 
 export default messageRespository;

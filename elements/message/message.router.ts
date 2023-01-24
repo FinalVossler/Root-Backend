@@ -1,9 +1,11 @@
 import express, { Request, Response } from "express";
+
 import ResponseDto from "../../globalTypes/ResponseDto";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import MessageGetBetweenUsersCommand from "./dtos/MessageGetBetweenUsersCommand";
 import MessageReadDto, { toReadDto } from "./dtos/MessageReadDto";
 import MessageSendCommand from "./dtos/MessageSendCommand";
+import PaginationResponse from "./dtos/PaginationResponse";
 import { IMessage } from "./message.model";
 import messageService from "./message.service";
 
@@ -31,16 +33,23 @@ router.post(
   protectMiddleware,
   async (
     req: Request<any, any, MessageGetBetweenUsersCommand>,
-    res: Response<ResponseDto<MessageReadDto[]>>
+    res: Response<ResponseDto<PaginationResponse<MessageReadDto>>>
   ) => {
     const command = req.body;
     const messages: IMessage[] = await messageService.getMessagesBetweenUsers(
       command
     );
 
+    const total: number = await messageService.getTotalMessagesBetweenUsers(
+      command
+    );
+
     return res.status(200).json({
       success: true,
-      data: messages.map((message) => toReadDto(message)),
+      data: {
+        data: messages.map((message) => toReadDto(message)),
+        total,
+      },
     });
   }
 );

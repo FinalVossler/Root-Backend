@@ -7,7 +7,6 @@ const messageService = {
   sendMessage: async (command: MessageSendCommand): Promise<IMessage> => {
     const message: IMessage = await messageRespository.sendMessage(command);
 
-    console.log("message", message, "command", command);
     return message;
   },
   getMessagesBetweenUsers: async (
@@ -17,6 +16,13 @@ const messageService = {
       await messageRespository.getMessagesBetweenUsers(command);
 
     return messages;
+  },
+  getTotalMessagesBetweenUsers: async (
+    command: MessageGetBetweenUsersCommand
+  ): Promise<number> => {
+    const total: number = await messageRespository.getTotalMessages(command);
+
+    return total;
   },
 };
 
