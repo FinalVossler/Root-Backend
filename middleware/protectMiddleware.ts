@@ -30,7 +30,7 @@ const protectMiddleware = async (
         throw new Error("Unauthorized");
       }
 
-      (req as ConnectedRequest).user = user;
+      (req as ConnectedRequest<any, any, any>).user = user;
 
       next();
     } catch (_) {

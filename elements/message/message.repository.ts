@@ -1,10 +1,17 @@
+import mongoose from "mongoose";
+import { IUser } from "../user/user.model";
 import MessageGetBetweenUsersCommand from "./dtos/MessageGetBetweenUsersCommand";
 import MessageSendCommand from "./dtos/MessageSendCommand";
 import Message, { IMessage } from "./message.model";
 
 const messageRespository = {
   sendMessage: async (command: MessageSendCommand): Promise<IMessage> => {
-    const message: IMessage = (await Message.create(command)) as IMessage;
+    const message: IMessage = (await Message.create({
+      from: command.from,
+      to: command.to,
+      message: command.message,
+      read: [command.from],
+    })) as IMessage;
 
     return message;
   },
@@ -23,6 +30,15 @@ const messageRespository = {
 
     return messages.reverse();
   },
+  markMessagesAsReadBy: async (
+    messages: IMessage[],
+    userId: mongoose.ObjectId
+  ): Promise<void> => {
+    await Message.updateMany(
+      { _id: { $in: messages.map((m) => m._id) } },
+      { $addToSet: { read: userId } }
+    );
+  },
   getTotalMessages: async (
     command: MessageGetBetweenUsersCommand
   ): Promise<number> => {
@@ -32,6 +48,18 @@ const messageRespository = {
     }).count();
 
     return count;
+  },
+  getTotalUnreadMessages: async (
+    usersIds: mongoose.ObjectId[],
+    currentUserId: mongoose.ObjectId
+  ): Promise<number> => {
+    const total: number = await Message.find({
+      read: { $ne: currentUserId },
+      to: { $all: usersIds },
+      numberOfParticipants: usersIds.length,
+    }).count();
+
+    return total;
   },
 };
 

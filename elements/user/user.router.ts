@@ -1,4 +1,4 @@
-import express, { Response, Request } from "express";
+import express, { Response, Request, json } from "express";
 
 import ResponseDto from "../../globalTypes/ResponseDto";
 import UserLoginCommand from "./dtos/UserLoginCommand";
@@ -9,13 +9,17 @@ import UserUpdateCommand from "./dtos/UserUpdateCommand";
 import { IUser } from "./user.model";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
+import { IPicture } from "../picture/picture.model";
 
 const router = express.Router();
 
 router.get(
   "/",
   protectMiddleware,
-  async (req: ConnectedRequest, res: Response<ResponseDto<UserReadDto[]>>) => {
+  async (
+    req: ConnectedRequest<any, any, any>,
+    res: Response<ResponseDto<UserReadDto[]>>
+  ) => {
     const users: IUser[] = await userService.get(req.user?._id);
 
     return res.status(200).json({
@@ -28,7 +32,10 @@ router.get(
 router.get(
   "/me",
   protectMiddleware,
-  async (req: ConnectedRequest, res: Response<ResponseDto<UserReadDto>>) => {
+  async (
+    req: ConnectedRequest<any, any, any>,
+    res: Response<ResponseDto<UserReadDto>>
+  ) => {
     const user: IUser | undefined = req.user;
 
     if (!user) {
@@ -101,6 +108,30 @@ router.put(
     return res.status(200).json({
       success: true,
       data: user,
+    });
+  }
+);
+
+router.put(
+  "/updateProfilePicture",
+  protectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, IPicture>,
+    res: Response<ResponseDto<UserReadDto>>
+  ) => {
+    let user: IUser = req.user;
+    const profilePicture: IPicture = req.body;
+
+    console.log("profilePicture", profilePicture);
+
+    user = await userService.updateProfilePictre({
+      userId: user._id,
+      picture: profilePicture,
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: toReadDto(user),
     });
   }
 );

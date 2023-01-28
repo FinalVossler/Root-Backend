@@ -1,4 +1,6 @@
 import express, { Request, Response } from "express";
+import mongoose from "mongoose";
+import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 
 import ResponseDto from "../../globalTypes/ResponseDto";
 import protectMiddleware from "../../middleware/protectMiddleware";
@@ -32,12 +34,14 @@ router.post(
   "/get",
   protectMiddleware,
   async (
-    req: Request<any, any, MessageGetBetweenUsersCommand>,
+    req: ConnectedRequest<any, any, MessageGetBetweenUsersCommand>,
     res: Response<ResponseDto<PaginationResponse<MessageReadDto>>>
   ) => {
     const command = req.body;
+
     const messages: IMessage[] = await messageService.getMessagesBetweenUsers(
-      command
+      command,
+      req.user
     );
 
     const total: number = await messageService.getTotalMessagesBetweenUsers(
@@ -50,6 +54,25 @@ router.post(
         data: messages.map((message) => toReadDto(message)),
         total,
       },
+    });
+  }
+);
+
+router.post(
+  "/totalUnreadMessages",
+  protectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, mongoose.ObjectId[]>,
+    res: Response<ResponseDto<number>>
+  ) => {
+    const usersIds: mongoose.ObjectId[] = req.body;
+
+    const totalUnreadMessages: number =
+      await messageService.getTotalUnreadMessages(usersIds, req.user._id);
+
+    return res.status(200).json({
+      success: true,
+      data: totalUnreadMessages,
     });
   }
 );

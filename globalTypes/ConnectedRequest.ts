@@ -2,7 +2,7 @@ import { Request } from "express";
 
 import { IUser } from "../elements/user/user.model";
 
-interface ConnectedRequest extends Request {
+interface ConnectedRequest<A, B, C> extends Request<A, B, C> {
   user?: IUser;
 }
 

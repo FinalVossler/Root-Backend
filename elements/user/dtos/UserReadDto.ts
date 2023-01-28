@@ -3,9 +3,10 @@ import { IUser } from "../user.model";
 
 type UserReadDto = {
   _id: mongoose.ObjectId;
-  firstName: string;
-  lastName: string;
-  email: string;
+  firstName: IUser["firstName"];
+  lastName: IUser["lastName"];
+  email: IUser["email"];
+  profilePicture: IUser["profilePicture"];
 };
 
 export const toReadDto = (user: IUser): UserReadDto => {
@@ -14,6 +15,7 @@ export const toReadDto = (user: IUser): UserReadDto => {
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
+    profilePicture: user.profilePicture,
   };
 };
 

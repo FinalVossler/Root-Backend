@@ -7,6 +7,7 @@ import userRepository from "./user.repository";
 import { IUser } from "./user.model";
 import UserUpdateCommand from "./dtos/UserUpdateCommand";
 import mongoose, { ObjectId } from "mongoose";
+import UserUpdateProfilePictureCommand from "./dtos/UserUpdateProfilePictureCommand";
 
 const userService = {
   get: async (currentUserId?: ObjectId): Promise<IUser[]> => {
@@ -47,6 +48,13 @@ const userService = {
   },
   update: async (command: UserUpdateCommand): Promise<IUser> => {
     const user: IUser = await userRepository.update(command);
+
+    return user;
+  },
+  updateProfilePictre: async (
+    command: UserUpdateProfilePictureCommand
+  ): Promise<IUser> => {
+    const user: IUser = await userRepository.updateProfilePicture(command);
 
     return user;
   },

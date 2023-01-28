@@ -8,6 +8,8 @@ export interface IMessage {
   to: mongoose.ObjectId[];
   message: string;
   numberOfParticipants?: number;
+  read: mongoose.ObjectId[];
+
   createdAt: string;
   updatedAt: string;
 }
@@ -32,6 +34,15 @@ const MessageSchema = new mongoose.Schema<IMessage>(
     },
     numberOfParticipants: {
       type: mongoose.SchemaTypes.Number,
+      required: false,
+    },
+    read: {
+      type: [
+        {
+          type: mongoose.SchemaTypes.ObjectId,
+          ref: userModel.name,
+        },
+      ],
       required: false,
     },
   },

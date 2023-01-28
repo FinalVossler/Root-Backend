@@ -5,6 +5,7 @@ type MessageReadDto = {
   from: IMessage["from"];
   to: IMessage["to"];
   message: IMessage["message"];
+  read: IMessage["read"];
   createdAt: IMessage["createdAt"];
   updatedAt: IMessage["updatedAt"];
 };
@@ -15,6 +16,7 @@ export const toReadDto = (message: IMessage): MessageReadDto => {
     from: message.from,
     to: message.to,
     message: message.message,
+    read: message.read,
     createdAt: message.createdAt,
     updatedAt: message.updatedAt,
   };

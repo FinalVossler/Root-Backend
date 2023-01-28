@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { genSalt, hash } from "bcrypt";
+import pictureModel from "../picture/picture.model";
 
 export enum Role {
   Admin = "Admin",
@@ -12,6 +13,10 @@ export interface IUser {
   email: string;
   password: string;
   role: Role;
+  profilePicture: {
+    url: string;
+    uuiid: string;
+  };
 }
 
 interface UserModel extends mongoose.Model<IUser> {}
@@ -41,6 +46,12 @@ const userSchema = new mongoose.Schema<IUser>(
       type: mongoose.SchemaTypes.String,
       required: false,
       default: Role.Admin,
+    },
+    profilePicture: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: pictureModel.modelName,
+      required: false,
+      default: null,
     },
   },
   {
