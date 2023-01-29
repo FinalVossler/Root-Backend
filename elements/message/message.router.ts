@@ -7,7 +7,7 @@ import protectMiddleware from "../../middleware/protectMiddleware";
 import MessageGetBetweenUsersCommand from "./dtos/MessageGetBetweenUsersCommand";
 import MessageReadDto, { toReadDto } from "./dtos/MessageReadDto";
 import MessageSendCommand from "./dtos/MessageSendCommand";
-import PaginationResponse from "./dtos/PaginationResponse";
+import PaginationResponse from "../../globalTypes/PaginationResponse";
 import { IMessage } from "./message.model";
 import messageService from "./message.service";
 

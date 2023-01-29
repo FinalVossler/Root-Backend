@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 
-import { IPicture } from "../../picture/picture.model";
+import { IFile } from "../../file/file.model";
 
 type UserUpdateProfilePictureCommand = {
   userId: mongoose.ObjectId;
-  picture: IPicture;
+  picture: IFile;
 };
 
 export default UserUpdateProfilePictureCommand;

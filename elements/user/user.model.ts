@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { genSalt, hash } from "bcrypt";
-import pictureModel from "../picture/picture.model";
+
+import File, { IFile } from "../file/file.model";
 
 export enum Role {
   Admin = "Admin",
@@ -13,13 +14,10 @@ export interface IUser {
   email: string;
   password: string;
   role: Role;
-  profilePicture: {
-    url: string;
-    uuiid: string;
-  };
+  profilePicture: IFile;
 }
 
-interface UserModel extends mongoose.Model<IUser> {}
+interface IUserModel extends mongoose.Model<IUser> {}
 
 const userSchema = new mongoose.Schema<IUser>(
   {
@@ -49,7 +47,7 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     profilePicture: {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: pictureModel.modelName,
+      ref: File.modelName,
       required: false,
       default: null,
     },
@@ -66,4 +64,4 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-export default mongoose.model<IUser, UserModel>("user", userSchema);
+export default mongoose.model<IUser, IUserModel>("user", userSchema);

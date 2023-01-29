@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
-import userModel from "../user/user.model";
+import File, { IFile } from "../file/file.model";
+import User from "../user/user.model";
 
 export interface IMessage {
   _id: mongoose.ObjectId;
@@ -9,6 +10,7 @@ export interface IMessage {
   message: string;
   numberOfParticipants?: number;
   read: mongoose.ObjectId[];
+  files: IFile[];
 
   createdAt: string;
   updatedAt: string;
@@ -20,16 +22,16 @@ const MessageSchema = new mongoose.Schema<IMessage>(
   {
     message: {
       type: mongoose.SchemaTypes.String,
-      required: true,
+      required: false,
     },
     from: {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: userModel.name,
+      ref: User.name,
       required: true,
     },
     to: {
       type: [mongoose.SchemaTypes.ObjectId],
-      ref: userModel.name,
+      ref: User.modelName,
       required: true,
     },
     numberOfParticipants: {
@@ -40,11 +42,19 @@ const MessageSchema = new mongoose.Schema<IMessage>(
       type: [
         {
           type: mongoose.SchemaTypes.ObjectId,
-          ref: userModel.name,
+          ref: User.modelName,
         },
       ],
       required: false,
     },
+    files: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        required: false,
+        ref: File.modelName,
+        default: [],
+      },
+    ],
   },
   {
     timestamps: true,

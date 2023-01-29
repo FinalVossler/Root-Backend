@@ -1,11 +1,12 @@
 import { ObjectId } from "mongoose";
+
 import UserUpdateProfilePictureCommand from "./dtos/UserUpdateProfilePictureCommand";
 import UserRegisterCommand from "./dtos/UserRegisterCommand";
 import UserUpdateCommand from "./dtos/UserUpdateCommand";
+import fileRepository from "../file/file.repository";
 
 import User, { IUser } from "./user.model";
-import { IPicture } from "../picture/picture.model";
-import pictureRepository from "../picture/picture.repository";
+import { IFile } from "../file/file.model";
 
 const userRepository = {
   get: async (currentUserId?: ObjectId): Promise<IUser[]> => {
@@ -50,7 +51,7 @@ const userRepository = {
   updateProfilePicture: async (
     command: UserUpdateProfilePictureCommand
   ): Promise<IUser> => {
-    const picture: IPicture = await pictureRepository.create(command.picture);
+    const picture: IFile = await fileRepository.create(command.picture);
 
     await User.updateOne(
       { _id: command.userId },

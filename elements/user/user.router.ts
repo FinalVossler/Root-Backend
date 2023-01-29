@@ -9,7 +9,7 @@ import UserUpdateCommand from "./dtos/UserUpdateCommand";
 import { IUser } from "./user.model";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
-import { IPicture } from "../picture/picture.model";
+import { IFile } from "../file/file.model";
 
 const router = express.Router();
 
@@ -116,13 +116,11 @@ router.put(
   "/updateProfilePicture",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, IPicture>,
+    req: ConnectedRequest<any, any, IFile>,
     res: Response<ResponseDto<UserReadDto>>
   ) => {
     let user: IUser = req.user;
-    const profilePicture: IPicture = req.body;
-
-    console.log("profilePicture", profilePicture);
+    const profilePicture: IFile = req.body;
 
     user = await userService.updateProfilePictre({
       userId: user._id,

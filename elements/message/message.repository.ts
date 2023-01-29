@@ -1,17 +1,33 @@
 import mongoose from "mongoose";
-import { IUser } from "../user/user.model";
+
+import { IFile } from "../file/file.model";
 import MessageGetBetweenUsersCommand from "./dtos/MessageGetBetweenUsersCommand";
 import MessageSendCommand from "./dtos/MessageSendCommand";
 import Message, { IMessage } from "./message.model";
+import fileRepository from "../file/file.repository";
 
 const messageRespository = {
   sendMessage: async (command: MessageSendCommand): Promise<IMessage> => {
-    const message: IMessage = (await Message.create({
+    let createdFiles: IFile[] = [];
+    if (command.files.length > 0) {
+      const promises: Promise<IFile>[] = command.files.map((file) =>
+        fileRepository.create(file)
+      );
+
+      await Promise.all(promises).then((files: IFile[]) => {
+        createdFiles = [...files];
+      });
+    }
+
+    const message = await Message.create({
       from: command.from,
       to: command.to,
       message: command.message,
       read: [command.from],
-    })) as IMessage;
+      files: createdFiles.map((el) => el._id),
+    });
+
+    await message.populate("files");
 
     return message;
   },
@@ -22,6 +38,7 @@ const messageRespository = {
       to: { $all: command.usersIds },
       numberOfParticipants: command.usersIds.length,
     })
+      .populate("files")
       .sort({ createdAt: -1 })
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
