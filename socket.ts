@@ -25,6 +25,15 @@ const init = (server: http.Server) => {
       });
     });
 
+    socket.on(ChatMessagesEnum.Delete, (message: MessageReadDto) => {
+      message.to.forEach((userId: mongoose.ObjectId) => {
+        if (onlineUsers.has(userId)) {
+          const userSocketId: string = onlineUsers.get(userId);
+          socket.to(userSocketId).emit(ChatMessagesEnum.Delete, message);
+        }
+      });
+    });
+
     socket.on("disconnect", () => {
       onlineUsers.set(userId, null);
     });

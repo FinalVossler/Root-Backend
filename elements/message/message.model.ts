@@ -58,11 +58,26 @@ const MessageSchema = new mongoose.Schema<IMessage>(
   },
   {
     timestamps: true,
+    virtuals: {},
   }
 );
 
 MessageSchema.pre("save", function (next) {
   this.numberOfParticipants = this.to.length;
+
+  next();
+});
+
+MessageSchema.pre("deleteOne", async function (next) {
+  const message: IMessage = (await this.model
+    .findOne(this.getQuery())
+    .populate("files")) as IMessage;
+
+  const filesUuids: string[] = message.files.map((f) => f.uuid);
+
+  console.log("filesUuids", filesUuids);
+
+  // TODO: we have file ids. Now we need to delete all in upload care
 
   next();
 });

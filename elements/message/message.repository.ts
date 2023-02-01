@@ -78,6 +78,15 @@ const messageRespository = {
 
     return total;
   },
+  deleteMessage: async (messageId: string) => {
+    await Message.deleteOne({ _id: messageId }).exec();
+  },
+  getMessage: async (messageId: string): Promise<IMessage> => {
+    const message: IMessage = (await Message.findById(
+      messageId
+    ).exec()) as IMessage;
+    return message;
+  },
 };
 
 export default messageRespository;

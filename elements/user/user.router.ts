@@ -17,7 +17,7 @@ router.get(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, any>,
+    req: ConnectedRequest<any, any, any, any>,
     res: Response<ResponseDto<UserReadDto[]>>
   ) => {
     const users: IUser[] = await userService.get(req.user?._id);
@@ -33,7 +33,7 @@ router.get(
   "/me",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, any>,
+    req: ConnectedRequest<any, any, any, any>,
     res: Response<ResponseDto<UserReadDto>>
   ) => {
     const user: IUser | undefined = req.user;
@@ -116,7 +116,7 @@ router.put(
   "/updateProfilePicture",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, IFile>,
+    req: ConnectedRequest<any, any, IFile, any>,
     res: Response<ResponseDto<UserReadDto>>
   ) => {
     let user: IUser = req.user;

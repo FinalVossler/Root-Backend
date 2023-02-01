@@ -34,7 +34,7 @@ router.post(
   "/get",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, MessageGetBetweenUsersCommand>,
+    req: ConnectedRequest<any, any, MessageGetBetweenUsersCommand, any>,
     res: Response<ResponseDto<PaginationResponse<MessageReadDto>>>
   ) => {
     const command = req.body;
@@ -62,7 +62,7 @@ router.post(
   "/totalUnreadMessages",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, mongoose.ObjectId[]>,
+    req: ConnectedRequest<any, any, mongoose.ObjectId[], any>,
     res: Response<ResponseDto<number>>
   ) => {
     const usersIds: mongoose.ObjectId[] = req.body;
@@ -73,6 +73,24 @@ router.post(
     return res.status(200).json({
       success: true,
       data: totalUnreadMessages,
+    });
+  }
+);
+
+router.delete(
+  "/",
+  protectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, any, { messageId: string }>,
+    res: Response<ResponseDto<void>>
+  ) => {
+    const messageId: string = req.query.messageId;
+
+    await messageService.deleteMessage(messageId, req.user);
+
+    return res.status(200).json({
+      success: true,
+      data: null,
     });
   }
 );
