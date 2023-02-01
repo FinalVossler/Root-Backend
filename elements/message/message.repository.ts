@@ -1,23 +1,14 @@
 import mongoose from "mongoose";
 
-import { IFile } from "../file/file.model";
 import MessageGetBetweenUsersCommand from "./dtos/MessageGetBetweenUsersCommand";
 import MessageSendCommand from "./dtos/MessageSendCommand";
 import Message, { IMessage } from "./message.model";
-import fileRepository from "../file/file.repository";
+import createFiles from "../../utils/createFiles";
+import { IFile } from "../file/file.model";
 
 const messageRespository = {
   sendMessage: async (command: MessageSendCommand): Promise<IMessage> => {
-    let createdFiles: IFile[] = [];
-    if (command.files.length > 0) {
-      const promises: Promise<IFile>[] = command.files.map((file) =>
-        fileRepository.create(file)
-      );
-
-      await Promise.all(promises).then((files: IFile[]) => {
-        createdFiles = [...files];
-      });
-    }
+    let createdFiles: IFile[] = await createFiles(command.files);
 
     const message = await Message.create({
       from: command.from,
