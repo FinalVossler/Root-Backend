@@ -1,12 +1,16 @@
 import mongoose from "mongoose";
+
+import PostVisibility from "../../globalTypes/PostVisibility";
 import File, { IFile } from "../file/file.model";
 import User from "../user/user.model";
 
 export interface IPost {
+  _id: mongoose.ObjectId;
   title?: string;
-  poster: mongoose.ObjectId;
+  posterId: mongoose.ObjectId;
   content?: string;
   files: IFile[];
+  visibility: PostVisibility;
 
   createdAt: string;
   updatedAt: string;
@@ -19,7 +23,7 @@ const PostSchema = new mongoose.Schema(
     title: {
       type: mongoose.SchemaTypes.String,
     },
-    poster: {
+    posterId: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: User.name,
       required: true,
@@ -32,10 +36,14 @@ const PostSchema = new mongoose.Schema(
       {
         type: mongoose.SchemaTypes.ObjectId,
         required: false,
-        ref: File.name,
+        ref: File.modelName,
         default: [],
       },
     ],
+    visibility: {
+      type: mongoose.SchemaTypes.String,
+      default: PostVisibility.Public,
+    },
   },
   {
     timestamps: true,

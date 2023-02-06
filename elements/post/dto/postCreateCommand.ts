@@ -2,7 +2,7 @@ import { IPost } from "../post.model";
 
 type PostCreateCommand = {
   title?: IPost["title"];
-  poster: IPost["poster"];
+  posterId: IPost["posterId"];
   content?: IPost["content"];
   files: IPost["files"];
 };

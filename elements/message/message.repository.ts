@@ -3,12 +3,12 @@ import mongoose from "mongoose";
 import MessageGetBetweenUsersCommand from "./dtos/MessageGetBetweenUsersCommand";
 import MessageSendCommand from "./dtos/MessageSendCommand";
 import Message, { IMessage } from "./message.model";
-import createFiles from "../../utils/createFiles";
 import { IFile } from "../file/file.model";
+import fileRepository from "../file/file.repository";
 
-const messageRespository = {
+const messageRepository = {
   sendMessage: async (command: MessageSendCommand): Promise<IMessage> => {
-    let createdFiles: IFile[] = await createFiles(command.files);
+    let createdFiles: IFile[] = await fileRepository.createFiles(command.files);
 
     const message = await Message.create({
       from: command.from,
@@ -80,4 +80,4 @@ const messageRespository = {
   },
 };
 
-export default messageRespository;
+export default messageRepository;
