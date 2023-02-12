@@ -10,12 +10,16 @@ const postRepository = {
       command.files
     );
 
-    const post: IPost = (await Post.create({
-      title: command.title,
-      content: command.content,
-      files: createdFiles.map((f) => f._id),
-      posterId: command.posterId,
-    })) as IPost;
+    const promise: Promise<IPost> = (
+      await Post.create({
+        title: command.title,
+        content: command.content,
+        files: createdFiles.map((f) => f._id),
+        posterId: command.posterId,
+      })
+    ).populate("files");
+
+    const post: IPost = await promise;
 
     return post;
   },
@@ -24,7 +28,7 @@ const postRepository = {
   ): Promise<{ posts: IPost[]; total: number }> => {
     const posts: IPost[] = await Post.find({
       posterId: command.userId,
-      // visibility: { $in: command.visibilities },
+      visibility: { $in: command.visibilities },
     })
       .populate("files")
       .sort({ createdAt: -1 })

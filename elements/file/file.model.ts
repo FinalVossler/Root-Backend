@@ -5,6 +5,7 @@ export interface IFile {
   url: string;
   uuid: string;
   isImage: boolean;
+  name?: string | null;
 }
 
 interface IFileModel extends mongoose.Model<IFile> {}
@@ -23,6 +24,11 @@ const FileSchema = new mongoose.Schema<IFile>(
       type: mongoose.SchemaTypes.Boolean,
       required: true,
       default: true,
+    },
+    name: {
+      type: mongoose.SchemaTypes.String,
+      required: true,
+      defaut: "",
     },
   },
   {
