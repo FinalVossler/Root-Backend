@@ -1,8 +1,19 @@
 import mongoose from "mongoose";
 
-import PostVisibility from "../../globalTypes/PostVisibility";
 import File, { IFile } from "../file/file.model";
 import User from "../user/user.model";
+
+export enum PostVisibility {
+  Private = "Private",
+  Public = "Public",
+  Connections = "Connections",
+}
+
+export enum PostDesign {
+  Default = "Default",
+  Card = "Card",
+  TitleAndText = "TitleAndText",
+}
 
 export interface IPost {
   _id: mongoose.ObjectId;
@@ -11,6 +22,7 @@ export interface IPost {
   content?: string;
   files: IFile[];
   visibility: PostVisibility;
+  design: PostDesign;
 
   createdAt: string;
   updatedAt: string;
@@ -43,6 +55,10 @@ const PostSchema = new mongoose.Schema(
     visibility: {
       type: mongoose.SchemaTypes.String,
       default: PostVisibility.Public,
+    },
+    design: {
+      type: mongoose.SchemaTypes.String,
+      default: PostDesign.Default,
     },
   },
   {

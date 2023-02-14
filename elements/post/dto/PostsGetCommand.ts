@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
 import PaginationCommand from "../../../globalTypes/PaginationCommand";
-import PostVisibility from "../../../globalTypes/PostVisibility";
+import { PostVisibility } from "../post.model";
 
-type PostsGetCommandd = {
+type PostsGetCommand = {
   userId: mongoose.ObjectId;
   visibilities: PostVisibility[];
   paginationCommand: PaginationCommand;
 };
 
-export default PostsGetCommandd;
+export default PostsGetCommand;

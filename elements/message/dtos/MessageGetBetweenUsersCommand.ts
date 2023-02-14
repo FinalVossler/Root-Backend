@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import PaginationCommand from "./PaginationCommand";
+import PaginationCommand from "../../../globalTypes/PaginationCommand";
 
 type MessageGetBetweenUsersCommand = {
   paginationCommand: PaginationCommand;

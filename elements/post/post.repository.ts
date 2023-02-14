@@ -16,6 +16,8 @@ const postRepository = {
         content: command.content,
         files: createdFiles.map((f) => f._id),
         posterId: command.posterId,
+        visibility: command.visibility,
+        design: command.design,
       })
     ).populate("files");
 

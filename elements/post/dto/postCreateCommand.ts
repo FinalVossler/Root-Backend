@@ -5,6 +5,8 @@ type PostCreateCommand = {
   posterId: IPost["posterId"];
   content?: IPost["content"];
   files: IPost["files"];
+  visibility: IPost["visibility"];
+  design: IPost["design"];
 };
 
 export default PostCreateCommand;
