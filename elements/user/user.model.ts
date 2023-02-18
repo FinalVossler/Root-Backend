@@ -5,6 +5,7 @@ import File, { IFile } from "../file/file.model";
 
 export enum Role {
   Admin = "Admin",
+  Normal = "Normal",
 }
 
 export interface IUser {
@@ -43,7 +44,7 @@ const userSchema = new mongoose.Schema<IUser>(
     role: {
       type: mongoose.SchemaTypes.String,
       required: false,
-      default: Role.Admin,
+      default: Role.Normal,
     },
     profilePicture: {
       type: mongoose.SchemaTypes.ObjectId,
