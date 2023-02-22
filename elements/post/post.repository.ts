@@ -1,6 +1,7 @@
 import { IFile } from "../file/file.model";
 import fileRepository from "../file/file.repository";
 import PostCreateCommand from "./dto/PostCreateCommand";
+import PostsSearchCommand from "./dto/PostsSearchCommand";
 import PostsGetCommand from "./dto/PostsGetCommand";
 import Post, { IPost } from "./post.model";
 
@@ -40,7 +41,33 @@ const postRepository = {
       .limit(command.paginationCommand.limit)
       .exec();
 
-    const total: number = await Post.find({ posterId: command.userId }).count();
+    const total: number = await Post.find({
+      posterId: command.userId,
+      visibility: { $in: command.visibilities },
+    }).count();
+
+    return { posts, total };
+  },
+  searchPosts: async (
+    command: PostsSearchCommand
+  ): Promise<{ posts: IPost[]; total: number }> => {
+    const query = Post.find({
+      title: { $regex: command.title },
+      visibility: { $in: command.visibilities },
+      posterId: command.posterId,
+    });
+
+    const posts: IPost[] = await query
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit);
+
+    const total = await Post.find({
+      title: { $regex: command.title },
+      visibility: { $in: command.visibilities },
+      posterId: command.posterId,
+    }).count();
 
     return { posts, total };
   },
