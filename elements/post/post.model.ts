@@ -14,6 +14,7 @@ export enum PostDesign {
   Card = "Card",
   TitleAndText = "TitleAndText",
   Banner = "Banner",
+  TitleImageAndText = "TitleImageAndText",
 }
 
 export interface IPost {
