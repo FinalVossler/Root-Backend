@@ -15,6 +15,7 @@ export enum PostDesign {
   TitleAndText = "TitleAndText",
   Banner = "Banner",
   TitleImageAndText = "TitleImageAndText",
+  ChildrenContainer = "ChildrenContainer",
 }
 
 export interface IPost {
@@ -25,6 +26,7 @@ export interface IPost {
   files: IFile[];
   visibility: PostVisibility;
   design: PostDesign;
+  children: IPost[];
 
   createdAt: string;
   updatedAt: string;
@@ -62,10 +64,19 @@ const PostSchema = new mongoose.Schema(
       type: mongoose.SchemaTypes.String,
       default: PostDesign.Default,
     },
+    children: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "post",
+        default: [],
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.model<IPost, IPostModel>("post", PostSchema);
+const model = mongoose.model<IPost, IPostModel>("post", PostSchema);
+
+export default model;

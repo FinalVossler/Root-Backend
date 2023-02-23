@@ -3,7 +3,7 @@ import { IPage } from "../page.model";
 type PageUpdateCommand = {
   _id: string;
   title: IPage["title"];
-  orderedPosts: string[];
+  posts: string[];
 };
 
 export default PageUpdateCommand;

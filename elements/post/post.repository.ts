@@ -19,6 +19,7 @@ const postRepository = {
         posterId: command.posterId,
         visibility: command.visibility,
         design: command.design,
+        children: command.children,
       })
     ).populate("files");
 
@@ -34,6 +35,7 @@ const postRepository = {
       visibility: { $in: command.visibilities },
     })
       .populate("files")
+      .populate("children")
       .sort({ createdAt: -1 })
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
@@ -55,7 +57,7 @@ const postRepository = {
       title: { $regex: command.title },
       visibility: { $in: command.visibilities },
       posterId: command.posterId,
-    });
+    }).populate("children");
 
     const posts: IPost[] = await query
       .skip(

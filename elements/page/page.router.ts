@@ -2,6 +2,8 @@ import express, { Response } from "express";
 
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
+import adminProtectMiddleware from "../../middleware/adminProtectMiddleware";
+import protectMiddleware from "../../middleware/protectMiddleware";
 import { Role } from "../user/user.model";
 import PageCreateCommand from "./dto/PageCreateCommand";
 import PageUpdateCommand from "./dto/PageUpdateCommand";
@@ -27,6 +29,8 @@ router.get(
 
 router.post(
   "/",
+  protectMiddleware,
+  adminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, PageCreateCommand, any>,
     res: Response<ResponseDto<IPage>>
@@ -50,6 +54,8 @@ router.post(
 
 router.put(
   "/",
+  protectMiddleware,
+  adminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, PageUpdateCommand, any>,
     res: Response<ResponseDto<IPage>>

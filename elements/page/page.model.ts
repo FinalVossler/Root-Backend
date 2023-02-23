@@ -7,7 +7,6 @@ export interface IPage {
   title: string;
   slug: string;
   posts: IPost[];
-  orderedPosts: mongoose.ObjectId[];
 }
 
 interface IPageModel extends mongoose.Model<IPage> {}
@@ -26,13 +25,6 @@ const PageSchema = new mongoose.Schema<IPage>({
       required: true,
       default: [],
       ref: postModel.modelName,
-    },
-  ],
-  orderedPosts: [
-    {
-      tyep: mongoose.SchemaTypes.ObjectId,
-      required: false,
-      default: [],
     },
   ],
 });

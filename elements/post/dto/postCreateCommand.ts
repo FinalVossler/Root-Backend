@@ -7,6 +7,7 @@ type PostCreateCommand = {
   files: IPost["files"];
   visibility: IPost["visibility"];
   design: IPost["design"];
+  children: string[];
 };
 
 export default PostCreateCommand;

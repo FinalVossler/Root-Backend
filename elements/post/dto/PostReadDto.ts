@@ -7,6 +7,7 @@ type PostReadDto = {
   content?: IPost["content"];
   files: IPost["files"];
   design: IPost["design"];
+  children: IPost["children"];
 
   createdAt: IPost["createdAt"];
   updatedAt: IPost["updatedAt"];
@@ -20,6 +21,7 @@ export const toReadDto = (post: IPost): PostReadDto => {
     content: post.content,
     files: post.files,
     design: post.design,
+    children: post.children,
     createdAt: post.createdAt,
     updatedAt: post.updatedAt,
   };
