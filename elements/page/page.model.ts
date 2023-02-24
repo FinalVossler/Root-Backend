@@ -4,6 +4,7 @@ import slugify from "slugify";
 import postModel, { IPost } from "../post/post.model";
 
 export interface IPage {
+  _id: mongoose.ObjectId;
   title: string;
   slug: string;
   posts: IPost[];

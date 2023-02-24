@@ -4,6 +4,7 @@ import PostCreateCommand from "./dto/PostCreateCommand";
 import PostsSearchCommand from "./dto/PostsSearchCommand";
 import PostsGetCommand from "./dto/PostsGetCommand";
 import Post, { IPost } from "./post.model";
+import File from "../file/file.model";
 
 const postRepository = {
   createPost: async (command: PostCreateCommand): Promise<IPost> => {
@@ -11,19 +12,24 @@ const postRepository = {
       command.files
     );
 
-    const promise: Promise<IPost> = (
-      await Post.create({
-        title: command.title,
-        content: command.content,
-        files: createdFiles.map((f) => f._id),
-        posterId: command.posterId,
-        visibility: command.visibility,
-        design: command.design,
-        children: command.children,
-      })
-    ).populate("files");
+    const post = await Post.create({
+      title: command.title,
+      content: command.content,
+      files: createdFiles.map((f) => f._id),
+      posterId: command.posterId,
+      visibility: command.visibility,
+      design: command.design,
+      children: command.children,
+    });
 
-    const post: IPost = await promise;
+    await post.populate("files");
+    await post.populate({
+      path: "children",
+      populate: {
+        path: "files",
+        model: File.modelName,
+      },
+    });
 
     return post;
   },
@@ -35,7 +41,13 @@ const postRepository = {
       visibility: { $in: command.visibilities },
     })
       .populate("files")
-      .populate("children")
+      .populate({
+        path: "children",
+        populate: {
+          path: "files",
+          model: File.modelName,
+        },
+      })
       .sort({ createdAt: -1 })
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
@@ -63,7 +75,15 @@ const postRepository = {
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
-      .limit(command.paginationCommand.limit);
+      .limit(command.paginationCommand.limit)
+      .populate("files")
+      .populate({
+        path: "children",
+        populate: {
+          path: "files",
+          model: File.modelName,
+        },
+      });
 
     const total = await Post.find({
       title: { $regex: command.title },

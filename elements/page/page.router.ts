@@ -6,6 +6,7 @@ import adminProtectMiddleware from "../../middleware/adminProtectMiddleware";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import { Role } from "../user/user.model";
 import PageCreateCommand from "./dto/PageCreateCommand";
+import PageReadDto, { toReadDto } from "./dto/PageReadDto";
 import PageUpdateCommand from "./dto/PageUpdateCommand";
 import { IPage } from "./page.model";
 import pageService from "./page.service";
@@ -16,12 +17,12 @@ router.get(
   "/",
   async (
     req: ConnectedRequest<any, any, any, any>,
-    res: Response<ResponseDto<IPage[]>>
+    res: Response<ResponseDto<PageReadDto[]>>
   ) => {
     const pages: IPage[] = await pageService.get();
 
     return res.status(200).json({
-      data: pages,
+      data: pages.map((p) => toReadDto(p)),
       success: true,
     });
   }
@@ -33,7 +34,7 @@ router.post(
   adminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, PageCreateCommand, any>,
-    res: Response<ResponseDto<IPage>>
+    res: Response<ResponseDto<PageReadDto>>
   ) => {
     if (req.user.role !== Role.Admin) {
       throw new Error(
@@ -46,7 +47,7 @@ router.post(
     const page: IPage = await pageService.create(command);
 
     return res.status(200).json({
-      data: page,
+      data: toReadDto(page),
       success: true,
     });
   }

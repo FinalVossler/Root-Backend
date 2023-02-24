@@ -1,11 +1,32 @@
 import mongoose from "mongoose";
+
 import PageCreateCommand from "./dto/PageCreateCommand";
 import PageUpdateCommand from "./dto/PageUpdateCommand";
 import Page, { IPage } from "./page.model";
+import Post from "../post/post.model";
+import File from "../file/file.model";
 
 const pageRepository = {
   get: async (): Promise<IPage[]> => {
-    const pages: IPage[] = await Page.find().populate("posts");
+    const pages: IPage[] = await Page.find()
+      .populate({
+        path: "posts",
+        populate: {
+          path: "children",
+          model: Post.modelName,
+          populate: {
+            path: "files",
+            model: File.modelName,
+          },
+        },
+      })
+      .populate({
+        path: "posts",
+        populate: {
+          path: "files",
+          model: File.modelName,
+        },
+      });
 
     return pages;
   },
@@ -15,7 +36,17 @@ const pageRepository = {
       title: command.title,
     });
 
-    page.populate("posts");
+    page.populate({
+      path: "posts",
+      populate: {
+        path: "children",
+        model: Post.modelName,
+        populate: {
+          path: "files",
+          model: File.modelName,
+        },
+      },
+    });
 
     return page as IPage;
   },
@@ -35,7 +66,17 @@ const pageRepository = {
     return page;
   },
   getById: async (id: mongoose.ObjectId | string): Promise<IPage> => {
-    const page: IPage = await Page.findById(id).populate("posts");
+    const page: IPage = await Page.findById(id).populate({
+      path: "posts",
+      populate: {
+        path: "children",
+        model: Post.modelName,
+        populate: {
+          path: "files",
+          model: File.modelName,
+        },
+      },
+    });
 
     return page;
   },
