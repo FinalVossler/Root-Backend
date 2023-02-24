@@ -22,14 +22,7 @@ const postRepository = {
       children: command.children,
     });
 
-    await post.populate("files");
-    await post.populate({
-      path: "children",
-      populate: {
-        path: "files",
-        model: File.modelName,
-      },
-    });
+    await post.populate(populationOptions);
 
     return post;
   },
@@ -40,14 +33,7 @@ const postRepository = {
       posterId: command.userId,
       visibility: { $in: command.visibilities },
     })
-      .populate("files")
-      .populate({
-        path: "children",
-        populate: {
-          path: "files",
-          model: File.modelName,
-        },
-      })
+      .populate(populationOptions)
       .sort({ createdAt: -1 })
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
@@ -76,14 +62,7 @@ const postRepository = {
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
       .limit(command.paginationCommand.limit)
-      .populate("files")
-      .populate({
-        path: "children",
-        populate: {
-          path: "files",
-          model: File.modelName,
-        },
-      });
+      .populate(populationOptions);
 
     const total = await Post.find({
       title: { $regex: command.title },
@@ -94,5 +73,20 @@ const postRepository = {
     return { posts, total };
   },
 };
+
+const populationOptions = [
+  {
+    path: "files",
+    model: File.modelName,
+  },
+  {
+    path: "children",
+    model: Post.modelName,
+    populate: {
+      path: "files",
+      model: File.modelName,
+    },
+  },
+];
 
 export default postRepository;

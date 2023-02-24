@@ -8,47 +8,26 @@ import File from "../file/file.model";
 
 const pageRepository = {
   get: async (): Promise<IPage[]> => {
-    const pages: IPage[] = await Page.find()
-      .populate({
-        path: "posts",
-        populate: {
-          path: "children",
-          model: Post.modelName,
-          populate: {
-            path: "files",
-            model: File.modelName,
-          },
-        },
-      })
-      .populate({
-        path: "posts",
-        populate: {
-          path: "files",
-          model: File.modelName,
-        },
-      });
+    const pages: IPage[] = await Page.find().populate(populationOptions);
 
     return pages;
   },
   create: async (command: PageCreateCommand): Promise<IPage> => {
-    const page = await Page.create({
+    const query = await Page.create({
       posts: command.posts,
       title: command.title,
     });
 
-    page.populate({
+    await query.populate(populationOptions);
+    const page: IPage = await query.populate({
       path: "posts",
       populate: {
-        path: "children",
-        model: Post.modelName,
-        populate: {
-          path: "files",
-          model: File.modelName,
-        },
+        path: "files",
+        model: File.modelName,
       },
     });
 
-    return page as IPage;
+    return page;
   },
   update: async (command: PageUpdateCommand): Promise<IPage> => {
     await Page.updateOne(
@@ -66,20 +45,33 @@ const pageRepository = {
     return page;
   },
   getById: async (id: mongoose.ObjectId | string): Promise<IPage> => {
-    const page: IPage = await Page.findById(id).populate({
-      path: "posts",
-      populate: {
-        path: "children",
-        model: Post.modelName,
-        populate: {
-          path: "files",
-          model: File.modelName,
-        },
-      },
-    });
+    const page: IPage = await Page.findById(id).populate(populationOptions);
 
     return page;
   },
 };
+
+const populationOptions = [
+  {
+    path: "posts",
+    model: Post.modelName,
+    populate: {
+      path: "children",
+      model: Post.modelName,
+      populate: {
+        path: "files",
+        model: File.modelName,
+      },
+    },
+  },
+  {
+    path: "posts",
+    model: Post.modelName,
+    populate: {
+      path: "files",
+      model: File.modelName,
+    },
+  },
+];
 
 export default pageRepository;
