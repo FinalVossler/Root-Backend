@@ -1,8 +1,17 @@
+import mongoose from "mongoose";
 import { IUser } from "../user/user.model";
 import File, { IFile } from "./file.model";
 
 const fileRepository = {
+  get: async (fileId: mongoose.ObjectId | string): Promise<IFile> => {
+    const file: IFile = await File.findById(fileId);
+
+    return file;
+  },
   create: async (file: IFile, currentUser: IUser): Promise<IFile> => {
+    if (file._id) {
+      return await fileRepository.get(file._id);
+    }
     file.ownerId = currentUser._id;
     const newFile: IFile = (await File.create(file)) as IFile;
 
