@@ -6,11 +6,12 @@ export interface IFile {
   uuid: string;
   isImage: boolean;
   name?: string | null;
+  ownerId?: mongoose.ObjectId;
 }
 
 interface IFileModel extends mongoose.Model<IFile> {}
 
-const FileSchema = new mongoose.Schema<IFile>(
+const fileSchema = new mongoose.Schema<IFile>(
   {
     url: {
       type: mongoose.SchemaTypes.String,
@@ -30,10 +31,15 @@ const FileSchema = new mongoose.Schema<IFile>(
       required: true,
       defaut: "",
     },
+    ownerId: {
+      type: mongoose.SchemaTypes.ObjectId,
+      required: false,
+      ref: "user",
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.model<IFile, IFileModel>("file", FileSchema);
+export default mongoose.model<IFile, IFileModel>("file", fileSchema);

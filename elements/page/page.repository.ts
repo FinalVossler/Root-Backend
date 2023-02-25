@@ -49,6 +49,9 @@ const pageRepository = {
 
     return page;
   },
+  delete: async (id: mongoose.ObjectId | string): Promise<void> => {
+    await Page.remove({ _id: id }).exec();
+  },
 };
 
 const populationOptions = [

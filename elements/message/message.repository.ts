@@ -5,10 +5,17 @@ import MessageSendCommand from "./dtos/MessageSendCommand";
 import Message, { IMessage } from "./message.model";
 import { IFile } from "../file/file.model";
 import fileRepository from "../file/file.repository";
+import { IUser } from "../user/user.model";
 
 const messageRepository = {
-  sendMessage: async (command: MessageSendCommand): Promise<IMessage> => {
-    let createdFiles: IFile[] = await fileRepository.createFiles(command.files);
+  sendMessage: async (
+    command: MessageSendCommand,
+    currentUser: IUser
+  ): Promise<IMessage> => {
+    let createdFiles: IFile[] = await fileRepository.createFiles(
+      command.files,
+      currentUser
+    );
 
     const message = await Message.create({
       from: command.from,

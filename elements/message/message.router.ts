@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { Response } from "express";
 import mongoose from "mongoose";
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 
@@ -17,11 +17,14 @@ router.post(
   "/",
   protectMiddleware,
   async (
-    req: Request<any, any, MessageSendCommand>,
+    req: ConnectedRequest<any, any, MessageSendCommand, any>,
     res: Response<ResponseDto<MessageReadDto>>
   ) => {
     const command = req.body;
-    const message: IMessage = await messageService.sendMessage(command);
+    const message: IMessage = await messageService.sendMessage(
+      command,
+      req.user
+    );
 
     return res.status(200).json({
       success: true,

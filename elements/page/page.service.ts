@@ -19,6 +19,9 @@ const pageService = {
 
     return page;
   },
+  delete: async (id: string): Promise<void> => {
+    await pageRepository.delete(id);
+  },
 };
 
 export default pageService;

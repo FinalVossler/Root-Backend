@@ -49,9 +49,13 @@ const userRepository = {
     return user;
   },
   updateProfilePicture: async (
-    command: UserUpdateProfilePictureCommand
+    command: UserUpdateProfilePictureCommand,
+    currentUser: IUser
   ): Promise<IUser> => {
-    const picture: IFile = await fileRepository.create(command.picture);
+    const picture: IFile = await fileRepository.create(
+      command.picture,
+      currentUser
+    );
 
     await User.updateOne(
       { _id: command.userId },

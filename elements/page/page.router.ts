@@ -78,4 +78,24 @@ router.put(
   }
 );
 
+router.delete(
+  "/",
+  protectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, any, { pageId: string }>,
+    res: Response<ResponseDto<void>>
+  ) => {
+    if (req.user.role !== Role.Admin) throw new Error("Unauthorized");
+
+    const pageId: string = req.query.pageId;
+
+    await pageService.delete(pageId);
+
+    return res.status(200).json({
+      success: true,
+      data: null,
+    });
+  }
+);
+
 export default router;

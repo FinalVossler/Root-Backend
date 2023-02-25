@@ -6,8 +6,14 @@ import { IMessage } from "./message.model";
 import messageRepository from "./message.repository";
 
 const messageService = {
-  sendMessage: async (command: MessageSendCommand): Promise<IMessage> => {
-    const message: IMessage = await messageRepository.sendMessage(command);
+  sendMessage: async (
+    command: MessageSendCommand,
+    currentUser: IUser
+  ): Promise<IMessage> => {
+    const message: IMessage = await messageRepository.sendMessage(
+      command,
+      currentUser
+    );
 
     return message;
   },

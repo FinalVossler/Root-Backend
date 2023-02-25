@@ -36,7 +36,7 @@ export interface IPost {
 
 interface IPostModel extends mongoose.Model<IPost> {}
 
-const PostSchema = new mongoose.Schema(
+const postSchema = new mongoose.Schema<IPost>(
   {
     title: {
       type: mongoose.SchemaTypes.String,
@@ -79,6 +79,6 @@ const PostSchema = new mongoose.Schema(
   }
 );
 
-const model = mongoose.model<IPost, IPostModel>("post", PostSchema);
+const model = mongoose.model<IPost, IPostModel>("post", postSchema);
 
 export default model;

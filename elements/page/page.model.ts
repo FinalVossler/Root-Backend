@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import slugify from "slugify";
 
-import postModel, { IPost } from "../post/post.model";
+import Post, { IPost } from "../post/post.model";
 
 export interface IPage {
   _id: mongoose.ObjectId;
@@ -25,7 +25,7 @@ const PageSchema = new mongoose.Schema<IPage>({
       type: mongoose.SchemaTypes.ObjectId,
       required: true,
       default: [],
-      ref: postModel.modelName,
+      ref: Post.modelName,
     },
   ],
 });

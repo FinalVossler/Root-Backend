@@ -122,10 +122,13 @@ router.put(
     let user: IUser = req.user;
     const profilePicture: IFile = req.body;
 
-    user = await userService.updateProfilePictre({
-      userId: user._id,
-      picture: profilePicture,
-    });
+    user = await userService.updateProfilePictre(
+      {
+        userId: user._id,
+        picture: profilePicture,
+      },
+      req.user
+    );
 
     return res.status(200).json({
       success: true,

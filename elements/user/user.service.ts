@@ -52,9 +52,13 @@ const userService = {
     return user;
   },
   updateProfilePictre: async (
-    command: UserUpdateProfilePictureCommand
+    command: UserUpdateProfilePictureCommand,
+    currentUser: IUser
   ): Promise<IUser> => {
-    const user: IUser = await userRepository.updateProfilePicture(command);
+    const user: IUser = await userRepository.updateProfilePicture(
+      command,
+      currentUser
+    );
 
     return user;
   },

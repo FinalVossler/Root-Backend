@@ -21,7 +21,7 @@ router.post(
     res: Response<ResponseDto<PostReadDto>>
   ) => {
     const command: PostCreateCommand = req.body;
-    const post: IPost = await postService.createPost(command);
+    const post: IPost = await postService.createPost(command, req.user);
 
     return res.status(200).send({
       success: true,

@@ -5,11 +5,16 @@ import PostsSearchCommand from "./dto/PostsSearchCommand";
 import PostsGetCommand from "./dto/PostsGetCommand";
 import Post, { IPost } from "./post.model";
 import File from "../file/file.model";
+import { IUser } from "../user/user.model";
 
 const postRepository = {
-  createPost: async (command: PostCreateCommand): Promise<IPost> => {
+  createPost: async (
+    command: PostCreateCommand,
+    currentUser: IUser
+  ): Promise<IPost> => {
     const createdFiles: IFile[] = await fileRepository.createFiles(
-      command.files
+      command.files,
+      currentUser
     );
 
     const post = await Post.create({
