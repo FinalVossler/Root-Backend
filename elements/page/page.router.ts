@@ -59,7 +59,7 @@ router.put(
   adminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, PageUpdateCommand, any>,
-    res: Response<ResponseDto<IPage>>
+    res: Response<ResponseDto<PageReadDto>>
   ) => {
     if (req.user.role !== Role.Admin) {
       throw new Error(
@@ -72,7 +72,7 @@ router.put(
     const page: IPage = await pageService.update(command);
 
     return res.status(200).json({
-      data: page,
+      data: toReadDto(page),
       success: true,
     });
   }
