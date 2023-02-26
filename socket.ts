@@ -7,7 +7,7 @@ import MessageReadDto from "./elements/message/dtos/MessageReadDto";
 
 const init = (server: http.Server) => {
   const io = new socket.Server(server, {
-    cors: { origin: process.env.ORIGIN },
+    cors: { origin: "*" },
   });
   const onlineUsers = new Map<mongoose.ObjectId, string>();
 
