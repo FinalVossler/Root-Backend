@@ -18,11 +18,13 @@ export enum PostDesign {
   TitleImageAndText = "TitleImageAndText",
   ChildrenContainer = "ChildrenContainer",
   RotatingCarzd = "RotatingCard",
+  AnimatedTitle = "AnimatedTitle",
 }
 
 export interface IPost {
   _id: mongoose.ObjectId;
   title?: string;
+  subTitle?: string;
   posterId: mongoose.ObjectId;
   content?: string;
   files: IFile[];
@@ -40,6 +42,10 @@ const postSchema = new mongoose.Schema<IPost>(
   {
     title: {
       type: mongoose.SchemaTypes.String,
+    },
+    subTitle: {
+      type: mongoose.SchemaTypes.String,
+      required: false,
     },
     posterId: {
       type: mongoose.SchemaTypes.ObjectId,

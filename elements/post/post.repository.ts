@@ -19,6 +19,7 @@ const postRepository = {
 
     const post = await Post.create({
       title: command.title,
+      subTitle: command.subTitle,
       content: command.content,
       files: createdFiles.map((f) => f._id),
       posterId: command.posterId,
