@@ -1,8 +1,20 @@
 import mongoose from "mongoose";
+
+import PaginationCommand from "../../globalTypes/PaginationCommand";
 import { IUser } from "../user/user.model";
 import File, { IFile } from "./file.model";
 
 const fileRepository = {
+  getUserFiles: async (
+    user: IUser,
+    paginationCommand: PaginationCommand
+  ): Promise<IFile[]> => {
+    const files: IFile[] = await File.find({ ownerId: user._id })
+      .skip((paginationCommand.page - 1) * paginationCommand.limit)
+      .limit(paginationCommand.limit);
+
+    return files;
+  },
   get: async (fileId: mongoose.ObjectId | string): Promise<IFile> => {
     const file: IFile = await File.findById(fileId);
 

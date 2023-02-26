@@ -5,6 +5,7 @@ import PageUpdateCommand from "./dto/PageUpdateCommand";
 import Page, { IPage } from "./page.model";
 import Post from "../post/post.model";
 import File from "../file/file.model";
+import slugify from "slugify";
 
 const pageRepository = {
   get: async (): Promise<IPage[]> => {
@@ -36,6 +37,7 @@ const pageRepository = {
         $set: {
           posts: command.posts,
           title: command.title,
+          slug: slugify(command.title),
         },
       }
     );
