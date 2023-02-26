@@ -8,6 +8,8 @@ import MessageReadDto from "./elements/message/dtos/MessageReadDto";
 const init = (server: http.Server) => {
   const io = new socket.Server(server, {
     cors: { origin: "*" },
+    // TODO: FIX LATER. It's not working on heroku for whatever reason
+    // cors: { origin: process.env.ORIGIN },
   });
   const onlineUsers = new Map<mongoose.ObjectId, string>();
 
