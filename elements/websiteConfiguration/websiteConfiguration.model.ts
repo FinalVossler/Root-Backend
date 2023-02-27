@@ -6,6 +6,8 @@ export interface IWebsiteConfiguration {
   email?: string;
   phoneNumber?: string;
   tabTitle?: string;
+  withChat?: boolean;
+  withRegistration?: boolean;
 }
 
 interface IWebsiteConfigurationModel
@@ -24,6 +26,13 @@ const websiteConfigurationSchema = new mongoose.Schema<IWebsiteConfiguration>(
     },
     tabTitle: {
       type: mongoose.SchemaTypes.String,
+    },
+    withChat: {
+      type: mongoose.SchemaTypes.Boolean,
+    },
+    withRegistration: {
+      type: mongoose.SchemaTypes.Boolean,
+      default: true,
     },
   },
   {

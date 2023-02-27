@@ -30,6 +30,8 @@ const websiteConfigurationRepository = {
           email: command.email,
           phoneNumber: command.phoneNumber,
           tabTitle: command.tabTitle,
+          withChat: command.withChat,
+          withRegistration: command.withRegistration,
         },
       }
     );
@@ -43,6 +45,8 @@ const websiteConfigurationRepository = {
         email: "",
         tabTitle: "",
         phoneNumber: "",
+        withChat: false,
+        withRegistration: false,
       });
 
     return configuration as IWebsiteConfiguration;

@@ -3,6 +3,8 @@ type WebsiteConfigurationUpdateCommand = {
   email: string;
   phoneNumber: string;
   tabTitle: string;
+  withChat: boolean;
+  withRegistration: boolean;
 };
 
 export default WebsiteConfigurationUpdateCommand;
