@@ -18,7 +18,7 @@ export interface IMessage {
 
 interface MessageModel extends mongoose.Model<IMessage> {}
 
-const messageSchema = new mongoose.Schema<IMessage>(
+const MessageSchema = new mongoose.Schema<IMessage>(
   {
     message: {
       type: mongoose.SchemaTypes.String,
@@ -62,13 +62,13 @@ const messageSchema = new mongoose.Schema<IMessage>(
   }
 );
 
-messageSchema.pre("save", function (next) {
+MessageSchema.pre("save", function (next) {
   this.numberOfParticipants = this.to.length;
 
   next();
 });
 
-messageSchema.pre("deleteOne", async function (next) {
+MessageSchema.pre("deleteOne", async function (next) {
   const message: IMessage = (await this.model
     .findOne(this.getQuery())
     .populate("files")) as IMessage;
@@ -82,4 +82,4 @@ messageSchema.pre("deleteOne", async function (next) {
   next();
 });
 
-export default mongoose.model<IMessage, MessageModel>("message", messageSchema);
+export default mongoose.model<IMessage, MessageModel>("message", MessageSchema);

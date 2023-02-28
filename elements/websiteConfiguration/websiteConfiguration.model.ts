@@ -13,7 +13,7 @@ export interface IWebsiteConfiguration {
 interface IWebsiteConfigurationModel
   extends mongoose.Model<IWebsiteConfiguration> {}
 
-const websiteConfigurationSchema = new mongoose.Schema<IWebsiteConfiguration>(
+const WebsiteConfigurationSchema = new mongoose.Schema<IWebsiteConfiguration>(
   {
     title: {
       type: mongoose.SchemaTypes.String,
@@ -43,4 +43,4 @@ const websiteConfigurationSchema = new mongoose.Schema<IWebsiteConfiguration>(
 export default mongoose.model<
   IWebsiteConfiguration,
   IWebsiteConfigurationModel
->("websiteConfiguration", websiteConfigurationSchema);
+>("websiteConfiguration", WebsiteConfigurationSchema);

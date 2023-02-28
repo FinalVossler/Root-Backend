@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 import slugify from "slugify";
+import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 
 import Post, { IPost } from "../post/post.model";
 
 export interface IPage {
   _id: mongoose.ObjectId;
-  title: string;
+  title: ITranslatedText[];
   slug: string;
   posts: IPost[];
 }
@@ -14,7 +15,7 @@ interface IPageModel extends mongoose.Model<IPage> {}
 
 const PageSchema = new mongoose.Schema<IPage>({
   title: {
-    type: mongoose.SchemaTypes.String,
+    type: translatedTextSchema,
     required: true,
   },
   slug: {
@@ -33,7 +34,7 @@ const PageSchema = new mongoose.Schema<IPage>({
 PageSchema.pre(
   "save",
   function (next: mongoose.CallbackWithoutResultAndOptionalError) {
-    this.slug = slugify(this.title);
+    this.slug = slugify(this.title[0].text);
 
     next();
   }

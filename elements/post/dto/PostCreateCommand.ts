@@ -9,6 +9,7 @@ type PostCreateCommand = {
   visibility: IPost["visibility"];
   design: IPost["design"];
   children: string[];
+  language: string;
 };
 
 export default PostCreateCommand;

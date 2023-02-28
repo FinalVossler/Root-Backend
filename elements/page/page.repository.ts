@@ -6,6 +6,7 @@ import Page, { IPage } from "./page.model";
 import Post from "../post/post.model";
 import File from "../file/file.model";
 import slugify from "slugify";
+import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
 
 const pageRepository = {
   get: async (): Promise<IPage[]> => {
@@ -16,7 +17,7 @@ const pageRepository = {
   create: async (command: PageCreateCommand): Promise<IPage> => {
     const query = await Page.create({
       posts: command.posts,
-      title: command.title,
+      title: [{ text: command.title, language: command.language }],
     });
 
     await query.populate(populationOptions);
@@ -31,20 +32,24 @@ const pageRepository = {
     return page;
   },
   update: async (command: PageUpdateCommand): Promise<IPage> => {
+    const page = await pageRepository.getById(command._id);
+
     await Page.updateOne(
       { _id: command._id },
       {
         $set: {
           posts: command.posts,
-          title: command.title,
+          title: getNewTranslatedTextsForUpdate({
+            oldValue: page.title,
+            language: command.language,
+            newText: command.title,
+          }),
           slug: slugify(command.title),
         },
       }
     );
 
-    const page = await pageRepository.getById(command._id);
-
-    return page;
+    return await pageRepository.getById(command._id);
   },
   getById: async (id: mongoose.ObjectId | string): Promise<IPage> => {
     const page: IPage = await Page.findById(id).populate(populationOptions);

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 import File, { IFile } from "../file/file.model";
+import TranslatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 import User from "../user/user.model";
 
 export enum PostVisibility {
@@ -23,10 +24,10 @@ export enum PostDesign {
 
 export interface IPost {
   _id: mongoose.ObjectId;
-  title?: string;
-  subTitle?: string;
+  title?: ITranslatedText[];
+  subTitle?: ITranslatedText[];
   posterId: mongoose.ObjectId;
-  content?: string;
+  content?: ITranslatedText[];
   files: IFile[];
   visibility: PostVisibility;
   design: PostDesign;
@@ -38,13 +39,14 @@ export interface IPost {
 
 interface IPostModel extends mongoose.Model<IPost> {}
 
-const postSchema = new mongoose.Schema<IPost>(
+const PostSchema = new mongoose.Schema<IPost>(
   {
     title: {
-      type: mongoose.SchemaTypes.String,
+      type: TranslatedTextSchema,
+      required: false,
     },
     subTitle: {
-      type: mongoose.SchemaTypes.String,
+      type: TranslatedTextSchema,
       required: false,
     },
     posterId: {
@@ -53,7 +55,7 @@ const postSchema = new mongoose.Schema<IPost>(
       required: true,
     },
     content: {
-      type: mongoose.SchemaTypes.String,
+      type: TranslatedTextSchema,
       required: true,
     },
     files: [
@@ -85,6 +87,6 @@ const postSchema = new mongoose.Schema<IPost>(
   }
 );
 
-const model = mongoose.model<IPost, IPostModel>("post", postSchema);
+const model = mongoose.model<IPost, IPostModel>("post", PostSchema);
 
 export default model;

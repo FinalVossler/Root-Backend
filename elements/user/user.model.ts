@@ -20,7 +20,7 @@ export interface IUser {
 
 interface IUserModel extends mongoose.Model<IUser> {}
 
-const userSchema = new mongoose.Schema<IUser>(
+const UserSchema = new mongoose.Schema<IUser>(
   {
     firstName: {
       type: mongoose.SchemaTypes.String,
@@ -58,11 +58,11 @@ const userSchema = new mongoose.Schema<IUser>(
   }
 );
 
-userSchema.pre("save", async function (next) {
+UserSchema.pre("save", async function (next) {
   const salt: string = await genSalt(10);
   this.password = await hash(this.password, salt);
 
   next();
 });
 
-export default mongoose.model<IUser, IUserModel>("user", userSchema);
+export default mongoose.model<IUser, IUserModel>("user", UserSchema);

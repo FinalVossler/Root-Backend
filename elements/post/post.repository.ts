@@ -18,9 +18,9 @@ const postRepository = {
     );
 
     const post = await Post.create({
-      title: command.title,
-      subTitle: command.subTitle,
-      content: command.content,
+      title: [{ text: command.title, language: command.language }],
+      subTitle: [{ text: command.subTitle, language: command.language }],
+      content: [{ text: command.content, language: command.language }],
       files: createdFiles.map((f) => f._id),
       posterId: command.posterId,
       visibility: command.visibility,
@@ -58,10 +58,10 @@ const postRepository = {
     command: PostsSearchCommand
   ): Promise<{ posts: IPost[]; total: number }> => {
     const query = Post.find({
-      title: { $regex: command.title },
+      title: { $elemMatch: { text: { $regex: command.title } } },
       visibility: { $in: command.visibilities },
       posterId: command.posterId,
-    }).populate("children");
+    }).populate(populationOptions);
 
     const posts: IPost[] = await query
       .skip(
@@ -71,7 +71,7 @@ const postRepository = {
       .populate(populationOptions);
 
     const total = await Post.find({
-      title: { $regex: command.title },
+      title: { $elemMatch: { text: { $regex: command.title } } },
       visibility: { $in: command.visibilities },
       posterId: command.posterId,
     }).count();

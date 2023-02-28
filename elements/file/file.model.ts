@@ -11,7 +11,7 @@ export interface IFile {
 
 interface IFileModel extends mongoose.Model<IFile> {}
 
-const fileSchema = new mongoose.Schema<IFile>(
+const FileSchema = new mongoose.Schema<IFile>(
   {
     url: {
       type: mongoose.SchemaTypes.String,
@@ -42,4 +42,4 @@ const fileSchema = new mongoose.Schema<IFile>(
   }
 );
 
-export default mongoose.model<IFile, IFileModel>("file", fileSchema);
+export default mongoose.model<IFile, IFileModel>("file", FileSchema);

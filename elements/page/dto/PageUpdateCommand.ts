@@ -1,9 +1,8 @@
-import { IPage } from "../page.model";
-
 type PageUpdateCommand = {
   _id: string;
-  title: IPage["title"];
+  title: string;
   posts: string[];
+  language: string;
 };
 
 export default PageUpdateCommand;
