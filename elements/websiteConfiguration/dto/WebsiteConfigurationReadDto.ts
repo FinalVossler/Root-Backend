@@ -1,4 +1,4 @@
-import { IWebsiteConfiguration } from "../websiteConfiguration.model";
+import { IWebsiteConfiguration, Theme } from "../websiteConfiguration.model";
 
 type WebsiteConfigurationReadDto = {
   _id?: IWebsiteConfiguration["_id"];
@@ -8,6 +8,7 @@ type WebsiteConfigurationReadDto = {
   phoneNumber: IWebsiteConfiguration["phoneNumber"];
   withChat: IWebsiteConfiguration["withChat"];
   withRegistration: IWebsiteConfiguration["withRegistration"];
+  theme: Theme;
 };
 
 export const toReadDto = (
@@ -21,6 +22,7 @@ export const toReadDto = (
     phoneNumber: websiteConfiguration.phoneNumber,
     withChat: websiteConfiguration.withChat,
     withRegistration: websiteConfiguration.withRegistration,
+    theme: websiteConfiguration.theme,
   };
 };
 

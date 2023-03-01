@@ -32,6 +32,7 @@ const websiteConfigurationRepository = {
           tabTitle: command.tabTitle,
           withChat: command.withChat,
           withRegistration: command.withRegistration,
+          theme: command.theme,
         },
       }
     );
