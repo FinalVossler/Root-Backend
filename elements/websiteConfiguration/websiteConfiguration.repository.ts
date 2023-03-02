@@ -29,6 +29,7 @@ const websiteConfigurationRepository = {
           title: command.title,
           email: command.email,
           phoneNumber: command.phoneNumber,
+          mainLanguages: command.mainLanguages,
           tabTitle: command.tabTitle,
           withChat: command.withChat,
           withRegistration: command.withRegistration,
@@ -48,6 +49,7 @@ const websiteConfigurationRepository = {
         phoneNumber: "",
         withChat: false,
         withRegistration: false,
+        mainLanguages: ["en", "fr"],
       });
 
     return configuration as IWebsiteConfiguration;

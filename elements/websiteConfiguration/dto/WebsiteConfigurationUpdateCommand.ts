@@ -5,6 +5,7 @@ type WebsiteConfigurationUpdateCommand = {
   email: string;
   phoneNumber: string;
   tabTitle: string;
+  mainLanguages: string[];
   withChat: boolean;
   withRegistration: boolean;
   theme: Theme;

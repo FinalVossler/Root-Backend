@@ -24,6 +24,7 @@ export interface IWebsiteConfiguration {
   email?: string;
   phoneNumber?: string;
   tabTitle?: string;
+  mainLanguages: string[];
   withChat?: boolean;
   withRegistration?: boolean;
   theme: Theme;
@@ -46,6 +47,11 @@ const WebsiteConfigurationSchema = new mongoose.Schema<IWebsiteConfiguration>(
     tabTitle: {
       type: mongoose.SchemaTypes.String,
     },
+    mainLanguages: [
+      {
+        type: mongoose.SchemaTypes.String,
+      },
+    ],
     withChat: {
       type: mongoose.SchemaTypes.Boolean,
     },

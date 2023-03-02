@@ -6,6 +6,7 @@ type WebsiteConfigurationReadDto = {
   tabTitle: IWebsiteConfiguration["tabTitle"];
   email: IWebsiteConfiguration["email"];
   phoneNumber: IWebsiteConfiguration["phoneNumber"];
+  mainLanguages: IWebsiteConfiguration["mainLanguages"];
   withChat: IWebsiteConfiguration["withChat"];
   withRegistration: IWebsiteConfiguration["withRegistration"];
   theme: Theme;
@@ -20,6 +21,7 @@ export const toReadDto = (
     tabTitle: websiteConfiguration.tabTitle,
     email: websiteConfiguration.email,
     phoneNumber: websiteConfiguration.phoneNumber,
+    mainLanguages: websiteConfiguration.mainLanguages,
     withChat: websiteConfiguration.withChat,
     withRegistration: websiteConfiguration.withRegistration,
     theme: websiteConfiguration.theme,

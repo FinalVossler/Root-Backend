@@ -20,6 +20,7 @@ export enum PostDesign {
   ChildrenContainer = "ChildrenContainer",
   RotatingCarzd = "RotatingCard",
   AnimatedTitle = "AnimatedTitle",
+  UnderlinedTitle = "UnderinedTitle",
 }
 
 export interface IPost {
