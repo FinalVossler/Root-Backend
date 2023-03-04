@@ -5,35 +5,42 @@ import websiteConfigurationRepository from "../websiteConfiguration/websiteConfi
 import EmailSendCommand from "./dto/EmailSendCommand";
 
 const emailService = {
-  send: async (command: EmailSendCommand) => {
+  send: async (command: EmailSendCommand): Promise<void> => {
     const conf: IWebsiteConfiguration =
       await websiteConfigurationRepository.get();
+
+    const content: string =
+      command.firstName +
+      " " +
+      command.lastName +
+      (command.phone ? ", Phone: " + command.phone : "") +
+      ", Email: " +
+      command.email +
+      "\nMessage: " +
+      command.message;
 
     let transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PASSWORD,
+        user: process.env.NODEMAILER_EMAIL,
+        pass: process.env.NODEMAILER_EMAIL_PASSWORD,
       },
     });
 
     let mailOptions = {
       from: command.email,
       to: conf.email,
-      subject: "Email sent on " + conf.title,
-      text:
-        "From " +
-        command.firstName +
-        " " +
-        command.lastName +
-        ": " +
-        command.message,
+      subject: "Email sent from wewsite: " + conf.title,
+      text: content,
     };
 
     const promise = new Promise((resolve, reject) => {
-      transporter.sendMail(mailOptions, function (error, info) {
+      transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
+          reject(error);
           throw new Error(error.message);
+        } else {
+          resolve(info);
         }
       });
     });
