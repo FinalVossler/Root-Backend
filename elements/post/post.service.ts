@@ -4,14 +4,13 @@ import PostsGetCommand from "./dto/PostsGetCommand";
 import { IPost } from "./post.model";
 import postRepository from "./post.repository";
 import { IUser } from "../user/user.model";
-import mongoose from "mongoose";
 
 const postService = {
-  createPost: async (
+  create: async (
     command: PostCreateCommand,
     currentUser: IUser
   ): Promise<IPost> => {
-    const post: IPost = await postRepository.createPost(command, currentUser);
+    const post: IPost = await postRepository.create(command, currentUser);
 
     return post;
   },
