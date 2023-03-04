@@ -6,6 +6,7 @@ import PostsGetCommand from "./dto/PostsGetCommand";
 import Post, { IPost } from "./post.model";
 import File from "../file/file.model";
 import { IUser } from "../user/user.model";
+import mongoose from "mongoose";
 
 const postRepository = {
   createPost: async (
@@ -54,7 +55,7 @@ const postRepository = {
 
     return { posts, total };
   },
-  searchPosts: async (
+  search: async (
     command: PostsSearchCommand
   ): Promise<{ posts: IPost[]; total: number }> => {
     const query = Post.find({
@@ -77,6 +78,12 @@ const postRepository = {
     }).count();
 
     return { posts, total };
+  },
+  getById: async (postId: string): Promise<IPost> => {
+    return await Post.findById(postId).exec();
+  },
+  delete: async (postId: string): Promise<void> => {
+    return await Post.remove({ _id: postId });
   },
 };
 

@@ -10,6 +10,8 @@ import { IPost } from "./post.model";
 import postService from "./post.service";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
 import PostsSearchCommand from "./dto/PostsSearchCommand";
+import mongoose from "mongoose";
+import { IUser, Role } from "../user/user.model";
 
 const router = Router();
 
@@ -50,14 +52,14 @@ router.post(
 );
 
 router.post(
-  "/searchPosts",
+  "/search",
   async (
     req: ConnectedRequest<any, any, PostsSearchCommand, any>,
     res: Response<ResponseDto<PaginationResponse<PostReadDto>>>
   ) => {
     const command: PostsSearchCommand = req.body;
 
-    const { posts, total } = await postService.searchPosts(command);
+    const { posts, total } = await postService.search(command);
 
     return res.status(200).send({
       success: true,
@@ -65,6 +67,25 @@ router.post(
         data: posts.map((p) => toReadDto(p)),
         total,
       },
+    });
+  }
+);
+
+router.delete(
+  "/",
+  protectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, any, { postId: string }>,
+    res: Response<ResponseDto<void>>
+  ) => {
+    const postId: string = req.query.postId;
+    const user: IUser = req.user;
+
+    await postService.delete(postId, user);
+
+    return res.status(200).json({
+      success: true,
+      data: null,
     });
   }
 );

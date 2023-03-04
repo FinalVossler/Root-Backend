@@ -4,6 +4,7 @@ import PostsGetCommand from "./dto/PostsGetCommand";
 import { IPost } from "./post.model";
 import postRepository from "./post.repository";
 import { IUser } from "../user/user.model";
+import mongoose from "mongoose";
 
 const postService = {
   createPost: async (
@@ -21,12 +22,22 @@ const postService = {
 
     return { posts, total };
   },
-  searchPosts: async (
+  search: async (
     command: PostsSearchCommand
   ): Promise<{ posts: IPost[]; total: number }> => {
-    const { posts, total } = await postRepository.searchPosts(command);
+    const { posts, total } = await postRepository.search(command);
 
     return { posts, total };
+  },
+  getById: async (postId: string): Promise<IPost> => {
+    return await postRepository.getById(postId);
+  },
+  delete: async (postId: string, currentUser: IUser): Promise<void> => {
+    const post: IPost = await postService.getById(postId);
+    if (post.posterId.toString() !== currentUser._id.toString())
+      throw new Error("Unauthorized to delete post");
+
+    await postRepository.delete(postId);
   },
 };
 
