@@ -10,8 +10,8 @@ import { IPost } from "./post.model";
 import postService from "./post.service";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
 import PostsSearchCommand from "./dto/PostsSearchCommand";
-import mongoose from "mongoose";
-import { IUser, Role } from "../user/user.model";
+import { IUser } from "../user/user.model";
+import PostUpdateCommand from "./dto/PostUpdateCommand";
 
 const router = Router();
 
@@ -67,6 +67,24 @@ router.post(
         data: posts.map((p) => toReadDto(p)),
         total,
       },
+    });
+  }
+);
+
+router.put(
+  "/",
+  protectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, PostUpdateCommand, any>,
+    res: Response<ResponseDto<PostReadDto>>
+  ) => {
+    const command: PostUpdateCommand = req.body;
+
+    const post: IPost = await postService.update(command, req.user);
+
+    return res.status(200).json({
+      data: toReadDto(post),
+      success: true,
     });
   }
 );

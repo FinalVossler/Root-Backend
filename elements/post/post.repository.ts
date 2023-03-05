@@ -6,6 +6,8 @@ import PostsGetCommand from "./dto/PostsGetCommand";
 import Post, { IPost } from "./post.model";
 import File from "../file/file.model";
 import { IUser } from "../user/user.model";
+import PostUpdateCommand from "./dto/PostUpdateCommand";
+import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
 
 const postRepository = {
   create: async (
@@ -13,15 +15,17 @@ const postRepository = {
     currentUser: IUser
   ): Promise<IPost> => {
     const createdFiles: IFile[] = await fileRepository.createFiles(
-      command.files,
+      command.files.filter((el) => !el._id),
       currentUser
     );
+
+    const allFiles = createdFiles.concat(command.files.filter((el) => el._id));
 
     const post = await Post.create({
       title: [{ text: command.title, language: command.language }],
       subTitle: [{ text: command.subTitle, language: command.language }],
       content: [{ text: command.content, language: command.language }],
-      files: createdFiles.map((f) => f._id),
+      files: allFiles.map((f) => f._id),
       posterId: command.posterId,
       visibility: command.visibility,
       design: command.design,
@@ -79,8 +83,52 @@ const postRepository = {
     return { posts, total };
   },
   getById: async (postId: string): Promise<IPost> => {
-    return await Post.findById(postId).exec();
+    return await Post.findById(postId).populate(populationOptions).exec();
   },
+  update: async (
+    command: PostUpdateCommand,
+    oldPost: IPost,
+    currentUser: IUser
+  ): Promise<IPost> => {
+    const createdFiles: IFile[] = await fileRepository.createFiles(
+      command.files.filter((el) => !el._id),
+      currentUser
+    );
+
+    const allFIles: IFile[] = createdFiles.concat(
+      command.files.filter((el) => el._id)
+    );
+
+    await Post.updateOne(
+      { _id: command._id },
+      {
+        $set: {
+          title: getNewTranslatedTextsForUpdate({
+            oldValue: oldPost.title,
+            language: command.language,
+            newText: command.title,
+          }),
+          children: command.children,
+          content: getNewTranslatedTextsForUpdate({
+            oldValue: oldPost.content,
+            language: command.language,
+            newText: command.content,
+          }),
+          design: command.design,
+          files: allFIles.map((el) => el._id),
+          subTitle: getNewTranslatedTextsForUpdate({
+            oldValue: oldPost.subTitle,
+            language: command.language,
+            newText: command.subTitle,
+          }),
+          visibility: command.visibility,
+        },
+      }
+    );
+
+    return await postRepository.getById(command._id);
+  },
+
   delete: async (postId: string): Promise<void> => {
     return await Post.remove({ _id: postId });
   },

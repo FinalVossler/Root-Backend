@@ -4,6 +4,7 @@ import PostsGetCommand from "./dto/PostsGetCommand";
 import { IPost } from "./post.model";
 import postRepository from "./post.repository";
 import { IUser } from "../user/user.model";
+import PostUpdateCommand from "./dto/PostUpdateCommand";
 
 const postService = {
   create: async (
@@ -30,6 +31,24 @@ const postService = {
   },
   getById: async (postId: string): Promise<IPost> => {
     return await postRepository.getById(postId);
+  },
+  update: async (
+    command: PostUpdateCommand,
+    currentUser: IUser
+  ): Promise<IPost> => {
+    const oldPost = await postRepository.getById(command._id);
+
+    if (oldPost.posterId.toString() !== currentUser._id.toString()) {
+      throw new Error("Unauthorized. The post isn't yours");
+    }
+
+    const page: IPost = await postRepository.update(
+      command,
+      oldPost,
+      currentUser
+    );
+
+    return page;
   },
   delete: async (postId: string, currentUser: IUser): Promise<void> => {
     const post: IPost = await postService.getById(postId);
