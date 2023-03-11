@@ -45,7 +45,14 @@ const messageRepository = {
 
     return messages.reverse();
   },
-  markMessagesAsReadBy: async (
+  getByIds: async (messagesIds: string[]): Promise<IMessage[]> => {
+    const messages: IMessage[] = await Message.find({
+      _id: { $in: messagesIds },
+    });
+
+    return messages;
+  },
+  markMessagesAsReadByUser: async (
     messages: IMessage[],
     userId: mongoose.ObjectId
   ): Promise<void> => {

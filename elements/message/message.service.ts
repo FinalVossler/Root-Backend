@@ -24,9 +24,34 @@ const messageService = {
     const messages: IMessage[] =
       await messageRepository.getMessagesBetweenUsers(command);
 
-    await messageRepository.markMessagesAsReadBy(messages, currentUser._id);
+    await messageService.markMessagesAsReadByUser({ messages, currentUser });
 
     return messages;
+  },
+  markMessagesAsReadByUser: async ({
+    messagesIds,
+    messages,
+    currentUser,
+  }: {
+    messagesIds?: string[];
+    messages?: IMessage[] | undefined;
+    currentUser: IUser;
+  }) => {
+    if (messagesIds && messagesIds.length > 0) {
+      const messages: IMessage[] = await messageRepository.getByIds(
+        messagesIds
+      );
+      await messageRepository.markMessagesAsReadByUser(
+        messages,
+        currentUser._id
+      );
+    }
+    if (messages && messages.length > 0) {
+      await messageRepository.markMessagesAsReadByUser(
+        messages,
+        currentUser._id
+      );
+    }
   },
   getTotalMessagesBetweenUsers: async (
     command: MessageGetBetweenUsersCommand

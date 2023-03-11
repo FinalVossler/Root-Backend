@@ -6,7 +6,7 @@ import UserRegisterCommand from "./dtos/UserRegisterCommand";
 import userService from "./user.service";
 import UserReadDto, { toReadDto } from "./dtos/UserReadDto";
 import UserUpdateCommand from "./dtos/UserUpdateCommand";
-import { IUser } from "./user.model";
+import { IUser, Role } from "./user.model";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import { IFile } from "../file/file.model";
@@ -99,15 +99,21 @@ router.post(
 
 router.put(
   "/",
+  protectMiddleware,
   async (
-    req: Request<any, any, UserUpdateCommand>,
+    req: ConnectedRequest<any, any, UserUpdateCommand, any>,
     res: Response<ResponseDto<UserReadDto>>
   ) => {
-    const user: IUser = await userService.update(req.body);
+    const command: UserUpdateCommand = req.body;
+    const user: IUser = req.user;
+    if (user.role !== Role.Admin || user._id !== command._id) {
+      throw new Error("Unauthorized to update user");
+    }
+    const updatedUser: IUser = await userService.update(command);
 
     return res.status(200).json({
       success: true,
-      data: user,
+      data: updatedUser,
     });
   }
 );

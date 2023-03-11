@@ -10,6 +10,7 @@ import MessageSendCommand from "./dtos/MessageSendCommand";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
 import { IMessage } from "./message.model";
 import messageService from "./message.service";
+import { IUser } from "../user/user.model";
 
 const router = express.Router();
 
@@ -90,6 +91,25 @@ router.delete(
     const messageId: string = req.query.messageId;
 
     await messageService.deleteMessage(messageId, req.user);
+
+    return res.status(200).json({
+      success: true,
+      data: null,
+    });
+  }
+);
+
+router.post(
+  "/markMessagesAsRead",
+  protectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, { messagesIds: string[] }, any>,
+    res: Response<ResponseDto<void>>
+  ) => {
+    const messagesIds: string[] = req.body.messagesIds;
+    const currentUser: IUser = req.user;
+
+    await messageService.markMessagesAsReadByUser({ messagesIds, currentUser });
 
     return res.status(200).json({
       success: true,
