@@ -10,6 +10,7 @@ type WebsiteConfigurationReadDto = {
   withChat: IWebsiteConfiguration["withChat"];
   withRegistration: IWebsiteConfiguration["withRegistration"];
   theme: Theme;
+  staticText: IWebsiteConfiguration["staticText"];
 };
 
 export const toReadDto = (
@@ -25,6 +26,7 @@ export const toReadDto = (
     withChat: websiteConfiguration.withChat,
     withRegistration: websiteConfiguration.withRegistration,
     theme: websiteConfiguration.theme,
+    staticText: websiteConfiguration.staticText,
   };
 };
 

@@ -28,6 +28,8 @@ export interface IWebsiteConfiguration {
   withChat?: boolean;
   withRegistration?: boolean;
   theme: Theme;
+
+  staticText?: any;
 }
 
 interface IWebsiteConfigurationModel
@@ -94,6 +96,9 @@ const WebsiteConfigurationSchema = new mongoose.Schema<IWebsiteConfiguration>(
         boxColor: "#3f3c51",
         boxShadow: "1px 2px 5px 4px black",
       },
+    },
+    staticText: {
+      type: mongoose.SchemaTypes.Mixed,
     },
   },
   {
