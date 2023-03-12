@@ -106,7 +106,7 @@ router.put(
   ) => {
     const command: UserUpdateCommand = req.body;
     const user: IUser = req.user;
-    if (user.role !== Role.Admin || user._id !== command._id) {
+    if (user._id.toString() !== command._id.toString()) {
       throw new Error("Unauthorized to update user");
     }
     const updatedUser: IUser = await userService.update(command);
