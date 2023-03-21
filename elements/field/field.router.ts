@@ -12,6 +12,7 @@ import FieldReadDto, { toReadDto } from "./dto/FieldReadDto";
 import FieldsGetCommand from "./dto/FieldsGetCommand";
 import FieldUpdateCommand from "./dto/FieldUpdateCommand";
 import protectMiddleware from "../../middleware/protectMiddleware";
+import mongoose from "mongoose";
 
 const router = Router();
 
@@ -73,6 +74,24 @@ router.post(
         data: fields.map((p) => toReadDto(p)),
         total,
       },
+    });
+  }
+);
+
+router.delete(
+  "/",
+  protectMiddleware,
+  adminProtectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, mongoose.ObjectId[], any>,
+    res: Response<ResponseDto<void>>
+  ) => {
+    const fieldsIds: mongoose.ObjectId[] = req.body;
+    await fieldService.deleteFields(fieldsIds);
+
+    return res.status(200).send({
+      success: true,
+      data: null,
     });
   }
 );

@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import FieldCreateCommand from "./dto/FieldCreateCommand";
 import FieldsGetCommand from "./dto/FieldsGetCommand";
 import FieldUpdateCommand from "./dto/FieldUpdateCommand";
@@ -21,6 +22,9 @@ const fieldService = {
     const { fields, total } = await fieldRepository.getFields(command);
 
     return { fields, total };
+  },
+  deleteFields: async (fieldsIds: mongoose.ObjectId[]): Promise<void> => {
+    await fieldRepository.deleteFields(fieldsIds);
   },
 };
 

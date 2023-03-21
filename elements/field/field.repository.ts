@@ -4,6 +4,7 @@ import { IField } from "./field.model";
 import Field from "./field.model";
 import FieldsGetCommand from "./dto/FieldsGetCommand";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
+import mongoose from "mongoose";
 
 const fieldRepository = {
   create: async (command: FieldCreateCommand): Promise<IField> => {
@@ -48,6 +49,9 @@ const fieldRepository = {
     const total: number = await Field.find({}).count();
 
     return { fields, total };
+  },
+  deleteFields: async (fieldsIds: mongoose.ObjectId[]): Promise<void> => {
+    await Field.deleteMany({ _id: { $in: fieldsIds } });
   },
 };
 
