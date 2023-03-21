@@ -57,7 +57,7 @@ router.put(
   }
 );
 
-router.get(
+router.post(
   "/getFields",
   async (
     req: ConnectedRequest<any, any, FieldsGetCommand, any>,
@@ -66,6 +66,7 @@ router.get(
     const command: FieldsGetCommand = req.body;
     const { fields, total } = await fieldService.getFields(command);
 
+    console.log("fields", fields);
     return res.status(200).send({
       success: true,
       data: {

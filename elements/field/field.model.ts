@@ -8,6 +8,7 @@ export enum FieldType {
 }
 
 export interface IField {
+  _id: mongoose.ObjectId;
   name: ITranslatedText[];
   type: FieldType;
 }
