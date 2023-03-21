@@ -46,9 +46,7 @@ router.put(
     res: Response<ResponseDto<FieldReadDto>>
   ) => {
     const command: FieldUpdateCommand = req.body;
-    if (req.user.role !== Role.Admin) {
-      throw new Error("Unauthorized to update field");
-    }
+
     const field: IField = await fieldService.updateField(command);
 
     return res.status(200).send({
@@ -67,7 +65,6 @@ router.post(
     const command: FieldsGetCommand = req.body;
     const { fields, total } = await fieldService.getFields(command);
 
-    console.log("fields", fields);
     return res.status(200).send({
       success: true,
       data: {
