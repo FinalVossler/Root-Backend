@@ -7,6 +7,7 @@ import pageRouter from "./elements/page/page.router";
 import fileRouter from "./elements/file/file.router";
 import websiteConfigurationRouter from "./elements/websiteConfiguration/websiteConfiguration.router";
 import emailRouter from "./elements/email/email.router";
+import fieldRouter from "./elements/field/field.router";
 
 const router = Router();
 
@@ -17,6 +18,7 @@ router.use("/pages", pageRouter);
 router.use("/files", fileRouter);
 router.use("/websiteConfigurations", websiteConfigurationRouter);
 router.use("/emails", emailRouter);
+router.use("/fields", fieldRouter);
 
 router.use("/", (req: Request, res: Response) => {
   res.status(200).send("Hello!");
