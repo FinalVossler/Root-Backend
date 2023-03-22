@@ -13,6 +13,7 @@ import FieldsGetCommand from "./dto/FieldsGetCommand";
 import FieldUpdateCommand from "./dto/FieldUpdateCommand";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import mongoose from "mongoose";
+import FieldsSearchCommand from "./dto/FieldsSearchCommand";
 
 const router = Router();
 
@@ -89,6 +90,26 @@ router.delete(
     return res.status(200).send({
       success: true,
       data: null,
+    });
+  }
+);
+
+router.post(
+  "/search",
+  async (
+    req: ConnectedRequest<any, any, FieldsSearchCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<FieldReadDto>>>
+  ) => {
+    const command: FieldsSearchCommand = req.body;
+
+    const { fields, total } = await fieldService.search(command);
+
+    return res.status(200).send({
+      success: true,
+      data: {
+        data: fields.map((p) => toReadDto(p)),
+        total,
+      },
     });
   }
 );

@@ -2,7 +2,7 @@ import PaginationCommand from "../../../globalTypes/PaginationCommand";
 import { IPost } from "../post.model";
 
 type PostsSearchCommand = {
-  title: IPost["title"];
+  title: string;
   visibilities: IPost["visibility"][];
   posterId: IPost["posterId"];
   paginationCommand: PaginationCommand;

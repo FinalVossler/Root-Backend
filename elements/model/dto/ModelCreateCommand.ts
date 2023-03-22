@@ -3,7 +3,7 @@ type ModelCreateCommand = {
   modelFields: {
     field: string;
     required: boolean;
-  };
+  }[];
   language: string;
 };
 

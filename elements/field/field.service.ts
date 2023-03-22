@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import FieldCreateCommand from "./dto/FieldCreateCommand";
 import FieldsGetCommand from "./dto/FieldsGetCommand";
+import FieldsSearchCommand from "./dto/FieldsSearchCommand";
 import FieldUpdateCommand from "./dto/FieldUpdateCommand";
 import { IField } from "./field.model";
 import fieldRepository from "./field.repository";
@@ -25,6 +26,14 @@ const fieldService = {
   },
   deleteFields: async (fieldsIds: mongoose.ObjectId[]): Promise<void> => {
     await fieldRepository.deleteFields(fieldsIds);
+  },
+
+  search: async (
+    command: FieldsSearchCommand
+  ): Promise<{ fields: IField[]; total: number }> => {
+    const { fields, total } = await fieldRepository.search(command);
+
+    return { fields, total };
   },
 };
 

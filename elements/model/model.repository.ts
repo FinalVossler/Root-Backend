@@ -1,18 +1,20 @@
+import mongoose from "mongoose";
+
 import Model, { IModel } from "./model.model";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
-import mongoose from "mongoose";
 import ModelCreateCommand from "./dto/ModelCreateCommand";
 import ModelUpdateCommand from "./dto/ModelUpdateCommand";
 import ModelsGetCommand from "./dto/ModelsGetCommand";
+import Field from "../field/field.model";
 
 const modelRepository = {
   create: async (command: ModelCreateCommand): Promise<IModel> => {
-    const model: IModel = await Model.create({
+    const model = await Model.create({
       name: [{ language: command.language, text: command.name }],
       modelFields: command.modelFields,
     });
 
-    return model;
+    return model.populate(populationOptions);
   },
   update: async (command: ModelUpdateCommand): Promise<IModel> => {
     const model: IModel = await Model.findById(command._id);
@@ -31,7 +33,9 @@ const modelRepository = {
       }
     );
 
-    const newModel: IModel = await Model.findById(command._id);
+    const newModel: IModel = await Model.findById(command._id).populate(
+      populationOptions
+    );
 
     return newModel;
   },
@@ -43,6 +47,7 @@ const modelRepository = {
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
       .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
       .exec();
 
     const total: number = await Model.find({}).count();
@@ -53,5 +58,15 @@ const modelRepository = {
     await Model.deleteMany({ _id: { $in: modelsIds } });
   },
 };
+
+const populationOptions = [
+  {
+    path: "modelFields",
+    populate: {
+      path: "field",
+      model: Field.modelName,
+    },
+  },
+];
 
 export default modelRepository;

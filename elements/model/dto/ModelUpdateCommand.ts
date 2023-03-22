@@ -1,9 +1,10 @@
-import { IModel } from "../model.model";
-
 type ModelUpdateCommand = {
   _id: string;
   name: string;
-  modelFields: IModel["modelFields"];
+  modelFields: {
+    field: string;
+    required: string;
+  }[];
   language: string;
 };
 
