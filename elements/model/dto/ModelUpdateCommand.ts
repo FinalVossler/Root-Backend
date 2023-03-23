@@ -2,7 +2,7 @@ type ModelUpdateCommand = {
   _id: string;
   name: string;
   modelFields: {
-    field: string;
+    fieldId: string;
     required: string;
   }[];
   language: string;

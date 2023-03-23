@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
 type EntityCreateCommand = {
-  model: mongoose.ObjectId;
+  modelId: mongoose.ObjectId;
   entityFieldValues: {
-    field: mongoose.ObjectId;
+    fieldId: mongoose.ObjectId;
     value: string;
   }[];
   language: string;

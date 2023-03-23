@@ -43,6 +43,7 @@ const modelRepository = {
     command: ModelsGetCommand
   ): Promise<{ total: number; models: IModel[] }> => {
     const models: IModel[] = await Model.find({})
+      .sort({ createAt: -1 })
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )

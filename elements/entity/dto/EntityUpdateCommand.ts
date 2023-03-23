@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 
 type EntityUpdateCommand = {
   _id: mongoose.ObjectId;
-  model: mongoose.ObjectId;
+  modelId: mongoose.ObjectId;
   entityFieldValues: {
-    field: mongoose.ObjectId;
+    fieldId: mongoose.ObjectId;
     value: string;
   }[];
   language: string;

@@ -1,7 +1,7 @@
 type ModelCreateCommand = {
   name: string;
   modelFields: {
-    field: string;
+    fieldId: string;
     required: boolean;
   }[];
   language: string;

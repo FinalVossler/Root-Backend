@@ -11,9 +11,9 @@ import EntitiesGetCommand from "./dto/EntitiesGetCommand";
 const entityRepository = {
   create: async (command: EntityCreateCommand): Promise<IEntity> => {
     const entity = await Entity.create({
-      model: command.model,
+      model: command.modelId,
       entityFieldValues: command.entityFieldValues.map((fieldValue) => ({
-        field: fieldValue.field,
+        field: fieldValue.fieldId,
         value: [{ language: command.language, text: fieldValue.value }],
       })),
     });
@@ -27,9 +27,9 @@ const entityRepository = {
       { _id: command._id },
       {
         $set: {
-          model: command.model,
+          model: command.modelId,
           entityFieldValues: command.entityFieldValues.map((fieldValue) => ({
-            field: fieldValue.field,
+            field: fieldValue.fieldId,
             value: getNewTranslatedTextsForUpdate({
               language: command.language,
               newText: fieldValue.value,
@@ -52,6 +52,7 @@ const entityRepository = {
     command: EntitiesGetCommand
   ): Promise<{ total: number; entities: IEntity[] }> => {
     const entities: IEntity[] = await Entity.find({ model: command.model })
+      .sort({ createAt: -1 })
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
@@ -59,7 +60,7 @@ const entityRepository = {
       .populate(populationOptions)
       .exec();
 
-    const total: number = await Entity.find({}).count();
+    const total: number = await Entity.find({ model: command.model }).count();
 
     return { entities, total };
   },
