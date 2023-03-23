@@ -30,7 +30,7 @@ const emailService = {
     let mailOptions = {
       from: command.email,
       to: conf.email,
-      subject: "Email sent from wewsite: " + conf.title,
+      subject: "Email sent from website: " + conf.title,
       text: content,
     };
 
