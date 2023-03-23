@@ -28,16 +28,18 @@ const entityRepository = {
       {
         $set: {
           model: command.modelId,
-          entityFieldValues: command.entityFieldValues.map((fieldValue) => ({
-            field: fieldValue.fieldId,
-            value: getNewTranslatedTextsForUpdate({
-              language: command.language,
-              newText: fieldValue.value,
-              oldValue: entity.entityFieldValues.find(
-                (fieldValue) => fieldValue.field._id === fieldValue.field._id
-              )?.value,
-            }),
-          })),
+          entityFieldValues: command.entityFieldValues.map((fieldValue) => {
+            return {
+              field: fieldValue.fieldId,
+              value: getNewTranslatedTextsForUpdate({
+                language: command.language,
+                newText: fieldValue.value,
+                oldValue: entity.entityFieldValues.find(
+                  (el) => el.field._id === fieldValue.fieldId
+                )?.value,
+              }),
+            };
+          }),
         },
       }
     );
