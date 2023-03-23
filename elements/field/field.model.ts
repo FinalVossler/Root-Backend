@@ -11,6 +11,9 @@ export interface IField {
   _id: mongoose.ObjectId;
   name: ITranslatedText[];
   type: FieldType;
+
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface IFieldModel extends mongoose.Model<IField> {}

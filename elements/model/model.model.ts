@@ -6,6 +6,9 @@ export interface IModel {
   _id: mongoose.ObjectId;
   name: ITranslatedText[];
   modelFields: IModelField[];
+
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IModelField {

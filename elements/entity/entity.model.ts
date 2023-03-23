@@ -8,6 +8,9 @@ export interface IEntity {
   _id: mongoose.ObjectId;
   model: IModel;
   entityFieldValues: IEntityFieldValue[];
+
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IEntityFieldValue {

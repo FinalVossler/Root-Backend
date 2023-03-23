@@ -21,7 +21,9 @@ const entityRepository = {
     return entity.populate(populationOptions);
   },
   update: async (command: EntityUpdateCommand): Promise<IEntity> => {
-    const entity: IEntity = await Entity.findById(command._id);
+    const entity: IEntity = await Entity.findById(command._id).populate(
+      populationOptions
+    );
 
     await Entity.updateOne(
       { _id: command._id },
@@ -35,7 +37,8 @@ const entityRepository = {
                 language: command.language,
                 newText: fieldValue.value,
                 oldValue: entity.entityFieldValues.find(
-                  (el) => el.field._id === fieldValue.fieldId
+                  (el) =>
+                    el.field._id.toString() === fieldValue.fieldId.toString()
                 )?.value,
               }),
             };
