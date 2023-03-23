@@ -9,6 +9,7 @@ import websiteConfigurationRouter from "./elements/websiteConfiguration/websiteC
 import emailRouter from "./elements/email/email.router";
 import fieldRouter from "./elements/field/field.router";
 import modelRouter from "./elements/model/model.router";
+import entityRouter from "./elements/entity/entity.router";
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.use("/websiteConfigurations", websiteConfigurationRouter);
 router.use("/emails", emailRouter);
 router.use("/fields", fieldRouter);
 router.use("/models", modelRouter);
+router.use("/entities", entityRouter);
 
 router.use("/", (req: Request, res: Response) => {
   res.status(200).send("Hello!");
