@@ -5,15 +5,22 @@ import EntitiesGetCommand from "./dto/EntitiesGetCommand";
 import entityRepository from "./entity.repository";
 import EntityCreateCommand from "./dto/EntityCreateCommand";
 import EntityUpdateCommand from "./dto/EntityUpdateCommand";
+import { IUser } from "../user/user.model";
 
 const entityService = {
-  createEntity: async (command: EntityCreateCommand): Promise<IEntity> => {
-    const entity: IEntity = await entityRepository.create(command);
+  createEntity: async (
+    command: EntityCreateCommand,
+    currentUser: IUser
+  ): Promise<IEntity> => {
+    const entity: IEntity = await entityRepository.create(command, currentUser);
 
     return entity;
   },
-  updateEntity: async (command: EntityUpdateCommand): Promise<IEntity> => {
-    const entity: IEntity = await entityRepository.update(command);
+  updateEntity: async (
+    command: EntityUpdateCommand,
+    currentUser: IUser
+  ): Promise<IEntity> => {
+    const entity: IEntity = await entityRepository.update(command, currentUser);
 
     return entity;
   },

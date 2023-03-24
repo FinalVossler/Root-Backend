@@ -4,25 +4,73 @@ import Entity, { IEntity } from "./entity.model";
 import Model from "../model/model.model";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
 import Field from "../field/field.model";
-import EntityCreateCommand from "./dto/EntityCreateCommand";
+import File, { IFile } from "../file/file.model";
+import EntityCreateCommand, {
+  EntityFieldValueCommand,
+} from "./dto/EntityCreateCommand";
 import EntityUpdateCommand from "./dto/EntityUpdateCommand";
 import EntitiesGetCommand from "./dto/EntitiesGetCommand";
+import fileRepository from "../file/file.repository";
+import { IUser } from "../user/user.model";
 
 const entityRepository = {
-  create: async (command: EntityCreateCommand): Promise<IEntity> => {
+  combineEntityFieldValuesNewFilesAndSelectedOwnFiles: async (
+    entityFieldValues: EntityFieldValueCommand[],
+    currentUser: IUser
+  ) => {
+    const createFilesPromises: Promise<IFile[]>[] = [];
+    entityFieldValues.forEach(async (entityFieldValue) => {
+      const promise: Promise<IFile[]> = new Promise(async (resolve, reject) => {
+        const createdFiles: IFile[] = await fileRepository.createFiles(
+          entityFieldValue.files.filter((el) => !el._id),
+          currentUser
+        );
+
+        const allFiles = createdFiles.concat(
+          entityFieldValue.files.filter((el) => el._id)
+        );
+
+        entityFieldValue.files = allFiles;
+
+        resolve(allFiles);
+      });
+
+      createFilesPromises.push(promise);
+    });
+
+    await Promise.all(createFilesPromises);
+  },
+  create: async (
+    command: EntityCreateCommand,
+    currentUser: IUser
+  ): Promise<IEntity> => {
+    await entityRepository.combineEntityFieldValuesNewFilesAndSelectedOwnFiles(
+      command.entityFieldValues,
+      currentUser
+    );
+
     const entity = await Entity.create({
       model: command.modelId,
       entityFieldValues: command.entityFieldValues.map((fieldValue) => ({
         field: fieldValue.fieldId,
         value: [{ language: command.language, text: fieldValue.value }],
+        files: fieldValue.files.map((f) => f._id),
       })),
     });
 
     return entity.populate(populationOptions);
   },
-  update: async (command: EntityUpdateCommand): Promise<IEntity> => {
+  update: async (
+    command: EntityUpdateCommand,
+    currentUser: IUser
+  ): Promise<IEntity> => {
     const entity: IEntity = await Entity.findById(command._id).populate(
       populationOptions
+    );
+
+    await entityRepository.combineEntityFieldValuesNewFilesAndSelectedOwnFiles(
+      command.entityFieldValues,
+      currentUser
     );
 
     await Entity.updateOne(
@@ -33,6 +81,7 @@ const entityRepository = {
           entityFieldValues: command.entityFieldValues.map((fieldValue) => {
             return {
               field: fieldValue.fieldId,
+              files: fieldValue.files.map((f) => f._id),
               value: getNewTranslatedTextsForUpdate({
                 language: command.language,
                 newText: fieldValue.value,
@@ -77,10 +126,16 @@ const entityRepository = {
 const populationOptions = [
   {
     path: "entityFieldValues",
-    populate: {
-      path: "field",
-      model: Field.modelName,
-    },
+    populate: [
+      {
+        path: "field",
+        model: Field.modelName,
+      },
+      {
+        path: "files",
+        model: File.modelName,
+      },
+    ],
   },
   {
     path: "model",

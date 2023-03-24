@@ -1,3 +1,4 @@
+import { IFile } from "../../file/file.model";
 import { IField } from "../field.model";
 
 type FieldCreateCommand = {

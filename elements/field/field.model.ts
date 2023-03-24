@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
+import { IFile } from "../file/file.model";
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 
 export enum FieldType {
   Number = "Number",
   Text = "Text",
   Paragraph = "Paragraph",
+  File = "File",
 }
 
 export interface IField {

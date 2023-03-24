@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 import { IField } from "../field/field.model";
+import File, { IFile } from "../file/file.model";
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 import Model, { IModel } from "../model/model.model";
 
@@ -16,6 +17,7 @@ export interface IEntity {
 export interface IEntityFieldValue {
   field: IField;
   value: ITranslatedText[];
+  files: IFile[];
 }
 
 interface IEntityModel extends mongoose.Model<IEntity> {}
@@ -33,6 +35,12 @@ const EntitySchema = new mongoose.Schema<IEntity>(
           required: true,
         },
         value: translatedTextSchema,
+        files: [
+          {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: File.modelName,
+          },
+        ],
       },
     ],
   },

@@ -12,6 +12,7 @@ import entityService from "./entity.service";
 import { IEntity } from "./entity.model";
 import EntityUpdateCommand from "./dto/EntityUpdateCommand";
 import EntitiesGetCommand from "./dto/EntitiesGetCommand";
+import { IUser } from "../user/user.model";
 
 const router = Router();
 
@@ -24,7 +25,12 @@ router.post(
     res: Response<ResponseDto<EntityReadDto>>
   ) => {
     const command: EntityCreateCommand = req.body;
-    const entity: IEntity = await entityService.createEntity(command);
+    const currentUser: IUser = req.user;
+
+    const entity: IEntity = await entityService.createEntity(
+      command,
+      currentUser
+    );
 
     return res.status(200).send({
       success: true,
@@ -42,7 +48,11 @@ router.put(
     res: Response<ResponseDto<EntityReadDto>>
   ) => {
     const command: EntityUpdateCommand = req.body;
-    const entity: IEntity = await entityService.updateEntity(command);
+    const currentUser: IUser = req.user;
+    const entity: IEntity = await entityService.updateEntity(
+      command,
+      currentUser
+    );
 
     return res.status(200).send({
       success: true,
