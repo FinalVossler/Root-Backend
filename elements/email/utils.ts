@@ -29,8 +29,6 @@ export const sendSendgridEmail = async (command: EmailSendCommand) => {
     html: content,
   };
 
-  console.log("message", email);
-
   try {
     const response = await sgMail.send(email);
     return response;
