@@ -1,17 +1,29 @@
 import mongoose from "mongoose";
 
-import PaginationCommand from "../../globalTypes/PaginationCommand";
 import { IUser } from "../user/user.model";
+import FileGetUserAndSelectedFilesCommand from "./dto/FileGetUserAndSelectedFilesCommand";
 import File, { IFile } from "./file.model";
 
 const fileRepository = {
   getUserFiles: async (
     user: IUser,
-    paginationCommand: PaginationCommand
+    command: FileGetUserAndSelectedFilesCommand
   ): Promise<IFile[]> => {
     const files: IFile[] = await File.find({ ownerId: user._id })
-      .skip((paginationCommand.page - 1) * paginationCommand.limit)
-      .limit(paginationCommand.limit);
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit);
+
+    const selectedFiles: IFile[] = await File.find({
+      _id: { $in: command.selectedFilesIds },
+    });
+
+    selectedFiles.forEach((file) => {
+      if (!files.find((f) => f._id === file._id)) {
+        files.unshift(file);
+      }
+    });
 
     return files;
   },
