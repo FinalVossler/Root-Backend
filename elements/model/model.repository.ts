@@ -60,12 +60,15 @@ const modelRepository = {
   },
 };
 
-const populationOptions = [
+export const populationOptions = [
   {
     path: "modelFields",
     populate: {
       path: "field",
-      model: Field.modelName,
+      model: "field",
+      populate: {
+        path: "options",
+      },
     },
   },
 ];

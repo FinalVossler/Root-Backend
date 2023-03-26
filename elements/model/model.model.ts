@@ -28,7 +28,7 @@ const ModelSchema = new mongoose.Schema<IModel>(
       {
         field: {
           type: mongoose.SchemaTypes.ObjectId,
-          ref: Field.modelName,
+          ref: "field",
         },
         required: {
           type: mongoose.SchemaTypes.Boolean,

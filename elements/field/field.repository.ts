@@ -1,10 +1,11 @@
+import mongoose from "mongoose";
+
 import FieldCreateCommand from "./dto/FieldCreateCommand";
 import FieldUpdateCommand from "./dto/FieldUpdateCommand";
 import { IField } from "./field.model";
 import Field from "./field.model";
 import FieldsGetCommand from "./dto/FieldsGetCommand";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
-import mongoose from "mongoose";
 import FieldsSearchCommand from "./dto/FieldsSearchCommand";
 
 const fieldRepository = {
@@ -12,6 +13,10 @@ const fieldRepository = {
     const field: IField = await Field.create({
       name: [{ language: command.language, text: command.name }],
       type: command.type,
+      options: command.options.map((option) => ({
+        label: [{ language: command.language, text: option.label }],
+        value: option.value,
+      })),
     });
 
     return field;
@@ -29,6 +34,15 @@ const fieldRepository = {
             oldValue: field.name,
           }),
           type: command.type,
+          options: command.options.map((option) => ({
+            value: option.value,
+            label: getNewTranslatedTextsForUpdate({
+              language: command.language,
+              newText: option.label,
+              oldValue: field.options.find((op) => op.value === option.value)
+                ?.label,
+            }),
+          })),
         },
       }
     );
@@ -53,7 +67,11 @@ const fieldRepository = {
     return { fields, total };
   },
   deleteFields: async (fieldsIds: mongoose.ObjectId[]): Promise<void> => {
-    await Field.deleteMany({ _id: { $in: fieldsIds } });
+    for (let i = 0; i < fieldsIds.length; i++) {
+      await Field.deleteOne({ _id: fieldsIds[i] });
+    }
+
+    return null;
   },
   search: async (
     command: FieldsSearchCommand
