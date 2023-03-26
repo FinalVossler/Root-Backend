@@ -8,10 +8,10 @@ const fileService = {
   getUserFiles: async (
     user: IUser,
     command: FileGetUserAndSelectedFilesCommand
-  ): Promise<IFile[]> => {
-    const files: IFile[] = await fileRepository.getUserFiles(user, command);
+  ): Promise<{ files: IFile[]; total: number }> => {
+    const { files, total } = await fileRepository.getUserFiles(user, command);
 
-    return files;
+    return { files, total };
   },
 };
 

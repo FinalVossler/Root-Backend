@@ -13,7 +13,7 @@ const adminProtectMiddleware = async (
     );
   }
 
-  if (req.user.role !== Role.Admin) {
+  if (req.user.role !== Role.SuperAdmin) {
     throw new Error("Unauthorized");
   }
   next();

@@ -20,7 +20,7 @@ router.post(
     req: ConnectedRequest<any, any, WebsiteConfigurationUpdateCommand, any>,
     res: Response<ResponseDto<WebsiteConfigurationReadDto>>
   ) => {
-    if (req.user.role !== Role.Admin) {
+    if (req.user.role !== Role.SuperAdmin) {
       throw new Error("Unauthorized");
     }
 

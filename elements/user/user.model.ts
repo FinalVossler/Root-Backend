@@ -4,7 +4,7 @@ import { genSalt, hash } from "bcrypt";
 import File, { IFile } from "../file/file.model";
 
 export enum Role {
-  Admin = "Admin",
+  SuperAdmin = "SuperAdmin",
   Normal = "Normal",
 }
 

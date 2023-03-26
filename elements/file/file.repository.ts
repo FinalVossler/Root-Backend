@@ -8,12 +8,14 @@ const fileRepository = {
   getUserFiles: async (
     user: IUser,
     command: FileGetUserAndSelectedFilesCommand
-  ): Promise<IFile[]> => {
+  ): Promise<{ files: IFile[]; total: number }> => {
     const files: IFile[] = await File.find({ ownerId: user._id })
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
       .limit(command.paginationCommand.limit);
+
+    const total: number = await File.find({ ownerId: user._id }).count();
 
     const selectedFiles: IFile[] = await File.find({
       _id: { $in: command.selectedFilesIds },
@@ -25,7 +27,7 @@ const fileRepository = {
       }
     });
 
-    return files;
+    return { files, total };
   },
   get: async (fileId: mongoose.ObjectId | string): Promise<IFile> => {
     const file: IFile = await File.findById(fileId);

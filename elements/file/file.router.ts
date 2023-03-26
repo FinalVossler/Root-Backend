@@ -16,13 +16,16 @@ router.post(
   protectMiddleware,
   async (
     req: ConnectedRequest<any, any, FileGetUserAndSelectedFilesCommand, any>,
-    res: Response<ResponseDto<FileReadDto[]>>
+    res: Response<ResponseDto<{ files: FileReadDto[]; total: number }>>
   ) => {
     const command: FileGetUserAndSelectedFilesCommand = req.body;
-    const files: IFile[] = await fileService.getUserFiles(req.user, req.body);
+    const { files, total } = await fileService.getUserFiles(req.user, req.body);
 
     res.status(200).json({
-      data: files.map((file) => toReadDto(file)),
+      data: {
+        files: files.map((file) => toReadDto(file)),
+        total,
+      },
       success: true,
     });
   }
