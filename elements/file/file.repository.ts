@@ -18,7 +18,9 @@ const fileRepository = {
     const total: number = await File.find({ ownerId: user._id }).count();
 
     const selectedFiles: IFile[] = await File.find({
-      _id: { $in: command.selectedFilesIds },
+      _id: {
+        $in: command.selectedFilesIds.filter((fieldId) => Boolean(fieldId)),
+      },
     });
 
     selectedFiles.forEach((file) => {

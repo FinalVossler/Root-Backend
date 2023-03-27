@@ -2,30 +2,27 @@ import express, { Response } from "express";
 
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
+import adminProtectMiddleware from "../../middleware/adminProtectMiddleware";
 import protectMiddleware from "../../middleware/protectMiddleware";
-import { Role } from "../user/user.model";
 import WebsiteConfigurationReadDto, {
   toReadDto,
 } from "./dto/WebsiteConfigurationReadDto";
 import WebsiteConfigurationUpdateCommand from "./dto/WebsiteConfigurationUpdateCommand";
 import { IWebsiteConfiguration } from "./websiteConfiguration.model";
-import websiteConfigurationRepository from "./websiteConfiguration.repository";
+import websiteConfigurationService from "./websiteConfiguration.service";
 
 const router = express.Router();
 
 router.post(
   "/update",
   protectMiddleware,
+  adminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, WebsiteConfigurationUpdateCommand, any>,
     res: Response<ResponseDto<WebsiteConfigurationReadDto>>
   ) => {
-    if (req.user.role !== Role.SuperAdmin) {
-      throw new Error("Unauthorized");
-    }
-
     const websiteConfiguration: IWebsiteConfiguration =
-      await websiteConfigurationRepository.update(req.body);
+      await websiteConfigurationService.update(req.body, req.user);
 
     res.status(200).json({
       data: toReadDto(websiteConfiguration),
@@ -41,7 +38,7 @@ router.get(
     res: Response<ResponseDto<WebsiteConfigurationReadDto>>
   ) => {
     const websiteConfiguration: IWebsiteConfiguration =
-      await websiteConfigurationRepository.get();
+      await websiteConfigurationService.get();
 
     res.status(200).json({
       data: toReadDto(websiteConfiguration),

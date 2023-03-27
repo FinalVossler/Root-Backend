@@ -1,3 +1,4 @@
+import { FileReadDto } from "../../file/dto/FileReadDto";
 import { IWebsiteConfiguration, Theme } from "../websiteConfiguration.model";
 
 type WebsiteConfigurationReadDto = {
@@ -11,6 +12,7 @@ type WebsiteConfigurationReadDto = {
   withRegistration: IWebsiteConfiguration["withRegistration"];
   theme: Theme;
   staticText: IWebsiteConfiguration["staticText"];
+  tabIcon?: FileReadDto;
 };
 
 export const toReadDto = (
@@ -27,6 +29,7 @@ export const toReadDto = (
     withRegistration: websiteConfiguration.withRegistration,
     theme: websiteConfiguration.theme,
     staticText: websiteConfiguration.staticText,
+    tabIcon: websiteConfiguration.tabIcon,
   };
 };
 

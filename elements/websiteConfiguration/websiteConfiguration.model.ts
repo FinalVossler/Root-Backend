@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { IFile } from "../file/file.model";
 
 export type Theme = {
   darkTextColor: string;
@@ -16,6 +17,7 @@ export type Theme = {
   transparentBackground: string;
   subContentBackgroundColor: string;
   boxShadow: string;
+  tabIcon: IFile;
 };
 
 export interface IWebsiteConfiguration {
@@ -28,6 +30,7 @@ export interface IWebsiteConfiguration {
   withChat?: boolean;
   withRegistration?: boolean;
   theme: Theme;
+  tabIcon: IFile;
 
   staticText?: any;
 }
@@ -99,6 +102,10 @@ const WebsiteConfigurationSchema = new mongoose.Schema<IWebsiteConfiguration>(
     },
     staticText: {
       type: mongoose.SchemaTypes.Mixed,
+    },
+    tabIcon: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "file",
     },
   },
   {

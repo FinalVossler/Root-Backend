@@ -1,3 +1,5 @@
+import fileRepository from "../file/file.repository";
+import { IUser } from "../user/user.model";
 import WebsiteConfigurationUpdateCommand from "./dto/WebsiteConfigurationUpdateCommand";
 import WebsiteConfiguration, {
   IWebsiteConfiguration,
@@ -6,7 +8,7 @@ import WebsiteConfiguration, {
 const websiteConfigurationRepository = {
   get: async (): Promise<IWebsiteConfiguration> => {
     const configurations: IWebsiteConfiguration[] =
-      await WebsiteConfiguration.find();
+      await WebsiteConfiguration.find().populate("tabIcon");
 
     if (configurations.length === 0) {
       const newConfiguration: IWebsiteConfiguration =
@@ -17,10 +19,16 @@ const websiteConfigurationRepository = {
     return configurations[0];
   },
   update: async (
-    command: WebsiteConfigurationUpdateCommand
+    command: WebsiteConfigurationUpdateCommand,
+    currentUser: IUser
   ): Promise<IWebsiteConfiguration> => {
     const configuration: IWebsiteConfiguration =
       await websiteConfigurationRepository.get();
+
+    let tabIcon = command.tabIcon;
+    if (command.tabIcon && !command.tabIcon._id) {
+      tabIcon = await fileRepository.create(command.tabIcon, currentUser);
+    }
 
     await WebsiteConfiguration.updateOne(
       { _id: configuration._id },
@@ -34,6 +42,7 @@ const websiteConfigurationRepository = {
           withChat: command.withChat,
           withRegistration: command.withRegistration,
           theme: command.theme,
+          tabIcon: command.tabIcon._id,
         },
       }
     );
