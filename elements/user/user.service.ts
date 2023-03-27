@@ -93,7 +93,7 @@ const userService = {
 
     return token;
   },
-  changePassword: async (currentUser: IUser) => {
+  sendChangePasswordEmail: async (currentUser: IUser) => {
     const token = await userService.generateToken(currentUser);
 
     await emailService.sendChangePasswordEmail(currentUser, token);

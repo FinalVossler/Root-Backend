@@ -144,7 +144,7 @@ router.put(
 );
 
 router.post(
-  "/changePassword",
+  "/sendChangePasswordEmail",
   protectMiddleware,
   async (
     req: ConnectedRequest<
@@ -155,7 +155,7 @@ router.post(
     >,
     res: Response<ResponseDto<void>>
   ) => {
-    await userService.changePassword(req.user);
+    await userService.sendChangePasswordEmail(req.user);
 
     return res.status(200).json({
       success: true,
