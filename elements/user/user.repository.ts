@@ -52,14 +52,15 @@ const userRepository = {
     command: UserUpdateProfilePictureCommand,
     currentUser: IUser
   ): Promise<IUser> => {
-    const picture: IFile = await fileRepository.create(
-      command.picture,
-      currentUser
-    );
+    let picture: IFile = null;
+
+    if (!command.picture._id) {
+      picture = await fileRepository.create(command.picture, currentUser);
+    }
 
     await User.updateOne(
       { _id: command.userId },
-      { $set: { profilePicture: picture._id } }
+      { $set: { profilePicture: picture ? picture._id : command.picture } }
     );
 
     const user: IUser = (await userRepository.getbyId(command.userId)) as IUser;
