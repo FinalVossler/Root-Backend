@@ -16,7 +16,7 @@ router.post(
   ) => {
     const command: EmailSendCommand = req.body;
 
-    await emailService.send(command);
+    await emailService.sendContactEmail(command);
 
     res.status(200).json({
       success: true,

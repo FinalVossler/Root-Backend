@@ -8,6 +8,8 @@ import { IUser } from "./user.model";
 import UserUpdateCommand from "./dtos/UserUpdateCommand";
 import mongoose, { ObjectId } from "mongoose";
 import UserUpdateProfilePictureCommand from "./dtos/UserUpdateProfilePictureCommand";
+import emailService from "../email/email.service";
+import EmailSendCommand from "../email/dto/EmailSendCommand";
 
 const userService = {
   get: async (currentUserId?: ObjectId): Promise<IUser[]> => {
@@ -90,6 +92,11 @@ const userService = {
     );
 
     return token;
+  },
+  changePassword: async (currentUser: IUser) => {
+    const token = await userService.generateToken(currentUser);
+
+    await emailService.sendChangePasswordEmail(currentUser, token);
   },
 };
 

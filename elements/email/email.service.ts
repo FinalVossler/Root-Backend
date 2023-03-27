@@ -1,11 +1,12 @@
 import nodemailer from "nodemailer";
+import { IUser } from "../user/user.model";
 import { IWebsiteConfiguration } from "../websiteConfiguration/websiteConfiguration.model";
 
 import websiteConfigurationRepository from "../websiteConfiguration/websiteConfiguration.repository";
 import EmailSendCommand from "./dto/EmailSendCommand";
 
 const emailService = {
-  send: async (command: EmailSendCommand): Promise<void> => {
+  sendContactEmail: async (command: EmailSendCommand): Promise<void> => {
     const conf: IWebsiteConfiguration =
       await websiteConfigurationRepository.get();
 
@@ -19,6 +20,41 @@ const emailService = {
       "\nMessage: " +
       command.message;
 
+    await emailService.send({
+      from: command.email,
+      to: conf.email,
+      subject: "Email sent from website: " + conf.title,
+      text: content,
+    });
+  },
+  sendChangePasswordEmail: async (user: IUser, token: string) => {
+    const conf: IWebsiteConfiguration =
+      await websiteConfigurationRepository.get();
+
+    const content: string =
+      "Click the following link to change your password " +
+      process.env.ORIGIN +
+      "/changePassword/" +
+      token;
+
+    await emailService.send({
+      from: conf.email,
+      to: user.email,
+      subject: conf.title + ": Changing password",
+      text: content,
+    });
+  },
+  send: async ({
+    from,
+    to,
+    subject,
+    text,
+  }: {
+    from: string;
+    to: string;
+    subject: string;
+    text: string;
+  }): Promise<void> => {
     let transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -28,10 +64,10 @@ const emailService = {
     });
 
     let mailOptions = {
-      from: command.email,
-      to: conf.email,
-      subject: "Email sent from website: " + conf.title,
-      text: content,
+      from,
+      to,
+      subject,
+      text,
     };
 
     const promise = new Promise((resolve, reject) => {

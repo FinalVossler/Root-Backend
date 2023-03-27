@@ -143,4 +143,25 @@ router.put(
   }
 );
 
+router.post(
+  "/changePassword",
+  protectMiddleware,
+  async (
+    req: ConnectedRequest<
+      any,
+      ResponseDto<{ token: string; expiresIn: string; user: UserReadDto }>,
+      UserRegisterCommand,
+      any
+    >,
+    res: Response<ResponseDto<void>>
+  ) => {
+    await userService.changePassword(req.user);
+
+    return res.status(200).json({
+      success: true,
+      data: null,
+    });
+  }
+);
+
 export default router;
