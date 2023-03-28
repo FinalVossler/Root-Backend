@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
-import adminProtectMiddleware from "../../middleware/adminProtectMiddleware";
+import superAdminProtectMiddleware from "../../middleware/superAdminProtectMiddleware";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import EntityCreateCommand from "./dto/EntityCreateCommand";
 import EntityReadDto, { toReadDto } from "./dto/EntityReadDto";
@@ -19,7 +19,7 @@ const router = Router();
 router.post(
   "/",
   protectMiddleware,
-  adminProtectMiddleware,
+  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, EntityCreateCommand, any>,
     res: Response<ResponseDto<EntityReadDto>>
@@ -42,7 +42,7 @@ router.post(
 router.put(
   "/",
   protectMiddleware,
-  adminProtectMiddleware,
+  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, EntityUpdateCommand, any>,
     res: Response<ResponseDto<EntityReadDto>>
@@ -83,7 +83,7 @@ router.post(
 router.delete(
   "/",
   protectMiddleware,
-  adminProtectMiddleware,
+  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, mongoose.ObjectId[], any>,
     res: Response<ResponseDto<void>>

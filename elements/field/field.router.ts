@@ -5,7 +5,7 @@ import ResponseDto from "../../globalTypes/ResponseDto";
 import { IField } from "./field.model";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
 import { Role } from "../user/user.model";
-import adminProtectMiddleware from "../../middleware/adminProtectMiddleware";
+import superAdminProtectMiddleware from "../../middleware/superAdminProtectMiddleware";
 import FieldCreateCommand from "./dto/FieldCreateCommand";
 import fieldService from "./field.service";
 import FieldReadDto, { toReadDto } from "./dto/FieldReadDto";
@@ -20,7 +20,7 @@ const router = Router();
 router.post(
   "/",
   protectMiddleware,
-  adminProtectMiddleware,
+  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, FieldCreateCommand, any>,
     res: Response<ResponseDto<FieldReadDto>>
@@ -41,7 +41,7 @@ router.post(
 router.put(
   "/",
   protectMiddleware,
-  adminProtectMiddleware,
+  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, FieldUpdateCommand, any>,
     res: Response<ResponseDto<FieldReadDto>>
@@ -79,7 +79,7 @@ router.post(
 router.delete(
   "/",
   protectMiddleware,
-  adminProtectMiddleware,
+  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, mongoose.ObjectId[], any>,
     res: Response<ResponseDto<void>>

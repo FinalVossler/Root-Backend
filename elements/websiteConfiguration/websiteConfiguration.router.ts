@@ -2,7 +2,7 @@ import express, { Response } from "express";
 
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
-import adminProtectMiddleware from "../../middleware/adminProtectMiddleware";
+import superAdminProtectMiddleware from "../../middleware/superAdminProtectMiddleware";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import WebsiteConfigurationReadDto, {
   toReadDto,
@@ -16,7 +16,7 @@ const router = express.Router();
 router.post(
   "/update",
   protectMiddleware,
-  adminProtectMiddleware,
+  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, WebsiteConfigurationUpdateCommand, any>,
     res: Response<ResponseDto<WebsiteConfigurationReadDto>>

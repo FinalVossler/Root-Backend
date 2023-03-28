@@ -2,7 +2,7 @@ import express, { Response } from "express";
 
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
-import adminProtectMiddleware from "../../middleware/adminProtectMiddleware";
+import superAdminProtectMiddleware from "../../middleware/superAdminProtectMiddleware";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import { Role } from "../user/user.model";
 import PageCreateCommand from "./dto/PageCreateCommand";
@@ -31,7 +31,7 @@ router.get(
 router.post(
   "/",
   protectMiddleware,
-  adminProtectMiddleware,
+  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, PageCreateCommand, any>,
     res: Response<ResponseDto<PageReadDto>>
@@ -56,7 +56,7 @@ router.post(
 router.put(
   "/",
   protectMiddleware,
-  adminProtectMiddleware,
+  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, PageUpdateCommand, any>,
     res: Response<ResponseDto<PageReadDto>>

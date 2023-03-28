@@ -1,7 +1,6 @@
 import express, { Response } from "express";
 
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
-import PaginationCommand from "../../globalTypes/PaginationCommand";
 import ResponseDto from "../../globalTypes/ResponseDto";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import FileGetUnownedAndSelectedFilesCommand from "./dto/FileGetUnownedAndSelectedFilesCommand";

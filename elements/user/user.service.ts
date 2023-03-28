@@ -11,6 +11,8 @@ import UserUpdateProfilePictureCommand from "./dtos/UserUpdateProfilePictureComm
 import emailService from "../email/email.service";
 import UserChangePasswordCommand from "./dtos/UserChangePasswordCommand";
 import UserForgotPasswordChangePasswordCommand from "./dtos/UserForgotPasswordChangePasswordCommand";
+import UserCreateCommand from "./dtos/UserCreateCommand";
+import UsersGetCommand from "./dtos/UsersGetCommand";
 
 const userService = {
   generatePasswordHash: async (password: string): Promise<string> => {
@@ -167,6 +169,21 @@ const userService = {
     } catch (_) {
       throw new Error("Token expired");
     }
+  },
+  createUser: async (command: UserCreateCommand): Promise<IUser> => {
+    const user: IUser = await userRepository.create(command);
+
+    return user;
+  },
+  getUsers: async (
+    command: UsersGetCommand
+  ): Promise<{ users: IUser[]; total: number }> => {
+    const { users, total } = await userRepository.getUsers(command);
+
+    return { users, total };
+  },
+  deleteUsers: async (usersIds: mongoose.ObjectId[]): Promise<void> => {
+    await userRepository.deleteUsers(usersIds);
   },
 };
 

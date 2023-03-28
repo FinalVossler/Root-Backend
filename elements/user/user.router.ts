@@ -12,6 +12,11 @@ import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import { IFile } from "../file/file.model";
 import UserChangePasswordCommand from "./dtos/UserChangePasswordCommand";
 import UserForgotPasswordChangePasswordCommand from "./dtos/UserForgotPasswordChangePasswordCommand";
+import superAdminProtectMiddleware from "../../middleware/superAdminProtectMiddleware";
+import UserCreateCommand from "./dtos/UserCreateCommand";
+import UsersGetCommand from "./dtos/UsersGetCommand";
+import PaginationResponse from "../../globalTypes/PaginationResponse";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -108,7 +113,10 @@ router.put(
   ) => {
     const command: UserUpdateCommand = req.body;
     const user: IUser = req.user;
-    if (user._id.toString() !== command._id.toString()) {
+    if (
+      user.role !== Role.SuperAdmin &&
+      user._id.toString() !== command._id.toString()
+    ) {
       throw new Error("Unauthorized to update user");
     }
     const updatedUser: IUser = await userService.update(command);
@@ -219,6 +227,63 @@ router.post(
     await userService.verifyfPasswordToken(passwordToken, req.user);
 
     return res.status(200).json({
+      success: true,
+      data: null,
+    });
+  }
+);
+
+router.post(
+  "/",
+  protectMiddleware,
+  superAdminProtectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, UserCreateCommand, any>,
+    res: Response<ResponseDto<UserReadDto>>
+  ) => {
+    const command: UserCreateCommand = req.body;
+    const user: IUser = await userService.createUser(command);
+
+    return res.status(200).send({
+      success: true,
+      data: toReadDto(user),
+    });
+  }
+);
+
+router.post(
+  "/getUsers",
+  protectMiddleware,
+  superAdminProtectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, UsersGetCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<UserReadDto>>>
+  ) => {
+    const command: UsersGetCommand = req.body;
+    const { users, total } = await userService.getUsers(command);
+
+    return res.status(200).send({
+      success: true,
+      data: {
+        data: users.map((p) => toReadDto(p)),
+        total,
+      },
+    });
+  }
+);
+
+router.delete(
+  "/",
+  protectMiddleware,
+  superAdminProtectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, mongoose.ObjectId[], any>,
+    res: Response<ResponseDto<void>>
+  ) => {
+    const usersIds: mongoose.ObjectId[] = req.body;
+    await userService.deleteUsers(usersIds);
+
+    return res.status(200).send({
       success: true,
       data: null,
     });

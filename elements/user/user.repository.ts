@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 
 import UserUpdateProfilePictureCommand from "./dtos/UserUpdateProfilePictureCommand";
 import UserRegisterCommand from "./dtos/UserRegisterCommand";
@@ -7,7 +7,8 @@ import fileRepository from "../file/file.repository";
 
 import User, { IUser } from "./user.model";
 import { IFile } from "../file/file.model";
-import UserChangePasswordCommand from "./dtos/UserChangePasswordCommand";
+import UserCreateCommand from "./dtos/UserCreateCommand";
+import UsersGetCommand from "./dtos/UsersGetCommand";
 
 const userRepository = {
   get: async (currentUserId?: ObjectId): Promise<IUser[]> => {
@@ -42,7 +43,11 @@ const userRepository = {
   update: async (command: UserUpdateCommand): Promise<IUser> => {
     await User.updateOne(
       { _id: command._id },
-      { firstName: command.firstName, lastName: command.lastName }
+      {
+        firstName: command.firstName,
+        lastName: command.lastName,
+        email: command.email,
+      }
     ).exec();
 
     const user: IUser = await userRepository.getbyId(command._id);
@@ -89,6 +94,37 @@ const userRepository = {
         },
       }
     );
+  },
+  create: async (command: UserCreateCommand): Promise<IUser> => {
+    const user: IUser = await User.create({
+      firstName: command.firstName,
+      lastName: command.lastName,
+      email: command.email,
+    });
+
+    return await userRepository.getbyId(user._id);
+  },
+  getUsers: async (
+    command: UsersGetCommand
+  ): Promise<{ total: number; users: IUser[] }> => {
+    const users: IUser[] = await User.find({})
+      .sort({ createdAt: -1 })
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .exec();
+
+    const total: number = await User.find({}).count();
+
+    return { users, total };
+  },
+  deleteUsers: async (usersIds: mongoose.ObjectId[]): Promise<void> => {
+    for (let i = 0; i < usersIds.length; i++) {
+      await User.deleteOne({ _id: usersIds[i] });
+    }
+
+    return null;
   },
 };
 
