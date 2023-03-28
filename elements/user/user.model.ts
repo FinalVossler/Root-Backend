@@ -16,6 +16,7 @@ export interface IUser {
   password: string;
   role: Role;
   profilePicture: IFile;
+  passwordChangeToken: string;
 }
 
 interface IUserModel extends mongoose.Model<IUser> {}
@@ -51,6 +52,10 @@ const UserSchema = new mongoose.Schema<IUser>(
       ref: File.modelName,
       required: false,
       default: null,
+    },
+    passwordChangeToken: {
+      type: mongoose.SchemaTypes.String,
+      required: false,
     },
   },
   {

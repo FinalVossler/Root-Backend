@@ -1,5 +1,5 @@
-import { decode, sign } from "jsonwebtoken";
-import { compare } from "bcrypt";
+import { decode, sign, verify } from "jsonwebtoken";
+import { compare, genSalt, hash } from "bcrypt";
 
 import UserRegisterCommand from "./dtos/UserRegisterCommand";
 import UserLoginCommand from "./dtos/UserLoginCommand";
@@ -9,9 +9,17 @@ import UserUpdateCommand from "./dtos/UserUpdateCommand";
 import mongoose, { ObjectId } from "mongoose";
 import UserUpdateProfilePictureCommand from "./dtos/UserUpdateProfilePictureCommand";
 import emailService from "../email/email.service";
-import EmailSendCommand from "../email/dto/EmailSendCommand";
+import UserChangePasswordCommand from "./dtos/UserChangePasswordCommand";
+import UserForgotPasswordChangePasswordCommand from "./dtos/UserForgotPasswordChangePasswordCommand";
 
 const userService = {
+  generatePasswordHash: async (password: string): Promise<string> => {
+    const salt: string = await genSalt(10);
+
+    const passwordHash: string = await hash(password, salt);
+
+    return passwordHash;
+  },
   get: async (currentUserId?: ObjectId): Promise<IUser[]> => {
     const users: IUser[] = await userRepository.get(currentUserId);
 
@@ -93,10 +101,72 @@ const userService = {
 
     return token;
   },
-  sendChangePasswordEmail: async (currentUser: IUser) => {
+  sendChangePasswordEmail: async (userEmail: string) => {
+    const currentUser: IUser = await userRepository.getByEmail(userEmail);
+
+    if (!currentUser) {
+      throw new Error("User doesn't exist");
+    }
+
     const token = await userService.generateToken(currentUser);
 
+    await userRepository.setPasswordChangeToken(token, currentUser);
+
     await emailService.sendChangePasswordEmail(currentUser, token);
+  },
+  changePassword: async (
+    command: UserChangePasswordCommand,
+    currentUser: IUser
+  ): Promise<void> => {
+    const validOldPassword: boolean = await compare(
+      command.oldPassword,
+      currentUser.password
+    );
+
+    if (!validOldPassword) {
+      throw new Error("Invalid old password");
+    }
+
+    const newPasswordHash: string = await userService.generatePasswordHash(
+      command.newPassword
+    );
+
+    await userRepository.changePassword(newPasswordHash, currentUser);
+  },
+  forgotPasswordChangePassword: async (
+    command: UserForgotPasswordChangePasswordCommand
+  ): Promise<void> => {
+    const currentUser: IUser = await userService.getByToken(command.token);
+
+    if (!currentUser) {
+      throw new Error("User doesn't exist");
+    }
+
+    if (command.token !== currentUser.passwordChangeToken) {
+      throw new Error("Invalid or expired token");
+    }
+
+    const newPasswordHash: string = await userService.generatePasswordHash(
+      command.newPassword
+    );
+
+    await userRepository.changePassword(newPasswordHash, currentUser);
+
+    await userRepository.setPasswordChangeToken("", currentUser);
+  },
+  verifyfPasswordToken: async (token: string, currentUser: IUser) => {
+    if (token !== currentUser.passwordChangeToken) {
+      throw new Error("Token expired");
+    }
+
+    // @ts-ignore
+    const secret: string = process.env.JWT_SECRET;
+
+    try {
+      verify(token, secret);
+    } catch (_) {
+      throw new Error("Token expired");
+    }
   },
 };
 

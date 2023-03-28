@@ -7,6 +7,7 @@ import fileRepository from "../file/file.repository";
 
 import User, { IUser } from "./user.model";
 import { IFile } from "../file/file.model";
+import UserChangePasswordCommand from "./dtos/UserChangePasswordCommand";
 
 const userRepository = {
   get: async (currentUserId?: ObjectId): Promise<IUser[]> => {
@@ -66,6 +67,28 @@ const userRepository = {
     const user: IUser = (await userRepository.getbyId(command.userId)) as IUser;
 
     return user;
+  },
+  setPasswordChangeToken: async (
+    token: string,
+    currentUser: IUser
+  ): Promise<void> => {
+    await User.updateOne(
+      { _id: currentUser._id },
+      { $set: { passwordChangeToken: token } }
+    );
+  },
+  changePassword: async (
+    newPasswordHash: string,
+    currentUser: IUser
+  ): Promise<void> => {
+    await User.updateOne(
+      { _id: currentUser._id },
+      {
+        $set: {
+          password: newPasswordHash,
+        },
+      }
+    );
   },
 };
 

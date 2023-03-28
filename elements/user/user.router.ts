@@ -1,4 +1,4 @@
-import express, { Response, Request, json } from "express";
+import express, { Response, Request } from "express";
 
 import ResponseDto from "../../globalTypes/ResponseDto";
 import UserLoginCommand from "./dtos/UserLoginCommand";
@@ -10,6 +10,8 @@ import { IUser, Role } from "./user.model";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import { IFile } from "../file/file.model";
+import UserChangePasswordCommand from "./dtos/UserChangePasswordCommand";
+import UserForgotPasswordChangePasswordCommand from "./dtos/UserForgotPasswordChangePasswordCommand";
 
 const router = express.Router();
 
@@ -144,18 +146,77 @@ router.put(
 );
 
 router.post(
-  "/sendChangePasswordEmail",
+  "/sendChangePasswordRequest",
+  async (
+    req: Request<any, ResponseDto<void>, { email }, any>,
+    res: Response<ResponseDto<void>>
+  ) => {
+    const userEmail: string = req.body.email;
+
+    await userService.sendChangePasswordEmail(userEmail);
+
+    return res.status(200).json({
+      success: true,
+      data: null,
+    });
+  }
+);
+
+router.post(
+  "/changePassword",
   protectMiddleware,
   async (
     req: ConnectedRequest<
       any,
-      ResponseDto<{ token: string; expiresIn: string; user: UserReadDto }>,
-      UserRegisterCommand,
+      ResponseDto<void>,
+      UserChangePasswordCommand,
       any
     >,
     res: Response<ResponseDto<void>>
   ) => {
-    await userService.sendChangePasswordEmail(req.user);
+    const command: UserChangePasswordCommand = req.body;
+
+    await userService.changePassword(command, req.user);
+
+    return res.status(200).json({
+      success: true,
+      data: null,
+    });
+  }
+);
+
+router.post(
+  "/forgotPasswordChangePassword",
+  async (
+    req: Request<
+      any,
+      ResponseDto<void>,
+      UserForgotPasswordChangePasswordCommand,
+      any
+    >,
+    res: Response<ResponseDto<void>>
+  ) => {
+    const command: UserForgotPasswordChangePasswordCommand = req.body;
+
+    await userService.forgotPasswordChangePassword(command);
+
+    return res.status(200).json({
+      success: true,
+      data: null,
+    });
+  }
+);
+
+router.post(
+  "/verifyPasswordToken",
+  protectMiddleware,
+  async (
+    req: ConnectedRequest<any, ResponseDto<void>, string, any>,
+    res: Response<ResponseDto<void>>
+  ) => {
+    const passwordToken: string = req.body;
+
+    await userService.verifyfPasswordToken(passwordToken, req.user);
 
     return res.status(200).json({
       success: true,
