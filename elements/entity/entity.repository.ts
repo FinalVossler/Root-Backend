@@ -15,15 +15,13 @@ import { IUser } from "../user/user.model";
 
 const entityRepository = {
   combineEntityFieldValuesNewFilesAndSelectedOwnFiles: async (
-    entityFieldValues: EntityFieldValueCommand[],
-    currentUser: IUser
+    entityFieldValues: EntityFieldValueCommand[]
   ) => {
     const createFilesPromises: Promise<IFile[]>[] = [];
     entityFieldValues.forEach(async (entityFieldValue) => {
       const promise: Promise<IFile[]> = new Promise(async (resolve, reject) => {
         const createdFiles: IFile[] = await fileRepository.createFiles(
-          entityFieldValue.files.filter((el) => !el._id),
-          currentUser
+          entityFieldValue.files.filter((el) => !el._id)
         );
 
         const allFiles = createdFiles.concat(
@@ -45,8 +43,7 @@ const entityRepository = {
     currentUser: IUser
   ): Promise<IEntity> => {
     await entityRepository.combineEntityFieldValuesNewFilesAndSelectedOwnFiles(
-      command.entityFieldValues,
-      currentUser
+      command.entityFieldValues
     );
 
     const entity = await Entity.create({
@@ -69,8 +66,7 @@ const entityRepository = {
     );
 
     await entityRepository.combineEntityFieldValuesNewFilesAndSelectedOwnFiles(
-      command.entityFieldValues,
-      currentUser
+      command.entityFieldValues
     );
 
     await Entity.updateOne(

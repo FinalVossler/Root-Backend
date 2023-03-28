@@ -27,7 +27,7 @@ const websiteConfigurationRepository = {
 
     let tabIcon = command.tabIcon;
     if (command.tabIcon && !command.tabIcon._id) {
-      tabIcon = await fileRepository.create(command.tabIcon, currentUser);
+      tabIcon = await fileRepository.create(command.tabIcon);
     }
 
     await WebsiteConfiguration.updateOne(
