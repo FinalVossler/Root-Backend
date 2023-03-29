@@ -132,6 +132,10 @@ const postRepository = {
   delete: async (postId: string): Promise<void> => {
     return await Post.remove({ _id: postId });
   },
+
+  deleteUserPosts: async (userId: string): Promise<void> => {
+    return await Post.remove({ posterId: userId });
+  },
 };
 
 const populationOptions = [

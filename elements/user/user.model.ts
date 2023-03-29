@@ -2,6 +2,9 @@ import mongoose from "mongoose";
 import { genSalt, hash } from "bcrypt";
 
 import File, { IFile } from "../file/file.model";
+import Post from "../post/post.model";
+import postRepository from "../post/post.repository";
+import fileRepository from "../file/file.repository";
 
 export enum Role {
   SuperAdmin = "SuperAdmin",
@@ -66,6 +69,15 @@ const UserSchema = new mongoose.Schema<IUser>(
 UserSchema.pre("save", async function (next) {
   const salt: string = await genSalt(10);
   this.password = await hash(this.password, salt);
+
+  next();
+});
+
+UserSchema.pre("deleteOne", async function (next) {
+  const user: IUser = (await this.model.findOne(this.getQuery())) as IUser;
+
+  await postRepository.deleteUserPosts(user._id.toString());
+  await fileRepository.deleteUserFiles(user._id.toString());
 
   next();
 });

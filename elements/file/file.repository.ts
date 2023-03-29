@@ -88,6 +88,9 @@ const fileRepository = {
 
     return createdFiles;
   },
+  deleteUserFiles: async (userId: string) => {
+    await File.deleteMany({ ownerId: userId });
+  },
 };
 
 export default fileRepository;

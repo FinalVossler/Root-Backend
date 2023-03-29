@@ -57,7 +57,7 @@ const PostSchema = new mongoose.Schema<IPost>(
     },
     posterId: {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: User.name,
+      ref: "user",
       required: true,
     },
     content: {

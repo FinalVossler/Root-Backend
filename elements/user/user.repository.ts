@@ -100,6 +100,7 @@ const userRepository = {
       firstName: command.firstName,
       lastName: command.lastName,
       email: command.email,
+      password: command.password,
     });
 
     return await userRepository.getbyId(user._id);
