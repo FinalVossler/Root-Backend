@@ -11,7 +11,7 @@ import UserCreateCommand from "./dtos/UserCreateCommand";
 import UsersGetCommand from "./dtos/UsersGetCommand";
 
 const userRepository = {
-  get: async (currentUserId?: ObjectId): Promise<IUser[]> => {
+  get: async (currentUserId?: string): Promise<IUser[]> => {
     const users: IUser[] = (await User.find({
       _id: { $nin: [currentUserId] },
     }).populate("profilePicture")) as IUser[];
@@ -23,10 +23,10 @@ const userRepository = {
 
     return user;
   },
-  getbyId: async (id: ObjectId): Promise<IUser> => {
-    const user: IUser = (await User.findById(id).populate(
-      "profilePicture"
-    )) as IUser;
+  getById: async (id: string): Promise<IUser> => {
+    const user: IUser = (await User.findById(
+      new mongoose.Types.ObjectId(id)
+    ).populate("profilePicture")) as IUser;
 
     return user;
   },
@@ -50,7 +50,7 @@ const userRepository = {
       }
     ).exec();
 
-    const user: IUser = await userRepository.getbyId(command._id);
+    const user: IUser = await userRepository.getById(command._id.toString());
 
     return user;
   },
@@ -69,7 +69,9 @@ const userRepository = {
       { $set: { profilePicture: picture ? picture._id : command.picture } }
     );
 
-    const user: IUser = (await userRepository.getbyId(command.userId)) as IUser;
+    const user: IUser = (await userRepository.getById(
+      command.userId.toString()
+    )) as IUser;
 
     return user;
   },
@@ -103,7 +105,7 @@ const userRepository = {
       password: command.password,
     });
 
-    return await userRepository.getbyId(user._id);
+    return await userRepository.getById(user._id.toString());
   },
   getUsers: async (
     command: UsersGetCommand

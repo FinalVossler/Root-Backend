@@ -22,10 +22,15 @@ const userService = {
 
     return passwordHash;
   },
-  get: async (currentUserId?: ObjectId): Promise<IUser[]> => {
+  get: async (currentUserId?: string): Promise<IUser[]> => {
     const users: IUser[] = await userRepository.get(currentUserId);
 
     return users;
+  },
+  getById: async (userId?: string): Promise<IUser> => {
+    const user: IUser = await userRepository.getById(userId);
+
+    return user;
   },
   register: async (
     command: UserRegisterCommand
@@ -77,7 +82,7 @@ const userService = {
   getByToken: async (token: string): Promise<IUser> => {
     const signedUser: { _id: mongoose.ObjectId } = decode(token) as IUser;
 
-    const user: IUser = await userRepository.getbyId(signedUser._id);
+    const user: IUser = await userRepository.getById(signedUser._id.toString());
 
     return user;
   },

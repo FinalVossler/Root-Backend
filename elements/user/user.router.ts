@@ -1,4 +1,5 @@
 import express, { Response, Request } from "express";
+import mongoose from "mongoose";
 
 import ResponseDto from "../../globalTypes/ResponseDto";
 import UserLoginCommand from "./dtos/UserLoginCommand";
@@ -16,7 +17,6 @@ import superAdminProtectMiddleware from "../../middleware/superAdminProtectMiddl
 import UserCreateCommand from "./dtos/UserCreateCommand";
 import UsersGetCommand from "./dtos/UsersGetCommand";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
-import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -27,11 +27,26 @@ router.get(
     req: ConnectedRequest<any, any, any, any>,
     res: Response<ResponseDto<UserReadDto[]>>
   ) => {
-    const users: IUser[] = await userService.get(req.user?._id);
+    const users: IUser[] = await userService.get(req.user?._id.toString());
 
     return res.status(200).json({
       success: true,
       data: users.map((user) => toReadDto(user)),
+    });
+  }
+);
+
+router.get(
+  "/getUser",
+  async (
+    req: ConnectedRequest<any, any, any, { userId: string }>,
+    res: Response<ResponseDto<UserReadDto>>
+  ) => {
+    const user: IUser = await userService.getById(req.query.userId);
+
+    return res.status(200).json({
+      success: true,
+      data: toReadDto(user),
     });
   }
 );
