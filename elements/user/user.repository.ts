@@ -1,4 +1,4 @@
-import mongoose, { ObjectId } from "mongoose";
+import mongoose from "mongoose";
 
 import UserUpdateProfilePictureCommand from "./dtos/UserUpdateProfilePictureCommand";
 import UserRegisterCommand from "./dtos/UserRegisterCommand";
@@ -14,7 +14,7 @@ const userRepository = {
   get: async (currentUserId?: string): Promise<IUser[]> => {
     const users: IUser[] = (await User.find({
       _id: { $nin: [currentUserId] },
-    }).populate("profilePicture")) as IUser[];
+    }).populate(populationOptions)) as IUser[];
 
     return users;
   },
@@ -26,13 +26,13 @@ const userRepository = {
   getById: async (id: string): Promise<IUser> => {
     const user: IUser = (await User.findById(
       new mongoose.Types.ObjectId(id)
-    ).populate("profilePicture")) as IUser;
+    ).populate(populationOptions)) as IUser;
 
     return user;
   },
   getByEmail: async (email: string): Promise<IUser> => {
     const user: IUser = (await User.findOne({ email })
-      .populate("profilePicture")
+      .populate(populationOptions)
       .exec()) as IUser;
 
     return user;
@@ -47,6 +47,7 @@ const userRepository = {
         firstName: command.firstName,
         lastName: command.lastName,
         email: command.email,
+        role: command.roleId,
       }
     ).exec();
 
@@ -103,6 +104,7 @@ const userRepository = {
       lastName: command.lastName,
       email: command.email,
       password: command.password,
+      role: command.roleId,
     });
 
     return await userRepository.getById(user._id.toString());
@@ -116,6 +118,7 @@ const userRepository = {
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
       .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
       .exec();
 
     const total: number = await User.find({}).count();
@@ -130,5 +133,16 @@ const userRepository = {
     return null;
   },
 };
+
+const populationOptions = [
+  {
+    path: "profilePicture",
+    model: "file",
+  },
+  {
+    path: "role",
+    model: "role",
+  },
+];
 
 export default userRepository;

@@ -6,6 +6,7 @@ type UserUpdateCommand = {
   firstName: IUser["firstName"];
   lastName: IUser["lastName"];
   email: IUser["email"];
+  roleId?: string;
 };
 
 export default UserUpdateCommand;

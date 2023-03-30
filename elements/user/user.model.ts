@@ -5,6 +5,7 @@ import File, { IFile } from "../file/file.model";
 import Post from "../post/post.model";
 import postRepository from "../post/post.repository";
 import fileRepository from "../file/file.repository";
+import { IRole } from "../role/role.model";
 
 export enum SuperRole {
   SuperAdmin = "SuperAdmin",
@@ -20,6 +21,7 @@ export interface IUser {
   superRole: SuperRole;
   profilePicture: IFile;
   passwordChangeToken: string;
+  role?: IRole;
 }
 
 interface IUserModel extends mongoose.Model<IUser> {}
@@ -58,6 +60,11 @@ const UserSchema = new mongoose.Schema<IUser>(
     },
     passwordChangeToken: {
       type: mongoose.SchemaTypes.String,
+      required: false,
+    },
+    role: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "role",
       required: false,
     },
   },

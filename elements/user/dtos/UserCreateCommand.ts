@@ -3,6 +3,7 @@ export type UserCreateCommand = {
   lastName: string;
   email: string;
   password: string;
+  roleId?: string;
 };
 
 export default UserCreateCommand;

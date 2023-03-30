@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+import RoleReadDto, {
+  toReadDto as roleReadDto,
+} from "../../role/dto/RoleReadDto";
 
 import { IUser } from "../user.model";
 
@@ -9,6 +12,7 @@ type UserReadDto = {
   email: IUser["email"];
   profilePicture: IUser["profilePicture"];
   superRole: IUser["superRole"];
+  role?: RoleReadDto;
 };
 
 export const toReadDto = (user: IUser): UserReadDto => {
@@ -19,6 +23,7 @@ export const toReadDto = (user: IUser): UserReadDto => {
     email: user.email,
     profilePicture: user.profilePicture,
     superRole: user.superRole,
+    role: roleReadDto(user.role),
   };
 };
 
