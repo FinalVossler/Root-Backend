@@ -6,7 +6,7 @@ import Post from "../post/post.model";
 import postRepository from "../post/post.repository";
 import fileRepository from "../file/file.repository";
 
-export enum Role {
+export enum SuperRole {
   SuperAdmin = "SuperAdmin",
   Normal = "Normal",
 }
@@ -17,7 +17,7 @@ export interface IUser {
   lastName: string;
   email: string;
   password: string;
-  role: Role;
+  superRole: SuperRole;
   profilePicture: IFile;
   passwordChangeToken: string;
 }
@@ -45,10 +45,10 @@ const UserSchema = new mongoose.Schema<IUser>(
       type: mongoose.SchemaTypes.String,
       required: [true, "Please provide a password"],
     },
-    role: {
+    superRole: {
       type: mongoose.SchemaTypes.String,
       required: false,
-      default: Role.Normal,
+      default: SuperRole.Normal,
     },
     profilePicture: {
       type: mongoose.SchemaTypes.ObjectId,

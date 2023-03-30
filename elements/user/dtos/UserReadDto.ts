@@ -8,7 +8,7 @@ type UserReadDto = {
   lastName: IUser["lastName"];
   email: IUser["email"];
   profilePicture: IUser["profilePicture"];
-  role: IUser["role"];
+  superRole: IUser["superRole"];
 };
 
 export const toReadDto = (user: IUser): UserReadDto => {
@@ -18,7 +18,7 @@ export const toReadDto = (user: IUser): UserReadDto => {
     lastName: user.lastName,
     email: user.email,
     profilePicture: user.profilePicture,
-    role: user.role,
+    superRole: user.superRole,
   };
 };
 

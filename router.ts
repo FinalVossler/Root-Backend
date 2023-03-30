@@ -10,6 +10,7 @@ import emailRouter from "./elements/email/email.router";
 import fieldRouter from "./elements/field/field.router";
 import modelRouter from "./elements/model/model.router";
 import entityRouter from "./elements/entity/entity.router";
+import roleRouter from "./elements/role/role.router";
 
 const router = Router();
 
@@ -23,6 +24,7 @@ router.use("/emails", emailRouter);
 router.use("/fields", fieldRouter);
 router.use("/models", modelRouter);
 router.use("/entities", entityRouter);
+router.use("/roles", roleRouter);
 
 router.use("/", (req: Request, res: Response) => {
   res.status(200).send("Hello!");

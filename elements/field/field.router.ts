@@ -4,7 +4,7 @@ import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
 import { IField } from "./field.model";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
-import { Role } from "../user/user.model";
+import { SuperRole } from "../user/user.model";
 import superAdminProtectMiddleware from "../../middleware/superAdminProtectMiddleware";
 import FieldCreateCommand from "./dto/FieldCreateCommand";
 import fieldService from "./field.service";
@@ -26,7 +26,7 @@ router.post(
     res: Response<ResponseDto<FieldReadDto>>
   ) => {
     const command: FieldCreateCommand = req.body;
-    if (req.user.role !== Role.SuperAdmin) {
+    if (req.user.superRole !== SuperRole.SuperAdmin) {
       throw new Error("Unauthorized to create field");
     }
     const field: IField = await fieldService.createField(command);

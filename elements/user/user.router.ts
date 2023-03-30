@@ -7,7 +7,7 @@ import UserRegisterCommand from "./dtos/UserRegisterCommand";
 import userService from "./user.service";
 import UserReadDto, { toReadDto } from "./dtos/UserReadDto";
 import UserUpdateCommand from "./dtos/UserUpdateCommand";
-import { IUser, Role } from "./user.model";
+import { IUser, SuperRole } from "./user.model";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import { IFile } from "../file/file.model";
@@ -129,7 +129,7 @@ router.put(
     const command: UserUpdateCommand = req.body;
     const user: IUser = req.user;
     if (
-      user.role !== Role.SuperAdmin &&
+      user.superRole !== SuperRole.SuperAdmin &&
       user._id.toString() !== command._id.toString()
     ) {
       throw new Error("Unauthorized to update user");

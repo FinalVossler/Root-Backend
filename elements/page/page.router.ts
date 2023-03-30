@@ -4,7 +4,7 @@ import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
 import superAdminProtectMiddleware from "../../middleware/superAdminProtectMiddleware";
 import protectMiddleware from "../../middleware/protectMiddleware";
-import { Role } from "../user/user.model";
+import { SuperRole } from "../user/user.model";
 import PageCreateCommand from "./dto/PageCreateCommand";
 import PageReadDto, { toReadDto } from "./dto/PageReadDto";
 import PageUpdateCommand from "./dto/PageUpdateCommand";
@@ -36,7 +36,7 @@ router.post(
     req: ConnectedRequest<any, any, PageCreateCommand, any>,
     res: Response<ResponseDto<PageReadDto>>
   ) => {
-    if (req.user.role !== Role.SuperAdmin) {
+    if (req.user.superRole !== SuperRole.SuperAdmin) {
       throw new Error(
         "Trying to create a page with a user who isn't an admin. That's not possible"
       );
@@ -61,7 +61,7 @@ router.put(
     req: ConnectedRequest<any, any, PageUpdateCommand, any>,
     res: Response<ResponseDto<PageReadDto>>
   ) => {
-    if (req.user.role !== Role.SuperAdmin) {
+    if (req.user.superRole !== SuperRole.SuperAdmin) {
       throw new Error(
         "Trying to update a page with a user who isn't an admin. That's not possible"
       );
@@ -85,7 +85,8 @@ router.delete(
     req: ConnectedRequest<any, any, any, { pageId: string }>,
     res: Response<ResponseDto<void>>
   ) => {
-    if (req.user.role !== Role.SuperAdmin) throw new Error("Unauthorized");
+    if (req.user.superRole !== SuperRole.SuperAdmin)
+      throw new Error("Unauthorized");
 
     const pageId: string = req.query.pageId;
 
