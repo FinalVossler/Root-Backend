@@ -9,6 +9,7 @@ import User, { IUser } from "./user.model";
 import { IFile } from "../file/file.model";
 import UserCreateCommand from "./dtos/UserCreateCommand";
 import UsersGetCommand from "./dtos/UsersGetCommand";
+import UsersSearchCommand from "./dtos/UsersSearchCommand";
 
 const userRepository = {
   get: async (currentUserId?: string): Promise<IUser[]> => {
@@ -131,6 +132,32 @@ const userRepository = {
     }
 
     return null;
+  },
+  search: async (
+    command: UsersSearchCommand
+  ): Promise<{ users: IUser[]; total: number }> => {
+    const query = User.find({
+      $or: [
+        { firstName: { $regex: command.firstNameOrLastName } },
+        { lastName: { $regex: command.firstNameOrLastName } },
+      ],
+    });
+
+    const users: IUser[] = await query
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions);
+
+    const total = await User.find({
+      $or: [
+        { firstName: { $regex: command.firstNameOrLastName } },
+        { lastName: { $regex: command.firstNameOrLastName } },
+      ],
+    }).count();
+
+    return { users, total };
   },
 };
 

@@ -17,6 +17,7 @@ import superAdminProtectMiddleware from "../../middleware/superAdminProtectMiddl
 import UserCreateCommand from "./dtos/UserCreateCommand";
 import UsersGetCommand from "./dtos/UsersGetCommand";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
+import UsersSearchCommand from "./dtos/UsersSearchCommand";
 
 const router = express.Router();
 
@@ -301,6 +302,26 @@ router.delete(
     return res.status(200).send({
       success: true,
       data: null,
+    });
+  }
+);
+
+router.post(
+  "/search",
+  async (
+    req: ConnectedRequest<any, any, UsersSearchCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<UserReadDto>>>
+  ) => {
+    const command: UsersSearchCommand = req.body;
+
+    const { users, total } = await userService.search(command);
+
+    return res.status(200).send({
+      success: true,
+      data: {
+        data: users.map((p) => toReadDto(p)),
+        total,
+      },
     });
   }
 );

@@ -13,6 +13,7 @@ import UserChangePasswordCommand from "./dtos/UserChangePasswordCommand";
 import UserForgotPasswordChangePasswordCommand from "./dtos/UserForgotPasswordChangePasswordCommand";
 import UserCreateCommand from "./dtos/UserCreateCommand";
 import UsersGetCommand from "./dtos/UsersGetCommand";
+import UsersSearchCommand from "./dtos/UsersSearchCommand";
 
 const userService = {
   generatePasswordHash: async (password: string): Promise<string> => {
@@ -189,6 +190,13 @@ const userService = {
   },
   deleteUsers: async (usersIds: mongoose.ObjectId[]): Promise<void> => {
     await userRepository.deleteUsers(usersIds);
+  },
+  search: async (
+    command: UsersSearchCommand
+  ): Promise<{ users: IUser[]; total: number }> => {
+    const { users, total } = await userRepository.search(command);
+
+    return { users, total };
   },
 };
 

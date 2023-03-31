@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import ModelCreateCommand from "./dto/ModelCreateCommand";
 import ModelsGetCommand from "./dto/ModelsGetCommand";
+import ModelsSearchCommand from "./dto/ModelsSearchCommand";
 import ModelUpdateCommand from "./dto/ModelUpdateCommand";
 import { IModel } from "./model.model";
 import modelRepository from "./model.repository";
@@ -25,6 +26,13 @@ const modelSerivce = {
   },
   deleteModels: async (modelsIds: mongoose.ObjectId[]): Promise<void> => {
     await modelRepository.deleteModels(modelsIds);
+  },
+  search: async (
+    command: ModelsSearchCommand
+  ): Promise<{ models: IModel[]; total: number }> => {
+    const { models, total } = await modelRepository.search(command);
+
+    return { models, total };
   },
 };
 

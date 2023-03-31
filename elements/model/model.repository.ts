@@ -6,6 +6,7 @@ import ModelCreateCommand from "./dto/ModelCreateCommand";
 import ModelUpdateCommand from "./dto/ModelUpdateCommand";
 import ModelsGetCommand from "./dto/ModelsGetCommand";
 import Field from "../field/field.model";
+import ModelsSearchCommand from "./dto/ModelsSearchCommand";
 
 const modelRepository = {
   create: async (command: ModelCreateCommand): Promise<IModel> => {
@@ -57,6 +58,26 @@ const modelRepository = {
   },
   deleteModels: async (modelsIds: mongoose.ObjectId[]): Promise<void> => {
     await Model.deleteMany({ _id: { $in: modelsIds } });
+  },
+  search: async (
+    command: ModelsSearchCommand
+  ): Promise<{ models: IModel[]; total: number }> => {
+    const query = Model.find({
+      name: { $elemMatch: { text: { $regex: command.name } } },
+    });
+
+    const models: IModel[] = await query
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions);
+
+    const total = await Model.find({
+      name: { $elemMatch: { text: { $regex: command.name } } },
+    }).count();
+
+    return { models, total };
   },
 };
 

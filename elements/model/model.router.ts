@@ -13,6 +13,7 @@ import modelSerivce from "./model.service";
 import ModelReadDto, { toReadDto } from "./dto/ModelReadDto";
 import ModelUpdateCommand from "./dto/ModelUpdateCommand";
 import ModelsGetCommand from "./dto/ModelsGetCommand";
+import ModelsSearchCommand from "./dto/ModelsSearchCommand";
 
 const router = Router();
 
@@ -85,6 +86,26 @@ router.delete(
     return res.status(200).send({
       success: true,
       data: null,
+    });
+  }
+);
+
+router.post(
+  "/search",
+  async (
+    req: ConnectedRequest<any, any, ModelsSearchCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<ModelReadDto>>>
+  ) => {
+    const command: ModelsSearchCommand = req.body;
+
+    const { models, total } = await fieldService.search(command);
+
+    return res.status(200).send({
+      success: true,
+      data: {
+        data: models.map((p) => toReadDto(p)),
+        total,
+      },
     });
   }
 );
