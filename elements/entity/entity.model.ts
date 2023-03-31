@@ -27,6 +27,7 @@ const EntitySchema = new mongoose.Schema<IEntity>(
     model: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: Model.modelName,
+      index: true,
     },
     entityFieldValues: [
       {
