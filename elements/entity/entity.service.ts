@@ -6,6 +6,7 @@ import entityRepository from "./entity.repository";
 import EntityCreateCommand from "./dto/EntityCreateCommand";
 import EntityUpdateCommand from "./dto/EntityUpdateCommand";
 import { IUser } from "../user/user.model";
+import EntitiesSearchCommand from "./dto/EntitiesSearchCommand";
 
 const entityService = {
   createEntity: async (
@@ -35,6 +36,13 @@ const entityService = {
   },
   deleteEntities: async (entitiesIds: mongoose.ObjectId[]): Promise<void> => {
     await entityRepository.deleteEntities(entitiesIds);
+  },
+  search: async (
+    command: EntitiesSearchCommand
+  ): Promise<{ entities: IEntity[]; total: number }> => {
+    const { entities, total } = await entityRepository.search(command);
+
+    return { entities, total };
   },
 };
 

@@ -13,6 +13,7 @@ import { IEntity } from "./entity.model";
 import EntityUpdateCommand from "./dto/EntityUpdateCommand";
 import EntitiesGetCommand from "./dto/EntitiesGetCommand";
 import { IUser } from "../user/user.model";
+import EntitiesSearchCommand from "./dto/EntitiesSearchCommand";
 
 const router = Router();
 
@@ -94,6 +95,26 @@ router.delete(
     return res.status(200).send({
       success: true,
       data: null,
+    });
+  }
+);
+
+router.post(
+  "/search",
+  async (
+    req: ConnectedRequest<any, any, EntitiesSearchCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<EntityReadDto>>>
+  ) => {
+    const command: EntitiesSearchCommand = req.body;
+
+    const { entities, total } = await entityService.search(command);
+
+    return res.status(200).send({
+      success: true,
+      data: {
+        data: entities.map((p) => toReadDto(p)),
+        total,
+      },
     });
   }
 );

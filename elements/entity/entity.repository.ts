@@ -12,6 +12,7 @@ import EntityUpdateCommand from "./dto/EntityUpdateCommand";
 import EntitiesGetCommand from "./dto/EntitiesGetCommand";
 import fileRepository from "../file/file.repository";
 import { IUser } from "../user/user.model";
+import EntitiesSearchCommand from "./dto/EntitiesSearchCommand";
 
 const entityRepository = {
   combineEntityFieldValuesNewFilesAndSelectedOwnFiles: async (
@@ -116,6 +117,36 @@ const entityRepository = {
   },
   deleteEntities: async (entitiesIds: mongoose.ObjectId[]): Promise<void> => {
     await Entity.deleteMany({ _id: { $in: entitiesIds } });
+  },
+  search: async (
+    command: EntitiesSearchCommand
+  ): Promise<{ entities: IEntity[]; total: number }> => {
+    const query = Entity.find({
+      model: { _id: command.modelId },
+      entityFieldValues: {
+        $elemMatch: {
+          value: { $elemMatch: { text: { $regex: command.name } } },
+        },
+      },
+    });
+
+    const entities: IEntity[] = await query
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions);
+
+    const total = await Entity.find({
+      model: { _id: command.modelId },
+      entityFieldValues: {
+        $elemMatch: {
+          value: { $elemMatch: { text: { $regex: command.name } } },
+        },
+      },
+    }).count();
+
+    return { entities, total };
   },
 };
 
