@@ -18,21 +18,29 @@ import UserCreateCommand from "./dtos/UserCreateCommand";
 import UsersGetCommand from "./dtos/UsersGetCommand";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
 import UsersSearchCommand from "./dtos/UsersSearchCommand";
+import ChatGetContactsCommand from "./dtos/ChatGetContactsCommand";
 
 const router = express.Router();
 
-router.get(
-  "/",
+router.post(
+  "/getChatContacts",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, any, any>,
-    res: Response<ResponseDto<UserReadDto[]>>
+    req: ConnectedRequest<any, any, ChatGetContactsCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<UserReadDto>>>
   ) => {
-    const users: IUser[] = await userService.get(req.user?._id.toString());
+    const command: ChatGetContactsCommand = req.body;
+    const { users, total } = await userService.chatGetContacts(
+      command,
+      req.user
+    );
 
     return res.status(200).json({
       success: true,
-      data: users.map((user) => toReadDto(user)),
+      data: {
+        data: users.map((user) => toReadDto(user)),
+        total,
+      },
     });
   }
 );

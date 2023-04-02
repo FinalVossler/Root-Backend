@@ -10,14 +10,27 @@ import { IFile } from "../file/file.model";
 import UserCreateCommand from "./dtos/UserCreateCommand";
 import UsersGetCommand from "./dtos/UsersGetCommand";
 import UsersSearchCommand from "./dtos/UsersSearchCommand";
+import ChatGetContactsCommand from "./dtos/ChatGetContactsCommand";
 
 const userRepository = {
-  get: async (currentUserId?: string): Promise<IUser[]> => {
+  chatGetContacts: async (
+    command: ChatGetContactsCommand,
+    currentUser: IUser
+  ): Promise<{ users: IUser[]; total: number }> => {
     const users: IUser[] = (await User.find({
-      _id: { $nin: [currentUserId] },
-    }).populate(populationOptions)) as IUser[];
+      _id: { $nin: [currentUser._id] },
+    })
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions)) as IUser[];
 
-    return users;
+    const total: number = await User.find({
+      _id: { $nin: [currentUser._id] },
+    }).count();
+
+    return { users, total };
   },
   save: async (command: UserRegisterCommand): Promise<IUser> => {
     const user: IUser = (await User.create(command)) as IUser;

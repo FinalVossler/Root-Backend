@@ -14,6 +14,7 @@ import UserForgotPasswordChangePasswordCommand from "./dtos/UserForgotPasswordCh
 import UserCreateCommand from "./dtos/UserCreateCommand";
 import UsersGetCommand from "./dtos/UsersGetCommand";
 import UsersSearchCommand from "./dtos/UsersSearchCommand";
+import ChatGetContactsCommand from "./dtos/ChatGetContactsCommand";
 
 const userService = {
   generatePasswordHash: async (password: string): Promise<string> => {
@@ -23,10 +24,16 @@ const userService = {
 
     return passwordHash;
   },
-  get: async (currentUserId?: string): Promise<IUser[]> => {
-    const users: IUser[] = await userRepository.get(currentUserId);
+  chatGetContacts: async (
+    command: ChatGetContactsCommand,
+    currentUser: IUser
+  ): Promise<{ users: IUser[]; total: number }> => {
+    const { users, total } = await userRepository.chatGetContacts(
+      command,
+      currentUser
+    );
 
-    return users;
+    return { users, total };
   },
   getById: async (userId?: string): Promise<IUser> => {
     const user: IUser = await userRepository.getById(userId);

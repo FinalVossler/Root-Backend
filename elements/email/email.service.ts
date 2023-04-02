@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
+
 import { IUser } from "../user/user.model";
 import { IWebsiteConfiguration } from "../websiteConfiguration/websiteConfiguration.model";
-
 import websiteConfigurationRepository from "../websiteConfiguration/websiteConfiguration.repository";
 import EmailSendCommand from "./dto/EmailSendCommand";
 
@@ -60,6 +60,9 @@ const emailService = {
       auth: {
         user: process.env.NODEMAILER_EMAIL,
         pass: process.env.NODEMAILER_EMAIL_PASSWORD,
+      },
+      tls: {
+        rejectUnauthorized: false,
       },
     });
 
