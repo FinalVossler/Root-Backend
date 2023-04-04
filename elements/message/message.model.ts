@@ -26,13 +26,14 @@ const MessageSchema = new mongoose.Schema<IMessage>(
     },
     from: {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: User.name,
+      ref: "user",
       required: true,
     },
     to: {
       type: [mongoose.SchemaTypes.ObjectId],
       ref: User.modelName,
       required: true,
+      index: true,
     },
     numberOfParticipants: {
       type: mongoose.SchemaTypes.Number,
@@ -64,6 +65,7 @@ const MessageSchema = new mongoose.Schema<IMessage>(
 
 MessageSchema.pre("save", function (next) {
   this.numberOfParticipants = this.to.length;
+  this.to.sort();
 
   next();
 });

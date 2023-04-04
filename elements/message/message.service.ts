@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { IUser } from "../user/user.model";
 import MessageGetBetweenUsersCommand from "./dtos/MessageGetBetweenUsersCommand";
+import MessageGetLastConversations from "./dtos/MessageGetLastConversations";
 import MessageSendCommand from "./dtos/MessageSendCommand";
 import { IMessage } from "./message.model";
 import messageRepository from "./message.repository";
@@ -83,6 +84,15 @@ const messageService = {
     }
 
     await messageRepository.deleteMessage(messageId);
+  },
+  getLastConversationsLastMessages: async (
+    command: MessageGetLastConversations,
+    currentUser: IUser
+  ): Promise<{ messages: IMessage[]; total: number }> => {
+    return await messageRepository.getLastConversationsLastMessages(
+      command,
+      currentUser
+    );
   },
 };
 

@@ -6,6 +6,7 @@ import Message, { IMessage } from "./message.model";
 import { IFile } from "../file/file.model";
 import fileRepository from "../file/file.repository";
 import { IUser } from "../user/user.model";
+import MessageGetLastConversations from "./dtos/MessageGetLastConversations";
 
 const messageRepository = {
   sendMessage: async (
@@ -48,7 +49,7 @@ const messageRepository = {
   getByIds: async (messagesIds: string[]): Promise<IMessage[]> => {
     const messages: IMessage[] = await Message.find({
       _id: { $in: messagesIds },
-    });
+    }).populate(populationOptions);
 
     return messages;
   },
@@ -92,6 +93,69 @@ const messageRepository = {
     ).exec()) as IMessage;
     return message;
   },
+  getLastConversationsLastMessages: async (
+    command: MessageGetLastConversations,
+    currentUser: IUser
+  ): Promise<{ messages: IMessage[]; total: number }> => {
+    const lastConversationsLastMessagesIds = await Message.aggregate([
+      {
+        $match: {
+          to: { $all: [currentUser._id] },
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+      {
+        $skip:
+          (command.paginationCommand.page - 1) *
+          command.paginationCommand.limit,
+      },
+      { $limit: command.paginationCommand.limit },
+      {
+        $sort: {
+          createdAt: 1,
+        },
+      },
+      {
+        $group: {
+          _id: "$to",
+          id: { $last: "$_id" },
+          message: { $last: "$message" },
+        },
+      },
+    ]).exec();
+
+    const messages: IMessage[] = await messageRepository.getByIds(
+      lastConversationsLastMessagesIds.map((el) => el.id.toString())
+    );
+
+    // TODO fetch the total:
+    const total: number = 100;
+
+    return { messages, total };
+  },
 };
+
+const populationOptions = [
+  {
+    path: "from",
+    model: "user",
+    populate: {
+      path: "profilePicture",
+      model: "file",
+    },
+  },
+  {
+    path: "to",
+    model: "user",
+    populate: {
+      path: "profilePicture",
+      model: "file",
+    },
+  },
+];
 
 export default messageRepository;
