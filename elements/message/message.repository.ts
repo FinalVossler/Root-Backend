@@ -133,7 +133,25 @@ const messageRepository = {
     );
 
     // TODO fetch the total:
-    const total: number = 100;
+    const total: number = (
+      await Message.aggregate([
+        {
+          $match: {
+            to: { $all: [currentUser._id] },
+          },
+        },
+        {
+          $group: {
+            _id: "$to",
+            id: { $last: "$_id" },
+            message: { $last: "$message" },
+          },
+        },
+        {
+          $count: "count",
+        },
+      ])
+    )[0].count;
 
     return { messages, total };
   },
