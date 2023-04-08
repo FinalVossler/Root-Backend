@@ -46,6 +46,22 @@ router.post(
 );
 
 router.get(
+  "/getContactsByIds",
+  async (
+    req: ConnectedRequest<any, any, any, { usersIds: string }>,
+    res: Response<ResponseDto<UserReadDto[]>>
+  ) => {
+    const usersIds: string[] = req.query.usersIds.split(",");
+    const users: IUser[] = await userService.getContactsByIds(usersIds);
+
+    return res.status(200).json({
+      success: true,
+      data: users.map((u) => toReadDto(u)),
+    });
+  }
+);
+
+router.get(
   "/getUser",
   async (
     req: ConnectedRequest<any, any, any, { userId: string }>,

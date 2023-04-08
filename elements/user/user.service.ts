@@ -40,6 +40,11 @@ const userService = {
 
     return user;
   },
+  getContactsByIds: async (usersIds: string[]): Promise<IUser[]> => {
+    const users: IUser[] = await userRepository.getContactsByIds(usersIds);
+
+    return users;
+  },
   register: async (
     command: UserRegisterCommand
   ): Promise<{ user: IUser; token: string }> => {
