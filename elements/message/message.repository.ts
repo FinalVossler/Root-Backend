@@ -105,17 +105,6 @@ const messageRepository = {
       },
       {
         $sort: {
-          createdAt: -1,
-        },
-      },
-      {
-        $skip:
-          (command.paginationCommand.page - 1) *
-          command.paginationCommand.limit,
-      },
-      { $limit: command.paginationCommand.limit },
-      {
-        $sort: {
           createdAt: 1,
         },
       },
@@ -126,6 +115,12 @@ const messageRepository = {
           message: { $last: "$message" },
         },
       },
+      {
+        $skip:
+          (command.paginationCommand.page - 1) *
+          command.paginationCommand.limit,
+      },
+      { $limit: command.paginationCommand.limit },
     ]).exec();
 
     const messages: IMessage[] = await messageRepository.getByIds(
@@ -153,7 +148,7 @@ const messageRepository = {
       ])
     )[0].count;
 
-    return { messages, total };
+    return { messages: messages.reverse(), total };
   },
 };
 
