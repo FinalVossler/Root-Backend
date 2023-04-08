@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { genSalt, hash } from "bcrypt";
 
 import File, { IFile } from "../file/file.model";
-import Post from "../post/post.model";
 import postRepository from "../post/post.repository";
 import fileRepository from "../file/file.repository";
 import { IRole } from "../role/role.model";

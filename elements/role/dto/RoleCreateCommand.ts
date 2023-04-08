@@ -1,8 +1,9 @@
-import { IRole } from "../role.model";
+import { Permission } from "../role.model";
 
 type RoleCreateCommand = {
   name: string;
   language: string;
+  permissions: Permission[];
 };
 
 export default RoleCreateCommand;

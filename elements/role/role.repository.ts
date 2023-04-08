@@ -12,6 +12,7 @@ const roleRepository = {
   create: async (command: RoleCreateCommand): Promise<IRole> => {
     const role: IRole = await Role.create({
       name: [{ language: command.language, text: command.name }],
+      permissions: command.permissions,
     });
 
     return role;
@@ -28,6 +29,7 @@ const roleRepository = {
             newText: command.name,
             oldValue: role.name,
           }),
+          permissions: command.permissions,
         },
       }
     );
