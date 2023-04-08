@@ -35,6 +35,7 @@ import { IRole } from "./elements/role/role.model";
         const command: RoleCreateCommand = {
           name: faker.name.jobTitle(),
           language: "en",
+          permissions: [],
         };
 
         const { users } = await userRepository.getUsers({
