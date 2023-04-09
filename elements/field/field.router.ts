@@ -5,7 +5,6 @@ import ResponseDto from "../../globalTypes/ResponseDto";
 import { IField } from "./field.model";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
 import { SuperRole } from "../user/user.model";
-import superAdminProtectMiddleware from "../../middleware/superAdminProtectMiddleware";
 import FieldCreateCommand from "./dto/FieldCreateCommand";
 import fieldService from "./field.service";
 import FieldReadDto, { toReadDto } from "./dto/FieldReadDto";
@@ -14,17 +13,23 @@ import FieldUpdateCommand from "./dto/FieldUpdateCommand";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import mongoose from "mongoose";
 import FieldsSearchCommand from "./dto/FieldsSearchCommand";
+import roleService from "../role/role.service";
+import { Permission } from "../role/role.model";
 
 const router = Router();
 
 router.post(
   "/",
   protectMiddleware,
-  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, FieldCreateCommand, any>,
     res: Response<ResponseDto<FieldReadDto>>
   ) => {
+    roleService.checkPermission({
+      user: req.user,
+      permission: Permission.CreateField,
+    });
+
     const command: FieldCreateCommand = req.body;
     if (req.user.superRole !== SuperRole.SuperAdmin) {
       throw new Error("Unauthorized to create field");
@@ -41,11 +46,15 @@ router.post(
 router.put(
   "/",
   protectMiddleware,
-  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, FieldUpdateCommand, any>,
     res: Response<ResponseDto<FieldReadDto>>
   ) => {
+    roleService.checkPermission({
+      user: req.user,
+      permission: Permission.UpdateField,
+    });
+
     const command: FieldUpdateCommand = req.body;
 
     const field: IField = await fieldService.updateField(command);
@@ -59,10 +68,16 @@ router.put(
 
 router.post(
   "/getFields",
+  protectMiddleware,
   async (
     req: ConnectedRequest<any, any, FieldsGetCommand, any>,
     res: Response<ResponseDto<PaginationResponse<FieldReadDto>>>
   ) => {
+    roleService.checkPermission({
+      user: req.user,
+      permission: Permission.ReadField,
+    });
+
     const command: FieldsGetCommand = req.body;
     const { fields, total } = await fieldService.getFields(command);
 
@@ -79,11 +94,15 @@ router.post(
 router.delete(
   "/",
   protectMiddleware,
-  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, mongoose.ObjectId[], any>,
     res: Response<ResponseDto<void>>
   ) => {
+    roleService.checkPermission({
+      user: req.user,
+      permission: Permission.DeleteField,
+    });
+
     const fieldsIds: mongoose.ObjectId[] = req.body;
     await fieldService.deleteFields(fieldsIds);
 
@@ -96,10 +115,16 @@ router.delete(
 
 router.post(
   "/search",
+  protectMiddleware,
   async (
     req: ConnectedRequest<any, any, FieldsSearchCommand, any>,
     res: Response<ResponseDto<PaginationResponse<FieldReadDto>>>
   ) => {
+    roleService.checkPermission({
+      user: req.user,
+      permission: Permission.ReadField,
+    });
+
     const command: FieldsSearchCommand = req.body;
 
     const { fields, total } = await fieldService.search(command);

@@ -7,18 +7,19 @@ import UserRegisterCommand from "./dtos/UserRegisterCommand";
 import userService from "./user.service";
 import UserReadDto, { toReadDto } from "./dtos/UserReadDto";
 import UserUpdateCommand from "./dtos/UserUpdateCommand";
-import { IUser, SuperRole } from "./user.model";
+import { IUser } from "./user.model";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import { IFile } from "../file/file.model";
 import UserChangePasswordCommand from "./dtos/UserChangePasswordCommand";
 import UserForgotPasswordChangePasswordCommand from "./dtos/UserForgotPasswordChangePasswordCommand";
-import superAdminProtectMiddleware from "../../middleware/superAdminProtectMiddleware";
 import UserCreateCommand from "./dtos/UserCreateCommand";
 import UsersGetCommand from "./dtos/UsersGetCommand";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
 import UsersSearchCommand from "./dtos/UsersSearchCommand";
 import ChatGetContactsCommand from "./dtos/ChatGetContactsCommand";
+import roleService from "../role/role.service";
+import { Permission } from "../role/role.model";
 
 const router = express.Router();
 
@@ -46,13 +47,13 @@ router.post(
 );
 
 router.get(
-  "/getContactsByIds",
+  "/getContactsById",
   async (
     req: ConnectedRequest<any, any, any, { usersIds: string }>,
     res: Response<ResponseDto<UserReadDto[]>>
   ) => {
     const usersIds: string[] = req.query.usersIds.split(",");
-    const users: IUser[] = await userService.getContactsByIds(usersIds);
+    const users: IUser[] = await userService.getContactsById(usersIds);
 
     return res.status(200).json({
       success: true,
@@ -153,12 +154,10 @@ router.put(
   ) => {
     const command: UserUpdateCommand = req.body;
     const user: IUser = req.user;
-    if (
-      user.superRole !== SuperRole.SuperAdmin &&
-      user._id.toString() !== command._id.toString()
-    ) {
-      throw new Error("Unauthorized to update user");
+    if (user._id.toString() !== command._id.toString()) {
+      roleService.checkPermission({ user, permission: Permission.UpdateUser });
     }
+
     const updatedUser: IUser = await userService.update(command);
 
     return res.status(200).json({
@@ -276,11 +275,15 @@ router.post(
 router.post(
   "/",
   protectMiddleware,
-  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, UserCreateCommand, any>,
     res: Response<ResponseDto<UserReadDto>>
   ) => {
+    roleService.checkPermission({
+      user: req.user,
+      permission: Permission.CreateUser,
+    });
+
     const command: UserCreateCommand = req.body;
     const user: IUser = await userService.createUser(command);
 
@@ -294,11 +297,15 @@ router.post(
 router.post(
   "/getUsers",
   protectMiddleware,
-  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, UsersGetCommand, any>,
     res: Response<ResponseDto<PaginationResponse<UserReadDto>>>
   ) => {
+    roleService.checkPermission({
+      user: req.user,
+      permission: Permission.ReadUser,
+    });
+
     const command: UsersGetCommand = req.body;
     const { users, total } = await userService.getUsers(command);
 
@@ -315,11 +322,15 @@ router.post(
 router.delete(
   "/",
   protectMiddleware,
-  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, mongoose.ObjectId[], any>,
     res: Response<ResponseDto<void>>
   ) => {
+    roleService.checkPermission({
+      user: req.user,
+      permission: Permission.DeleteUser,
+    });
+
     const usersIds: mongoose.ObjectId[] = req.body;
     await userService.deleteUsers(usersIds);
 

@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
+import { IUser, SuperRole } from "../user/user.model";
 
 import RoleCreateCommand from "./dto/RoleCreateCommand";
 import RolesGetCommand from "./dto/RolesGetCommand";
 import RolesSearchCommand from "./dto/RolesSearchCommand";
 import RoleUpdateCommand from "./dto/RoleUpdateCommand";
-import { IRole } from "./role.model";
+import { IRole, Permission } from "./role.model";
 import roleRepository from "./role.repository";
 
 const roleService = {
@@ -35,6 +36,33 @@ const roleService = {
     const { roles, total } = await roleRepository.search(command);
 
     return { roles, total };
+  },
+  checkPermission: ({
+    user,
+    permission,
+  }: {
+    user?: IUser;
+    permission: Permission;
+  }): boolean => {
+    if (!user) {
+      throw new Error("Permission denied");
+    }
+
+    if (user.superRole === SuperRole.SuperAdmin) {
+      return true;
+    }
+
+    if (
+      !Boolean(
+        user.role &&
+          user.role.permissions &&
+          user.role?.permissions.indexOf(permission) > -1
+      )
+    ) {
+      throw new Error("Permission denied");
+    }
+
+    return true;
   },
 };
 

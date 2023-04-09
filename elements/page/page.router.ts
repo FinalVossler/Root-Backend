@@ -2,14 +2,14 @@ import express, { Response } from "express";
 
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
-import superAdminProtectMiddleware from "../../middleware/superAdminProtectMiddleware";
 import protectMiddleware from "../../middleware/protectMiddleware";
-import { SuperRole } from "../user/user.model";
 import PageCreateCommand from "./dto/PageCreateCommand";
 import PageReadDto, { toReadDto } from "./dto/PageReadDto";
 import PageUpdateCommand from "./dto/PageUpdateCommand";
 import { IPage } from "./page.model";
 import pageService from "./page.service";
+import roleService from "../role/role.service";
+import { Permission } from "../role/role.model";
 
 const router = express.Router();
 
@@ -31,16 +31,14 @@ router.get(
 router.post(
   "/",
   protectMiddleware,
-  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, PageCreateCommand, any>,
     res: Response<ResponseDto<PageReadDto>>
   ) => {
-    if (req.user.superRole !== SuperRole.SuperAdmin) {
-      throw new Error(
-        "Trying to create a page with a user who isn't an admin. That's not possible"
-      );
-    }
+    roleService.checkPermission({
+      user: req.user,
+      permission: Permission.CreatePage,
+    });
 
     const command: PageCreateCommand = req.body;
 
@@ -56,16 +54,14 @@ router.post(
 router.put(
   "/",
   protectMiddleware,
-  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, PageUpdateCommand, any>,
     res: Response<ResponseDto<PageReadDto>>
   ) => {
-    if (req.user.superRole !== SuperRole.SuperAdmin) {
-      throw new Error(
-        "Trying to update a page with a user who isn't an admin. That's not possible"
-      );
-    }
+    roleService.checkPermission({
+      user: req.user,
+      permission: Permission.UpdatePage,
+    });
 
     const command: PageUpdateCommand = req.body;
 
@@ -85,8 +81,10 @@ router.delete(
     req: ConnectedRequest<any, any, any, { pageId: string }>,
     res: Response<ResponseDto<void>>
   ) => {
-    if (req.user.superRole !== SuperRole.SuperAdmin)
-      throw new Error("Unauthorized");
+    roleService.checkPermission({
+      user: req.user,
+      permission: Permission.DeletePage,
+    });
 
     const pageId: string = req.query.pageId;
 

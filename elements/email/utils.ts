@@ -33,7 +33,6 @@ export const sendSendgridEmail = async (command: EmailSendCommand) => {
     const response = await sgMail.send(email);
     return response;
   } catch (e) {
-    console.log("e", e);
     throw e;
   }
 };

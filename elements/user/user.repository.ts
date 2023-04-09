@@ -44,7 +44,7 @@ const userRepository = {
 
     return user;
   },
-  getContactsByIds: async (usersIds: string[]): Promise<IUser[]> => {
+  getContactsById: async (usersIds: string[]): Promise<IUser[]> => {
     const users: IUser[] = (await User.find({
       _id: { $in: [usersIds.map((id) => new mongoose.Types.ObjectId(id))] },
     }).populate(populationOptions)) as IUser[];

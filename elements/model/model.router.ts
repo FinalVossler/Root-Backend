@@ -4,7 +4,6 @@ import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
 import { IModel } from "./model.model";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
-import superAdminProtectMiddleware from "../../middleware/superAdminProtectMiddleware";
 import fieldService from "./model.service";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import mongoose from "mongoose";
@@ -14,17 +13,23 @@ import ModelReadDto, { toReadDto } from "./dto/ModelReadDto";
 import ModelUpdateCommand from "./dto/ModelUpdateCommand";
 import ModelsGetCommand from "./dto/ModelsGetCommand";
 import ModelsSearchCommand from "./dto/ModelsSearchCommand";
+import roleService from "../role/role.service";
+import { Permission } from "../role/role.model";
 
 const router = Router();
 
 router.post(
   "/",
   protectMiddleware,
-  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, ModelCreateCommand, any>,
     res: Response<ResponseDto<ModelReadDto>>
   ) => {
+    roleService.checkPermission({
+      user: req.user,
+      permission: Permission.CreateModel,
+    });
+
     const command: ModelCreateCommand = req.body;
     const model: IModel = await modelSerivce.createModel(command);
 
@@ -38,11 +43,15 @@ router.post(
 router.put(
   "/",
   protectMiddleware,
-  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, ModelUpdateCommand, any>,
     res: Response<ResponseDto<ModelReadDto>>
   ) => {
+    roleService.checkPermission({
+      user: req.user,
+      permission: Permission.UpdateModel,
+    });
+
     const command: ModelUpdateCommand = req.body;
     const model: IModel = await modelSerivce.updateModel(command);
 
@@ -55,10 +64,16 @@ router.put(
 
 router.post(
   "/getModels",
+  protectMiddleware,
   async (
     req: ConnectedRequest<any, any, ModelsGetCommand, any>,
     res: Response<ResponseDto<PaginationResponse<ModelReadDto>>>
   ) => {
+    roleService.checkPermission({
+      user: req.user,
+      permission: Permission.ReadModel,
+    });
+
     const command: ModelsGetCommand = req.body;
     const { models, total } = await fieldService.getModels(command);
 
@@ -75,11 +90,15 @@ router.post(
 router.delete(
   "/",
   protectMiddleware,
-  superAdminProtectMiddleware,
   async (
     req: ConnectedRequest<any, any, mongoose.ObjectId[], any>,
     res: Response<ResponseDto<void>>
   ) => {
+    roleService.checkPermission({
+      user: req.user,
+      permission: Permission.DeleteModel,
+    });
+
     const modelsIds: mongoose.ObjectId[] = req.body;
     await modelSerivce.deleteModels(modelsIds);
 
@@ -92,10 +111,16 @@ router.delete(
 
 router.post(
   "/search",
+  protectMiddleware,
   async (
     req: ConnectedRequest<any, any, ModelsSearchCommand, any>,
     res: Response<ResponseDto<PaginationResponse<ModelReadDto>>>
   ) => {
+    roleService.checkPermission({
+      user: req.user,
+      permission: Permission.ReadModel,
+    });
+
     const command: ModelsSearchCommand = req.body;
 
     const { models, total } = await fieldService.search(command);
