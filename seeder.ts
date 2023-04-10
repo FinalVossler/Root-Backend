@@ -36,6 +36,7 @@ import { IRole } from "./elements/role/role.model";
           name: faker.name.jobTitle(),
           language: "en",
           permissions: [],
+          entityPermissions: [],
         };
 
         const { users } = await userRepository.getUsers({
