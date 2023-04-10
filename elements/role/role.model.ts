@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
+import { IEntityPermission } from "../entityPermission/entityPermission.model";
+import entityPermissionRepository from "../entityPermission/entityPermissionRepository";
 
 export enum Permission {
   EditConfiguration = "EditConfiguration",
@@ -37,6 +39,7 @@ export interface IRole {
   _id: mongoose.ObjectId;
   name: ITranslatedText[];
   permissions: Permission[];
+  entityPermissions: IEntityPermission[];
 
   createdAt: string;
   updatedAt: string;
@@ -56,11 +59,27 @@ const RoleSchema = new mongoose.Schema<IRole>(
         required: true,
       },
     ],
+    entityPermissions: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "entityPermission",
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
+
+RoleSchema.pre("deleteOne", async function (next) {
+  const role: IRole = (await this.model.findOne(this.getQuery())) as IRole;
+
+  await entityPermissionRepository.deleteByIds(
+    role.entityPermissions.map((p) => p._id.toString())
+  );
+
+  next();
+});
 
 const model = mongoose.model<IRole, IRoleModel>("role", RoleSchema);
 

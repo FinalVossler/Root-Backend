@@ -7,18 +7,59 @@ import RoleCreateCommand from "./dto/RoleCreateCommand";
 import RoleUpdateCommand from "./dto/RoleUpdateCommand";
 import RolesGetCommand from "./dto/RolesGetCommand";
 import RolesSearchCommand from "./dto/RolesSearchCommand";
+import { IEntityPermission } from "../entityPermission/entityPermission.model";
+import entityPermissionRepository from "../entityPermission/entityPermissionRepository";
+import EntityPermissionCreateCommand from "../entityPermission/dto/EntityPermissionCreateCommand";
 
 const roleRepository = {
-  create: async (command: RoleCreateCommand): Promise<IRole> => {
-    const role: IRole = await Role.create({
-      name: [{ language: command.language, text: command.name }],
-      permissions: command.permissions,
+  createEntityPermissions: async (
+    command: EntityPermissionCreateCommand[]
+  ): Promise<IEntityPermission[]> => {
+    const entityPermissionsCreationPromises: Promise<IEntityPermission>[] = [];
+    const createdEntityPermissions: IEntityPermission[] = [];
+
+    command.forEach((entityPermissionCommand) => {
+      entityPermissionsCreationPromises.push(
+        new Promise(async (resolve, reject) => {
+          const command: EntityPermissionCreateCommand = {
+            modelId: entityPermissionCommand.modelId,
+            permissions: entityPermissionCommand.permissions,
+          };
+          const createdEntityPermission: IEntityPermission =
+            await entityPermissionRepository.create(command);
+          createdEntityPermissions.push(createdEntityPermission);
+          resolve(createdEntityPermission);
+        })
+      );
     });
 
-    return role;
+    await Promise.all(entityPermissionsCreationPromises);
+
+    return createdEntityPermissions;
+  },
+  create: async (command: RoleCreateCommand): Promise<IRole> => {
+    const createdEntityPermissions: IEntityPermission[] =
+      await roleRepository.createEntityPermissions(command.entityPermissions);
+
+    const role = await Role.create({
+      name: [{ language: command.language, text: command.name }],
+      permissions: command.permissions,
+      entityPermissions: createdEntityPermissions,
+    });
+
+    role.populate(populationOptions);
+
+    return role as IRole;
   },
   update: async (command: RoleUpdateCommand): Promise<IRole> => {
     const role: IRole = await Role.findById(command._id);
+
+    await entityPermissionRepository.deleteByIds(
+      role.entityPermissions.map((e) => e._id.toString())
+    );
+
+    const createdEntityPermissions: IEntityPermission[] =
+      await roleRepository.createEntityPermissions(command.entityPermissions);
 
     await Role.updateOne(
       { _id: command._id },
@@ -30,13 +71,16 @@ const roleRepository = {
             oldValue: role.name,
           }),
           permissions: command.permissions,
+          entityPermissions: createdEntityPermissions,
         },
       }
     );
 
-    const newRole: IRole = await Role.findById(command._id);
+    const newRole = await Role.findById(command._id);
 
-    return newRole;
+    newRole.populate(populationOptions);
+
+    return newRole as IRole;
   },
   getRoles: async (
     command: RolesGetCommand
@@ -47,6 +91,7 @@ const roleRepository = {
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
       .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
       .exec();
 
     const total: number = await Role.find({}).count();
@@ -71,7 +116,8 @@ const roleRepository = {
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
-      .limit(command.paginationCommand.limit);
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions);
 
     const total = await Role.find({
       name: { $elemMatch: { text: { $regex: command.name } } },
@@ -80,5 +126,16 @@ const roleRepository = {
     return { roles, total };
   },
 };
+
+const populationOptions = [
+  {
+    path: "entityPermissions",
+    model: "entityPermission",
+    populate: {
+      path: "model",
+      model: "model",
+    },
+  },
+];
 
 export default roleRepository;

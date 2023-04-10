@@ -1,3 +1,4 @@
+import { StaticPermission } from "../../entityPermission/entityPermission.model";
 import { Permission } from "../role.model";
 
 type RoleUpdateCommand = {
@@ -5,6 +6,11 @@ type RoleUpdateCommand = {
   name: string;
   language: string;
   permissions: Permission[];
+
+  entityPermissions: {
+    modelId: string;
+    permissions: StaticPermission[];
+  }[];
 };
 
 export default RoleUpdateCommand;
