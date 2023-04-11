@@ -71,14 +71,14 @@ const roleRepository = {
             oldValue: role.name,
           }),
           permissions: command.permissions,
-          entityPermissions: createdEntityPermissions,
+          entityPermissions: createdEntityPermissions.map((el) => el._id),
         },
       }
     );
 
-    const newRole = await Role.findById(command._id);
-
-    newRole.populate(populationOptions);
+    const newRole = await Role.findById(command._id).populate(
+      populationOptions
+    );
 
     return newRole as IRole;
   },
