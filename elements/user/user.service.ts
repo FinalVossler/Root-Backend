@@ -40,8 +40,8 @@ const userService = {
 
     return user;
   },
-  getContactsById: async (usersIds: string[]): Promise<IUser[]> => {
-    const users: IUser[] = await userRepository.getContactsById(usersIds);
+  getContactsByIds: async (usersIds: string[]): Promise<IUser[]> => {
+    const users: IUser[] = await userRepository.getContactsByIds(usersIds);
 
     return users;
   },

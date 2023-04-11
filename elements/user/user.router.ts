@@ -47,13 +47,13 @@ router.post(
 );
 
 router.get(
-  "/getContactsById",
+  "/getContactsByIds",
   async (
     req: ConnectedRequest<any, any, any, { usersIds: string }>,
     res: Response<ResponseDto<UserReadDto[]>>
   ) => {
     const usersIds: string[] = req.query.usersIds.split(",");
-    const users: IUser[] = await userService.getContactsById(usersIds);
+    const users: IUser[] = await userService.getContactsByIds(usersIds);
 
     return res.status(200).json({
       success: true,
