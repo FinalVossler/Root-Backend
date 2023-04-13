@@ -56,6 +56,25 @@ const modelRepository = {
 
     return { models, total };
   },
+  getModelsByIds: async (
+    command: ModelsGetCommand,
+    ids: string[]
+  ): Promise<{ total: number; models: IModel[] }> => {
+    const models: IModel[] = await Model.find({
+      _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
+    })
+      .sort({ createAt: -1 })
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
+      .exec();
+
+    const total: number = await Model.find({}).count();
+
+    return { models, total };
+  },
   deleteModels: async (modelsIds: mongoose.ObjectId[]): Promise<void> => {
     await Model.deleteMany({ _id: { $in: modelsIds } });
   },

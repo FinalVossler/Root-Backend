@@ -4,7 +4,6 @@ import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
 import { IModel } from "./model.model";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
-import fieldService from "./model.service";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import mongoose from "mongoose";
 import ModelCreateCommand from "./dto/ModelCreateCommand";
@@ -69,13 +68,32 @@ router.post(
     req: ConnectedRequest<any, any, ModelsGetCommand, any>,
     res: Response<ResponseDto<PaginationResponse<ModelReadDto>>>
   ) => {
-    roleService.checkPermission({
-      user: req.user,
-      permission: Permission.ReadModel,
-    });
+    // Models are always parsed at the beginning for the menu, so we need a try and catch for permission checking in case we don't have direct access to them.
+    try {
+      roleService.checkPermission({
+        user: req.user,
+        permission: Permission.ReadModel,
+      });
+    } catch (e) {
+      // If we can't read the models, we should at least be able to read the entities to which we have access (and that are based on the models)
+      const { models, total } = await modelSerivce.getModelsByIds(
+        req.body,
+        req.user?.role?.entityPermissions?.map((ePermission) =>
+          ePermission.model._id.toString()
+        ) || []
+      );
+
+      return res.status(200).send({
+        success: true,
+        data: {
+          data: models.map((m) => toReadDto(m)),
+          total,
+        },
+      });
+    }
 
     const command: ModelsGetCommand = req.body;
-    const { models, total } = await fieldService.getModels(command);
+    const { models, total } = await modelSerivce.getModels(command);
 
     return res.status(200).send({
       success: true,
@@ -123,7 +141,7 @@ router.post(
 
     const command: ModelsSearchCommand = req.body;
 
-    const { models, total } = await fieldService.search(command);
+    const { models, total } = await modelSerivce.search(command);
 
     return res.status(200).send({
       success: true,

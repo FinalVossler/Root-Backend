@@ -189,6 +189,14 @@ const populationOptions = [
   {
     path: "role",
     model: "role",
+    populate: {
+      path: "entityPermissions",
+      model: "entityPermission",
+      populate: {
+        path: "model",
+        model: "model",
+      },
+    },
   },
 ];
 

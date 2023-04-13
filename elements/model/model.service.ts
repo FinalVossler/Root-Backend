@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { IRole } from "../role/role.model";
 import ModelCreateCommand from "./dto/ModelCreateCommand";
 import ModelsGetCommand from "./dto/ModelsGetCommand";
 import ModelsSearchCommand from "./dto/ModelsSearchCommand";
@@ -21,6 +22,17 @@ const modelSerivce = {
     command: ModelsGetCommand
   ): Promise<{ models: IModel[]; total: number }> => {
     const { models, total } = await modelRepository.getModels(command);
+
+    return { models, total };
+  },
+  getModelsByIds: async (
+    command: ModelsGetCommand,
+    ids: string[]
+  ): Promise<{ models: IModel[]; total: number }> => {
+    const { models, total } = await modelRepository.getModelsByIds(
+      command,
+      ids
+    );
 
     return { models, total };
   },
