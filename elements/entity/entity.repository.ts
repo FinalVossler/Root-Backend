@@ -93,8 +93,8 @@ const entityRepository = {
       }
     );
 
-    const newEntity: IEntity = await Entity.findById(command._id).populate(
-      populationOptions
+    const newEntity: IEntity = await entityRepository.getById(
+      command._id.toString()
     );
 
     return newEntity;
@@ -102,7 +102,7 @@ const entityRepository = {
   getEntitiesByModel: async (
     command: EntitiesGetCommand
   ): Promise<{ total: number; entities: IEntity[] }> => {
-    const entities: IEntity[] = await Entity.find({ model: command.model })
+    const entities: IEntity[] = await Entity.find({ model: command.modelId })
       .sort({ createAt: -1 })
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
@@ -111,12 +111,19 @@ const entityRepository = {
       .populate(populationOptions)
       .exec();
 
-    const total: number = await Entity.find({ model: command.model }).count();
+    const total: number = await Entity.find({ model: command.modelId }).count();
 
     return { entities, total };
   },
   deleteEntities: async (entitiesIds: mongoose.ObjectId[]): Promise<void> => {
     await Entity.deleteMany({ _id: { $in: entitiesIds } });
+  },
+  getById: async (entityId: string): Promise<IEntity> => {
+    const entity: IEntity = await (
+      await Entity.findById(entityId).exec()
+    ).populate(populationOptions);
+
+    return entity;
   },
   search: async (
     command: EntitiesSearchCommand

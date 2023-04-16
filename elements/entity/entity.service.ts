@@ -37,6 +37,9 @@ const entityService = {
   deleteEntities: async (entitiesIds: mongoose.ObjectId[]): Promise<void> => {
     await entityRepository.deleteEntities(entitiesIds);
   },
+  getById: async (entityId: string): Promise<IEntity> => {
+    return await entityRepository.getById(entityId);
+  },
   search: async (
     command: EntitiesSearchCommand
   ): Promise<{ entities: IEntity[]; total: number }> => {

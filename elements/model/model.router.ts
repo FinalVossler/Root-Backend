@@ -1,11 +1,11 @@
 import { Router, Response } from "express";
+import mongoose from "mongoose";
 
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
 import { IModel } from "./model.model";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
 import protectMiddleware from "../../middleware/protectMiddleware";
-import mongoose from "mongoose";
 import ModelCreateCommand from "./dto/ModelCreateCommand";
 import modelSerivce from "./model.service";
 import ModelReadDto, { toReadDto } from "./dto/ModelReadDto";

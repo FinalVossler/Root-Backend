@@ -1,4 +1,8 @@
 import mongoose from "mongoose";
+import {
+  IEntityPermission,
+  StaticPermission,
+} from "../entityPermission/entityPermission.model";
 import { IUser, SuperRole } from "../user/user.model";
 
 import RoleCreateCommand from "./dto/RoleCreateCommand";
@@ -36,6 +40,34 @@ const roleService = {
     const { roles, total } = await roleRepository.search(command);
 
     return { roles, total };
+  },
+  checkEntityPermission: ({
+    user,
+    modelId,
+    staticPermission,
+  }: {
+    user: IUser;
+    modelId: string;
+    staticPermission: StaticPermission;
+  }): boolean => {
+    if (user.superRole === SuperRole.SuperAdmin) {
+      return true;
+    }
+
+    const hasAccess: boolean = Boolean(
+      user.role?.entityPermissions
+        .find(
+          (entityPermission: IEntityPermission) =>
+            entityPermission.model._id.toString() === modelId
+        )
+        ?.permissions.find((p) => p === staticPermission)
+    );
+
+    if (!hasAccess) {
+      throw new Error("Permission denied");
+    }
+
+    return hasAccess;
   },
   checkPermission: ({
     user,

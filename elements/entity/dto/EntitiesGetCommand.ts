@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import PaginationCommand from "../../../globalTypes/PaginationCommand";
 
 type EntitiesGetCommand = {
-  model: mongoose.ObjectId;
+  modelId: mongoose.ObjectId;
   paginationCommand: PaginationCommand;
 };
 
