@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { IRole } from "../role/role.model";
+
 import ModelCreateCommand from "./dto/ModelCreateCommand";
 import ModelsGetCommand from "./dto/ModelsGetCommand";
 import ModelsSearchCommand from "./dto/ModelsSearchCommand";

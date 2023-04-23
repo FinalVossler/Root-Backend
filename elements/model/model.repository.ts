@@ -5,20 +5,38 @@ import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsFor
 import ModelCreateCommand from "./dto/ModelCreateCommand";
 import ModelUpdateCommand from "./dto/ModelUpdateCommand";
 import ModelsGetCommand from "./dto/ModelsGetCommand";
-import Field from "../field/field.model";
 import ModelsSearchCommand from "./dto/ModelsSearchCommand";
 
 const modelRepository = {
   create: async (command: ModelCreateCommand): Promise<IModel> => {
+    console.log(
+      "conditions",
+      command.modelFields
+        .map((modelField) => modelField.conditions || [])
+        .map((conditions) => conditions.map((condition) => condition.fieldId))
+    );
     const model = await Model.create({
       name: [{ language: command.language, text: command.name }],
-      modelFields: command.modelFields,
+      modelFields: command.modelFields.map((modelField) => ({
+        field: modelField.fieldId,
+        required: modelField.required,
+        conditions:
+          modelField.conditions?.map((condition) => ({
+            value: condition.value,
+            conditionType: condition.conditionType,
+            field: condition.fieldId,
+          })) || [],
+      })),
     });
 
     return model.populate(populationOptions);
   },
   update: async (command: ModelUpdateCommand): Promise<IModel> => {
-    const model: IModel = await Model.findById(command._id);
+    const model: IModel = await Model.findById(command._id).populate(
+      populationOptions
+    );
+
+    if (!model) return null;
 
     await Model.updateOne(
       { _id: command._id },
@@ -29,7 +47,16 @@ const modelRepository = {
             newText: command.name,
             oldValue: model.name,
           }),
-          modelFields: command.modelFields,
+          modelFields: command.modelFields.map((modelField) => ({
+            field: modelField.fieldId,
+            required: modelField.required,
+            conditions:
+              modelField.conditions?.map((condition) => ({
+                value: condition.value,
+                conditionType: condition.conditionType,
+                field: condition.fieldId,
+              })) || [],
+          })),
         },
       }
     );
@@ -103,13 +130,22 @@ const modelRepository = {
 export const populationOptions = [
   {
     path: "modelFields",
-    populate: {
-      path: "field",
-      model: "field",
-      populate: {
-        path: "options",
+    populate: [
+      {
+        path: "field",
+        model: "field",
+        populate: {
+          path: "options",
+        },
       },
-    },
+      {
+        path: "conditions",
+        populate: {
+          path: "field",
+          model: "field",
+        },
+      },
+    ],
   },
 ];
 

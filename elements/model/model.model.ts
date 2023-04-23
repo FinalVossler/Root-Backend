@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import Field, { IField } from "../field/field.model";
+
+import { IField } from "../field/field.model";
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 
 export interface IModel {
@@ -14,6 +15,19 @@ export interface IModel {
 export interface IModelField {
   field: IField;
   required: boolean;
+  conditions?: IModelFieldCondition[];
+}
+
+export enum ModelFieldConditionType {
+  SuperiorTo = "SuperiorTo",
+  InferiorTo = "InferiorTo",
+  Equal = "Equal",
+}
+
+export interface IModelFieldCondition {
+  field: IField;
+  conditionType: ModelFieldConditionType;
+  value: number | string;
 }
 
 interface IModelModel extends mongoose.Model<IModel> {}
@@ -33,6 +47,21 @@ const ModelSchema = new mongoose.Schema<IModel>(
         required: {
           type: mongoose.SchemaTypes.Boolean,
         },
+        conditions: [
+          {
+            field: {
+              type: mongoose.SchemaTypes.ObjectId,
+              ref: "field",
+              required: false,
+            },
+            conditionType: {
+              type: mongoose.SchemaTypes.String,
+            },
+            value: {
+              type: mongoose.SchemaTypes.String,
+            },
+          },
+        ],
       },
     ],
   },

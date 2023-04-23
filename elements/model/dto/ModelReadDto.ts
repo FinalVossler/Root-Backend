@@ -18,6 +18,11 @@ export const toReadDto = (model: IModel): ModelReadDto => {
       return {
         field: fieldToReadDto(modelField.field),
         required: modelField.required,
+        conditions: modelField.conditions.map((condition) => ({
+          field: condition.field ? fieldToReadDto(condition.field) : null,
+          conditionType: condition.conditionType,
+          value: condition.value,
+        })),
       };
     }),
 
