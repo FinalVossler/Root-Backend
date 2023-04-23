@@ -9,12 +9,6 @@ import ModelsSearchCommand from "./dto/ModelsSearchCommand";
 
 const modelRepository = {
   create: async (command: ModelCreateCommand): Promise<IModel> => {
-    console.log(
-      "conditions",
-      command.modelFields
-        .map((modelField) => modelField.conditions || [])
-        .map((conditions) => conditions.map((condition) => condition.fieldId))
-    );
     const model = await Model.create({
       name: [{ language: command.language, text: command.name }],
       modelFields: command.modelFields.map((modelField) => ({
