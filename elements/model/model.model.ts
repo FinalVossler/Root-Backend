@@ -20,7 +20,9 @@ export interface IModelField {
 
 export enum ModelFieldConditionType {
   SuperiorTo = "SuperiorTo",
+  SuperiorOrEqualTo = "SuperiorOrEqualTo",
   InferiorTo = "InferiorTo",
+  InferiorOrEqualTo = "InferiorOrEqualTo",
   Equal = "Equal",
 }
 
