@@ -24,6 +24,7 @@ export enum ModelFieldConditionType {
   InferiorTo = "InferiorTo",
   InferiorOrEqualTo = "InferiorOrEqualTo",
   Equal = "Equal",
+  ValueInferiorOrEqualToCurrentYearPlusValueOfFieldAndSuperiorOrEqualToCurrentYear = "ValueInferiorOrEqualToCurrentYearPlusValueOfFieldAndSuperiorOrEqualToCurrentYear",
 }
 
 export interface IModelFieldCondition {
