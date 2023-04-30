@@ -1,6 +1,6 @@
 import { StaticPermission } from "../entityPermission.model";
 
-type EntityPermissionCreateCommand = {
+type EntityPermissionUpdateCommand = {
   modelId: string;
   permissions: StaticPermission[];
   fieldPermissions: {
@@ -9,4 +9,4 @@ type EntityPermissionCreateCommand = {
   }[];
 };
 
-export default EntityPermissionCreateCommand;
+export default EntityPermissionUpdateCommand;

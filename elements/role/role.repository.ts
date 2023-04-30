@@ -24,6 +24,7 @@ const roleRepository = {
           const command: EntityPermissionCreateCommand = {
             modelId: entityPermissionCommand.modelId,
             permissions: entityPermissionCommand.permissions,
+            fieldPermissions: entityPermissionCommand.fieldPermissions,
           };
           const createdEntityPermission: IEntityPermission =
             await entityPermissionRepository.create(command);
@@ -60,6 +61,8 @@ const roleRepository = {
 
     const createdEntityPermissions: IEntityPermission[] =
       await roleRepository.createEntityPermissions(command.entityPermissions);
+
+    console.log("created entity permissions", createdEntityPermissions);
 
     await Role.updateOne(
       { _id: command._id },
@@ -134,6 +137,25 @@ const populationOptions = [
     populate: {
       path: "model",
       model: "model",
+      populate: {
+        path: "modelFields",
+        populate: {
+          path: "field",
+          model: "field",
+        },
+      },
+    },
+  },
+  {
+    path: "entityPermissions",
+    model: "entityPermission",
+    populate: {
+      path: "fieldPermissions",
+      model: "field",
+      populate: {
+        path: "field",
+        model: "field",
+      },
     },
   },
 ];

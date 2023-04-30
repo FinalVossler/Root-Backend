@@ -10,6 +10,10 @@ const entityPermissionRepository = {
     const entityPermission: IEntityPermission = await EntityPermission.create({
       model: command.modelId,
       permissions: command.permissions.map((p) => p.toString()),
+      fieldPermissions: command.fieldPermissions.map((fieldPermission) => ({
+        field: fieldPermission.fieldId,
+        permissions: fieldPermission.permissions,
+      })),
     });
 
     return entityPermission;
