@@ -10,6 +10,7 @@ type PostUpdateCommand = {
   design: IPost["design"];
   children: IPost["children"];
   language: string;
+  code?: string;
 };
 
 export default PostUpdateCommand;

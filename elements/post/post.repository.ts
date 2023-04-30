@@ -30,6 +30,7 @@ const postRepository = {
       visibility: command.visibility,
       design: command.design,
       children: command.children,
+      code: command.code,
     });
 
     await post.populate(populationOptions);
@@ -121,6 +122,7 @@ const postRepository = {
             language: command.language,
             newText: command.subTitle,
           }),
+          code: command.code,
           visibility: command.visibility,
         },
       }

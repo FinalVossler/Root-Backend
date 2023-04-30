@@ -10,6 +10,7 @@ type PostCreateCommand = {
   design: IPost["design"];
   children: string[];
   language: string;
+  code?: string;
 };
 
 export default PostCreateCommand;

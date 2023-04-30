@@ -26,6 +26,7 @@ export enum PostDesign {
   Person = "Person",
   Card2 = "Card2",
   Video = "Video",
+  ModelForm = "ModelForm",
 }
 
 export interface IPost {
@@ -38,6 +39,7 @@ export interface IPost {
   visibility: PostVisibility;
   design: PostDesign;
   children: IPost[];
+  code?: string;
 
   createdAt: string;
   updatedAt: string;
@@ -53,6 +55,10 @@ const PostSchema = new mongoose.Schema<IPost>(
     },
     subTitle: {
       type: TranslatedTextSchema,
+      required: false,
+    },
+    code: {
+      type: mongoose.SchemaTypes.String,
       required: false,
     },
     posterId: {
