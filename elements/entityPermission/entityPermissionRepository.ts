@@ -14,6 +14,15 @@ const entityPermissionRepository = {
         field: fieldPermission.fieldId,
         permissions: fieldPermission.permissions,
       })),
+      eventNotifications: command.eventNotifications.map(
+        (eventNotification) => ({
+          title: [
+            { language: command.language, text: eventNotification.title },
+          ],
+          text: [{ language: command.language, text: eventNotification.text }],
+          trigger: eventNotification.trigger,
+        })
+      ),
     });
 
     return entityPermission;

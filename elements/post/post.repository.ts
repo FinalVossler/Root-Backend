@@ -96,7 +96,7 @@ const postRepository = {
       currentUser
     );
 
-    const allFIles: IFile[] = createdFiles.concat(
+    const allFiles: IFile[] = createdFiles.concat(
       command.files.filter((el) => el._id)
     );
 
@@ -116,7 +116,7 @@ const postRepository = {
             newText: command.content,
           }),
           design: command.design,
-          files: allFIles.map((el) => el._id),
+          files: allFiles.map((el) => el._id),
           subTitle: getNewTranslatedTextsForUpdate({
             oldValue: oldPost.subTitle,
             language: command.language,

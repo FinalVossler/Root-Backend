@@ -25,6 +25,8 @@ const roleRepository = {
             modelId: entityPermissionCommand.modelId,
             permissions: entityPermissionCommand.permissions,
             fieldPermissions: entityPermissionCommand.fieldPermissions,
+            eventNotifications: entityPermissionCommand.eventNotifications,
+            language: entityPermissionCommand.language,
           };
           const createdEntityPermission: IEntityPermission =
             await entityPermissionRepository.create(command);

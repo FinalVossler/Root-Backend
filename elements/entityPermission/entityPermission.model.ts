@@ -1,6 +1,12 @@
 import mongoose from "mongoose";
+
 import { IField } from "../field/field.model";
+import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 import { IModel } from "../model/model.model";
+
+export enum EventNotificationTrigger {
+  OnCreate = "OnCreate",
+}
 
 export enum StaticPermission {
   Create = "Create",
@@ -14,6 +20,13 @@ export interface IEntityPermission {
   model: IModel;
   permissions: StaticPermission[];
   fieldPermissions: IFieldPermission[];
+  eventNotifications: IEventNotification[];
+}
+
+export interface IEventNotification {
+  title: ITranslatedText[];
+  text: ITranslatedText[];
+  trigger: EventNotificationTrigger;
 }
 
 export interface IFieldPermission {
@@ -39,6 +52,16 @@ const EntityPermissionSchema = new mongoose.Schema(
           required: true,
         },
         permissions: [mongoose.SchemaTypes.String],
+      },
+    ],
+    eventNotifications: [
+      {
+        title: translatedTextSchema,
+        text: translatedTextSchema,
+        trigger: {
+          type: mongoose.SchemaTypes.String,
+          required: true,
+        },
       },
     ],
   },
