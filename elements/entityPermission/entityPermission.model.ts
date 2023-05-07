@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
+import EntityEventNotification, {
+  IEntityEventNotification,
+} from "../entityEventNotification/entityEventNotification.model";
+import entityEventNotificationRepository from "../entityEventNotification/entityEventNotification.repository";
 import { IField } from "../field/field.model";
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 import { IModel } from "../model/model.model";
-
-export enum EventNotificationTrigger {
-  OnCreate = "OnCreate",
-}
 
 export enum StaticPermission {
   Create = "Create",
@@ -19,14 +19,8 @@ export interface IEntityPermission {
   _id: mongoose.ObjectId;
   model: IModel;
   permissions: StaticPermission[];
-  fieldPermissions: IFieldPermission[];
-  eventNotifications: IEventNotification[];
-}
-
-export interface IEventNotification {
-  title: ITranslatedText[];
-  text: ITranslatedText[];
-  trigger: EventNotificationTrigger;
+  entityFieldPermissions: IFieldPermission[];
+  entityEventNotifications: IEntityEventNotification[];
 }
 
 export interface IFieldPermission {
@@ -44,7 +38,7 @@ const EntityPermissionSchema = new mongoose.Schema(
       required: true,
     },
     permissions: [mongoose.SchemaTypes.String],
-    fieldPermissions: [
+    entityFieldPermissions: [
       {
         field: {
           type: mongoose.SchemaTypes.ObjectId,
@@ -54,7 +48,7 @@ const EntityPermissionSchema = new mongoose.Schema(
         permissions: [mongoose.SchemaTypes.String],
       },
     ],
-    eventNotifications: [
+    entityEventNotifications: [
       {
         title: translatedTextSchema,
         text: translatedTextSchema,
@@ -69,6 +63,25 @@ const EntityPermissionSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Deleting the event notifications from the entity permission that's about to get deleted
+EntityPermissionSchema.pre("deleteOne", async function (next) {
+  const entityPermission: IEntityPermission = (await this.model
+    .findOne(this.getQuery())
+    .populate({
+      path: "entityEventNotifications",
+      model: "entityEventNotification",
+    })) as IEntityPermission;
+
+  const entityEventNotifications: IEntityEventNotification[] =
+    entityPermission.entityEventNotifications;
+
+  await entityEventNotificationRepository.deleteByIds(
+    entityEventNotifications.map((el) => el._id.toString())
+  );
+
+  next();
+});
 
 export default mongoose.model<IEntityPermission, IEntityPermissionModel>(
   "entityPermission",

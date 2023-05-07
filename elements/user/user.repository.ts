@@ -198,7 +198,7 @@ const populationOptions = [
           model: "model",
         },
         {
-          path: "fieldPermissions",
+          path: "entityFieldPermissions",
           populate: {
             path: "field",
             model: "field",

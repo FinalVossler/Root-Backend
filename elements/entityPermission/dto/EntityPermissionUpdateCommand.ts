@@ -1,20 +1,15 @@
-import {
-  EventNotificationTrigger,
-  StaticPermission,
-} from "../entityPermission.model";
+import EntityEventNotificationUpdateCommand from "../../entityEventNotification/dto/EntityEventNotificationUpdateCommand";
+import { StaticPermission } from "../entityPermission.model";
 
 type EntityPermissionUpdateCommand = {
+  _id?: string;
   modelId: string;
   permissions: StaticPermission[];
-  fieldPermissions: {
+  entityFieldPermissions: {
     fieldId: string;
     permissions: StaticPermission[];
   }[];
-  eventNotifications: {
-    title: string;
-    text: string;
-    trigger: EventNotificationTrigger;
-  }[];
+  entityEventNotifications: EntityEventNotificationUpdateCommand[];
   language: string;
 };
 

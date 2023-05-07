@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 import { IEntityPermission } from "../entityPermission/entityPermission.model";
-import entityPermissionRepository from "../entityPermission/entityPermissionRepository";
+import entityPermissionRepository from "../entityPermission/entityPermission.repository";
 
 export enum Permission {
   EditConfiguration = "EditConfiguration",
