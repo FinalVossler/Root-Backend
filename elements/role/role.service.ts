@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
+import { IEntityEventNotification } from "../entityEventNotification/entityEventNotification.model";
 import {
   IEntityPermission,
   StaticPermission,
 } from "../entityPermission/entityPermission.model";
+import entityPermissionSerivce from "../entityPermission/entityPermission.service";
 import { IUser, SuperRole } from "../user/user.model";
 
 import RoleCreateCommand from "./dto/RoleCreateCommand";
@@ -95,6 +97,17 @@ const roleService = {
     }
 
     return true;
+  },
+  getRolesWithEntityPermissionsForModel: async (
+    modelId: string
+  ): Promise<IRole[]> => {
+    const entityPermissions: IEntityPermission[] =
+      await entityPermissionSerivce.getModelEntityPermissions(modelId);
+
+    const roles: IRole[] = await roleRepository.getRolesWithEntityPermissions(
+      entityPermissions.map((el) => el._id.toString())
+    );
+    return roles;
   },
 };
 

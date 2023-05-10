@@ -203,6 +203,17 @@ const roleRepository = {
 
     return { roles, total };
   },
+  getRolesWithEntityPermissions: async (
+    entityPermissionsIds: string[]
+  ): Promise<IRole[]> => {
+    const roles: IRole[] = await Role.find({
+      entityPermissions: {
+        $in: entityPermissionsIds.map((id) => new mongoose.Types.ObjectId(id)),
+      },
+    }).populate(populationOptions);
+
+    return roles;
+  },
 };
 
 const populationOptions = [

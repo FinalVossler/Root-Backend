@@ -210,6 +210,9 @@ const userService = {
 
     return { users, total };
   },
+  getRoleUsers: async (roleId: string): Promise<IUser[]> => {
+    return await userRepository.getRoleUsers(roleId);
+  },
 };
 
 export default userService;

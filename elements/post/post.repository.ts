@@ -131,12 +131,12 @@ const postRepository = {
     return await postRepository.getById(command._id);
   },
 
-  delete: async (postId: string): Promise<void> => {
-    return await Post.remove({ _id: postId });
+  delete: async (postId: string): Promise<any> => {
+    return await Post.deleteOne({ _id: postId });
   },
 
-  deleteUserPosts: async (userId: string): Promise<void> => {
-    return await Post.remove({ posterId: userId });
+  deleteUserPosts: async (userId: string): Promise<any> => {
+    return await Post.deleteOne({ posterId: userId });
   },
 };
 

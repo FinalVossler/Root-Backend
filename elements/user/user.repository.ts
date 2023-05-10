@@ -158,8 +158,9 @@ const userRepository = {
   ): Promise<{ users: IUser[]; total: number }> => {
     const query = User.find({
       $or: [
-        { firstName: { $regex: command.firstNameOrLastName } },
-        { lastName: { $regex: command.firstNameOrLastName } },
+        { firstName: { $regex: command.firstNameOrLastNameOrEmail } },
+        { lastName: { $regex: command.firstNameOrLastNameOrEmail } },
+        { email: { $regex: command.firstNameOrLastNameOrEmail } },
       ],
     });
 
@@ -172,12 +173,19 @@ const userRepository = {
 
     const total = await User.find({
       $or: [
-        { firstName: { $regex: command.firstNameOrLastName } },
-        { lastName: { $regex: command.firstNameOrLastName } },
+        { firstName: { $regex: command.firstNameOrLastNameOrEmail } },
+        { lastName: { $regex: command.firstNameOrLastNameOrEmail } },
       ],
     }).count();
 
     return { users, total };
+  },
+  getRoleUsers: async (roleId: string): Promise<IUser[]> => {
+    const users: IUser[] = await User.find({
+      role: { _id: new mongoose.Types.ObjectId(roleId) },
+    }).exec();
+
+    return users;
   },
 };
 

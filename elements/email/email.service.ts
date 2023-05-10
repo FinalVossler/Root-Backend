@@ -4,6 +4,7 @@ import { IUser } from "../user/user.model";
 import { IWebsiteConfiguration } from "../websiteConfiguration/websiteConfiguration.model";
 import websiteConfigurationRepository from "../websiteConfiguration/websiteConfiguration.repository";
 import EmailSendCommand from "./dto/EmailSendCommand";
+import { google } from "googleapis";
 
 const emailService = {
   sendContactEmail: async (command: EmailSendCommand): Promise<void> => {
@@ -20,8 +21,7 @@ const emailService = {
       "\nMessage: " +
       command.message;
 
-    await emailService.send({
-      from: command.email,
+    await emailService.sendEmail({
       to: conf.email,
       subject: "Email sent from website: " + conf.title,
       text: content,
@@ -37,14 +37,32 @@ const emailService = {
       "/changePassword/" +
       token;
 
-    await emailService.send({
-      from: conf.email,
+    await emailService.sendEmail({
       to: user.email,
       subject: conf.title + ": Changing password",
       text: content,
     });
   },
-  send: async ({
+  sendEmail: async ({
+    to,
+    subject,
+    text,
+  }: {
+    to: string;
+    subject: string;
+    text: string;
+  }) => {
+    const conf: IWebsiteConfiguration =
+      await websiteConfigurationRepository.get();
+
+    await emailService.sendWithNodeMailerAndGoogleOAuth({
+      from: process.env.NODEMAILER_EMAIL,
+      subject,
+      text,
+      to,
+    });
+  },
+  sendWithNodeMailerAndGoogleOAuth: async ({
     from,
     to,
     subject,
@@ -55,11 +73,48 @@ const emailService = {
     subject: string;
     text: string;
   }): Promise<void> => {
+    const OAuth2 = google.auth.OAuth2;
+
+    const OAuthClient = new OAuth2(
+      process.env.GMAIL_OAUTH_CLIENT_ID,
+      process.env.GMAIL_OAUTH_CLIENT_SECRET,
+      "https://developers.google.com/oauthplayground"
+    );
+    OAuthClient.setCredentials({
+      refresh_token: process.env.GMAIL_MAIL_REFRESH_TOKEN,
+    });
+
+    const accessToken = await new Promise((resolve, reject) => {
+      OAuthClient.getAccessToken((err, token) => {
+        if (err) {
+          console.log("err", err);
+          reject("Failed to create access token :(");
+        }
+        resolve(token);
+      });
+    });
+
+    console.log(
+      process.env.GMAIL_MAIL_REFRESH_TOKEN,
+      "from",
+      from,
+      "to",
+      to,
+      "subject",
+      subject,
+      "text",
+      text
+    );
     let transporter = nodemailer.createTransport({
+      //@ts-ignore
       service: "gmail",
       auth: {
         user: process.env.NODEMAILER_EMAIL,
-        pass: process.env.NODEMAILER_EMAIL_PASSWORD,
+        type: "OAuth2",
+        clientId: process.env.GMAIL_OAUTH_CLIENT_ID,
+        clientSecret: process.env.GMAIL_OAUTH_CLIENT_SECRET,
+        refreshToken: process.env.GMAIL_MAIL_REFRESH_TOKEN,
+        accessToken: accessToken,
       },
       tls: {
         rejectUnauthorized: false,

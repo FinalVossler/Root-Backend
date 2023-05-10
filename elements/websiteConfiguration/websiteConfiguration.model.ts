@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+
 import { IFile } from "../file/file.model";
 
 export type Theme = {

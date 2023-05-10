@@ -1,7 +1,7 @@
 import PaginationCommand from "../../../globalTypes/PaginationCommand";
 
 type UsersSearchCommand = {
-  firstNameOrLastName: string;
+  firstNameOrLastNameOrEmail: string;
   paginationCommand: PaginationCommand;
 };
 

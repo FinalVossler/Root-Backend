@@ -1,5 +1,4 @@
 import express, { Response } from "express";
-import sgMail from "@sendgrid/mail";
 
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";

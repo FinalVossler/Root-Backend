@@ -7,6 +7,8 @@ import EntityCreateCommand from "./dto/EntityCreateCommand";
 import EntityUpdateCommand from "./dto/EntityUpdateCommand";
 import { IUser } from "../user/user.model";
 import EntitiesSearchCommand from "./dto/EntitiesSearchCommand";
+import entityEventNotificationService from "../entityEventNotification/entityEventNotification.service";
+import { EntityEventNotificationTrigger } from "../entityEventNotification/entityEventNotification.model";
 
 const entityService = {
   createEntity: async (
@@ -14,6 +16,11 @@ const entityService = {
     currentUser: IUser
   ): Promise<IEntity> => {
     const entity: IEntity = await entityRepository.create(command, currentUser);
+
+    await entityEventNotificationService.notifyUsers(
+      command.modelId.toString(),
+      EntityEventNotificationTrigger.OnCreate
+    );
 
     return entity;
   },

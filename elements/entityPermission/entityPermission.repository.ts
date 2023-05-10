@@ -174,6 +174,15 @@ const entityPermissionRepository = {
       _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
     });
   },
+  getModelEntityPermissions: async (
+    modelId: string
+  ): Promise<IEntityPermission[]> => {
+    const entityPermissions: IEntityPermission[] = await EntityPermission.find({
+      model: new mongoose.Types.ObjectId(modelId),
+    });
+
+    return entityPermissions;
+  },
 };
 
 export default entityPermissionRepository;
