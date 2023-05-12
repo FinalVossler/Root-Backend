@@ -133,6 +133,7 @@ router.delete(
 
 router.post(
   "/search",
+  protectMiddleware,
   async (
     req: ConnectedRequest<any, any, EntitiesSearchCommand, any>,
     res: Response<ResponseDto<PaginationResponse<EntityReadDto>>>
