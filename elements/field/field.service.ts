@@ -34,6 +34,11 @@ const fieldService = {
 
     return { fields, total };
   },
+  copy: async (ids: string[]): Promise<IField[]> => {
+    const fields: IField[] = await fieldRepository.copy(ids);
+
+    return fields;
+  },
 };
 
 export default fieldService;

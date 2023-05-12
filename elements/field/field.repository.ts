@@ -92,6 +92,49 @@ const fieldRepository = {
 
     return { fields, total };
   },
+  getByIds: async (ids: string[]): Promise<IField[]> => {
+    const fields: IField[] = await Field.find({
+      _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
+    });
+
+    return fields;
+  },
+  copy: async (ids: string[]): Promise<IField[]> => {
+    const fieldsToCopy: IField[] = await fieldRepository.getByIds(ids);
+
+    const promises: Promise<IField>[] = [];
+
+    fieldsToCopy.forEach((field) => {
+      promises.push(
+        new Promise<IField>(async (resolve, reject) => {
+          try {
+            const newField: IField = await Field.create({
+              name: field.name.map((el) => ({
+                language: el.language,
+                text: el.text,
+              })),
+              type: field.type,
+              options: field.options.map((option) => ({
+                label: option.label.map((el) => ({
+                  language: el.language,
+                  text: el.text,
+                })),
+                value: option.value,
+              })),
+            });
+
+            resolve(newField);
+          } catch (e) {
+            reject(e);
+          }
+        })
+      );
+    });
+
+    const fields: IField[] = await Promise.all(promises);
+
+    return fields;
+  },
 };
 
 export default fieldRepository;

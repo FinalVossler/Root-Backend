@@ -139,4 +139,25 @@ router.post(
   }
 );
 
+router.post(
+  "/copy",
+  protectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, { ids: string[] }, any>,
+    res: Response<ResponseDto<FieldReadDto[]>>
+  ) => {
+    roleService.checkPermission({
+      user: req.user,
+      permission: Permission.CreateField,
+    });
+
+    const createdFields: IField[] = await fieldService.copy(req.body.ids);
+
+    return res.status(200).send({
+      success: true,
+      data: createdFields.map((f) => toReadDto(f)),
+    });
+  }
+);
+
 export default router;

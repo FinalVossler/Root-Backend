@@ -220,29 +220,27 @@ const populationOptions = [
   {
     path: "entityPermissions",
     model: "entityPermission",
-    populate: {
-      path: "model",
-      model: "model",
-      populate: {
-        path: "modelFields",
+    populate: [
+      {
+        path: "model",
+        model: "model",
+        populate: {
+          path: "modelFields",
+          populate: {
+            path: "field",
+            model: "field",
+          },
+        },
+      },
+      {
+        path: "entityFieldPermissions",
+        model: "field",
         populate: {
           path: "field",
           model: "field",
         },
       },
-    },
-  },
-  {
-    path: "entityPermissions",
-    model: "entityPermission",
-    populate: {
-      path: "entityFieldPermissions",
-      model: "field",
-      populate: {
-        path: "field",
-        model: "field",
-      },
-    },
+    ],
   },
 ];
 
