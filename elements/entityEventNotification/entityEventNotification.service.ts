@@ -18,13 +18,13 @@ const entityEventNotificationService = {
     const roles: IRole[] =
       await roleService.getRolesWithEntityPermissionsForModel(modelId);
 
-    const emails: {
-      subject: string;
-      text: string;
-      trigger: EntityEventNotificationTrigger;
-    }[] = [];
-
     for (let i = 0; i < roles.length; i++) {
+      const emails: {
+        subject: string;
+        text: string;
+        trigger: EntityEventNotificationTrigger;
+      }[] = [];
+
       const role: IRole = roles[i];
       role.entityPermissions.forEach((entityPermission: IEntityPermission) => {
         entityPermission.entityEventNotifications.forEach(
@@ -73,6 +73,14 @@ const entityEventNotificationService = {
 
       const usersToNotify: IUser[] = await userService.getRoleUsers(
         role._id.toString()
+      );
+
+      console.log("emails", emails.length, "role", role.name[0].text);
+      console.log(
+        "users to notify",
+        usersToNotify.length,
+        "names",
+        usersToNotify.map((u) => u.firstName + " " + u.lastName)
       );
 
       usersToNotify.forEach((user) => {
