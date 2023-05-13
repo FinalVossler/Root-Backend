@@ -75,14 +75,6 @@ const entityEventNotificationService = {
         role._id.toString()
       );
 
-      console.log("emails", emails.length, "role", role.name[0].text);
-      console.log(
-        "users to notify",
-        usersToNotify.length,
-        "names",
-        usersToNotify.map((u) => u.firstName + " " + u.lastName)
-      );
-
       usersToNotify.forEach((user) => {
         emails.forEach((email) => {
           if (email.trigger === trigger) {
