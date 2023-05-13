@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { IField } from "../field/field.model";
 import File, { IFile } from "../file/file.model";
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
-import Model, { IModel } from "../model/model.model";
+import { IModel } from "../model/model.model";
 
 export interface IEntity {
   _id: mongoose.ObjectId;
@@ -26,7 +26,7 @@ const EntitySchema = new mongoose.Schema<IEntity>(
   {
     model: {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: Model.modelName,
+      ref: "model",
       index: true,
     },
     entityFieldValues: [

@@ -170,9 +170,11 @@ const entityPermissionRepository = {
     return entityPermission;
   },
   deleteByIds: async (ids: string[]): Promise<void> => {
-    await EntityPermission.deleteMany({
-      _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
-    });
+    for (let i = 0; i < ids.length; i++) {
+      await EntityPermission.deleteOne({
+        _id: new mongoose.Types.ObjectId(ids[i]),
+      });
+    }
   },
   getModelEntityPermissions: async (
     modelId: string

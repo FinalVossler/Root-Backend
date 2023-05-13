@@ -97,7 +97,9 @@ const modelRepository = {
     return { models, total };
   },
   deleteModels: async (modelsIds: mongoose.ObjectId[]): Promise<void> => {
-    await Model.deleteMany({ _id: { $in: modelsIds } });
+    for (let i = 0; i < modelsIds.length; i++) {
+      await Model.deleteOne({ _id: modelsIds[i] });
+    }
   },
   search: async (
     command: ModelsSearchCommand

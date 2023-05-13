@@ -1,12 +1,11 @@
 import mongoose from "mongoose";
 
-import EntityEventNotification, {
-  IEntityEventNotification,
-} from "../entityEventNotification/entityEventNotification.model";
+import { IEntityEventNotification } from "../entityEventNotification/entityEventNotification.model";
 import entityEventNotificationRepository from "../entityEventNotification/entityEventNotification.repository";
 import { IField } from "../field/field.model";
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 import { IModel } from "../model/model.model";
+import Role, { IRole } from "../role/role.model";
 
 export enum StaticPermission {
   Create = "Create",
@@ -64,7 +63,6 @@ const EntityPermissionSchema = new mongoose.Schema(
   }
 );
 
-// Deleting the event notifications from the entity permission that's about to get deleted
 EntityPermissionSchema.pre("deleteOne", async function (next) {
   const entityPermission: IEntityPermission = (await this.model
     .findOne(this.getQuery())
@@ -73,12 +71,36 @@ EntityPermissionSchema.pre("deleteOne", async function (next) {
       model: "entityEventNotification",
     })) as IEntityPermission;
 
+  // Deleting the event notifications from the entity permission that's about to get deleted
   const entityEventNotifications: IEntityEventNotification[] =
     entityPermission.entityEventNotifications;
 
   await entityEventNotificationRepository.deleteByIds(
     entityEventNotifications.map((el) => el._id.toString())
   );
+
+  // Delete the entity permission reference from the roles that use them
+  const allRoles: IRole[] = await Role.find({}).populate("entityPermissions");
+  const roles = allRoles.filter((r) =>
+    r.entityPermissions.find(
+      (e) => e._id.toString() === entityPermission._id.toString()
+    )
+  );
+
+  for (let i = 0; i < roles.length; i++) {
+    const role: IRole = roles[i];
+
+    await Role.updateOne(
+      { _id: role._id },
+      {
+        $set: {
+          entityPermissions: role.entityPermissions.filter(
+            (e) => e._id.toString() !== entityPermission._id.toString()
+          ),
+        },
+      }
+    );
+  }
 
   next();
 });
