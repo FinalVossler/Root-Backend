@@ -1,4 +1,5 @@
 import emailService from "../email/email.service";
+import { IEntity } from "../entity/entity.model";
 import { IEntityPermission } from "../entityPermission/entityPermission.model";
 import { ITranslatedText } from "../ITranslatedText";
 import { IRole } from "../role/role.model";
@@ -13,7 +14,8 @@ import {
 const entityEventNotificationService = {
   notifyUsers: async (
     modelId: string,
-    trigger: EntityEventNotificationTrigger
+    trigger: EntityEventNotificationTrigger,
+    entity: IEntity
   ): Promise<void> => {
     const roles: IRole[] =
       await roleService.getRolesWithEntityPermissionsForModel(modelId);
@@ -54,13 +56,26 @@ const entityEventNotificationService = {
               })
               .join(" | ");
 
-            const text: string = languages
+            const content: string = languages
               .map((language) => {
                 return entityEventNotification.text.find(
                   (el) => el.language === language
                 ).text;
               })
               .join("<br>");
+
+            const link =
+              process.env.ORIGIN + "/entities/" + modelId + "/" + entity._id;
+
+            const text =
+              "<div>" +
+              content +
+              '<br><br> <a target="_blank" href="' +
+              link +
+              '">' +
+              link +
+              "</a>" +
+              "<div>";
 
             emails.push({
               subject,
@@ -80,8 +95,8 @@ const entityEventNotificationService = {
           if (email.trigger === trigger) {
             emailService.sendEmail({
               to: user.email,
-              text: email.text,
               subject: email.subject,
+              text: email.text,
             });
           }
         });

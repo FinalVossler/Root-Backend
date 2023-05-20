@@ -94,17 +94,6 @@ const emailService = {
       });
     });
 
-    console.log(
-      process.env.GMAIL_MAIL_REFRESH_TOKEN,
-      "from",
-      from,
-      "to",
-      to,
-      "subject",
-      subject,
-      "text",
-      text
-    );
     let transporter = nodemailer.createTransport({
       //@ts-ignore
       service: "gmail",
@@ -125,7 +114,7 @@ const emailService = {
       from,
       to,
       subject,
-      text,
+      html: text,
     };
 
     const promise = new Promise((resolve, reject) => {
