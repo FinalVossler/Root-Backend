@@ -16,8 +16,34 @@ import EntitiesSearchCommand from "./dto/EntitiesSearchCommand";
 import roleService from "../role/role.service";
 import { StaticPermission } from "../entityPermission/entityPermission.model";
 import entityRepository from "./entity.repository";
+import EntitiesGetEntityCommand from "./dto/EntitiesGetEntityCommand";
 
 const router = Router();
+
+router.get(
+  "/getEntity",
+  protectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, any, EntitiesGetEntityCommand>,
+    res: Response<ResponseDto<EntityReadDto>>
+  ) => {
+    const command: EntitiesGetEntityCommand = req.query;
+    const currentUser: IUser = req.user;
+
+    roleService.checkEntityPermission({
+      user: currentUser,
+      staticPermission: StaticPermission.Read,
+      modelId: command.modelId,
+    });
+
+    const entity: IEntity = await entityService.getById(command.entityId);
+
+    return res.status(200).send({
+      success: true,
+      data: toReadDto(entity),
+    });
+  }
+);
 
 router.post(
   "/",
