@@ -127,26 +127,32 @@ const messageRepository = {
       lastConversationsLastMessagesIds.map((el) => el.id.toString())
     );
 
-    // TODO fetch the total:
-    const total: number = (
-      await Message.aggregate([
-        {
-          $match: {
-            to: { $all: [currentUser._id] },
+    let total = 0;
+
+    try {
+      // TODO fetch the total:
+      const total: number = (
+        await Message.aggregate([
+          {
+            $match: {
+              to: { $all: [currentUser._id] },
+            },
           },
-        },
-        {
-          $group: {
-            _id: "$to",
-            id: { $last: "$_id" },
-            message: { $last: "$message" },
+          {
+            $group: {
+              _id: "$to",
+              id: { $last: "$_id" },
+              message: { $last: "$message" },
+            },
           },
-        },
-        {
-          $count: "count",
-        },
-      ])
-    )[0].count;
+          {
+            $count: "count",
+          },
+        ])
+      )[0].count;
+    } catch (e) {
+      total = 0;
+    }
 
     return { messages: messages.reverse(), total };
   },
