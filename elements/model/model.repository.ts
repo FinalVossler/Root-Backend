@@ -77,6 +77,13 @@ const modelRepository = {
 
     return { models, total };
   },
+  getById: async (id: string): Promise<IModel> => {
+    const model: IModel = (await Model.findById(id)
+      .populate(populationOptions)
+      .exec()) as IModel;
+
+    return model;
+  },
   getModelsByIds: async (
     command: ModelsGetCommand,
     ids: string[]

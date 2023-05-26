@@ -25,6 +25,9 @@ const modelSerivce = {
 
     return { models, total };
   },
+  getById: async (id: string): Promise<IModel> => {
+    return await modelRepository.getById(id);
+  },
   getModelsByIds: async (
     command: ModelsGetCommand,
     ids: string[]
