@@ -89,7 +89,8 @@ const entityService = {
     await entityEventNotificationService.notifyUsers(
       command.modelId.toString(),
       EntityEventNotificationTrigger.OnCreate,
-      entity
+      entity,
+      currentUser
     );
 
     return entity;

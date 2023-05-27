@@ -2,6 +2,8 @@ import emailService from "../email/email.service";
 import { IEntity } from "../entity/entity.model";
 import { IEntityPermission } from "../entityPermission/entityPermission.model";
 import { ITranslatedText } from "../ITranslatedText";
+import NotificationCreateCommand from "../notification/dto/NotificationCreateCommand";
+import notificationService from "../notification/notification.service";
 import { IRole } from "../role/role.model";
 import roleService from "../role/role.service";
 import { IUser } from "../user/user.model";
@@ -15,7 +17,8 @@ const entityEventNotificationService = {
   notifyUsers: async (
     modelId: string,
     trigger: EntityEventNotificationTrigger,
-    entity: IEntity
+    entity: IEntity,
+    currentUser: IUser
   ): Promise<void> => {
     const roles: IRole[] =
       await roleService.getRolesWithEntityPermissionsForModel(modelId);
@@ -25,6 +28,10 @@ const entityEventNotificationService = {
         subject: string;
         text: string;
         trigger: EntityEventNotificationTrigger;
+        // Used for the in app notification text
+        notificationText: ITranslatedText[];
+        // Used for the in app notification link
+        link: string;
       }[] = [];
 
       const role: IRole = roles[i];
@@ -81,6 +88,8 @@ const entityEventNotificationService = {
               subject,
               text,
               trigger: entityEventNotification.trigger,
+              notificationText: entityEventNotification.title,
+              link,
             });
           }
         );
@@ -99,6 +108,16 @@ const entityEventNotificationService = {
               text: email.text,
             });
           }
+
+          // Now create the in app notification
+          const notificationCreateCommand: NotificationCreateCommand = {
+            imageId: currentUser.profilePicture._id?.toString(),
+            link: email.link,
+            notifiedUserId: user._id.toString(),
+            text: email.notificationText,
+          };
+
+          notificationService.create(notificationCreateCommand);
         });
       });
     }

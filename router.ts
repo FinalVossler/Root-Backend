@@ -11,6 +11,7 @@ import fieldRouter from "./elements/field/field.router";
 import modelRouter from "./elements/model/model.router";
 import entityRouter from "./elements/entity/entity.router";
 import roleRouter from "./elements/role/role.router";
+import notificationRouter from "./elements/notification/notification.router";
 
 const router = Router();
 
@@ -25,6 +26,7 @@ router.use("/fields", fieldRouter);
 router.use("/models", modelRouter);
 router.use("/entities", entityRouter);
 router.use("/roles", roleRouter);
+router.use("/notifications", notificationRouter);
 
 router.use("/", (req: Request, res: Response) => {
   res.status(200).send("Hello!");
