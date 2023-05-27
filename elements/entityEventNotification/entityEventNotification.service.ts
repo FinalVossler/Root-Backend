@@ -88,7 +88,17 @@ const entityEventNotificationService = {
               subject,
               text,
               trigger: entityEventNotification.trigger,
-              notificationText: entityEventNotification.title,
+              notificationText: entityEventNotification.title.map(
+                (translatedText) => ({
+                  language: translatedText.language,
+                  text:
+                    currentUser.firstName +
+                    " " +
+                    currentUser.lastName +
+                    ": " +
+                    translatedText.text,
+                })
+              ),
               link,
             });
           }
@@ -99,26 +109,26 @@ const entityEventNotificationService = {
         role._id.toString()
       );
 
-      usersToNotify.forEach((user) => {
-        emails.forEach((email) => {
-          if (email.trigger === trigger) {
+      emails.forEach((email) => {
+        if (email.trigger === trigger) {
+          // Create the in app notification
+          const notificationCreateCommand: NotificationCreateCommand = {
+            imageId: currentUser.profilePicture._id?.toString(),
+            link: email.link,
+            toIds: usersToNotify.map((user) => user._id.toString()),
+            text: email.notificationText,
+          };
+
+          notificationService.create(notificationCreateCommand);
+
+          usersToNotify.forEach((user) => {
             emailService.sendEmail({
               to: user.email,
               subject: email.subject,
               text: email.text,
             });
-          }
-
-          // Now create the in app notification
-          const notificationCreateCommand: NotificationCreateCommand = {
-            imageId: currentUser.profilePicture._id?.toString(),
-            link: email.link,
-            notifiedUserId: user._id.toString(),
-            text: email.notificationText,
-          };
-
-          notificationService.create(notificationCreateCommand);
-        });
+          });
+        }
       });
     }
   },

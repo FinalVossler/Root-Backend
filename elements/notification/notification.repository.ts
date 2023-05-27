@@ -10,7 +10,7 @@ const notificationRepository = {
       image: command.imageId,
       link: command.link,
       text: command.text,
-      notifiedUser: command.notifiedUserId,
+      to: command.toIds,
     });
 
     return notification;
@@ -23,7 +23,7 @@ const notificationRepository = {
     totalUnclicked: number;
   }> => {
     const notifications: INotification[] = await Notification.find({
-      notifiedUser: command.userId,
+      to: { $all: [command.userId] },
     })
       .populate(populationOptions)
       .sort({ createdAt: -1 })
@@ -34,11 +34,11 @@ const notificationRepository = {
       .exec();
 
     const total: number = await Notification.find({
-      notifiedUser: command.userId,
+      to: { $all: [command.userId] },
     }).count();
 
     const totalUnclicked: number = await Notification.find({
-      notifiedUser: command.userId,
+      to: { $all: [command.userId] },
       clicked: false || null,
     }).count();
 
@@ -55,7 +55,7 @@ const populationOptions = [
     model: "file",
   },
   {
-    path: "notifiedUser",
+    path: "to",
     model: "user",
   },
 ];

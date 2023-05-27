@@ -5,7 +5,7 @@ type NotificationCreateCommand = {
   text: ITranslatedText[];
   link: INotification["link"];
   imageId: string;
-  notifiedUserId: string;
+  toIds: string[];
 };
 
 export default NotificationCreateCommand;

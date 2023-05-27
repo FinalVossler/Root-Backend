@@ -5,7 +5,7 @@ type NotificationReadDto = {
   text: INotification["text"];
   link: string;
   image: INotification["image"];
-  notifiedUser: INotification["notifiedUser"];
+  to: INotification["to"];
   clicked: INotification["clicked"];
 
   createdAt: INotification["createdAt"];
@@ -19,7 +19,7 @@ export const toReadDto = (
   text: notification.text,
   link: notification.link,
   image: notification.image,
-  notifiedUser: notification.notifiedUser,
+  to: notification.to,
   clicked: notification.clicked,
 
   createdAt: notification.createdAt,

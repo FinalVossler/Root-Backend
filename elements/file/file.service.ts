@@ -19,8 +19,6 @@ const fileService = {
   ): Promise<{ files: IFile[]; total: number }> => {
     const { files, total } = await fileRepository.getUnownedFiles(command);
 
-    console.log("files", files);
-
     return { files, total };
   },
 };

@@ -9,8 +9,8 @@ export interface INotification {
   text: ITranslatedText[];
   link: string;
   image?: IFile;
-  notifiedUser: IUser;
   clicked?: boolean;
+  to: mongoose.ObjectId[];
 
   createdAt: string;
   updatedAt: string;
@@ -33,10 +33,11 @@ const NotificationSchema = new mongoose.Schema(
       required: false,
       ref: "file",
     },
-    notifiedUser: {
-      type: mongoose.SchemaTypes.ObjectId,
+    to: {
+      type: [mongoose.SchemaTypes.ObjectId],
       ref: "user",
       required: true,
+      index: true,
     },
     clicked: {
       type: mongoose.SchemaTypes.Boolean,

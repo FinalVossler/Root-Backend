@@ -1,7 +1,12 @@
+import socket from "socket.io";
+import mongoose from "mongoose";
+
 import NotificationCreateCommand from "./dto/NotificationCreateCommand";
 import NotificationsGetCommand from "./dto/NotificationsGetCommand";
 import { INotification } from "./notification.model";
 import notificationRepository from "./notification.repository";
+import { onlineUsers, socketHandler } from "../../socket";
+import NotificationMessageEnum from "../../globalTypes/NotificationMessageEnum";
 
 const notificationService = {
   create: async (
@@ -10,6 +15,15 @@ const notificationService = {
     const notification: INotification = await notificationRepository.create(
       command
     );
+
+    notification.to.forEach((userId: mongoose.ObjectId) => {
+      if (onlineUsers.has(userId.toString())) {
+        const userSocketId: string = onlineUsers.get(userId.toString());
+        socketHandler.socket
+          .to(userSocketId)
+          .emit(NotificationMessageEnum.Receive, notification);
+      }
+    });
 
     return notification;
   },
