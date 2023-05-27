@@ -1,5 +1,4 @@
 enum ChatMessagesEnum {
-  Send = "ChantSend",
   Receive = "ChantReceive",
   Delete = "ChatDelete",
 }

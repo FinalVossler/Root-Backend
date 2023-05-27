@@ -1,5 +1,4 @@
 enum NotificationMessageEnum {
-  Send = "NotificationSend",
   Receive = "NotificationReceive",
 }
 

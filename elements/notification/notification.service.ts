@@ -1,4 +1,3 @@
-import socket from "socket.io";
 import mongoose from "mongoose";
 
 import NotificationCreateCommand from "./dto/NotificationCreateCommand";
@@ -19,7 +18,7 @@ const notificationService = {
     notification.to.forEach((userId: mongoose.ObjectId) => {
       if (onlineUsers.has(userId.toString())) {
         const userSocketId: string = onlineUsers.get(userId.toString());
-        socketHandler.socket
+        socketHandler.io
           .to(userSocketId)
           .emit(NotificationMessageEnum.Receive, notification);
       }

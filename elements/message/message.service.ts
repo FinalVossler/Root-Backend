@@ -1,10 +1,13 @@
 import mongoose from "mongoose";
+
 import { IUser } from "../user/user.model";
 import MessageGetBetweenUsersCommand from "./dtos/MessageGetBetweenUsersCommand";
 import MessageGetLastConversations from "./dtos/MessageGetLastConversations";
 import MessageSendCommand from "./dtos/MessageSendCommand";
 import { IMessage } from "./message.model";
 import messageRepository from "./message.repository";
+import { onlineUsers, socketHandler } from "../../socket";
+import ChatMessagesEnum from "../../globalTypes/ChatMessagesEnum";
 
 const messageService = {
   sendMessage: async (
@@ -15,6 +18,17 @@ const messageService = {
       command,
       currentUser
     );
+
+    const onlineConcernedUsersIds: string[] = message.to
+      .filter((userId) => onlineUsers.has(userId.toString()))
+      .map((userId) => userId.toString());
+    if (onlineConcernedUsersIds.length > 0) {
+      const socketIds: string[] = onlineConcernedUsersIds.map((userId) =>
+        onlineUsers.get(userId)
+      );
+      console.log("sending to", socketIds, "message", message.message);
+      socketHandler.io.to(socketIds).emit(ChatMessagesEnum.Receive, message);
+    }
 
     return message;
   },
