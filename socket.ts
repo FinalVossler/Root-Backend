@@ -4,17 +4,17 @@ import mongoose from "mongoose";
 
 import ChatMessagesEnum from "./globalTypes/ChatMessagesEnum";
 import MessageReadDto from "./elements/message/dtos/MessageReadDto";
+import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import NotificationMessageEnum from "./globalTypes/NotificationMessageEnum";
 import NotificationReadDto from "./elements/notification/dto/NotificationReadDto";
-import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
-export const socketHandler: {
+const socketHandler: {
   io: socket.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
 } = {
   io: null,
 };
 
-export const onlineUsers = new Map<string, string>();
+const onlineUsers = new Map<string, string>();
 
 const init = (server: http.Server) => {
   const io = new socket.Server(server, {
@@ -30,20 +30,31 @@ const init = (server: http.Server) => {
 
     onlineUsers.set(userId, socket.id);
 
-    // Chat messages
-    socket.on(ChatMessagesEnum.Delete, (message: MessageReadDto) => {
-      message.to.forEach((userId: mongoose.ObjectId) => {
-        if (onlineUsers.has(userId.toString())) {
-          const userSocketId: string = onlineUsers.get(userId.toString());
-          socket.to(userSocketId).emit(ChatMessagesEnum.Delete, message);
-        }
-      });
-    });
-
     socket.on("disconnect", () => {
       onlineUsers.set(userId, null);
     });
   });
+};
+
+export const socketEmit = ({
+  userIds,
+  messageType,
+  object,
+}: {
+  userIds: string[];
+  messageType: ChatMessagesEnum | NotificationMessageEnum;
+  object: NotificationReadDto | MessageReadDto;
+}) => {
+  const onlineConcernedUsersIds: string[] = userIds
+    .map((userId) => userId.toString())
+    .filter((userId) => onlineUsers.has(userId.toString()));
+
+  if (onlineConcernedUsersIds.length > 0) {
+    const socketIds: string[] = onlineConcernedUsersIds.map((userId) =>
+      onlineUsers.get(userId)
+    );
+    socketHandler.io.to(socketIds).emit(messageType, object);
+  }
 };
 
 export default init;

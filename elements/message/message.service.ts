@@ -6,8 +6,9 @@ import MessageGetLastConversations from "./dtos/MessageGetLastConversations";
 import MessageSendCommand from "./dtos/MessageSendCommand";
 import { IMessage } from "./message.model";
 import messageRepository from "./message.repository";
-import { onlineUsers, socketHandler } from "../../socket";
+import { socketEmit } from "../../socket";
 import ChatMessagesEnum from "../../globalTypes/ChatMessagesEnum";
+import { toReadDto } from "./dtos/MessageReadDto";
 
 const messageService = {
   sendMessage: async (
@@ -19,16 +20,11 @@ const messageService = {
       currentUser
     );
 
-    const onlineConcernedUsersIds: string[] = message.to
-      .filter((userId) => onlineUsers.has(userId.toString()))
-      .map((userId) => userId.toString());
-    if (onlineConcernedUsersIds.length > 0) {
-      const socketIds: string[] = onlineConcernedUsersIds.map((userId) =>
-        onlineUsers.get(userId)
-      );
-      console.log("sending to", socketIds, "message", message.message);
-      socketHandler.io.to(socketIds).emit(ChatMessagesEnum.Receive, message);
-    }
+    socketEmit({
+      messageType: ChatMessagesEnum.Receive,
+      object: toReadDto(message),
+      userIds: message.to.map((userId) => userId.toString()),
+    });
 
     return message;
   },
@@ -98,6 +94,12 @@ const messageService = {
     }
 
     await messageRepository.deleteMessage(messageId);
+
+    socketEmit({
+      messageType: ChatMessagesEnum.Delete,
+      object: toReadDto(message),
+      userIds: message.to.map((userId) => userId.toString()),
+    });
   },
   getLastConversationsLastMessages: async (
     command: MessageGetLastConversations,

@@ -132,7 +132,7 @@ const entityRepository = {
       model: { _id: command.modelId },
       entityFieldValues: {
         $elemMatch: {
-          value: { $elemMatch: { text: { $regex: command.name } } },
+          $or: [{ value: { $elemMatch: { text: { $regex: command.name } } } }],
         },
       },
     });

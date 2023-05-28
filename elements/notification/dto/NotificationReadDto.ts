@@ -3,7 +3,7 @@ import { INotification } from "../notification.model";
 type NotificationReadDto = {
   _id: string;
   text: INotification["text"];
-  link: string;
+  link: INotification["link"];
   image: INotification["image"];
   to: INotification["to"];
   clicked: INotification["clicked"];
