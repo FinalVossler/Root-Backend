@@ -39,13 +39,35 @@ const notificationRepository = {
 
     const totalUnclicked: number = await Notification.find({
       to: { $all: [command.userId] },
-      clicked: false || null,
+      clickedBy: { $ne: command.userId },
     }).count();
 
     return { notifications, total, totalUnclicked };
   },
-  setNotificationToClicked: async (id: string): Promise<void> => {
-    await Notification.updateOne({ _id: id }, { $set: { clicked: true } });
+  setNotificationToClickedBy: async ({
+    notificationId,
+    userId,
+  }: {
+    notificationId: string;
+    userId: string;
+  }): Promise<void> => {
+    await Notification.updateOne(
+      { _id: notificationId },
+      { $addToSet: { clickedBy: userId } }
+    );
+  },
+  markAlluserNotificationsAsClicked: async ({
+    userId,
+  }: {
+    userId: string;
+  }): Promise<void> => {
+    await Notification.updateMany(
+      {
+        to: { $all: [userId] },
+        clickedBy: { $ne: userId },
+      },
+      { $addToSet: { clickedBy: userId } }
+    );
   },
 };
 

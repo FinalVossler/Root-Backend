@@ -34,8 +34,25 @@ const notificationService = {
 
     return { notifications, total, totalUnclicked };
   },
-  setNotificationToClicked: async (id: string): Promise<void> => {
-    await notificationRepository.setNotificationToClicked(id);
+  setNotificationToClickedBy: async ({
+    notificationId,
+    userId,
+  }: {
+    notificationId: string;
+    userId: string;
+  }): Promise<void> => {
+    await notificationRepository.setNotificationToClickedBy({
+      notificationId,
+      userId,
+    });
+  },
+
+  markAlluserNotificationsAsClicked: async ({
+    userId,
+  }: {
+    userId: string;
+  }): Promise<void> => {
+    await notificationRepository.markAlluserNotificationsAsClicked({ userId });
   },
 };
 

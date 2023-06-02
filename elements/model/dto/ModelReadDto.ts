@@ -5,6 +5,7 @@ type ModelReadDto = {
   _id: IModel["_id"];
   name: IModel["name"];
   modelFields: IModel["modelFields"];
+  modelEvents?: IModel["modelEvents"];
 
   createdAt: IModel["createdAt"];
   updatedAt: IModel["updatedAt"];
@@ -25,6 +26,7 @@ export const toReadDto = (model: IModel): ModelReadDto => {
         })),
       };
     }),
+    modelEvents: model.modelEvents,
 
     createdAt: model.createdAt,
     updatedAt: model.updatedAt,

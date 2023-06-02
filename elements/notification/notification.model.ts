@@ -9,7 +9,7 @@ export interface INotification {
   text: ITranslatedText[];
   link: string;
   image?: IFile;
-  clicked?: boolean;
+  clickedBy: mongoose.ObjectId[];
   to: mongoose.ObjectId[];
 
   createdAt: string;
@@ -39,10 +39,12 @@ const NotificationSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    clicked: {
-      type: mongoose.SchemaTypes.Boolean,
-      required: false,
-    },
+    clickedBy: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        required: false,
+      },
+    ],
   },
   {
     timestamps: true,

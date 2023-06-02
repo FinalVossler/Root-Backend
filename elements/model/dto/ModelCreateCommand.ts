@@ -1,4 +1,8 @@
-import { ModelFieldConditionType } from "../model.model";
+import {
+  ModelEventTriggerEnum,
+  ModelEventTypeEnum,
+  ModelFieldConditionTypeEnum,
+} from "../model.model";
 
 type ModelCreateCommand = {
   name: string;
@@ -7,9 +11,23 @@ type ModelCreateCommand = {
     required: boolean;
     conditions?: {
       fieldId: string;
-      conditionType: ModelFieldConditionType;
+      conditionType: ModelFieldConditionTypeEnum;
       value: number | string;
     }[];
+  }[];
+  modelEvents: {
+    eventTrigger: ModelEventTriggerEnum;
+    eventType: ModelEventTypeEnum;
+
+    // Redirection options
+    redirectionUrl: string;
+    redirectionToSelf: boolean;
+
+    // API call options
+    requestMethod: string;
+    requestUrl: string;
+    requestDataIsCreatedEntity: boolean;
+    requestData: string;
   }[];
   language: string;
 };

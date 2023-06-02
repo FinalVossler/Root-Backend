@@ -11,7 +11,7 @@ import { IUser } from "../user/user.model";
 import EntitiesSearchCommand from "./dto/EntitiesSearchCommand";
 import entityEventNotificationService from "../entityEventNotification/entityEventNotification.service";
 import { EntityEventNotificationTrigger } from "../entityEventNotification/entityEventNotification.model";
-import { IModel, IModelField } from "../model/model.model";
+import { IModel, IModelEvent, IModelField } from "../model/model.model";
 import modelSerivce from "../model/model.service";
 import { FieldType } from "../field/field.model";
 

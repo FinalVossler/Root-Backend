@@ -21,6 +21,7 @@ const modelRepository = {
             field: condition.fieldId,
           })) || [],
       })),
+      modelEvents: command.modelEvents,
     });
 
     return model.populate(populationOptions);
@@ -51,6 +52,7 @@ const modelRepository = {
                 field: condition.fieldId,
               })) || [],
           })),
+          modelEvents: command.modelEvents,
         },
       }
     );
@@ -149,6 +151,9 @@ export const populationOptions = [
         },
       },
     ],
+  },
+  {
+    path: "modelEvents",
   },
 ];
 
