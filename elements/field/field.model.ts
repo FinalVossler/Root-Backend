@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import EventSchema, { IEvent } from "../event/event.model";
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 import Model, { IModel } from "../model/model.model";
 import { populationOptions } from "../model/model.repository";
@@ -9,6 +10,7 @@ export enum FieldType {
   Paragraph = "Paragraph",
   File = "File",
   Selector = "Selector",
+  Button = "Button",
 }
 
 export type FieldOption = {
@@ -21,6 +23,7 @@ export interface IField {
   name: ITranslatedText[];
   type: FieldType;
   options?: FieldOption[];
+  fieldEvents: IEvent[];
 
   createdAt: string;
   updatedAt: string;
@@ -45,6 +48,7 @@ const FieldSchema = new mongoose.Schema<IField>(
         label: translatedTextSchema,
       },
     ],
+    fieldEvents: [EventSchema],
   },
   {
     timestamps: true,

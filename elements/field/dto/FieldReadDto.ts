@@ -5,6 +5,7 @@ type FieldReadDto = {
   name: IField["name"];
   type: IField["type"];
   options?: IField["options"];
+  fieldEvents: IField["fieldEvents"];
 
   createdAt: IField["createdAt"];
   updatedAt: IField["updatedAt"];
@@ -16,6 +17,7 @@ export const toReadDto = (field: IField): FieldReadDto => {
     name: field.name,
     type: field.type,
     options: field.options,
+    fieldEvents: field.fieldEvents || [],
 
     createdAt: field.createdAt,
     updatedAt: field.updatedAt,

@@ -19,6 +19,7 @@ export interface IEvent {
 export enum EventTriggerEnum {
   OnCreate = "OnCreate",
   OnUpdate = "OnUpdate",
+  OnClick = "OnClick",
 }
 
 export enum EventTypeEnum {
