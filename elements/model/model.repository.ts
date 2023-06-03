@@ -6,6 +6,7 @@ import ModelCreateCommand from "./dto/ModelCreateCommand";
 import ModelUpdateCommand from "./dto/ModelUpdateCommand";
 import ModelsGetCommand from "./dto/ModelsGetCommand";
 import ModelsSearchCommand from "./dto/ModelsSearchCommand";
+import { IEvent, IEventRequestHeader } from "../event/event.model";
 
 const modelRepository = {
   create: async (command: ModelCreateCommand): Promise<IModel> => {
@@ -21,7 +22,22 @@ const modelRepository = {
             field: condition.fieldId,
           })) || [],
       })),
-      modelEvents: command.modelEvents,
+      modelEvents: command.modelEvents.map<IEvent>((modelEvent: IEvent) => ({
+        eventTrigger: modelEvent.eventTrigger,
+        eventType: modelEvent.eventType,
+        redirectionToSelf: modelEvent.redirectionToSelf,
+        redirectionUrl: modelEvent.redirectionUrl,
+        requestData: modelEvent.requestData,
+        requestDataIsCreatedEntity: modelEvent.requestDataIsCreatedEntity,
+        requestMethod: modelEvent.requestMethod,
+        requestUrl: modelEvent.requestUrl,
+        requestHeaders: modelEvent.requestHeaders.map<IEventRequestHeader>(
+          (header: IEventRequestHeader) => ({
+            key: header.key,
+            value: header.value,
+          })
+        ),
+      })),
     });
 
     return model.populate(populationOptions);
@@ -33,6 +49,7 @@ const modelRepository = {
 
     if (!model) return null;
 
+    console.log("command model events", command.modelEvents);
     await Model.updateOne(
       { _id: command._id },
       {
@@ -52,7 +69,25 @@ const modelRepository = {
                 field: condition.fieldId,
               })) || [],
           })),
-          modelEvents: command.modelEvents,
+          modelEvents: command.modelEvents.map<IEvent>(
+            (modelEvent: IEvent) => ({
+              eventTrigger: modelEvent.eventTrigger,
+              eventType: modelEvent.eventType,
+              redirectionToSelf: modelEvent.redirectionToSelf,
+              redirectionUrl: modelEvent.redirectionUrl,
+              requestData: modelEvent.requestData,
+              requestDataIsCreatedEntity: modelEvent.requestDataIsCreatedEntity,
+              requestMethod: modelEvent.requestMethod,
+              requestUrl: modelEvent.requestUrl,
+              requestHeaders:
+                modelEvent.requestHeaders.map<IEventRequestHeader>(
+                  (header: IEventRequestHeader) => ({
+                    key: header.key,
+                    value: header.value,
+                  })
+                ),
+            })
+          ),
         },
       }
     );

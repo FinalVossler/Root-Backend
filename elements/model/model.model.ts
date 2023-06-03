@@ -6,12 +6,13 @@ import Entity from "../entity/entity.model";
 import { IEntityPermission } from "../entityPermission/entityPermission.model";
 import entityPermissionSerivce from "../entityPermission/entityPermission.service";
 import entityPermissionRepository from "../entityPermission/entityPermission.repository";
+import EventSchema, { IEvent } from "../event/event.model";
 
 export interface IModel {
   _id: mongoose.ObjectId;
   name: ITranslatedText[];
   modelFields: IModelField[];
-  modelEvents?: IModelEvent[];
+  modelEvents?: IEvent[];
 
   createdAt: string;
   updatedAt: string;
@@ -39,33 +40,6 @@ export enum ModelFieldConditionTypeEnum {
   ValueInferiorOrEqualToCurrentYearPlusValueOfFieldAndSuperiorOrEqualToCurrentYear = "ValueInferiorOrEqualToCurrentYearPlusValueOfFieldAndSuperiorOrEqualToCurrentYear",
 }
 //#endregion model fields
-
-//#region model events
-export interface IModelEvent {
-  eventTrigger: ModelEventTriggerEnum;
-  eventType: ModelEventTypeEnum;
-
-  // Redirection options
-  redirectionUrl: string;
-  redirectionToSelf: boolean;
-
-  // API call options
-  requestMethod: string;
-  requestUrl: string;
-  requestDataIsCreatedEntity: boolean;
-  requestData: string;
-}
-
-export enum ModelEventTypeEnum {
-  ApiCall = "ApiCall",
-  Redirection = "Redirection",
-}
-
-export enum ModelEventTriggerEnum {
-  OnCreate = "OnCreate",
-  OnUpdate = "OnUpdate",
-}
-//#endregion model events
 
 interface IModelModel extends mongoose.Model<IModel> {}
 
@@ -101,34 +75,7 @@ const ModelSchema = new mongoose.Schema<IModel>(
         ],
       },
     ],
-    modelEvents: [
-      {
-        eventTrigger: {
-          type: mongoose.SchemaTypes.String,
-        },
-        eventType: {
-          type: mongoose.SchemaTypes.String,
-        },
-        redirectionUrl: {
-          type: mongoose.SchemaTypes.String,
-        },
-        redirectionToSelf: {
-          type: mongoose.SchemaTypes.Boolean,
-        },
-        requestMethod: {
-          type: mongoose.SchemaTypes.String,
-        },
-        requestUrl: {
-          type: mongoose.SchemaTypes.String,
-        },
-        requestDataIsCreatedEntity: {
-          type: mongoose.SchemaTypes.Boolean,
-        },
-        requestData: {
-          type: mongoose.SchemaTypes.String,
-        },
-      },
-    ],
+    modelEvents: [EventSchema],
   },
   {
     timestamps: true,

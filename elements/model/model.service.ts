@@ -4,7 +4,7 @@ import ModelCreateCommand from "./dto/ModelCreateCommand";
 import ModelsGetCommand from "./dto/ModelsGetCommand";
 import ModelsSearchCommand from "./dto/ModelsSearchCommand";
 import ModelUpdateCommand from "./dto/ModelUpdateCommand";
-import { IModel, IModelEvent, ModelEventTypeEnum } from "./model.model";
+import { IModel } from "./model.model";
 import modelRepository from "./model.repository";
 
 const modelSerivce = {

@@ -1,8 +1,9 @@
 import {
-  ModelEventTriggerEnum,
-  ModelEventTypeEnum,
-  ModelFieldConditionTypeEnum,
-} from "../model.model";
+  EventTriggerEnum,
+  EventTypeEnum,
+  IEventRequestHeader,
+} from "../../event/event.model";
+import { ModelFieldConditionTypeEnum } from "../model.model";
 
 type ModelCreateCommand = {
   name: string;
@@ -16,8 +17,8 @@ type ModelCreateCommand = {
     }[];
   }[];
   modelEvents: {
-    eventTrigger: ModelEventTriggerEnum;
-    eventType: ModelEventTypeEnum;
+    eventTrigger: EventTriggerEnum;
+    eventType: EventTypeEnum;
 
     // Redirection options
     redirectionUrl: string;
@@ -28,6 +29,7 @@ type ModelCreateCommand = {
     requestUrl: string;
     requestDataIsCreatedEntity: boolean;
     requestData: string;
+    requestHeaders: IEventRequestHeader[];
   }[];
   language: string;
 };
