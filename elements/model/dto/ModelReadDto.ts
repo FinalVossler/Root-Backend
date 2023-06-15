@@ -6,6 +6,8 @@ type ModelReadDto = {
   name: IModel["name"];
   modelFields: IModel["modelFields"];
   modelEvents?: IModel["modelEvents"];
+  states?: IModel["states"];
+  subStates?: IModel["subStates"];
 
   createdAt: IModel["createdAt"];
   updatedAt: IModel["updatedAt"];
@@ -27,6 +29,8 @@ export const toReadDto = (model: IModel): ModelReadDto => {
       };
     }),
     modelEvents: model.modelEvents,
+    states: model.states,
+    subStates: model.subStates,
 
     createdAt: model.createdAt,
     updatedAt: model.updatedAt,

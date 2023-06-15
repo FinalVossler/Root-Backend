@@ -13,6 +13,8 @@ type ModelCreateCommand = {
     }[];
   }[];
   modelEvents: EventCommand[];
+  states: string[];
+  subStates: string[];
   language: string;
 };
 

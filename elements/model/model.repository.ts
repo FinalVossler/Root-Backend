@@ -38,6 +38,14 @@ const modelRepository = {
           })
         ),
       })),
+      states: command.states.map((state) => ({
+        language: command.language,
+        text: state,
+      })),
+      subStates: command.subStates.map((subState) => ({
+        language: command.language,
+        text: subState,
+      })),
     });
 
     return model.populate(populationOptions);
@@ -88,6 +96,24 @@ const modelRepository = {
                 ),
             })
           ),
+          states: command.states.map((state, index) => {
+            if (model.states.length > index) {
+              return model.states[index]
+                .filter((el) => el.language !== command.language)
+                .concat([{ language: command.language, text: state }]);
+            } else {
+              return [{ language: command.language, text: state }];
+            }
+          }),
+          subStates: command.subStates.map((subState, index) => {
+            if (model.states.length > index) {
+              return model.states[index]
+                .filter((el) => el.language !== command.language)
+                .concat([{ language: command.language, text: subState }]);
+            } else {
+              return [{ language: command.language, text: subState }];
+            }
+          }),
         },
       }
     );

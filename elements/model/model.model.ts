@@ -13,6 +13,8 @@ export interface IModel {
   name: ITranslatedText[];
   modelFields: IModelField[];
   modelEvents?: IEvent[];
+  states?: ITranslatedText[][];
+  subStates?: ITranslatedText[][];
 
   createdAt: string;
   updatedAt: string;
@@ -76,6 +78,8 @@ const ModelSchema = new mongoose.Schema<IModel>(
       },
     ],
     modelEvents: [EventSchema],
+    states: [translatedTextSchema],
+    subStates: [translatedTextSchema],
   },
   {
     timestamps: true,

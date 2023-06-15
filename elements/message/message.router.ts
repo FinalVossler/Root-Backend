@@ -1,7 +1,7 @@
 import express, { Response } from "express";
 import mongoose from "mongoose";
-import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 
+import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import MessageGetBetweenUsersCommand from "./dtos/MessageGetBetweenUsersCommand";
