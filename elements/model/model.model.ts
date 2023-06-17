@@ -7,14 +7,15 @@ import { IEntityPermission } from "../entityPermission/entityPermission.model";
 import entityPermissionSerivce from "../entityPermission/entityPermission.service";
 import entityPermissionRepository from "../entityPermission/entityPermission.repository";
 import EventSchema, { IEvent } from "../event/event.model";
+import { IModelState } from "../modelState/modelState.model";
 
 export interface IModel {
   _id: mongoose.ObjectId;
   name: ITranslatedText[];
   modelFields: IModelField[];
   modelEvents?: IEvent[];
-  states?: ITranslatedText[][];
-  subStates?: ITranslatedText[][];
+  states?: IModelState[];
+  subStates?: IModelState[];
 
   createdAt: string;
   updatedAt: string;
@@ -25,6 +26,7 @@ export interface IModelField {
   field: IField;
   required: boolean;
   conditions?: IModelFieldCondition[];
+  states?: IModelState[];
 }
 
 export interface IModelFieldCondition {
@@ -75,11 +77,33 @@ const ModelSchema = new mongoose.Schema<IModel>(
             },
           },
         ],
+        states: [
+          {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: "modelState",
+          },
+        ],
+        subStates: [
+          {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: "modelState",
+          },
+        ],
       },
     ],
     modelEvents: [EventSchema],
-    states: [translatedTextSchema],
-    subStates: [translatedTextSchema],
+    states: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "modelState",
+      },
+    ],
+    subStates: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "modelState",
+      },
+    ],
   },
   {
     timestamps: true,

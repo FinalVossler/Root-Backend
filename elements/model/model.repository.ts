@@ -7,9 +7,19 @@ import ModelUpdateCommand from "./dto/ModelUpdateCommand";
 import ModelsGetCommand from "./dto/ModelsGetCommand";
 import ModelsSearchCommand from "./dto/ModelsSearchCommand";
 import { IEvent, IEventRequestHeader } from "../event/event.model";
+import modelStateRepository from "../modelState/modelState.repository";
+import { IModelState } from "../modelState/modelState.model";
 
 const modelRepository = {
   create: async (command: ModelCreateCommand): Promise<IModel> => {
+    // create model states first:
+    const modelStates: IModelState[] = await modelStateRepository.createMany(
+      command.states
+    );
+    const modelSubstates: IModelState[] = await modelStateRepository.createMany(
+      command.subStates
+    );
+
     const model = await Model.create({
       name: [{ language: command.language, text: command.name }],
       modelFields: command.modelFields.map((modelField) => ({
@@ -21,6 +31,7 @@ const modelRepository = {
             conditionType: condition.conditionType,
             field: condition.fieldId,
           })) || [],
+        states: modelField.modelStatesIds,
       })),
       modelEvents: command.modelEvents.map<IEvent>((modelEvent: IEvent) => ({
         eventTrigger: modelEvent.eventTrigger,
@@ -38,14 +49,8 @@ const modelRepository = {
           })
         ),
       })),
-      states: command.states.map((state) => ({
-        language: command.language,
-        text: state,
-      })),
-      subStates: command.subStates.map((subState) => ({
-        language: command.language,
-        text: subState,
-      })),
+      states: modelStates.map((el) => el._id),
+      subStates: modelSubstates.map((el) => el._id),
     });
 
     return model.populate(populationOptions);
@@ -57,7 +62,25 @@ const modelRepository = {
 
     if (!model) return null;
 
-    console.log("command model events", command.modelEvents);
+    // Delete no long existing model states:
+    const noLongerExistingModelStatesIds = model.states
+      .filter((modelState: IModelState) => {
+        return !Boolean(
+          command.states.find((el) => el._id === modelState._id.toString())
+        );
+      })
+      .map((el) => el._id);
+
+    await modelStateRepository.deleteMany(noLongerExistingModelStatesIds);
+
+    // update model states first:
+    const modelStates: IModelState[] = await modelStateRepository.updateMany(
+      command.states
+    );
+    const modelSubstates: IModelState[] = await modelStateRepository.updateMany(
+      command.subStates
+    );
+
     await Model.updateOne(
       { _id: command._id },
       {
@@ -76,6 +99,7 @@ const modelRepository = {
                 conditionType: condition.conditionType,
                 field: condition.fieldId,
               })) || [],
+            states: modelField.modelStatesIds,
           })),
           modelEvents: command.modelEvents.map<IEvent>(
             (modelEvent: IEvent) => ({
@@ -96,24 +120,8 @@ const modelRepository = {
                 ),
             })
           ),
-          states: command.states.map((state, index) => {
-            if (model.states.length > index) {
-              return model.states[index]
-                .filter((el) => el.language !== command.language)
-                .concat([{ language: command.language, text: state }]);
-            } else {
-              return [{ language: command.language, text: state }];
-            }
-          }),
-          subStates: command.subStates.map((subState, index) => {
-            if (model.states.length > index) {
-              return model.states[index]
-                .filter((el) => el.language !== command.language)
-                .concat([{ language: command.language, text: subState }]);
-            } else {
-              return [{ language: command.language, text: subState }];
-            }
-          }),
+          states: modelStates.map((el) => el._id),
+          subStates: modelSubstates.map((el) => el._id),
         },
       }
     );
@@ -211,10 +219,20 @@ export const populationOptions = [
           model: "field",
         },
       },
+      {
+        path: "states",
+        model: "modelState",
+      },
     ],
   },
   {
     path: "modelEvents",
+  },
+  {
+    path: "states",
+  },
+  {
+    path: "subStates",
   },
 ];
 

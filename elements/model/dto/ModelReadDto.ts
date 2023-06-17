@@ -1,4 +1,5 @@
 import { toReadDto as fieldToReadDto } from "../../field/dto/FieldReadDto";
+import ModelStateReadDto from "../../modelState/dto/ModelStateReadDto";
 import { IModel } from "../model.model";
 
 type ModelReadDto = {
@@ -6,8 +7,8 @@ type ModelReadDto = {
   name: IModel["name"];
   modelFields: IModel["modelFields"];
   modelEvents?: IModel["modelEvents"];
-  states?: IModel["states"];
-  subStates?: IModel["subStates"];
+  states?: ModelStateReadDto[];
+  subStates?: ModelStateReadDto[];
 
   createdAt: IModel["createdAt"];
   updatedAt: IModel["updatedAt"];
@@ -26,6 +27,7 @@ export const toReadDto = (model: IModel): ModelReadDto => {
           conditionType: condition.conditionType,
           value: condition.value,
         })),
+        states: modelField.states,
       };
     }),
     modelEvents: model.modelEvents,

@@ -1,4 +1,5 @@
 import EventCommand from "../../event/dto/EventCommand";
+import ModelStateUpdateCommand from "../../modelState/dto/ModelStateUpdateCommand";
 import { ModelFieldConditionTypeEnum } from "../model.model";
 
 type ModelUpdateCommand = {
@@ -12,10 +13,11 @@ type ModelUpdateCommand = {
       conditionType: ModelFieldConditionTypeEnum;
       value: number | string;
     }[];
+    modelStatesIds: string[];
   }[];
   modelEvents: EventCommand[];
-  states: string[];
-  subStates: string[];
+  states: ModelStateUpdateCommand[];
+  subStates: ModelStateUpdateCommand[];
   language: string;
 };
 
