@@ -9,6 +9,7 @@ const modelStateRepository = {
     const modelState: IModelState = await ModelState.create({
       name: [{ language: command.language, text: command.name }],
       stateType: command.stateType,
+      exlusive: command.exclusive,
     });
     return modelState;
   },
@@ -23,6 +24,7 @@ const modelStateRepository = {
             newText: command.name,
             oldValue: oldModelState.name,
           }),
+          exlusive: command.exclusive,
         },
       }
     ).exec();
@@ -57,6 +59,7 @@ const modelStateRepository = {
             language: command.language,
             name: command.name,
             stateType: command.stateType,
+            exclusive: command.exclusive,
           });
           resolve(modelState);
         }
