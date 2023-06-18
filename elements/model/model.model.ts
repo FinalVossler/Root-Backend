@@ -27,6 +27,7 @@ export interface IModelField {
   required: boolean;
   conditions?: IModelFieldCondition[];
   states?: IModelState[];
+  mainField?: boolean;
 }
 
 export interface IModelFieldCondition {
@@ -89,6 +90,10 @@ const ModelSchema = new mongoose.Schema<IModel>(
             ref: "modelState",
           },
         ],
+        mainField: {
+          type: mongoose.SchemaTypes.Boolean,
+          required: false,
+        },
       },
     ],
     modelEvents: [EventSchema],

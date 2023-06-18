@@ -28,6 +28,7 @@ export const toReadDto = (model: IModel): ModelReadDto => {
           value: condition.value,
         })),
         states: modelField.states,
+        mainField: modelField.mainField,
       };
     }),
     modelEvents: model.modelEvents,

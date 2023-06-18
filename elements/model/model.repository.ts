@@ -32,6 +32,7 @@ const modelRepository = {
             field: condition.fieldId,
           })) || [],
         states: modelField.modelStatesIds,
+        mainField: modelField.mainField,
       })),
       modelEvents: command.modelEvents.map<IEvent>((modelEvent: IEvent) => ({
         eventTrigger: modelEvent.eventTrigger,
@@ -100,6 +101,7 @@ const modelRepository = {
                 field: condition.fieldId,
               })) || [],
             states: modelField.modelStatesIds,
+            mainField: modelField.mainField,
           })),
           modelEvents: command.modelEvents.map<IEvent>(
             (modelEvent: IEvent) => ({

@@ -13,6 +13,7 @@ type ModelCreateCommand = {
       value: number | string;
     }[];
     modelStatesIds: string[];
+    mainField: boolean;
   }[];
   modelEvents: EventCommand[];
   states: ModelStateCreateCommand[];

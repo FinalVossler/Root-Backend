@@ -14,6 +14,7 @@ type ModelUpdateCommand = {
       value: number | string;
     }[];
     modelStatesIds: string[];
+    mainField: boolean;
   }[];
   modelEvents: EventCommand[];
   states: ModelStateUpdateCommand[];
