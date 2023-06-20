@@ -81,9 +81,11 @@ const roleRepository = {
       entityPermissions: createdEntityPermissions,
     });
 
-    role.populate(populationOptions);
+    const createdRole: IRole = await Role.findById(role._id).populate(
+      populationOptions
+    );
 
-    return role as IRole;
+    return createdRole;
   },
   update: async (command: RoleUpdateCommand): Promise<IRole> => {
     const role: IRole = await Role.findById(command._id).populate(
@@ -238,6 +240,13 @@ const populationOptions = [
         populate: {
           path: "field",
           model: "field",
+        },
+      },
+      {
+        path: "entityUserAssignmentPermissionsByRole",
+        populate: {
+          path: "otherRoles",
+          model: "role",
         },
       },
     ],

@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 
 import { IFile } from "../file/file.model";
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
-import { IUser } from "../user/user.model";
 
 export interface INotification {
   _id: mongoose.ObjectId;

@@ -96,6 +96,19 @@ const entityPermissionRepository = {
         })
       ),
       entityEventNotifications: entityEventNotifications,
+      entityUserAssignmentPermissionsByRole: {
+        canAssignToUserFromSameRole:
+          command.entityUserAssignmentPermissionsByRole
+            .canAssignToUserFromSameRole,
+        otherRoles: command.entityUserAssignmentPermissionsByRole.otherRolesIds,
+      },
+    });
+
+    console.log("huh", {
+      canAssignToUserFromSameRole:
+        command.entityUserAssignmentPermissionsByRole
+          .canAssignToUserFromSameRole,
+      otherRoles: command.entityUserAssignmentPermissionsByRole.otherRolesIds,
     });
 
     return entityPermission;
@@ -159,6 +172,13 @@ const entityPermissionRepository = {
             ...updatedEntityEventNotifications,
             ...createdEntityEventNotifications,
           ],
+          entityUserAssignmentPermissionsByRole: {
+            canAssignToUserFromSameRole:
+              command.entityUserAssignmentPermissionsByRole
+                .canAssignToUserFromSameRole,
+            otherRoles:
+              command.entityUserAssignmentPermissionsByRole.otherRolesIds,
+          },
         },
       }
     ).exec();

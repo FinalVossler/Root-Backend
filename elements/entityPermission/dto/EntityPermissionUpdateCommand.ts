@@ -10,6 +10,11 @@ type EntityPermissionUpdateCommand = {
     permissions: StaticPermission[];
   }[];
   entityEventNotifications: EntityEventNotificationUpdateCommand[];
+  entityUserAssignmentPermissionsByRole: {
+    // used to also add the current role that's just been added
+    canAssignToUserFromSameRole: boolean;
+    otherRolesIds: string[];
+  };
   language: string;
 };
 

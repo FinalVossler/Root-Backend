@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { IEntityEventNotification } from "../entityEventNotification/entityEventNotification.model";
 import entityEventNotificationRepository from "../entityEventNotification/entityEventNotification.repository";
 import { IField } from "../field/field.model";
-import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
+import translatedTextSchema from "../ITranslatedText";
 import { IModel } from "../model/model.model";
 import Role, { IRole } from "../role/role.model";
 
@@ -20,6 +20,10 @@ export interface IEntityPermission {
   permissions: StaticPermission[];
   entityFieldPermissions: IFieldPermission[];
   entityEventNotifications: IEntityEventNotification[];
+  entityUserAssignmentPermissionsByRole?: {
+    canAssignToUserFromSameRole: boolean;
+    otherRoles: IRole[];
+  };
 }
 
 export interface IFieldPermission {
@@ -57,6 +61,17 @@ const EntityPermissionSchema = new mongoose.Schema(
         },
       },
     ],
+    entityUserAssignmentPermissionsByRole: {
+      canAssignToUserFromSameRole: {
+        type: mongoose.SchemaTypes.Boolean,
+      },
+      otherRoles: [
+        {
+          type: mongoose.SchemaTypes.ObjectId,
+          ref: "role",
+        },
+      ],
+    },
   },
   {
     timestamps: true,
