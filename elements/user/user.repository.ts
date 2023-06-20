@@ -11,6 +11,7 @@ import UserCreateCommand from "./dtos/UserCreateCommand";
 import UsersGetCommand from "./dtos/UsersGetCommand";
 import UsersSearchCommand from "./dtos/UsersSearchCommand";
 import ChatGetContactsCommand from "./dtos/ChatGetContactsCommand";
+import UserSearchByRoleCommand from "./dtos/UserSearchByRoleCommand";
 
 const userRepository = {
   chatGetContacts: async (
@@ -154,7 +155,8 @@ const userRepository = {
     return null;
   },
   search: async (
-    command: UsersSearchCommand
+    command: UsersSearchCommand,
+    additionalConditions: any = {}
   ): Promise<{ users: IUser[]; total: number }> => {
     const query = User.find({
       $or: [
@@ -162,6 +164,7 @@ const userRepository = {
         { lastName: { $regex: command.firstNameOrLastNameOrEmail } },
         { email: { $regex: command.firstNameOrLastNameOrEmail } },
       ],
+      ...additionalConditions,
     });
 
     const users: IUser[] = await query
@@ -186,6 +189,18 @@ const userRepository = {
     }).exec();
 
     return users;
+  },
+  searchByRole: async (
+    command: UserSearchByRoleCommand
+  ): Promise<{ users: IUser[]; total: number }> => {
+    const { users, total } = await userRepository.search(
+      command.searchCommand,
+      {
+        role: new mongoose.Types.ObjectId(command.roleId),
+      }
+    );
+
+    return { users, total };
   },
 };
 

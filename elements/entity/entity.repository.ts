@@ -39,10 +39,7 @@ const entityRepository = {
 
     await Promise.all(createFilesPromises);
   },
-  create: async (
-    command: EntityCreateCommand,
-    currentUser: IUser
-  ): Promise<IEntity> => {
+  create: async (command: EntityCreateCommand): Promise<IEntity> => {
     await entityRepository.combineEntityFieldValuesNewFilesAndSelectedOwnFiles(
       command.entityFieldValues
     );
@@ -54,6 +51,7 @@ const entityRepository = {
         value: [{ language: command.language, text: fieldValue.value }],
         files: fieldValue.files.map((f) => f._id),
       })),
+      assignedUsers: command.assignedUsersIds,
     });
 
     return entity.populate(populationOptions);
@@ -89,6 +87,7 @@ const entityRepository = {
               }),
             };
           }),
+          assignedUsers: command.assignedUsersIds,
         },
       }
     );
@@ -174,6 +173,20 @@ const populationOptions = [
   {
     path: "model",
     model: Model.modelName,
+  },
+  {
+    path: "assignedUsers",
+    model: "user",
+    populate: [
+      {
+        path: "role",
+        model: "role",
+      },
+      {
+        path: "profilePicture",
+        model: "file",
+      },
+    ],
   },
 ];
 

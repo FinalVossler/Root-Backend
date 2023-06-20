@@ -1,6 +1,5 @@
 import socket from "socket.io";
 import http from "http";
-import mongoose from "mongoose";
 
 import ChatMessagesEnum from "./globalTypes/ChatMessagesEnum";
 import MessageReadDto from "./elements/message/dtos/MessageReadDto";

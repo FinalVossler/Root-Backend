@@ -4,6 +4,7 @@ import { IFile } from "../../file/file.model";
 type EntityCreateCommand = {
   modelId: mongoose.ObjectId;
   entityFieldValues: EntityFieldValueCommand[];
+  assignedUsersIds: string[];
   language: string;
 };
 

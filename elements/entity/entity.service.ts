@@ -74,7 +74,7 @@ const entityService = {
     command: EntityCreateCommand,
     currentUser: IUser
   ): Promise<IEntity> => {
-    const entity: IEntity = await entityRepository.create(command, currentUser);
+    const entity: IEntity = await entityRepository.create(command);
 
     // Required fields validation
     const { valid, errorText } = await entityService.verifyRequiredFields({

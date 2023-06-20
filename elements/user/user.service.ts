@@ -6,7 +6,7 @@ import UserLoginCommand from "./dtos/UserLoginCommand";
 import userRepository from "./user.repository";
 import { IUser } from "./user.model";
 import UserUpdateCommand from "./dtos/UserUpdateCommand";
-import mongoose, { ObjectId } from "mongoose";
+import mongoose from "mongoose";
 import UserUpdateProfilePictureCommand from "./dtos/UserUpdateProfilePictureCommand";
 import emailService from "../email/email.service";
 import UserChangePasswordCommand from "./dtos/UserChangePasswordCommand";
@@ -15,6 +15,7 @@ import UserCreateCommand from "./dtos/UserCreateCommand";
 import UsersGetCommand from "./dtos/UsersGetCommand";
 import UsersSearchCommand from "./dtos/UsersSearchCommand";
 import ChatGetContactsCommand from "./dtos/ChatGetContactsCommand";
+import UserSearchByRoleCommand from "./dtos/UserSearchByRoleCommand";
 
 const userService = {
   generatePasswordHash: async (password: string): Promise<string> => {
@@ -212,6 +213,13 @@ const userService = {
   },
   getRoleUsers: async (roleId: string): Promise<IUser[]> => {
     return await userRepository.getRoleUsers(roleId);
+  },
+  searchByRole: async (
+    command: UserSearchByRoleCommand
+  ): Promise<{ users: IUser[]; total: number }> => {
+    const { users, total } = await userRepository.searchByRole(command);
+
+    return { users, total };
   },
 };
 

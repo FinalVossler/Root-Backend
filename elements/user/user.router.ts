@@ -20,6 +20,7 @@ import UsersSearchCommand from "./dtos/UsersSearchCommand";
 import ChatGetContactsCommand from "./dtos/ChatGetContactsCommand";
 import roleService from "../role/role.service";
 import { Permission } from "../role/role.model";
+import UserSearchByRoleCommand from "./dtos/UserSearchByRoleCommand";
 
 const router = express.Router();
 
@@ -350,6 +351,26 @@ router.post(
     const command: UsersSearchCommand = req.body;
 
     const { users, total } = await userService.search(command);
+
+    return res.status(200).send({
+      success: true,
+      data: {
+        data: users.map((p) => toReadDto(p)),
+        total,
+      },
+    });
+  }
+);
+
+router.post(
+  "/searchByRole",
+  async (
+    req: ConnectedRequest<any, any, UserSearchByRoleCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<UserReadDto>>>
+  ) => {
+    const command: UserSearchByRoleCommand = req.body;
+
+    const { users, total } = await userService.searchByRole(command);
 
     return res.status(200).send({
       success: true,

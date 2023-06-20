@@ -6,6 +6,7 @@ type EntityUpdateCommand = {
   _id: mongoose.ObjectId;
   modelId: mongoose.ObjectId;
   entityFieldValues: EntityFieldValueCommand[];
+  assignedUsersIds: string[];
   language: string;
 };
 
