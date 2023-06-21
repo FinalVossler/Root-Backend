@@ -227,6 +227,13 @@ const populationOptions = [
             model: "field",
           },
         },
+        {
+          path: "entityUserAssignmentPermissionsByRole",
+          populate: {
+            path: "otherRoles",
+            model: "role",
+          },
+        },
       ],
     },
   },
