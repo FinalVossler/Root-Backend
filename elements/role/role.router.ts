@@ -67,10 +67,11 @@ router.post(
     req: ConnectedRequest<any, any, RolesGetCommand, any>,
     res: Response<ResponseDto<PaginationResponse<RoleReadDto>>>
   ) => {
-    roleService.checkPermission({
-      user: req.user,
-      permission: Permission.ReadRole,
-    });
+    // Code commented. Roles should always be activated. We need to get the roles when assigning entities to users by roles
+    // roleService.checkPermission({
+    //   user: req.user,
+    //   permission: Permission.ReadRole,
+    // });
 
     const command: RolesGetCommand = req.body;
     const { roles, total } = await roleService.getRoles(command);
