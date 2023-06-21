@@ -7,7 +7,7 @@ import EntityCreateCommand, {
   EntityFieldValueCommand,
 } from "./dto/EntityCreateCommand";
 import EntityUpdateCommand from "./dto/EntityUpdateCommand";
-import { IUser } from "../user/user.model";
+import { IUser, SuperRole } from "../user/user.model";
 import EntitiesSearchCommand from "./dto/EntitiesSearchCommand";
 import entityEventNotificationService from "../entityEventNotification/entityEventNotification.service";
 import { EntityEventNotificationTrigger } from "../entityEventNotification/entityEventNotification.model";
@@ -16,6 +16,9 @@ import modelSerivce from "../model/model.service";
 import { FieldType } from "../field/field.model";
 import userService from "../user/user.service";
 import { IEntityPermission } from "../entityPermission/entityPermission.model";
+import NotificationCreateCommand from "../notification/dto/NotificationCreateCommand";
+import notificationService from "../notification/notification.service";
+import { assign } from "nodemailer/lib/shared";
 
 const entityService = {
   verifyRequiredFields: async ({
@@ -81,6 +84,10 @@ const entityService = {
     assignedUsersIds: string[];
     modelId: string;
   }): Promise<boolean> => {
+    if (currentUser.superRole === SuperRole.SuperAdmin) {
+      return true;
+    }
+
     let hasPermission: boolean = true;
 
     const users: IUser[] = await userService.getByIds(assignedUsersIds);
@@ -149,12 +156,32 @@ const entityService = {
       currentUser
     );
 
+    // Now send a notification to assigned users
+    const createNotificationCommand: NotificationCreateCommand = {
+      imageId: currentUser.profilePicture._id.toString(),
+      link:
+        process.env.ORIGIN + "/entities/" + command.modelId + "/" + entity._id,
+      // TODO Replace notification text by the configuration in model assignment notification text configuration
+      text: [{ language: "en", text: "An entity was just assigned to you" }],
+      toIds: command.assignedUsersIds,
+    };
+    notificationService.create(createNotificationCommand);
+
     return entity;
   },
   updateEntity: async (
     command: EntityUpdateCommand,
     currentUser: IUser
   ): Promise<IEntity> => {
+    const oldEntity: IEntity = await entityService.getById(
+      command._id.toString()
+    );
+    const oldAssignedUsers = [...(oldEntity.assignedUsers || [])];
+
+    const newlyAssignedUsersIds = command.assignedUsersIds.filter(
+      (assignedNow) =>
+        !oldAssignedUsers.some((u) => u._id.toString() === assignedNow)
+    );
     const entity: IEntity = await entityRepository.update(command, currentUser);
 
     const assignmentPermissionGranted: boolean =
@@ -176,6 +203,17 @@ const entityService = {
     if (!valid) {
       throw new Error(errorText);
     }
+
+    // Now send a notification to newly assigned users
+    const createNotificationCommand: NotificationCreateCommand = {
+      imageId: currentUser.profilePicture._id.toString(),
+      link:
+        process.env.ORIGIN + "/entities/" + command.modelId + "/" + entity._id,
+      // TODO Replace notification text by the configuration in model assignment notification text configuration
+      text: [{ language: "en", text: "An entity was just assigned to you" }],
+      toIds: newlyAssignedUsersIds,
+    };
+    notificationService.create(createNotificationCommand);
 
     return entity;
   },
