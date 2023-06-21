@@ -201,6 +201,11 @@ const userService = {
 
     return { users, total };
   },
+  getByIds: async (ids: string[]): Promise<IUser[]> => {
+    const users: IUser[] = await userRepository.getByIds(ids);
+
+    return users;
+  },
   deleteUsers: async (usersIds: mongoose.ObjectId[]): Promise<void> => {
     await userRepository.deleteUsers(usersIds);
   },

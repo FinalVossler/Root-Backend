@@ -147,6 +147,15 @@ const userRepository = {
 
     return { users, total };
   },
+  getByIds: async (userIds: string[]): Promise<IUser[]> => {
+    const users: IUser[] = await User.find({
+      _id: { $in: userIds.map((id) => new mongoose.Types.ObjectId(id)) },
+    })
+      .populate(populationOptions)
+      .exec();
+
+    return users;
+  },
   deleteUsers: async (usersIds: mongoose.ObjectId[]): Promise<void> => {
     for (let i = 0; i < usersIds.length; i++) {
       await User.deleteOne({ _id: usersIds[i] });

@@ -14,6 +14,8 @@ import { EntityEventNotificationTrigger } from "../entityEventNotification/entit
 import { IModel, IModelField } from "../model/model.model";
 import modelSerivce from "../model/model.service";
 import { FieldType } from "../field/field.model";
+import userService from "../user/user.service";
+import { IEntityPermission } from "../entityPermission/entityPermission.model";
 
 const entityService = {
   verifyRequiredFields: async ({
@@ -70,11 +72,65 @@ const entityService = {
 
     return { valid: invalidFields.length === 0, invalidFields, errorText };
   },
+  usersEntityAssignmentPermissionGranted: async ({
+    currentUser,
+    assignedUsersIds,
+    modelId,
+  }: {
+    currentUser: IUser;
+    assignedUsersIds: string[];
+    modelId: string;
+  }): Promise<boolean> => {
+    let hasPermission: boolean = true;
+
+    const users: IUser[] = await userService.getByIds(assignedUsersIds);
+
+    const currentUserEntityPermissions: IEntityPermission | undefined =
+      currentUser.role?.entityPermissions.find(
+        (e) => e.model._id.toString() === modelId.toString()
+      );
+
+    if (!currentUserEntityPermissions && assignedUsersIds.length > 0) {
+      return false;
+    } else {
+      users.forEach((user) => {
+        if (
+          user.role?._id.toString() === currentUser.role?._id.toString() &&
+          !currentUserEntityPermissions.entityUserAssignmentPermissionsByRole
+            .canAssignToUserFromSameRole &&
+          !currentUserEntityPermissions.entityUserAssignmentPermissionsByRole.otherRoles.some(
+            (r) => r._id.toString() === currentUser.role?._id.toString()
+          )
+        ) {
+          hasPermission = false;
+        } else if (
+          user.role?._id.toString() !== currentUser.role?._id.toString() &&
+          !currentUserEntityPermissions.entityUserAssignmentPermissionsByRole.otherRoles.some(
+            (r) => r._id.toString() === user.role?._id.toString()
+          )
+        ) {
+          hasPermission = false;
+        }
+      });
+    }
+
+    return hasPermission;
+  },
   createEntity: async (
     command: EntityCreateCommand,
     currentUser: IUser
   ): Promise<IEntity> => {
     const entity: IEntity = await entityRepository.create(command);
+
+    const assignmentPermissionGranted: boolean =
+      await entityService.usersEntityAssignmentPermissionGranted({
+        currentUser,
+        assignedUsersIds: command.assignedUsersIds,
+        modelId: command.modelId.toString(),
+      });
+    if (!assignmentPermissionGranted) {
+      throw new Error("Some user assignments are not allowed");
+    }
 
     // Required fields validation
     const { valid, errorText } = await entityService.verifyRequiredFields({
@@ -100,6 +156,16 @@ const entityService = {
     currentUser: IUser
   ): Promise<IEntity> => {
     const entity: IEntity = await entityRepository.update(command, currentUser);
+
+    const assignmentPermissionGranted: boolean =
+      await entityService.usersEntityAssignmentPermissionGranted({
+        currentUser,
+        assignedUsersIds: command.assignedUsersIds,
+        modelId: command.modelId.toString(),
+      });
+    if (!assignmentPermissionGranted) {
+      throw new Error("Some user assignments are not allowed");
+    }
 
     // Required fields validation
     const { valid, errorText } = await entityService.verifyRequiredFields({
