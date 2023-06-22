@@ -18,7 +18,8 @@ const entityEventNotificationService = {
     modelId: string,
     trigger: EntityEventNotificationTrigger,
     entity: IEntity,
-    currentUser: IUser
+    currentUser: IUser,
+    usersIdsToNotify?: string[]
   ): Promise<void> => {
     const roles: IRole[] =
       await roleService.getRolesWithEntityPermissionsForModel(modelId);
@@ -105,9 +106,13 @@ const entityEventNotificationService = {
         );
       });
 
-      const usersToNotify: IUser[] = await userService.getRoleUsers(
-        role._id.toString()
-      );
+      let usersToNotify: IUser[] = [];
+
+      if (usersIdsToNotify) {
+        usersToNotify = await userService.getByIds(usersIdsToNotify);
+      } else {
+        usersToNotify = await userService.getRoleUsers(role._id.toString());
+      }
 
       emails.forEach((email) => {
         if (email.trigger === trigger) {

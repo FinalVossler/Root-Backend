@@ -149,23 +149,24 @@ const entityService = {
       throw new Error(errorText);
     }
 
-    await entityEventNotificationService.notifyUsers(
+    // Now send the onCreate event notificatiosn (email + inapp notifications)
+    entityEventNotificationService.notifyUsers(
       command.modelId.toString(),
       EntityEventNotificationTrigger.OnCreate,
       entity,
       currentUser
     );
 
-    // Now send a notification to assigned users
-    const createNotificationCommand: NotificationCreateCommand = {
-      imageId: currentUser.profilePicture._id.toString(),
-      link:
-        process.env.ORIGIN + "/entities/" + command.modelId + "/" + entity._id,
-      // TODO Replace notification text by the configuration in model assignment notification text configuration
-      text: [{ language: "en", text: "An entity was just assigned to you" }],
-      toIds: command.assignedUsersIds,
-    };
-    notificationService.create(createNotificationCommand);
+    // Now send the onAssigned event notificatiosn (email + inapp notifications)
+    if (command.assignedUsersIds.length > 0) {
+      entityEventNotificationService.notifyUsers(
+        command.modelId.toString(),
+        EntityEventNotificationTrigger.OnAssigned,
+        entity,
+        currentUser,
+        command.assignedUsersIds
+      );
+    }
 
     return entity;
   },

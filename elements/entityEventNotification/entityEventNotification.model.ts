@@ -4,6 +4,7 @@ import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 
 export enum EntityEventNotificationTrigger {
   OnCreate = "OnCreate",
+  OnAssigned = "OnAssigned",
 }
 
 export interface IEntityEventNotification {
