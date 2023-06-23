@@ -18,7 +18,6 @@ import userService from "../user/user.service";
 import { IEntityPermission } from "../entityPermission/entityPermission.model";
 import NotificationCreateCommand from "../notification/dto/NotificationCreateCommand";
 import notificationService from "../notification/notification.service";
-import { assign } from "nodemailer/lib/shared";
 
 const entityService = {
   verifyRequiredFields: async ({
@@ -205,16 +204,18 @@ const entityService = {
       throw new Error(errorText);
     }
 
-    // Now send a notification to newly assigned users
-    const createNotificationCommand: NotificationCreateCommand = {
-      imageId: currentUser.profilePicture._id.toString(),
-      link:
-        process.env.ORIGIN + "/entities/" + command.modelId + "/" + entity._id,
-      // TODO Replace notification text by the configuration in model assignment notification text configuration
-      text: [{ language: "en", text: "An entity was just assigned to you" }],
-      toIds: newlyAssignedUsersIds,
-    };
-    notificationService.create(createNotificationCommand);
+    // Now send the onAssigned event notificatiosn (email + inapp notifications)
+    if (newlyAssignedUsersIds.length > 0) {
+      if (command.assignedUsersIds.length > 0) {
+        entityEventNotificationService.notifyUsers(
+          command.modelId.toString(),
+          EntityEventNotificationTrigger.OnAssigned,
+          entity,
+          currentUser,
+          newlyAssignedUsersIds
+        );
+      }
+    }
 
     return entity;
   },
