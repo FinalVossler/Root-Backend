@@ -11,6 +11,7 @@ type ModelCreateCommand = {
       fieldId: string;
       conditionType: ModelFieldConditionTypeEnum;
       value: number | string;
+      modelStateId: string[];
     }[];
     modelStatesIds: string[];
     mainField: boolean;

@@ -87,7 +87,6 @@ const emailService = {
     const accessToken = await new Promise((resolve, reject) => {
       OAuthClient.getAccessToken((err, token) => {
         if (err) {
-          console.log("err", err);
           reject("Failed to create access token :(");
         }
         resolve(token);

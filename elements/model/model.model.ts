@@ -31,9 +31,10 @@ export interface IModelField {
 }
 
 export interface IModelFieldCondition {
-  field: IField;
+  field?: IField;
   conditionType: ModelFieldConditionTypeEnum;
-  value: number | string;
+  value?: number | string;
+  modelState?: IModelState;
 }
 
 export enum ModelFieldConditionTypeEnum {
@@ -43,6 +44,7 @@ export enum ModelFieldConditionTypeEnum {
   InferiorOrEqualTo = "InferiorOrEqualTo",
   Equal = "Equal",
   ValueInferiorOrEqualToCurrentYearPlusValueOfFieldAndSuperiorOrEqualToCurrentYear = "ValueInferiorOrEqualToCurrentYearPlusValueOfFieldAndSuperiorOrEqualToCurrentYear",
+  StateConditionsMet = "StateConditionsMet",
 }
 //#endregion model fields
 
@@ -59,6 +61,7 @@ const ModelSchema = new mongoose.Schema<IModel>(
         field: {
           type: mongoose.SchemaTypes.ObjectId,
           ref: "field",
+          required: false,
         },
         required: {
           type: mongoose.SchemaTypes.Boolean,
@@ -75,6 +78,11 @@ const ModelSchema = new mongoose.Schema<IModel>(
             },
             value: {
               type: mongoose.SchemaTypes.String,
+              required: false,
+            },
+            modelState: {
+              type: mongoose.SchemaTypes.ObjectId,
+              ref: "modelState",
             },
           },
         ],

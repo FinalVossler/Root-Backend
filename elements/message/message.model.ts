@@ -77,7 +77,7 @@ MessageSchema.pre("deleteOne", async function (next) {
 
   const filesUuids: string[] = message.files.map((f) => f.uuid);
 
-  console.log("filesUuids", filesUuids);
+  console.info("filesUuids", filesUuids);
 
   // TODO: we have file ids. Now we need to delete all in upload care
 

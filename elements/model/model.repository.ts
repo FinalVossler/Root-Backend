@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import Model, { IModel } from "./model.model";
+import Model, { IModel, ModelFieldConditionTypeEnum } from "./model.model";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
 import ModelCreateCommand from "./dto/ModelCreateCommand";
 import ModelUpdateCommand from "./dto/ModelUpdateCommand";
@@ -29,7 +29,8 @@ const modelRepository = {
           modelField.conditions?.map((condition) => ({
             value: condition.value,
             conditionType: condition.conditionType,
-            field: condition.fieldId,
+            field: condition.fieldId || undefined,
+            modelState: condition.modelStateId,
           })) || [],
         states: modelField.modelStatesIds,
         mainField: modelField.mainField,
@@ -95,11 +96,14 @@ const modelRepository = {
             field: modelField.fieldId,
             required: modelField.required,
             conditions:
-              modelField.conditions?.map((condition) => ({
-                value: condition.value,
-                conditionType: condition.conditionType,
-                field: condition.fieldId,
-              })) || [],
+              modelField.conditions?.map((condition) => {
+                return {
+                  value: condition.value,
+                  conditionType: condition.conditionType,
+                  field: condition.fieldId || undefined,
+                  modelState: condition.modelStateId,
+                };
+              }) || [],
             states: modelField.modelStatesIds,
             mainField: modelField.mainField,
           })),
@@ -216,10 +220,16 @@ export const populationOptions = [
       },
       {
         path: "conditions",
-        populate: {
-          path: "field",
-          model: "field",
-        },
+        populate: [
+          {
+            path: "field",
+            model: "field",
+          },
+          {
+            path: "modelState",
+            model: "modelState",
+          },
+        ],
       },
       {
         path: "states",

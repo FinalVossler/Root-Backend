@@ -18,6 +18,9 @@ const pageRepository = {
     const query = await Page.create({
       posts: command.posts,
       title: [{ text: command.title, language: command.language }],
+      showInHeader: command.showInHeader,
+      slug: slugify(command.title),
+      showInSideMenu: command.showInSideMenu,
     });
 
     await query.populate(populationOptions);
@@ -44,7 +47,9 @@ const pageRepository = {
             language: command.language,
             newText: command.title,
           }),
-          slug: slugify(command.title),
+          // The slug is managed in the onCreate mongoose middleware
+          showInHeader: command.showInHeader,
+          showInSideMenu: command.showInSideMenu,
         },
       }
     );

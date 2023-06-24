@@ -104,13 +104,6 @@ const entityPermissionRepository = {
       },
     });
 
-    console.log("huh", {
-      canAssignToUserFromSameRole:
-        command.entityUserAssignmentPermissionsByRole
-          .canAssignToUserFromSameRole,
-      otherRoles: command.entityUserAssignmentPermissionsByRole.otherRolesIds,
-    });
-
     return entityPermission;
   },
   updateEntityPermission: async (

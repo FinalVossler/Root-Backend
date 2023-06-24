@@ -63,5 +63,5 @@ import { IRole } from "./elements/role/role.model";
 
   seedUsers();
   seedRoles();
-  console.log("finished seeding");
+  console.info("finished seeding");
 })();

@@ -5,6 +5,8 @@ type PageReadDto = {
   title: IPage["title"];
   slug: IPage["slug"];
   posts: IPage["posts"];
+  showInHeader: IPage["showInHeader"];
+  showInSideMenu: IPage["showInSideMenu"];
 };
 
 export const toReadDto = (page: IPage): PageReadDto => {
@@ -13,6 +15,8 @@ export const toReadDto = (page: IPage): PageReadDto => {
     title: page.title,
     slug: page.slug,
     posts: page.posts,
+    showInHeader: page.showInHeader,
+    showInSideMenu: page.showInSideMenu,
   };
 };
 

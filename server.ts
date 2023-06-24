@@ -20,11 +20,11 @@ app.use(express.json());
 app.use(loggerMiddleware);
 app.use(router);
 
-app.use(errorMiddleware);
+// app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 5000;
 const server: http.Server = app.listen(PORT, () => {
-  console.log("app is running on port " + PORT);
+  console.info("app is running on port " + PORT);
 });
 
 socket(server);

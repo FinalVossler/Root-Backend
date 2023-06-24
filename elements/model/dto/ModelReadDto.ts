@@ -26,6 +26,7 @@ export const toReadDto = (model: IModel): ModelReadDto => {
           field: condition.field ? fieldToReadDto(condition.field) : null,
           conditionType: condition.conditionType,
           value: condition.value,
+          modelState: condition.modelState,
         })),
         states: modelField.states,
         mainField: modelField.mainField,
