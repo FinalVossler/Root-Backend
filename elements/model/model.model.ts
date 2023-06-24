@@ -8,6 +8,7 @@ import entityPermissionSerivce from "../entityPermission/entityPermission.servic
 import entityPermissionRepository from "../entityPermission/entityPermission.repository";
 import EventSchema, { IEvent } from "../event/event.model";
 import { IModelState } from "../modelState/modelState.model";
+import modelStateRepository from "../modelState/modelState.repository";
 
 export interface IModel {
   _id: mongoose.ObjectId;
@@ -138,6 +139,15 @@ ModelSchema.pre("deleteOne", async function (next) {
   await entityPermissionRepository.deleteByIds(
     modelEntityPermissions.map((ep) => ep._id.toString())
   );
+
+  // Delete model modelField states
+  let statesIds: mongoose.Types.ObjectId[] = [];
+  model.modelFields?.forEach((modelField) => {
+    statesIds = statesIds.concat(modelField.states.map((state) => state._id));
+  });
+  if (statesIds.length > 0) {
+    await modelStateRepository.deleteMany(statesIds);
+  }
 
   next();
 });
