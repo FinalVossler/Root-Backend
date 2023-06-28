@@ -1,8 +1,12 @@
 import mongoose from "mongoose";
+
 import EventSchema, { IEvent } from "../event/event.model";
+import { IFieldTableElement } from "../fieldTableElement/fieldTableElement.model";
+import fieldTableElementRepository from "../fieldTableElement/fieldTableElement.repository";
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 import Model, { IModel } from "../model/model.model";
 import { populationOptions } from "../model/model.repository";
+import { populationOptions as fieldPopulationOptions } from "../field/field.repository";
 
 export enum FieldType {
   Number = "Number",
@@ -11,6 +15,7 @@ export enum FieldType {
   File = "File",
   Selector = "Selector",
   Button = "Button",
+  Table = "Table",
 }
 
 export type FieldOption = {
@@ -24,6 +29,12 @@ export interface IField {
   type: FieldType;
   options?: FieldOption[];
   fieldEvents: IEvent[];
+  tableOptions?: {
+    name?: ITranslatedText[];
+    columns: IFieldTableElement[];
+    rows: IFieldTableElement[];
+    yearTable: boolean;
+  };
 
   createdAt: string;
   updatedAt: string;
@@ -49,15 +60,38 @@ const FieldSchema = new mongoose.Schema<IField>(
       },
     ],
     fieldEvents: [EventSchema],
+    tableOptions: {
+      name: {
+        type: translatedTextSchema,
+        required: false,
+      },
+      columns: [
+        {
+          type: mongoose.SchemaTypes.ObjectId,
+          ref: "fieldTableElement",
+        },
+      ],
+      rows: [
+        {
+          type: mongoose.SchemaTypes.ObjectId,
+          ref: "fieldTableElement",
+        },
+      ],
+      yearTable: {
+        type: mongoose.SchemaTypes.Boolean,
+      },
+    },
   },
   {
     timestamps: true,
   }
 );
 
-// Deleting the fields from the models that are using them
 FieldSchema.pre("deleteOne", async function (next) {
-  const field: IField = (await this.model.findOne(this.getQuery())) as IField;
+  // Deleting the fields from the models that are using them
+  const field: IField = (await this.model
+    .findOne(this.getQuery())
+    .populate(fieldPopulationOptions)) as IField;
 
   const models: IModel[] = await Model.find({
     modelFields: { $elemMatch: { field: { _id: field._id } } },
@@ -82,6 +116,13 @@ FieldSchema.pre("deleteOne", async function (next) {
   });
 
   await Promise.all(promises);
+
+  // Delete field table elements on field deletion
+  fieldTableElementRepository.deleteMany(
+    (field.tableOptions?.columns.map((c) => c._id.toString()) || []).concat(
+      field.tableOptions?.rows.map((r) => r._id.toString())
+    )
+  );
 
   next();
 });
