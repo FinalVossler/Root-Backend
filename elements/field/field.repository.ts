@@ -138,8 +138,6 @@ const fieldRepository = {
       createdColumns.concat(updatedColumns);
     const allRows: IFieldTableElement[] = createdRows.concat(updatedRows);
 
-    console.log("allColumns", allColumns);
-
     await Field.updateOne(
       { _id: command._id },
       {

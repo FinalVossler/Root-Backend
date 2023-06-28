@@ -40,20 +40,6 @@ const fieldTableElementRepository = {
     const updatedTableElement: IFieldTableElement =
       await FieldTableElement.findById(command._id).exec();
 
-    console.log(
-      "updated",
-      command._id,
-      updatedTableElement,
-      "command",
-      command,
-      "name",
-      getNewTranslatedTextsForUpdate({
-        language: command.language,
-        newText: command.name,
-        oldValue: oldFieldTableElement?.name,
-      })
-    );
-
     return updatedTableElement;
   },
   createMany: async (
