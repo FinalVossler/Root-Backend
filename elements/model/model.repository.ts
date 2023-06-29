@@ -214,9 +214,24 @@ export const populationOptions = [
       {
         path: "field",
         model: "field",
-        populate: {
-          path: "options",
-        },
+        populate: [
+          {
+            path: "options",
+          },
+          {
+            path: "tableOptions",
+            populate: [
+              {
+                path: "columns",
+                model: "fieldTableElement",
+              },
+              {
+                path: "rows",
+                model: "fieldTableElement",
+              },
+            ],
+          },
+        ],
       },
       {
         path: "conditions",
