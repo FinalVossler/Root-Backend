@@ -87,7 +87,7 @@ const fieldTableElementRepository = {
   },
   deleteMany: async (ids: string[]): Promise<void> => {
     if (ids.length > 0) {
-      await FieldTableElement.deleteMany({ id: { $in: ids } });
+      await FieldTableElement.deleteMany({ _id: { $in: ids } });
     }
   },
 };
