@@ -37,6 +37,10 @@ const entityEventNotificationService = {
 
       const role: IRole = roles[i];
       role.entityPermissions.forEach((entityPermission: IEntityPermission) => {
+        if (entityPermission.model._id.toString() !== modelId) {
+          return;
+        }
+
         entityPermission.entityEventNotifications.forEach(
           (entityEventNotification: IEntityEventNotification) => {
             const languages: string[] = [];

@@ -16,8 +16,6 @@ import modelSerivce from "../model/model.service";
 import { FieldType } from "../field/field.model";
 import userService from "../user/user.service";
 import { IEntityPermission } from "../entityPermission/entityPermission.model";
-import NotificationCreateCommand from "../notification/dto/NotificationCreateCommand";
-import notificationService from "../notification/notification.service";
 
 const entityService = {
   verifyRequiredFields: async ({
@@ -148,7 +146,7 @@ const entityService = {
       throw new Error(errorText);
     }
 
-    // Now send the onCreate event notificatiosn (email + inapp notifications)
+    // Now send the onCreate event notifications (email + inapp notifications)
     entityEventNotificationService.notifyUsers(
       command.modelId.toString(),
       EntityEventNotificationTrigger.OnCreate,
@@ -156,7 +154,7 @@ const entityService = {
       currentUser
     );
 
-    // Now send the onAssigned event notificatiosn (email + inapp notifications)
+    // Now send the onAssigned event notifications (email + inapp notifications)
     if (command.assignedUsersIds.length > 0) {
       entityEventNotificationService.notifyUsers(
         command.modelId.toString(),

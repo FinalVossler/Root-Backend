@@ -141,7 +141,7 @@ const entityRepository = {
                                 t.row._id.toString() ===
                                 yearTableRowValues.rowId.toString()
                             )
-                            .values.find(
+                            ?.values.find(
                               (yearValue) =>
                                 yearValue.year.toString() ===
                                 value.year.toString()
