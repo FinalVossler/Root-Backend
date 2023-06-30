@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 import { IField } from "../field/field.model";
+import { IFieldTableElement } from "../fieldTableElement/fieldTableElement.model";
 import File, { IFile } from "../file/file.model";
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 import { IModel } from "../model/model.model";
@@ -20,6 +21,22 @@ export interface IEntityFieldValue {
   field: IField;
   value: ITranslatedText[];
   files: IFile[];
+  tableValues?: IEntityTableFieldCaseValue[];
+  yearTableValues?: IEntityYearTableFieldRowValues[];
+}
+
+export interface IEntityTableFieldCaseValue {
+  column: IFieldTableElement;
+  row: IFieldTableElement;
+  value: ITranslatedText[];
+}
+
+export interface IEntityYearTableFieldRowValues {
+  row: IFieldTableElement;
+  values: {
+    year: number;
+    value: ITranslatedText[];
+  }[];
 }
 
 interface IEntityModel extends mongoose.Model<IEntity> {}
@@ -42,6 +59,35 @@ const EntitySchema = new mongoose.Schema<IEntity>(
           {
             type: mongoose.SchemaTypes.ObjectId,
             ref: File.modelName,
+          },
+        ],
+        tableValues: [
+          {
+            column: {
+              type: mongoose.SchemaTypes.ObjectId,
+              ref: "fieldTableElement",
+            },
+            row: {
+              type: mongoose.SchemaTypes.ObjectId,
+              ref: "fieldTableElement",
+            },
+            value: translatedTextSchema,
+          },
+        ],
+        yearTableValues: [
+          {
+            row: {
+              type: mongoose.SchemaTypes.ObjectId,
+              ref: "fieldTableElement",
+            },
+            values: [
+              {
+                year: {
+                  type: mongoose.SchemaTypes.Number,
+                },
+                value: translatedTextSchema,
+              },
+            ],
           },
         ],
       },

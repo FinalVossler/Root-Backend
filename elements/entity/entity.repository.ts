@@ -50,6 +50,20 @@ const entityRepository = {
         field: fieldValue.fieldId,
         value: [{ language: command.language, text: fieldValue.value }],
         files: fieldValue.files.map((f) => f._id),
+        tableValues: fieldValue.tableValues.map((tableValue) => ({
+          column: tableValue.columnId,
+          row: tableValue.rowId,
+          value: [{ language: command.language, text: tableValue.value }],
+        })),
+        yearTableValues: fieldValue.yearTableValues.map(
+          (yearTableRowValues) => ({
+            row: yearTableRowValues.rowId,
+            values: yearTableRowValues.values.map((value) => ({
+              year: value.year,
+              value: [{ language: command.language, text: value.value }],
+            })),
+          })
+        ),
       })),
       assignedUsers: command.assignedUsersIds,
     });
@@ -73,20 +87,72 @@ const entityRepository = {
       {
         $set: {
           model: command.modelId,
-          entityFieldValues: command.entityFieldValues.map((fieldValue) => {
-            return {
-              field: fieldValue.fieldId,
-              files: fieldValue.files.map((f) => f._id),
-              value: getNewTranslatedTextsForUpdate({
-                language: command.language,
-                newText: fieldValue.value,
-                oldValue: entity.entityFieldValues.find(
-                  (el) =>
-                    el.field._id.toString() === fieldValue.fieldId.toString()
-                )?.value,
-              }),
-            };
-          }),
+          entityFieldValues: command.entityFieldValues.map(
+            (entityFieldValue) => {
+              return {
+                field: entityFieldValue.fieldId,
+                files: entityFieldValue.files.map((f) => f._id),
+                value: getNewTranslatedTextsForUpdate({
+                  language: command.language,
+                  newText: entityFieldValue.value,
+                  oldValue: entity.entityFieldValues.find(
+                    (el) =>
+                      el.field._id.toString() ===
+                      entityFieldValue.fieldId.toString()
+                  )?.value,
+                }),
+                tableValues: entityFieldValue.tableValues.map((tableValue) => ({
+                  column: tableValue.columnId,
+                  row: tableValue.rowId,
+                  value: getNewTranslatedTextsForUpdate({
+                    language: command.language,
+                    newText: tableValue.value,
+                    oldValue:
+                      entity.entityFieldValues
+                        .find(
+                          (e) =>
+                            e.field._id.toString() ===
+                            entityFieldValue.fieldId.toString()
+                        )
+                        .tableValues.find(
+                          (t) =>
+                            t.column._id.toString() === tableValue.columnId &&
+                            t.row._id.toString() === tableValue.rowId.toString()
+                        ).value || [],
+                  }),
+                })),
+                yearTableValues: entityFieldValue.yearTableValues.map(
+                  (yearTableRowValues) => ({
+                    row: yearTableRowValues.rowId,
+                    values: yearTableRowValues.values.map((value) => ({
+                      year: value.year,
+                      value: getNewTranslatedTextsForUpdate({
+                        language: command.language,
+                        newText: value.value,
+                        oldValue:
+                          entity.entityFieldValues
+                            .find(
+                              (e) =>
+                                e.field._id.toString() ===
+                                entityFieldValue.fieldId.toString()
+                            )
+                            .yearTableValues.find(
+                              (t) =>
+                                t.row._id.toString() ===
+                                yearTableRowValues.rowId.toString()
+                            )
+                            .values.find(
+                              (yearValue) =>
+                                yearValue.year.toString() ===
+                                value.year.toString()
+                            ).value || [],
+                      }),
+                    })),
+                  })
+                ),
+              };
+            }
+          ),
           assignedUsers: command.assignedUsersIds,
         },
       }
@@ -167,6 +233,28 @@ const populationOptions = [
       {
         path: "files",
         model: File.modelName,
+      },
+      {
+        path: "tableValues",
+        populate: [
+          {
+            path: "column",
+            model: "fieldTableElement",
+          },
+          {
+            path: "row",
+            model: "fieldTableElement",
+          },
+        ],
+      },
+      {
+        path: "yearTableValues",
+        populate: [
+          {
+            path: "row",
+            model: "fieldTableElement",
+          },
+        ],
       },
     ],
   },
