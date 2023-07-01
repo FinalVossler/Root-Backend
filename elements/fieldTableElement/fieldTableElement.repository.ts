@@ -1,5 +1,3 @@
-import mongoose from "mongoose";
-
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
 import FieldTableElementCreateCommand from "./dto/FieldTableElementCreateCommand";
 import FieldTableElementUpdateCommand from "./dto/FieldTableElementUpdateCommand";
@@ -13,7 +11,10 @@ const fieldTableElementRepository = {
   ): Promise<IFieldTableElement> => {
     const fieldTableElement: IFieldTableElement =
       await FieldTableElement.create({
-        name: [{ language: command.language, text: command.name }],
+        name:
+          command.name.length && command.name[0]["language"]
+            ? command.name
+            : [{ language: command.language, text: command.name }],
       });
 
     return fieldTableElement;

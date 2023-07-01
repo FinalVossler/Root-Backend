@@ -145,7 +145,7 @@ const entityRepository = {
                               (yearValue) =>
                                 yearValue.year.toString() ===
                                 value.year.toString()
-                            ).value || [],
+                            )?.value || [],
                       }),
                     })),
                   })

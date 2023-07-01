@@ -1,5 +1,7 @@
+import { ITranslatedText } from "../../ITranslatedText";
+
 type FieldTableElementCreateCommand = {
-  name: string;
+  name: string | ITranslatedText[];
   language: string;
 };
 

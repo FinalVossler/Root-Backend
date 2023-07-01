@@ -272,6 +272,30 @@ const fieldRepository = {
       promises.push(
         new Promise<IField>(async (resolve, reject) => {
           try {
+            const createdColumns: IFieldTableElement[] =
+              await fieldTableElementRepository.createMany(
+                field.tableOptions.columns.map((column) => ({
+                  // language doesn't matter
+                  language: "en",
+                  name: column.name.map((translatedText) => ({
+                    text: translatedText.text,
+                    language: translatedText.language,
+                  })),
+                }))
+              );
+
+            const createdRows: IFieldTableElement[] =
+              await fieldTableElementRepository.createMany(
+                field.tableOptions.rows.map((row) => ({
+                  // language doesn't matter
+                  language: "en",
+                  name: row.name.map((translatedText) => ({
+                    text: translatedText.text,
+                    language: translatedText.language,
+                  })),
+                }))
+              );
+
             const newField: IField = await Field.create({
               name: field.name.map((el) => ({
                 language: el.language,
@@ -285,7 +309,20 @@ const fieldRepository = {
                 })),
                 value: option.value,
               })),
-              // TODO Field events and table options should also be copied
+              tableOptions: {
+                name: field.tableOptions.name.map((translatedText) => ({
+                  text: translatedText.text,
+                  language: translatedText.language,
+                })),
+                columns: createdColumns.map((col) => col._id.toString()),
+                rows: createdRows.map((row) => row._id.toString()),
+                yearTable: field.tableOptions.yearTable,
+              },
+              fieldEvents: {
+                name: field.fieldEvents.map((fieldEvent) => ({
+                  ...fieldEvent,
+                })),
+              },
             });
 
             resolve(newField);
