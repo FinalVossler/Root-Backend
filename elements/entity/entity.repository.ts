@@ -114,11 +114,11 @@ const entityRepository = {
                             e.field._id.toString() ===
                             entityFieldValue.fieldId.toString()
                         )
-                        .tableValues.find(
+                        ?.tableValues.find(
                           (t) =>
                             t.column._id.toString() === tableValue.columnId &&
                             t.row._id.toString() === tableValue.rowId.toString()
-                        ).value || [],
+                        )?.value || [],
                   }),
                 })),
                 yearTableValues: entityFieldValue.yearTableValues.map(
