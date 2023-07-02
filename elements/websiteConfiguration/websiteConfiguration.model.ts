@@ -30,6 +30,7 @@ export interface IWebsiteConfiguration {
   mainLanguages: string[];
   withChat?: boolean;
   withRegistration?: boolean;
+  withTaskManagement?: boolean;
   theme: Theme;
   tabIcon: IFile;
 
@@ -62,6 +63,10 @@ const WebsiteConfigurationSchema = new mongoose.Schema<IWebsiteConfiguration>(
       type: mongoose.SchemaTypes.Boolean,
     },
     withRegistration: {
+      type: mongoose.SchemaTypes.Boolean,
+      default: true,
+    },
+    withTaskManagement: {
       type: mongoose.SchemaTypes.Boolean,
       default: true,
     },

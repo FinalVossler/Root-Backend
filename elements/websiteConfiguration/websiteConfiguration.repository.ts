@@ -41,6 +41,7 @@ const websiteConfigurationRepository = {
           tabTitle: command.tabTitle,
           withChat: command.withChat,
           withRegistration: command.withRegistration,
+          withTaskManagement: command.withTaskManagement,
           theme: command.theme,
           tabIcon: tabIcon._id,
         },
@@ -58,6 +59,7 @@ const websiteConfigurationRepository = {
         phoneNumber: "",
         withChat: false,
         withRegistration: false,
+        withTaskManagement: false,
         mainLanguages: ["en", "fr"],
       });
 

@@ -17,6 +17,7 @@ import roleService from "../role/role.service";
 import { StaticPermission } from "../entityPermission/entityPermission.model";
 import entityRepository from "./entity.repository";
 import EntitiesGetEntityCommand from "./dto/EntitiesGetEntityCommand";
+import PaginationCommand from "../../globalTypes/PaginationCommand";
 
 const router = Router();
 
@@ -109,13 +110,43 @@ router.post(
     res: Response<ResponseDto<PaginationResponse<EntityReadDto>>>
   ) => {
     const command: EntitiesGetCommand = req.body;
-    const { entities, total } = await entityService.getEntitiesByModel(command);
 
     roleService.checkEntityPermission({
       user: req.user,
       staticPermission: StaticPermission.Read,
       modelId: command.modelId.toString(),
     });
+
+    const { entities, total } = await entityService.getEntitiesByModel(command);
+
+    return res.status(200).send({
+      success: true,
+      data: {
+        data: entities.map((e) => toReadDto(e)),
+        total,
+      },
+    });
+  }
+);
+
+router.post(
+  "/getAssignedEntitiesByModel",
+  protectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, EntitiesGetCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<EntityReadDto>>>
+  ) => {
+    const command: EntitiesGetCommand = req.body;
+
+    roleService.checkEntityPermission({
+      user: req.user,
+      staticPermission: StaticPermission.Read,
+      modelId: command.modelId.toString(),
+    });
+
+    const { entities, total } = await entityService.getAssignedEntitiesByModel(
+      command
+    );
 
     return res.status(200).send({
       success: true,

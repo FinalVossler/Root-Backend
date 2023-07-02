@@ -15,7 +15,11 @@ import { IModel, IModelField } from "../model/model.model";
 import modelSerivce from "../model/model.service";
 import { FieldType } from "../field/field.model";
 import userService from "../user/user.service";
-import { IEntityPermission } from "../entityPermission/entityPermission.model";
+import {
+  IEntityPermission,
+  StaticPermission,
+} from "../entityPermission/entityPermission.model";
+import PaginationCommand from "../../globalTypes/PaginationCommand";
 
 const entityService = {
   verifyRequiredFields: async ({
@@ -223,6 +227,14 @@ const entityService = {
     const { entities, total } = await entityRepository.getEntitiesByModel(
       command
     );
+
+    return { entities, total };
+  },
+  getAssignedEntitiesByModel: async (
+    command: EntitiesGetCommand
+  ): Promise<{ entities: IEntity[]; total: number }> => {
+    const { entities, total } =
+      await entityRepository.getAssignedEntitiesByModel(command);
 
     return { entities, total };
   },

@@ -13,6 +13,7 @@ import EntitiesGetCommand from "./dto/EntitiesGetCommand";
 import fileRepository from "../file/file.repository";
 import { IUser } from "../user/user.model";
 import EntitiesSearchCommand from "./dto/EntitiesSearchCommand";
+import PaginationCommand from "../../globalTypes/PaginationCommand";
 
 const entityRepository = {
   combineEntityFieldValuesNewFilesAndSelectedOwnFiles: async (
@@ -189,6 +190,27 @@ const entityRepository = {
     ).populate(populationOptions);
 
     return entity;
+  },
+  getAssignedEntitiesByModel: async (
+    command: EntitiesGetCommand
+  ): Promise<{ total: number; entities: IEntity[] }> => {
+    const findCondition = {
+      assignedUsers: { $exists: true, $ne: [] },
+      model: command.modelId,
+    };
+
+    const entities: IEntity[] = await Entity.find(findCondition)
+      .sort({ createAt: -1 })
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
+      .exec();
+
+    const total: number = await Entity.find(findCondition).count();
+
+    return { entities, total };
   },
   search: async (
     command: EntitiesSearchCommand

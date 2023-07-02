@@ -10,6 +10,7 @@ type WebsiteConfigurationReadDto = {
   mainLanguages: IWebsiteConfiguration["mainLanguages"];
   withChat: IWebsiteConfiguration["withChat"];
   withRegistration: IWebsiteConfiguration["withRegistration"];
+  withTaskManagement: IWebsiteConfiguration["withTaskManagement"];
   theme: Theme;
   staticText: IWebsiteConfiguration["staticText"];
   tabIcon?: FileReadDto;
@@ -27,6 +28,7 @@ export const toReadDto = (
     mainLanguages: websiteConfiguration.mainLanguages,
     withChat: websiteConfiguration.withChat,
     withRegistration: websiteConfiguration.withRegistration,
+    withTaskManagement: websiteConfiguration.withTaskManagement,
     theme: websiteConfiguration.theme,
     staticText: websiteConfiguration.staticText,
     tabIcon: websiteConfiguration.tabIcon,
