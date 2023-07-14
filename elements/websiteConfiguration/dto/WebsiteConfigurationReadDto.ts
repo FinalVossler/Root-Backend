@@ -14,6 +14,8 @@ type WebsiteConfigurationReadDto = {
   theme: Theme;
   staticText: IWebsiteConfiguration["staticText"];
   tabIcon?: FileReadDto;
+  logo1?: FileReadDto;
+  logo2?: FileReadDto;
 };
 
 export const toReadDto = (
@@ -32,6 +34,8 @@ export const toReadDto = (
     theme: websiteConfiguration.theme,
     staticText: websiteConfiguration.staticText,
     tabIcon: websiteConfiguration.tabIcon,
+    logo1: websiteConfiguration.logo1,
+    logo2: websiteConfiguration.logo2
   };
 };
 

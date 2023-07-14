@@ -18,7 +18,6 @@ export type Theme = {
   transparentBackground: string;
   subContentBackgroundColor: string;
   boxShadow: string;
-  tabIcon: IFile;
 };
 
 export interface IWebsiteConfiguration {
@@ -33,6 +32,8 @@ export interface IWebsiteConfiguration {
   withTaskManagement?: boolean;
   theme: Theme;
   tabIcon: IFile;
+  logo1?: IFile;
+  logo2?: IFile;
 
   staticText?: any;
 }
@@ -110,6 +111,14 @@ const WebsiteConfigurationSchema = new mongoose.Schema<IWebsiteConfiguration>(
       type: mongoose.SchemaTypes.Mixed,
     },
     tabIcon: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "file",
+    },
+    logo1: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "file",
+    },
+    logo2: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "file",
     },
