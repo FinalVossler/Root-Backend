@@ -28,11 +28,11 @@ const entityEventNotificationService = {
       const emails: {
         subject: string;
         text: string;
-        trigger: EntityEventNotificationTrigger;
         // Used for the in app notification text
         notificationText: ITranslatedText[];
         // Used for the in app notification link
         link: string;
+        forRole: IRole;
       }[] = [];
 
       const role: IRole = roles[i];
@@ -43,6 +43,10 @@ const entityEventNotificationService = {
 
         entityPermission.entityEventNotifications.forEach(
           (entityEventNotification: IEntityEventNotification) => {
+            if (entityEventNotification.trigger !== trigger) {
+              return;
+            }
+
             const languages: string[] = [];
             entityEventNotification.title.forEach(
               (translatedText: ITranslatedText) => {
@@ -92,7 +96,6 @@ const entityEventNotificationService = {
             emails.push({
               subject,
               text,
-              trigger: entityEventNotification.trigger,
               notificationText: entityEventNotification.title.map(
                 (translatedText) => ({
                   language: translatedText.language,
@@ -104,40 +107,43 @@ const entityEventNotificationService = {
                     translatedText.text,
                 })
               ),
+              forRole: role,
               link,
             });
           }
         );
       });
 
-      let usersToNotify: IUser[] = [];
+      let allUsersToNotifiy: IUser[] = [];
 
       if (usersIdsToNotify) {
-        usersToNotify = await userService.getByIds(usersIdsToNotify);
+        allUsersToNotifiy = await userService.getByIds(usersIdsToNotify);
       } else {
-        usersToNotify = await userService.getRoleUsers(role._id.toString());
+        allUsersToNotifiy = await userService.getRoleUsers(role._id.toString());
       }
 
       emails.forEach((email) => {
-        if (email.trigger === trigger) {
-          // Create the in app notification
-          const notificationCreateCommand: NotificationCreateCommand = {
-            imageId: currentUser.profilePicture._id?.toString(),
-            link: email.link,
-            toIds: usersToNotify.map((user) => user._id.toString()),
-            text: email.notificationText,
-          };
+        const usersToNotifyForThisEmail: IUser[] = allUsersToNotifiy.filter(
+          (u) => u.role?._id.toString() === email.forRole._id.toString()
+        );
 
-          notificationService.create(notificationCreateCommand);
+        // Create the in app notification
+        const notificationCreateCommand: NotificationCreateCommand = {
+          imageId: currentUser.profilePicture._id?.toString(),
+          link: email.link,
+          toIds: usersToNotifyForThisEmail.map((user) => user._id.toString()),
+          text: email.notificationText,
+        };
 
-          usersToNotify.forEach((user) => {
-            emailService.sendEmail({
-              to: user.email,
-              subject: email.subject,
-              text: email.text,
-            });
+        notificationService.create(notificationCreateCommand);
+
+        usersToNotifyForThisEmail.forEach((user) => {
+          emailService.sendEmail({
+            to: user.email,
+            subject: email.subject,
+            text: email.text,
           });
-        }
+        });
       });
     }
   },

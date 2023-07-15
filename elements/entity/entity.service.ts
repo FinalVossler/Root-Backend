@@ -15,11 +15,7 @@ import { IModel, IModelField } from "../model/model.model";
 import modelSerivce from "../model/model.service";
 import { FieldType } from "../field/field.model";
 import userService from "../user/user.service";
-import {
-  IEntityPermission,
-  StaticPermission,
-} from "../entityPermission/entityPermission.model";
-import PaginationCommand from "../../globalTypes/PaginationCommand";
+import { IEntityPermission } from "../entityPermission/entityPermission.model";
 
 const entityService = {
   verifyRequiredFields: async ({
