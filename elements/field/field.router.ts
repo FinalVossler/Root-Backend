@@ -31,9 +31,6 @@ router.post(
     });
 
     const command: FieldCreateCommand = req.body;
-    if (req.user.superRole !== SuperRole.SuperAdmin) {
-      throw new Error("Unauthorized to create field");
-    }
     const field: IField = await fieldService.createField(command);
 
     return res.status(200).send({
