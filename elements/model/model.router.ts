@@ -14,6 +14,7 @@ import ModelsGetCommand from "./dto/ModelsGetCommand";
 import ModelsSearchCommand from "./dto/ModelsSearchCommand";
 import roleService from "../role/role.service";
 import { Permission } from "../role/role.model";
+import { StaticPermission } from "../entityPermission/entityPermission.model";
 
 const router = Router();
 
@@ -75,12 +76,15 @@ router.post(
         permission: Permission.ReadModel,
       });
     } catch (e) {
-      // If we can't read the models, we should at least be able to read the entities to which we have access (and that are based on the models)
+      // If we can't read the models, we should at least be able to read the entities to which we have read access (and that are based on the models)
       const { models, total } = await modelSerivce.getModelsByIds(
         req.body,
-        req.user?.role?.entityPermissions?.map((ePermission) =>
-          ePermission.model._id.toString()
-        ) || []
+        req.user?.role?.entityPermissions
+          ?.filter(
+            (ePermission) =>
+              ePermission.permissions.indexOf(StaticPermission.Read) !== -1
+          )
+          .map((ePermission) => ePermission.model._id.toString()) || []
       );
 
       return res.status(200).send({

@@ -134,7 +134,10 @@ const userRepository = {
   getUsers: async (
     command: UsersGetCommand
   ): Promise<{ total: number; users: IUser[] }> => {
-    const users: IUser[] = await User.find({})
+    const findQuery = command.roleId
+      ? { role: new mongoose.Types.ObjectId(command.roleId) }
+      : {};
+    const users: IUser[] = await User.find(findQuery)
       .sort({ createdAt: -1 })
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
@@ -143,7 +146,7 @@ const userRepository = {
       .populate(populationOptions)
       .exec();
 
-    const total: number = await User.find({}).count();
+    const total: number = await User.find(findQuery).count();
 
     return { users, total };
   },
