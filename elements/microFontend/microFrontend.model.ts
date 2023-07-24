@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 export interface IMicroFrontend {
+  _id: mongoose.Types.ObjectId;
   name: string;
   remoteEntry: string;
   components: string[];
