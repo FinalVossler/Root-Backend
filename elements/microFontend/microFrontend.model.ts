@@ -22,6 +22,11 @@ const MicroFrontendSchema = new mongoose.Schema<IMicroFrontend>(
       type: mongoose.SchemaTypes.String,
       required: true,
     },
+    components: [
+      {
+        type: mongoose.SchemaTypes.String,
+      },
+    ],
   },
   {
     timestamps: true,

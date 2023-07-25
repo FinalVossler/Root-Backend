@@ -34,6 +34,7 @@ export enum Permission {
   UpdateRole = "UpdateRole",
   DeleteRole = "DeleteRole",
 
+  ReadMicroFrontend = "ReadMicroFrontend",
   CreateMicroFrontend = "CreateMicroFrontend",
   UpdateMicroFrontend = "UpdateMicroFrontend",
   DeleteMicroFrontend = "DeleteMicroFrontend",

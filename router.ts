@@ -12,6 +12,7 @@ import modelRouter from "./elements/model/model.router";
 import entityRouter from "./elements/entity/entity.router";
 import roleRouter from "./elements/role/role.router";
 import notificationRouter from "./elements/notification/notification.router";
+import microFrontendRouter from "./elements/microFontend/microFrontend.router";
 
 const router = Router();
 
@@ -27,6 +28,7 @@ router.use("/models", modelRouter);
 router.use("/entities", entityRouter);
 router.use("/roles", roleRouter);
 router.use("/notifications", notificationRouter);
+router.use("/microFrontends", microFrontendRouter);
 
 router.use("/", (req: Request, res: Response) => {
   res.status(200).send("Hello!");

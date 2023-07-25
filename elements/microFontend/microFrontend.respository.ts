@@ -12,7 +12,8 @@ const microFrontendRepository = {
   ): Promise<IMicroFrontend> => {
     const microFrontend = await MicroFrontend.create({
       name: command.name,
-      components: command.name,
+      components: command.components,
+      remoteEntry: command.remoteEntry,
     });
 
     return microFrontend;

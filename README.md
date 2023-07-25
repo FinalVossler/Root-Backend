@@ -7,3 +7,5 @@
   EntityPermission:
   ref to the model
   the permissions: array of basic permissions [Create, Read, Update, Delete]
+
+- Permission:
