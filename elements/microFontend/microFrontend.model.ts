@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
+import { IMicroFrontendComponent } from "../microFontendComponent/microFrontendComponent.model";
 
 export interface IMicroFrontend {
   _id: mongoose.Types.ObjectId;
   name: string;
   remoteEntry: string;
-  components: string[];
+  components: IMicroFrontendComponent[];
 
   createdAt: string;
   updatedAt: string;
@@ -24,7 +25,8 @@ const MicroFrontendSchema = new mongoose.Schema<IMicroFrontend>(
     },
     components: [
       {
-        type: mongoose.SchemaTypes.String,
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "microFrontendComponent",
       },
     ],
   },

@@ -1,7 +1,7 @@
 type MicroFrontendCreateCommand = {
   name: string;
   remoteEntry: string;
-  components: string[];
+  components: MicroFrontendCreateCommand[];
 };
 
 export default MicroFrontendCreateCommand;

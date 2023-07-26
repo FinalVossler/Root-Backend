@@ -1,10 +1,11 @@
+import { IMicroFrontendComponent } from "../../microFontendComponent/microFrontendComponent.model";
 import { IMicroFrontend } from "../microFrontend.model";
 
 type MicroFrontendReadDto = {
   _id: IMicroFrontend["_id"];
   name: string;
   remoteEntry: string;
-  components: string[];
+  components: IMicroFrontendComponent[];
 
   createdAt: string;
   updatedAt: string;
