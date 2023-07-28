@@ -5,9 +5,7 @@ import MicroFrontendCreateCommand from "./dto/MicroFrontendCreateCommand";
 import MicroFrontendUpdateCommand from "./dto/MicroFrontendUpdateCommand";
 import MicroFrontendsGetCommand from "./dto/MicroFrontendsGetCommand";
 import MicroFrontendsSearchCommand from "./dto/MicroFrontendsSearchCommand";
-import microFrontendComponentModel, {
-  IMicroFrontendComponent,
-} from "../microFontendComponent/microFrontendComponent.model";
+import { IMicroFrontendComponent } from "../microFontendComponent/microFrontendComponent.model";
 import microFrontendComponentRepository from "../microFontendComponent/microFrontendComponent.respository";
 import MicroFrontendComponentUpdateCommand from "../microFontendComponent/dto/MicroFrontendComponentUpdateCommand";
 import MicroFrontendComponentCreateCommand from "../microFontendComponent/dto/MicroFrontendComponentCreateCommand";
@@ -107,7 +105,7 @@ const microFrontendRepository = {
       )
       .map((el) => el._id.toString());
 
-    await microFrontendComponentRepository.deleteMicroFrontendComponents(
+    await microFrontendComponentRepository.delete(
       componentsToDeleteIds.map((el) => new mongoose.Types.ObjectId(el))
     );
 

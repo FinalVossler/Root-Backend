@@ -39,7 +39,7 @@ const microFrontendComponentRepository = {
       await MicroFrontendComponent.findById(id);
     return microFrontendComponent;
   },
-  deleteMicroFrontendComponents: async (
+  delete: async (
     microFrontendsComponentsIds: mongoose.Types.ObjectId[]
   ): Promise<void> => {
     for (let i = 0; i < microFrontendsComponentsIds.length; i++) {

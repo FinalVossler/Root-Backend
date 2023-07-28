@@ -6,7 +6,7 @@ import { IMicroFrontendComponent } from "./microFrontendComponent.model";
 import microFrontendComponentRepository from "./microFrontendComponent.respository";
 
 const microFrontendComponentService = {
-  createMicroFrontendComponent: async (
+  create: async (
     command: MicroFrontendComponentCreateCommand
   ): Promise<IMicroFrontendComponent> => {
     const microFrontendComponent: IMicroFrontendComponent =
@@ -14,7 +14,7 @@ const microFrontendComponentService = {
 
     return microFrontendComponent;
   },
-  updateMicroFrontend: async (
+  update: async (
     command: MicroFrontendUpdateCommand
   ): Promise<IMicroFrontendComponent> => {
     const microFrontendComponent: IMicroFrontendComponent =
@@ -22,12 +22,10 @@ const microFrontendComponentService = {
 
     return microFrontendComponent;
   },
-  deleteMicroFrontends: async (
-    microFrontendsIds: mongoose.ObjectId[]
+  delete: async (
+    microFrontendsIds: mongoose.Types.ObjectId[]
   ): Promise<void> => {
-    await microFrontendComponentRepository.deleteMicroFrontends(
-      microFrontendsIds
-    );
+    await microFrontendComponentRepository.delete(microFrontendsIds);
   },
 };
 
