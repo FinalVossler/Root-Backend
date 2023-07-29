@@ -9,6 +9,7 @@ import ModelsSearchCommand from "./dto/ModelsSearchCommand";
 import { IEvent, IEventRequestHeader } from "../event/event.model";
 import modelStateRepository from "../modelState/modelState.repository";
 import { IModelState } from "../modelState/modelState.model";
+import EventCommand from "../event/dto/EventCommand";
 
 const modelRepository = {
   create: async (command: ModelCreateCommand): Promise<IModel> => {
@@ -35,22 +36,27 @@ const modelRepository = {
         states: modelField.modelStatesIds,
         mainField: modelField.mainField,
       })),
-      modelEvents: command.modelEvents.map<IEvent>((modelEvent: IEvent) => ({
-        eventTrigger: modelEvent.eventTrigger,
-        eventType: modelEvent.eventType,
-        redirectionToSelf: modelEvent.redirectionToSelf,
-        redirectionUrl: modelEvent.redirectionUrl,
-        requestData: modelEvent.requestData,
-        requestDataIsCreatedEntity: modelEvent.requestDataIsCreatedEntity,
-        requestMethod: modelEvent.requestMethod,
-        requestUrl: modelEvent.requestUrl,
-        requestHeaders: modelEvent.requestHeaders.map<IEventRequestHeader>(
-          (header: IEventRequestHeader) => ({
-            key: header.key,
-            value: header.value,
-          })
-        ),
-      })),
+      modelEvents: command.modelEvents.map<EventCommand>(
+        (modelEvent: EventCommand) => ({
+          eventTrigger: modelEvent.eventTrigger,
+          eventType: modelEvent.eventType,
+          redirectionToSelf: modelEvent.redirectionToSelf,
+          redirectionUrl: modelEvent.redirectionUrl,
+          requestData: modelEvent.requestData,
+          requestDataIsCreatedEntity: modelEvent.requestDataIsCreatedEntity,
+          requestMethod: modelEvent.requestMethod,
+          requestUrl: modelEvent.requestUrl,
+          requestHeaders: modelEvent.requestHeaders.map<IEventRequestHeader>(
+            (header: IEventRequestHeader) => ({
+              key: header.key,
+              value: header.value,
+            })
+          ),
+
+          microFrontend: modelEvent.microFrontendId,
+          microFrontendComponentId: modelEvent.microFrontendComponentId,
+        })
+      ),
       states: modelStates.map((el) => el._id),
       subStates: modelSubstates.map((el) => el._id),
     });
@@ -107,8 +113,8 @@ const modelRepository = {
             states: modelField.modelStatesIds,
             mainField: modelField.mainField,
           })),
-          modelEvents: command.modelEvents.map<IEvent>(
-            (modelEvent: IEvent) => ({
+          modelEvents: command.modelEvents.map<EventCommand>(
+            (modelEvent: EventCommand) => ({
               eventTrigger: modelEvent.eventTrigger,
               eventType: modelEvent.eventType,
               redirectionToSelf: modelEvent.redirectionToSelf,
@@ -124,6 +130,8 @@ const modelRepository = {
                     value: header.value,
                   })
                 ),
+              microFrontend: modelEvent.microFrontendId,
+              microFrontendComponentId: modelEvent.microFrontendComponentId,
             })
           ),
           states: modelStates.map((el) => el._id),
@@ -231,6 +239,21 @@ export const populationOptions = [
               },
             ],
           },
+          {
+            path: "fieldEvents",
+            populate: [
+              {
+                path: "microFrontend",
+                model: "microFrontend",
+                populate: [
+                  {
+                    path: "components",
+                    model: "microFrontendComponent",
+                  },
+                ],
+              },
+            ],
+          },
         ],
       },
       {
@@ -254,6 +277,18 @@ export const populationOptions = [
   },
   {
     path: "modelEvents",
+    populate: [
+      {
+        path: "microFrontend",
+        model: "microFrontend",
+        populate: [
+          {
+            path: "components",
+            model: "microFrontendComponent",
+          },
+        ],
+      },
+    ],
   },
   {
     path: "states",

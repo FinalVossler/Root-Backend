@@ -85,6 +85,24 @@ router.post(
   }
 );
 
+router.get(
+  "/getById",
+  async (
+    req: ConnectedRequest<any, any, any, { microFrontendId: string }>,
+    res: Response<ResponseDto<MicroFrontendReadDto>>
+  ) => {
+    const id: string = req.query.microFrontendId;
+    const microFrontend: IMicroFrontend = await microFrontendService.getById(
+      id
+    );
+
+    return res.status(200).send({
+      success: true,
+      data: toReadDto(microFrontend),
+    });
+  }
+);
+
 router.delete(
   "/",
   protectMiddleware,

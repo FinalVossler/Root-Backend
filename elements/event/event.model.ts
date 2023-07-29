@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { IMicroFrontend } from "../microFontend/microFrontend.model";
 
 export interface IEvent {
   eventTrigger: EventTriggerEnum;
@@ -14,6 +15,10 @@ export interface IEvent {
   requestDataIsCreatedEntity: boolean;
   requestData: string;
   requestHeaders: IEventRequestHeader[];
+
+  // Microfrontend redirection
+  microFrontend?: IMicroFrontend;
+  microFrontendComponentId?: string;
 }
 
 export enum EventTriggerEnum {
@@ -25,6 +30,7 @@ export enum EventTriggerEnum {
 export enum EventTypeEnum {
   ApiCall = "ApiCall",
   Redirection = "Redirection",
+  MicroFrontendRedirection = "MicroFrontendRedirection",
 }
 
 export interface IEventRequestHeader {
@@ -67,6 +73,13 @@ const EventSchema = new mongoose.Schema({
       },
     },
   ],
+  microFrontend: {
+    type: mongoose.SchemaTypes.ObjectId,
+    required: false,
+  },
+  microFrontendComponentId: {
+    type: mongoose.SchemaTypes.String,
+  },
 });
 
 export default EventSchema;

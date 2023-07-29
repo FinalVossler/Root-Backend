@@ -16,8 +16,6 @@ import EntitiesSearchCommand from "./dto/EntitiesSearchCommand";
 import roleService from "../role/role.service";
 import { StaticPermission } from "../entityPermission/entityPermission.model";
 import entityRepository from "./entity.repository";
-import EntitiesGetEntityCommand from "./dto/EntitiesGetEntityCommand";
-import PaginationCommand from "../../globalTypes/PaginationCommand";
 
 const router = Router();
 
@@ -25,19 +23,18 @@ router.get(
   "/getEntity",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, any, EntitiesGetEntityCommand>,
+    req: ConnectedRequest<any, any, any, { entityId: string }>,
     res: Response<ResponseDto<EntityReadDto>>
   ) => {
-    const command: EntitiesGetEntityCommand = req.query;
     const currentUser: IUser = req.user;
+
+    const entity: IEntity = await entityService.getById(req.query.entityId);
 
     roleService.checkEntityPermission({
       user: currentUser,
       staticPermission: StaticPermission.Read,
-      modelId: command.modelId,
+      modelId: entity.model._id.toString(),
     });
-
-    const entity: IEntity = await entityService.getById(command.entityId);
 
     return res.status(200).send({
       success: true,

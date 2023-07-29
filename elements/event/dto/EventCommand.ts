@@ -18,6 +18,9 @@ type EventCommand = {
   requestDataIsCreatedEntity: boolean;
   requestData: string;
   requestHeaders: IEventRequestHeader[];
+
+  microFrontendId?: string;
+  microFrontendComponentId?: string;
 };
 
 export default EventCommand;

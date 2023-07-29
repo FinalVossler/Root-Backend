@@ -7,10 +7,11 @@ import Field from "./field.model";
 import FieldsGetCommand from "./dto/FieldsGetCommand";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
 import FieldsSearchCommand from "./dto/FieldsSearchCommand";
-import { IEvent, IEventRequestHeader } from "../event/event.model";
+import { IEventRequestHeader } from "../event/event.model";
 import { IFieldTableElement } from "../fieldTableElement/fieldTableElement.model";
 import fieldTableElementRepository from "../fieldTableElement/fieldTableElement.repository";
 import FieldTableElementCreateCommand from "../fieldTableElement/dto/FieldTableElementCreateCommand";
+import EventCommand from "../event/dto/EventCommand";
 
 const fieldRepository = {
   create: async (command: FieldCreateCommand): Promise<IField> => {
@@ -28,22 +29,26 @@ const fieldRepository = {
         label: [{ language: command.language, text: option.label }],
         value: option.value,
       })),
-      fieldEvents: command.fieldEvents.map<IEvent>((fieldEvent: IEvent) => ({
-        eventTrigger: fieldEvent.eventTrigger,
-        eventType: fieldEvent.eventType,
-        redirectionToSelf: fieldEvent.redirectionToSelf,
-        redirectionUrl: fieldEvent.redirectionUrl,
-        requestData: fieldEvent.requestData,
-        requestDataIsCreatedEntity: fieldEvent.requestDataIsCreatedEntity,
-        requestMethod: fieldEvent.requestMethod,
-        requestUrl: fieldEvent.requestUrl,
-        requestHeaders: fieldEvent.requestHeaders.map<IEventRequestHeader>(
-          (header: IEventRequestHeader) => ({
-            key: header.key,
-            value: header.value,
-          })
-        ),
-      })),
+      fieldEvents: command.fieldEvents.map<EventCommand>(
+        (fieldEvent: EventCommand) => ({
+          eventTrigger: fieldEvent.eventTrigger,
+          eventType: fieldEvent.eventType,
+          redirectionToSelf: fieldEvent.redirectionToSelf,
+          redirectionUrl: fieldEvent.redirectionUrl,
+          requestData: fieldEvent.requestData,
+          requestDataIsCreatedEntity: fieldEvent.requestDataIsCreatedEntity,
+          requestMethod: fieldEvent.requestMethod,
+          requestUrl: fieldEvent.requestUrl,
+          requestHeaders: fieldEvent.requestHeaders.map<IEventRequestHeader>(
+            (header: IEventRequestHeader) => ({
+              key: header.key,
+              value: header.value,
+            })
+          ),
+          microFrontend: fieldEvent.microFrontendId,
+          microFrontendComponentId: fieldEvent.microFrontendComponentId,
+        })
+      ),
       tableOptions: {
         name: [{ language: command.language, text: command.tableOptions.name }],
         columns: createdColumns.map((c) => c._id),
@@ -157,8 +162,8 @@ const fieldRepository = {
                 ?.label,
             }),
           })),
-          fieldEvents: command.fieldEvents.map<IEvent>(
-            (fieldEvent: IEvent) => ({
+          fieldEvents: command.fieldEvents.map<EventCommand>(
+            (fieldEvent: EventCommand) => ({
               eventTrigger: fieldEvent.eventTrigger,
               eventType: fieldEvent.eventType,
               redirectionToSelf: fieldEvent.redirectionToSelf,
@@ -174,6 +179,8 @@ const fieldRepository = {
                     value: header.value,
                   })
                 ),
+              microFrontend: fieldEvent.microFrontendId,
+              microFrontendComponentId: fieldEvent.microFrontendComponentId,
             })
           ),
 
@@ -350,6 +357,21 @@ export const populationOptions = [
       {
         path: "rows",
         model: "fieldTableElement",
+      },
+    ],
+  },
+  {
+    path: "fieldEvents",
+    populate: [
+      {
+        path: "microFrontend",
+        model: "microFrontend",
+        populate: [
+          {
+            path: "components",
+            model: "microFrontendComponent",
+          },
+        ],
       },
     ],
   },

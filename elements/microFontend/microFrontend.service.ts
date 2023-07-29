@@ -34,6 +34,13 @@ const microFrontendService = {
 
     return { microFrontends, total };
   },
+  getById: async (id: string): Promise<IMicroFrontend> => {
+    const microFrontend: IMicroFrontend = await microFrontendRepository.getById(
+      id
+    );
+
+    return microFrontend;
+  },
   deleteMicroFrontends: async (
     microFrontendsIds: mongoose.ObjectId[]
   ): Promise<void> => {
