@@ -4,7 +4,6 @@ import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
 import { IField } from "./field.model";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
-import { SuperRole } from "../user/user.model";
 import FieldCreateCommand from "./dto/FieldCreateCommand";
 import fieldService from "./field.service";
 import FieldReadDto, { toReadDto } from "./dto/FieldReadDto";
