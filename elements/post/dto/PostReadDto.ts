@@ -10,6 +10,7 @@ type PostReadDto = {
   design: IPost["design"];
   children: IPost["children"];
   code: IPost["code"];
+  visibility: IPost["visibility"];
 
   createdAt: IPost["createdAt"];
   updatedAt: IPost["updatedAt"];
@@ -26,6 +27,7 @@ export const toReadDto = (post: IPost): PostReadDto => {
     design: post.design,
     children: post.children,
     code: post.code,
+    visibility: post.visibility,
     createdAt: post.createdAt,
     updatedAt: post.updatedAt,
   };

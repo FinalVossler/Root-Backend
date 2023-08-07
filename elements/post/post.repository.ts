@@ -3,7 +3,7 @@ import fileRepository from "../file/file.repository";
 import PostCreateCommand from "./dto/PostCreateCommand";
 import PostsSearchCommand from "./dto/PostsSearchCommand";
 import PostsGetCommand from "./dto/PostsGetCommand";
-import Post, { IPost } from "./post.model";
+import Post, { IPost, PostVisibility } from "./post.model";
 import File from "../file/file.model";
 import { IUser } from "../user/user.model";
 import PostUpdateCommand from "./dto/PostUpdateCommand";
@@ -38,11 +38,18 @@ const postRepository = {
     return post;
   },
   getUserPosts: async (
-    command: PostsGetCommand
+    command: PostsGetCommand,
+    currentUser: IUser
   ): Promise<{ posts: IPost[]; total: number }> => {
+    let visibilities = [...command.visibilities];
+    // if the current user isn't the same as the user making the request, then we must force removing the "private" visibility from the request
+    if (currentUser._id.toString() !== command.userId.toString()) {
+      visibilities = visibilities.filter((el) => el !== PostVisibility.Private);
+    }
+
     const posts: IPost[] = await Post.find({
       posterId: command.userId,
-      visibility: { $in: command.visibilities },
+      visibility: { $in: visibilities },
     })
       .populate(populationOptions)
       .sort({ createdAt: -1 })
@@ -99,6 +106,8 @@ const postRepository = {
     const allFiles: IFile[] = createdFiles.concat(
       command.files.filter((el) => el._id)
     );
+
+    console.log("visibility", command.visibility);
 
     await Post.updateOne(
       { _id: command._id },

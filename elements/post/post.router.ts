@@ -34,12 +34,13 @@ router.post(
 
 router.post(
   "/getUserPosts",
+  protectMiddleware,
   async (
     req: ConnectedRequest<any, any, PostsGetCommand, any>,
     res: Response<ResponseDto<PaginationResponse<PostReadDto>>>
   ) => {
     const command: PostsGetCommand = req.body;
-    const { posts, total } = await postService.getUserPosts(command);
+    const { posts, total } = await postService.getUserPosts(command, req.user);
 
     return res.status(200).send({
       success: true,

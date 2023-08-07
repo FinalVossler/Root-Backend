@@ -16,9 +16,13 @@ const postService = {
     return post;
   },
   getUserPosts: async (
-    command: PostsGetCommand
+    command: PostsGetCommand,
+    currentUser: IUser
   ): Promise<{ posts: IPost[]; total: number }> => {
-    const { posts, total } = await postRepository.getUserPosts(command);
+    const { posts, total } = await postRepository.getUserPosts(
+      command,
+      currentUser
+    );
 
     return { posts, total };
   },
