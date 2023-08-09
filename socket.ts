@@ -26,10 +26,12 @@ const init = (server: http.Server) => {
 
   io.on("connection", (socket: socket.Socket) => {
     const userId: any = socket.handshake.query.userId;
+    console.log("connecting", userId, "socket id", socket.id);
 
     onlineUsers.set(userId, socket.id);
 
     socket.on("disconnect", () => {
+      console.log("disconnecting", userId, "socket id", socket.id);
       onlineUsers.set(userId, null);
     });
   });
