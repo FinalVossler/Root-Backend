@@ -156,6 +156,14 @@ const messageRepository = {
 
     return { messages: messages.reverse(), total };
   },
+  getUserTotalUnreadMessages: async (userId: string): Promise<number> => {
+    const totalUnreadMessages: number = await Message.find({
+      to: { $in: [new mongoose.Types.ObjectId(userId)] },
+      read: { $nin: [new mongoose.Types.ObjectId(userId)] },
+    }).count();
+
+    return totalUnreadMessages;
+  },
 };
 
 const populationOptions = [

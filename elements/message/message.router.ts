@@ -64,7 +64,7 @@ router.post(
 );
 
 router.post(
-  "/totalUnreadMessages",
+  "/conversationTotalUnreadMessages",
   protectMiddleware,
   async (
     req: ConnectedRequest<any, any, mongoose.ObjectId[], any>,
@@ -135,6 +135,24 @@ router.post(
         data: messages.map((m) => toReadDto(m)),
         total,
       },
+    });
+  }
+);
+
+router.post(
+  "/userTotalUnreadMessages",
+  protectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, any, any>,
+    res: Response<ResponseDto<number>>
+  ) => {
+    const total: number = await messageService.getUserTotalUnreadMessages(
+      req.user._id.toString()
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: total,
     });
   }
 );
