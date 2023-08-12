@@ -105,16 +105,18 @@ router.post(
   protectMiddleware,
   async (
     req: ConnectedRequest<any, any, { messagesIds: string[] }, any>,
-    res: Response<ResponseDto<void>>
+    res: Response<ResponseDto<number>>
   ) => {
     const messagesIds: string[] = req.body.messagesIds;
     const currentUser: IUser = req.user;
 
     await messageService.markMessagesAsReadByUser({ messagesIds, currentUser });
+    const userTotalUnreadMessages: number =
+      await messageService.getUserTotalUnreadMessages(req.user?._id.toString());
 
     return res.status(200).json({
       success: true,
-      data: null,
+      data: userTotalUnreadMessages,
     });
   }
 );
