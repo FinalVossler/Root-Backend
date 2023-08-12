@@ -6,6 +6,7 @@ import MessageReadDto from "./elements/message/dtos/MessageReadDto";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import NotificationMessageEnum from "./globalTypes/NotificationMessageEnum";
 import NotificationReadDto from "./elements/notification/dto/NotificationReadDto";
+import ReactionReadDto from "./elements/reaction/dtos/ReactionReadDto";
 
 const socketHandler: {
   io: socket.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
@@ -44,7 +45,7 @@ export const socketEmit = ({
 }: {
   userIds: string[];
   messageType: ChatMessagesEnum | NotificationMessageEnum;
-  object: NotificationReadDto | MessageReadDto;
+  object: NotificationReadDto | MessageReadDto | ReactionReadDto;
 }) => {
   const onlineConcernedUsersIds: string[] = userIds
     .map((userId) => userId.toString())

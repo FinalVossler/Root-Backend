@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 import File, { IFile } from "../file/file.model";
 import User from "../user/user.model";
+import Reaction from "../reaction/reaction.model";
 
 export interface IMessage {
   _id: mongoose.ObjectId;
@@ -76,10 +77,12 @@ MessageSchema.pre("deleteOne", async function (next) {
     .populate("files")) as IMessage;
 
   const filesUuids: string[] = message.files.map((f) => f.uuid);
-
-  console.info("filesUuids", filesUuids);
-
   // TODO: we have file ids. Now we need to delete all in upload care
+
+  // Delete all reactions to this message
+  Reaction.deleteMany({
+    message: new mongoose.Types.ObjectId(message._id.toString()),
+  });
 
   next();
 });

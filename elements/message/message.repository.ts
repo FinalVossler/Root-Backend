@@ -164,6 +164,13 @@ const messageRepository = {
 
     return totalUnreadMessages;
   },
+  getById: async (messageId: string): Promise<IMessage> => {
+    const message: IMessage = await Message.findOne({
+      _id: new mongoose.Types.ObjectId(messageId),
+    }).populate(populationOptions);
+
+    return message;
+  },
 };
 
 const populationOptions = [

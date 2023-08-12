@@ -113,6 +113,11 @@ const messageService = {
   getUserTotalUnreadMessages: async (userId: string): Promise<number> => {
     return await messageRepository.getUserTotalUnreadMessages(userId);
   },
+  getById: async (messageId: string): Promise<IMessage> => {
+    const message: IMessage = await messageRepository.getById(messageId);
+
+    return message;
+  },
 };
 
 export default messageService;
