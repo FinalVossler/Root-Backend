@@ -46,8 +46,7 @@ router.post(
     const command = req.body;
 
     const messages: IMessage[] = await messageService.getMessagesBetweenUsers(
-      command,
-      req.user
+      command
     );
 
     const total: number = await messageService.getTotalMessagesBetweenUsers(

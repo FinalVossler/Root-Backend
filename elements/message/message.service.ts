@@ -27,18 +27,10 @@ const messageService = {
     return populatedMessage;
   },
   getMessagesBetweenUsers: async (
-    command: MessageGetBetweenUsersCommand,
-    currentUser: IUser
+    command: MessageGetBetweenUsersCommand
   ): Promise<IMessage[]> => {
     const messages: IMessage[] =
       await messageRepository.getMessagesBetweenUsers(command);
-
-    // if (messages.length > 0) {
-    //   await messageService.markAllConversationMessagesAsReadByUser({
-    //     to: messages[0].to.map((el) => el.toString()),
-    //     currentUser,
-    //   });
-    // }
 
     return messages;
   },
