@@ -10,7 +10,6 @@ const microFrontendComponentRepository = {
   create: async (
     command: MicroFrontendComponentCreateCommand
   ): Promise<IMicroFrontendComponent> => {
-    console.log("command", command);
     const microFrontendComponent = await MicroFrontendComponent.create({
       name: command.name,
     });

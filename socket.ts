@@ -45,7 +45,10 @@ export const socketEmit = ({
 }: {
   userIds: string[];
   messageType: ChatMessagesEnum | NotificationMessageEnum;
-  object: NotificationReadDto | MessageReadDto | ReactionReadDto;
+  object:
+    | NotificationReadDto
+    | MessageReadDto
+    | { reaction: ReactionReadDto; message: MessageReadDto };
 }) => {
   const onlineConcernedUsersIds: string[] = userIds
     .map((userId) => userId.toString())

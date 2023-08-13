@@ -6,6 +6,7 @@ import ReactionCreateCommand from "./dtos/ReactionCreateCommand";
 import { IReaction } from "./reaction.model";
 import reactionRepository from "./reaction.repository";
 import { IMessage } from "../message/message.model";
+import { toReadDto as messageToReadDto } from "../message/dtos/MessageReadDto";
 import messageService from "../message/message.service";
 
 const reactionService = {
@@ -22,8 +23,11 @@ const reactionService = {
 
     socketEmit({
       messageType: ChatMessagesEnum.ReaceiveReaction,
-      object: toReadDto(reaction),
-      userIds: message.to.map((userId) => userId.toString()),
+      object: {
+        message: messageToReadDto(message),
+        reaction: toReadDto(reaction),
+      },
+      userIds: message.to.map((user) => user.toString()),
     });
 
     return reaction;

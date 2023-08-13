@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 import File, { IFile } from "../file/file.model";
 import User from "../user/user.model";
-import Reaction from "../reaction/reaction.model";
+import Reaction, { IReaction } from "../reaction/reaction.model";
 
 export interface IMessage {
   _id: mongoose.ObjectId;
@@ -12,6 +12,7 @@ export interface IMessage {
   numberOfParticipants?: number;
   read: mongoose.ObjectId[];
   files: IFile[];
+  reactions?: IReaction[];
 
   createdAt: string;
   updatedAt: string;
@@ -54,6 +55,13 @@ const MessageSchema = new mongoose.Schema<IMessage>(
         type: mongoose.SchemaTypes.ObjectId,
         required: false,
         ref: File.modelName,
+        default: [],
+      },
+    ],
+    reactions: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "reaction",
         default: [],
       },
     ],

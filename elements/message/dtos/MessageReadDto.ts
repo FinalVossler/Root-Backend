@@ -1,4 +1,5 @@
 import { IMessage } from "../message.model";
+import { toReadDto as reactionToReadDto } from "../../reaction/dtos/ReactionReadDto";
 
 type MessageReadDto = {
   _id: IMessage["_id"];
@@ -7,6 +8,7 @@ type MessageReadDto = {
   message: IMessage["message"];
   read: IMessage["read"];
   files: IMessage["files"];
+  reactions: IMessage["reactions"];
   createdAt: IMessage["createdAt"];
   updatedAt: IMessage["updatedAt"];
 };
@@ -19,6 +21,7 @@ export const toReadDto = (message: IMessage): MessageReadDto => {
     message: message.message,
     read: message.read,
     files: message.files,
+    reactions: message.reactions.map((r) => reactionToReadDto(r)),
     createdAt: message.createdAt,
     updatedAt: message.updatedAt,
   };

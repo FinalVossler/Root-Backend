@@ -18,7 +18,6 @@ const microFrontendRepository = {
     commands.forEach((command: MicroFrontendComponentCreateCommand) => {
       createComponentsPromises.push(
         new Promise<IMicroFrontendComponent>(async (resolve) => {
-          console.log("command", command);
           const microFrontendComponent: IMicroFrontendComponent =
             await microFrontendComponentRepository.create(command);
 

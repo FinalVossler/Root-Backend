@@ -38,6 +38,7 @@ const messageRepository = {
       numberOfParticipants: command.usersIds.length,
     })
       .populate("files")
+      .populate("reactions")
       .sort({ createdAt: -1 })
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
@@ -167,7 +168,7 @@ const messageRepository = {
   getById: async (messageId: string): Promise<IMessage> => {
     const message: IMessage = await Message.findOne({
       _id: new mongoose.Types.ObjectId(messageId),
-    }).populate(populationOptions);
+    });
 
     return message;
   },
@@ -189,6 +190,10 @@ const populationOptions = [
       path: "profilePicture",
       model: "file",
     },
+  },
+  {
+    path: "reactions",
+    model: "reaction",
   },
 ];
 

@@ -44,8 +44,6 @@ MicroFrontendSchema.pre("deleteOne", async function (next) {
     this.getQuery()
   )) as IMicroFrontend;
 
-  console.log("micro frontend to delete");
-
   // Deleting the events created on the basis of this microFrontend for fields
   const fields: IField[] = await Field.find({
     fieldEvents: {
@@ -62,10 +60,6 @@ MicroFrontendSchema.pre("deleteOne", async function (next) {
         event.microFrontend._id.toString() !== microFrontend._id.toString()
     );
 
-    console.log("field with this micro Frontend events", field.fieldEvents);
-    console.log("newFieldEvents", newFieldEvents);
-    console.log("microFrontend._id", microFrontend._id);
-    console.log("field._id", field._id);
     await Field.updateOne(
       { _id: field._id },
       { $set: { fieldEvents: newFieldEvents } }

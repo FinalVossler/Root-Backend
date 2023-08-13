@@ -107,8 +107,6 @@ const postRepository = {
       command.files.filter((el) => el._id)
     );
 
-    console.log("visibility", command.visibility);
-
     await Post.updateOne(
       { _id: command._id },
       {

@@ -1,11 +1,9 @@
 import mongoose from "mongoose";
 
-import { IMessage } from "../message/message.model";
 import { IUser } from "../user/user.model";
 
 export interface IReaction {
   _id: mongoose.ObjectId;
-  message: IMessage;
   user: IUser;
   reaction: ReactionEnum;
 
@@ -25,10 +23,6 @@ interface ReactionModel extends mongoose.Model<IReaction> {}
 
 const ReactionSchema = new mongoose.Schema<IReaction>(
   {
-    message: {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "message",
-    },
     user: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "user",
