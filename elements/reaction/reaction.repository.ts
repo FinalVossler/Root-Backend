@@ -19,6 +19,7 @@ const reactionRepository = {
       {
         $addToSet: {
           reactions: new mongoose.Types.ObjectId(reaction._id.toString()),
+          read: [new mongoose.Types.ObjectId(currentUser._id.toString())],
         },
       }
     );

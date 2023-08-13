@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 import MessageGetBetweenUsersCommand from "./dtos/MessageGetBetweenUsersCommand";
 import MessageSendCommand from "./dtos/MessageSendCommand";
-import Message, { IMessage } from "./message.model";
+import Message, { IMessage, IPopulatedMessage } from "./message.model";
 import { IFile } from "../file/file.model";
 import fileRepository from "../file/file.repository";
 import { IUser } from "../user/user.model";
@@ -12,7 +12,7 @@ const messageRepository = {
   sendMessage: async (
     command: MessageSendCommand,
     currentUser: IUser
-  ): Promise<IMessage> => {
+  ): Promise<IPopulatedMessage> => {
     let createdFiles: IFile[] = await fileRepository.createFiles(
       command.files,
       currentUser
@@ -26,9 +26,11 @@ const messageRepository = {
       files: createdFiles.map((el) => el._id),
     });
 
-    await message.populate("files");
+    const populatedMessage: IPopulatedMessage = await message.populate(
+      populationOptions
+    );
 
-    return message;
+    return populatedMessage;
   },
   getMessagesBetweenUsers: async (
     command: MessageGetBetweenUsersCommand
@@ -43,23 +45,30 @@ const messageRepository = {
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
-      .limit(command.paginationCommand.limit)) as IMessage[];
+      .limit(command.paginationCommand.limit)
+      .exec()) as IMessage[];
 
     return messages.reverse();
   },
-  getByIds: async (messagesIds: string[]): Promise<IMessage[]> => {
-    const messages: IMessage[] = await Message.find({
+  getByIds: async (messagesIds: string[]): Promise<IPopulatedMessage[]> => {
+    const messages: IPopulatedMessage[] = await Message.find({
       _id: { $in: messagesIds },
     }).populate(populationOptions);
 
     return messages;
   },
-  markMessagesAsReadByUser: async (
-    messages: IMessage[],
+  markAllConversationMessagesAsReadByUser: async (
+    to: string[],
     userId: mongoose.ObjectId
   ): Promise<void> => {
     await Message.updateMany(
-      { _id: { $in: messages.map((m) => m._id) } },
+      // { _id: { $in: messages.map((m) => m._id) } },
+      // Mark all messages in the conversation as read by the user instead of the passed messages
+      {
+        to: {
+          $all: to.map((el) => new mongoose.Types.ObjectId(el)),
+        },
+      },
       { $addToSet: { read: userId } }
     );
   },
@@ -74,8 +83,8 @@ const messageRepository = {
     return count;
   },
   getTotalUnreadMessages: async (
-    usersIds: mongoose.ObjectId[],
-    currentUserId: mongoose.ObjectId
+    usersIds: string[],
+    currentUserId: string
   ): Promise<number> => {
     const total: number = await Message.find({
       read: { $ne: currentUserId },
@@ -97,7 +106,7 @@ const messageRepository = {
   getLastConversationsLastMessages: async (
     command: MessageGetLastConversations,
     currentUser: IUser
-  ): Promise<{ messages: IMessage[]; total: number }> => {
+  ): Promise<{ messages: IPopulatedMessage[]; total: number }> => {
     const lastConversationsLastMessagesIds = await Message.aggregate([
       {
         $match: {
@@ -124,15 +133,34 @@ const messageRepository = {
       { $limit: command.paginationCommand.limit },
     ]).exec();
 
-    const messages: IMessage[] = await messageRepository.getByIds(
+    const messages: IPopulatedMessage[] = await messageRepository.getByIds(
       lastConversationsLastMessagesIds.map((el) => el.id.toString())
     );
 
-    let total = 0;
+    // Fetch the total number of unread messages by the user for each message conversation
+    const getConversationTotalUnreadMessagesPromises: Promise<number>[] = [];
 
+    messages.forEach((message) => {
+      getConversationTotalUnreadMessagesPromises.push(
+        new Promise(async (resolve) => {
+          const conversationTotalUnreadMessages =
+            await messageRepository.getTotalUnreadMessages(
+              [...message.to.map((el) => el._id.toString())],
+              currentUser._id.toString()
+            );
+
+          message.totalUnreadMessages = conversationTotalUnreadMessages;
+
+          resolve(conversationTotalUnreadMessages);
+        })
+      );
+    });
+    await Promise.all(getConversationTotalUnreadMessagesPromises);
+
+    let total = 0;
     try {
       // TODO fetch the total:
-      const total: number = (
+      total = (
         await Message.aggregate([
           {
             $match: {
@@ -175,6 +203,10 @@ const messageRepository = {
 };
 
 const populationOptions = [
+  {
+    path: "files",
+    model: "file",
+  },
   {
     path: "from",
     model: "user",

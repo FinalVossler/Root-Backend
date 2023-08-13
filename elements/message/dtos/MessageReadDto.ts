@@ -1,19 +1,22 @@
-import { IMessage } from "../message.model";
+import { IMessage, IPopulatedMessage } from "../message.model";
 import { toReadDto as reactionToReadDto } from "../../reaction/dtos/ReactionReadDto";
 
 type MessageReadDto = {
-  _id: IMessage["_id"];
-  from: IMessage["from"];
-  to: IMessage["to"];
+  _id: IMessage["_id"] | IPopulatedMessage["_id"];
+  from: IMessage["from"] | IPopulatedMessage["from"];
+  to: IMessage["to"] | IPopulatedMessage["to"];
   message: IMessage["message"];
-  read: IMessage["read"];
+  read: IMessage["read"] | IPopulatedMessage["read"];
   files: IMessage["files"];
-  reactions: IMessage["reactions"];
+  totalUnreadMessages?: number;
+  reactions?: IMessage["reactions"];
   createdAt: IMessage["createdAt"];
   updatedAt: IMessage["updatedAt"];
 };
 
-export const toReadDto = (message: IMessage): MessageReadDto => {
+export const toReadDto = (
+  message: IMessage | IPopulatedMessage
+): MessageReadDto => {
   return {
     _id: message._id,
     from: message.from,
@@ -21,7 +24,8 @@ export const toReadDto = (message: IMessage): MessageReadDto => {
     message: message.message,
     read: message.read,
     files: message.files,
-    reactions: message.reactions.map((r) => reactionToReadDto(r)),
+    reactions: message.reactions?.map((r) => reactionToReadDto(r)) || [],
+    totalUnreadMessages: message["totalUnreadMessages"],
     createdAt: message.createdAt,
     updatedAt: message.updatedAt,
   };

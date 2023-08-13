@@ -8,10 +8,11 @@ import MessageGetBetweenUsersCommand from "./dtos/MessageGetBetweenUsersCommand"
 import MessageReadDto, { toReadDto } from "./dtos/MessageReadDto";
 import MessageSendCommand from "./dtos/MessageSendCommand";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
-import { IMessage } from "./message.model";
+import { IMessage, IPopulatedMessage } from "./message.model";
 import messageService from "./message.service";
 import { IUser } from "../user/user.model";
 import MessageGetLastConversations from "./dtos/MessageGetLastConversations";
+import MessageMarkMessagesAsReadByUserCommand from "./dtos/MessageMarkMessagesAsReadByUserCommand";
 
 const router = express.Router();
 
@@ -23,7 +24,7 @@ router.post(
     res: Response<ResponseDto<MessageReadDto>>
   ) => {
     const command = req.body;
-    const message: IMessage = await messageService.sendMessage(
+    const message: IPopulatedMessage = await messageService.sendMessage(
       command,
       req.user
     );
@@ -67,13 +68,16 @@ router.post(
   "/conversationTotalUnreadMessages",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, mongoose.ObjectId[], any>,
+    req: ConnectedRequest<any, any, string[], any>,
     res: Response<ResponseDto<number>>
   ) => {
-    const usersIds: mongoose.ObjectId[] = req.body;
+    const usersIds: string[] = req.body;
 
     const totalUnreadMessages: number =
-      await messageService.getTotalUnreadMessages(usersIds, req.user._id);
+      await messageService.getTotalUnreadMessages(
+        usersIds,
+        req.user._id.toString()
+      );
 
     return res.status(200).json({
       success: true,
@@ -101,16 +105,24 @@ router.delete(
 );
 
 router.post(
-  "/markMessagesAsRead",
+  "/markAllConversationMessagesAsReadByUser",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, { messagesIds: string[] }, any>,
+    req: ConnectedRequest<
+      any,
+      any,
+      MessageMarkMessagesAsReadByUserCommand,
+      any
+    >,
     res: Response<ResponseDto<number>>
   ) => {
-    const messagesIds: string[] = req.body.messagesIds;
+    const to: string[] = req.body.to;
     const currentUser: IUser = req.user;
 
-    await messageService.markMessagesAsReadByUser({ messagesIds, currentUser });
+    await messageService.markAllConversationMessagesAsReadByUser({
+      to,
+      currentUser,
+    });
     const userTotalUnreadMessages: number =
       await messageService.getUserTotalUnreadMessages(req.user?._id.toString());
 

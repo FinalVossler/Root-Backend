@@ -4,7 +4,7 @@ import { IUser } from "../user/user.model";
 import MessageGetBetweenUsersCommand from "./dtos/MessageGetBetweenUsersCommand";
 import MessageGetLastConversations from "./dtos/MessageGetLastConversations";
 import MessageSendCommand from "./dtos/MessageSendCommand";
-import { IMessage } from "./message.model";
+import { IMessage, IPopulatedMessage } from "./message.model";
 import messageRepository from "./message.repository";
 import { socketEmit } from "../../socket";
 import ChatMessagesEnum from "../../globalTypes/ChatMessagesEnum";
@@ -14,19 +14,17 @@ const messageService = {
   sendMessage: async (
     command: MessageSendCommand,
     currentUser: IUser
-  ): Promise<IMessage> => {
-    const message: IMessage = await messageRepository.sendMessage(
-      command,
-      currentUser
-    );
+  ): Promise<IPopulatedMessage> => {
+    const populatedMessage: IPopulatedMessage =
+      await messageRepository.sendMessage(command, currentUser);
 
     socketEmit({
       messageType: ChatMessagesEnum.Receive,
-      object: toReadDto(message),
-      userIds: message.to.map((userId) => userId.toString()),
+      object: toReadDto(populatedMessage),
+      userIds: populatedMessage.to.map((user) => user._id.toString()),
     });
 
-    return message;
+    return populatedMessage;
   },
   getMessagesBetweenUsers: async (
     command: MessageGetBetweenUsersCommand,
@@ -35,34 +33,26 @@ const messageService = {
     const messages: IMessage[] =
       await messageRepository.getMessagesBetweenUsers(command);
 
-    await messageService.markMessagesAsReadByUser({ messages, currentUser });
+    // if (messages.length > 0) {
+    //   await messageService.markAllConversationMessagesAsReadByUser({
+    //     to: messages[0].to.map((el) => el.toString()),
+    //     currentUser,
+    //   });
+    // }
 
     return messages;
   },
-  markMessagesAsReadByUser: async ({
-    messagesIds,
-    messages,
+  markAllConversationMessagesAsReadByUser: async ({
+    to,
     currentUser,
   }: {
-    messagesIds?: string[];
-    messages?: IMessage[] | undefined;
+    to: string[];
     currentUser: IUser;
   }) => {
-    if (messagesIds && messagesIds.length > 0) {
-      const messages: IMessage[] = await messageRepository.getByIds(
-        messagesIds
-      );
-      await messageRepository.markMessagesAsReadByUser(
-        messages,
-        currentUser._id
-      );
-    }
-    if (messages && messages.length > 0) {
-      await messageRepository.markMessagesAsReadByUser(
-        messages,
-        currentUser._id
-      );
-    }
+    await messageRepository.markAllConversationMessagesAsReadByUser(
+      to,
+      currentUser._id
+    );
   },
   getTotalMessagesBetweenUsers: async (
     command: MessageGetBetweenUsersCommand
@@ -72,8 +62,8 @@ const messageService = {
     return total;
   },
   getTotalUnreadMessages: async (
-    usersIds: mongoose.ObjectId[],
-    currentUserId: mongoose.ObjectId
+    usersIds: string[],
+    currentUserId: string
   ): Promise<number> => {
     const total: number = await messageRepository.getTotalUnreadMessages(
       usersIds,
@@ -104,7 +94,7 @@ const messageService = {
   getLastConversationsLastMessages: async (
     command: MessageGetLastConversations,
     currentUser: IUser
-  ): Promise<{ messages: IMessage[]; total: number }> => {
+  ): Promise<{ messages: IPopulatedMessage[]; total: number }> => {
     return await messageRepository.getLastConversationsLastMessages(
       command,
       currentUser

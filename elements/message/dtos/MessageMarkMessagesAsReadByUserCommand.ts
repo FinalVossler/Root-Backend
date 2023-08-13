@@ -1,5 +1,5 @@
 type MessageMarkMessagesAsReadByUserCommand = {
-  messagesIds: string[];
+  to: string[];
 };
 
 export default MessageMarkMessagesAsReadByUserCommand;

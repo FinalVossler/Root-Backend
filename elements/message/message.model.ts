@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 import File, { IFile } from "../file/file.model";
-import User from "../user/user.model";
+import User, { IUser } from "../user/user.model";
 import Reaction, { IReaction } from "../reaction/reaction.model";
 
 export interface IMessage {
@@ -13,6 +13,20 @@ export interface IMessage {
   read: mongoose.ObjectId[];
   files: IFile[];
   reactions?: IReaction[];
+
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IPopulatedMessage {
+  _id: mongoose.ObjectId;
+  from: IUser;
+  to: IUser[];
+  message: string;
+  read: string[];
+  files: IFile[];
+  reactions?: IReaction[];
+  totalUnreadMessages?: number;
 
   createdAt: string;
   updatedAt: string;
