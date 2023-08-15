@@ -17,7 +17,7 @@ const socketHandler: {
   io: null,
 };
 
-const onlineUsers = new Map<string, string>();
+const onlineUsers = new Map<string, string[]>();
 const usersTypingStates = new Map<string, SocketTypingStateCommand[]>();
 
 const init = (server: http.Server) => {
@@ -34,11 +34,19 @@ const init = (server: http.Server) => {
     const userId: any = socket.handshake.query.userId;
     console.log("connecting", userId, "socket id", socket.id);
 
-    onlineUsers.set(userId, socket.id);
+    const userSocketsIds: string[] = onlineUsers.get(userId) || [];
+
+    onlineUsers.set(userId, [...userSocketsIds, socket.id]);
 
     socket.on("disconnect", () => {
+      const userSocketsIds: string[] | undefined =
+        onlineUsers.get(userId) || [];
+
       console.log("disconnecting", userId, "socket id", socket.id);
-      onlineUsers.set(userId, null);
+      onlineUsers.set(
+        userId,
+        userSocketsIds.filter((socketId) => socketId !== socket.id)
+      );
       usersTypingStates.set(userId, undefined);
     });
 
@@ -92,16 +100,18 @@ export const socketEmit = ({
     | MessageReadDto
     | SocketTypingStateCommand
     | { reaction: ReactionReadDto; message: MessageReadDto }
-    | { lastMarkedMessageAsRead: IMessage; by: IUser };
+    | { lastMarkedMessageAsRead: MessageReadDto; by: IUser };
 }) => {
   const onlineConcernedUsersIds: string[] = userIds
     .map((userId) => userId.toString())
     .filter((userId) => onlineUsers.has(userId.toString()));
 
   if (onlineConcernedUsersIds.length > 0) {
-    const socketIds: string[] = onlineConcernedUsersIds.map((userId) =>
-      onlineUsers.get(userId)
+    const socketIds: string[] = onlineConcernedUsersIds.reduce(
+      (acc, userId) => acc.concat(onlineUsers.get(userId) || []),
+      []
     );
+
     socketHandler.io.to(socketIds).emit(messageType, object);
   }
 };

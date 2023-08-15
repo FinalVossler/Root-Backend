@@ -4,7 +4,7 @@ import { compare, genSalt, hash } from "bcrypt";
 import UserRegisterCommand from "./dtos/UserRegisterCommand";
 import UserLoginCommand from "./dtos/UserLoginCommand";
 import userRepository from "./user.repository";
-import { IUser, UserWithLastUnreadMessageInConversation } from "./user.model";
+import { IUser, UserWithLastReadMessageInConversation } from "./user.model";
 import UserUpdateCommand from "./dtos/UserUpdateCommand";
 import mongoose from "mongoose";
 import UserUpdateProfilePictureCommand from "./dtos/UserUpdateProfilePictureCommand";
@@ -208,18 +208,17 @@ const userService = {
 
     return users;
   },
-  getUsersWithTheirLastUnreadMessagesInConversation: async (
+  getUsersWithTheirLastReadMessagesInConversation: async (
     usersIds: string[]
-  ): Promise<UserWithLastUnreadMessageInConversation[]> => {
+  ): Promise<UserWithLastReadMessageInConversation[]> => {
     const users: IUser[] = await userRepository.getByIds(usersIds);
 
     const promises: Promise<IMessage>[] = [];
 
-    const usersWithLastUnreadMessageInConversation: UserWithLastUnreadMessageInConversation[] =
+    const usersWithLastReadMessageInConversation: UserWithLastReadMessageInConversation[] =
       [];
 
     users.forEach((user) => {
-      console.log("user", user);
       promises.push(
         new Promise<IMessage>(async (resolve, reject) => {
           const userLastReadMessageInConversation: IMessage =
@@ -227,7 +226,7 @@ const userService = {
               to: usersIds,
               userId: user._id.toString(),
             });
-          usersWithLastUnreadMessageInConversation.push({
+          usersWithLastReadMessageInConversation.push({
             firstName: user.firstName,
             lastName: user.lastName,
             profilePicture: user.profilePicture,
@@ -248,7 +247,7 @@ const userService = {
 
     await Promise.all(promises);
 
-    return usersWithLastUnreadMessageInConversation;
+    return usersWithLastReadMessageInConversation;
   },
   deleteUsers: async (usersIds: mongoose.ObjectId[]): Promise<void> => {
     await userRepository.deleteUsers(usersIds);

@@ -24,7 +24,7 @@ export interface IUser {
   role?: IRole;
 }
 
-export type UserWithLastUnreadMessageInConversation = IUser & {
+export type UserWithLastReadMessageInConversation = IUser & {
   lastReadMessageInConversation: IMessage | null;
   to: string[];
 };

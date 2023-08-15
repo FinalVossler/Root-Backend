@@ -24,6 +24,15 @@ const messageService = {
       userIds: populatedMessage.to.map((user) => user._id.toString()),
     });
 
+    socketEmit({
+      messageType: ChatMessagesEnum.ReceiveLastMarkedMessageAsReadByUser,
+      object: {
+        lastMarkedMessageAsRead: toReadDto(populatedMessage),
+        by: currentUser,
+      },
+      userIds: populatedMessage.to.map((user) => user._id.toString()),
+    });
+
     return populatedMessage;
   },
   getMessagesBetweenUsers: async (
@@ -49,7 +58,10 @@ const messageService = {
 
     socketEmit({
       messageType: ChatMessagesEnum.ReceiveLastMarkedMessageAsReadByUser,
-      object: { lastMarkedMessageAsRead, by: currentUser },
+      object: {
+        lastMarkedMessageAsRead: toReadDto(lastMarkedMessageAsRead),
+        by: currentUser,
+      },
       userIds: to,
     });
 

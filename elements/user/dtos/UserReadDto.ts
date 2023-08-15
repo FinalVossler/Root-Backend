@@ -3,7 +3,7 @@ import RoleReadDto, {
   toReadDto as roleReadDto,
 } from "../../role/dto/RoleReadDto";
 
-import { IUser, UserWithLastUnreadMessageInConversation } from "../user.model";
+import { IUser, UserWithLastReadMessageInConversation } from "../user.model";
 import MessageReadDto from "../../message/dtos/MessageReadDto";
 
 type UserReadDto = {
@@ -16,7 +16,7 @@ type UserReadDto = {
   role?: RoleReadDto;
 };
 
-type UserReadDtoWithLastUnreadMessageInConversation = UserReadDto & {
+type UserReadDtoWithLastReadMessageInConversation = UserReadDto & {
   to: string[];
   lastReadMessageInConversation: MessageReadDto | null;
 };
@@ -33,9 +33,9 @@ export const toReadDto = (user: IUser): UserReadDto => {
   };
 };
 
-export const toReadDtoWithLastUnreadMessageInConversation = (
-  user: UserWithLastUnreadMessageInConversation
-): UserReadDtoWithLastUnreadMessageInConversation => {
+export const toReadDtoWithLastReadMessageInConversation = (
+  user: UserWithLastReadMessageInConversation
+): UserReadDtoWithLastReadMessageInConversation => {
   return {
     ...toReadDto(user),
     to: user.to,
