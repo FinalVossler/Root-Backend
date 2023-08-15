@@ -40,11 +40,20 @@ const messageService = {
   }: {
     to: string[];
     currentUser: IUser;
-  }) => {
-    await messageRepository.markAllConversationMessagesAsReadByUser(
-      to,
-      currentUser._id
-    );
+  }): Promise<IMessage | null> => {
+    const lastMarkedMessageAsRead: IMessage =
+      await messageRepository.markAllConversationMessagesAsReadByUser(
+        to,
+        currentUser._id
+      );
+
+    socketEmit({
+      messageType: ChatMessagesEnum.ReceiveLastMarkedMessageAsReadByUser,
+      object: { lastMarkedMessageAsRead, by: currentUser },
+      userIds: to,
+    });
+
+    return lastMarkedMessageAsRead;
   },
   getTotalMessagesBetweenUsers: async (
     command: MessageGetBetweenUsersCommand
@@ -99,6 +108,18 @@ const messageService = {
     const message: IMessage = await messageRepository.getById(messageId);
 
     return message;
+  },
+  getUserLastReadMessageInConversation: async ({
+    to,
+    userId,
+  }: {
+    to: string[];
+    userId: string;
+  }): Promise<IMessage | null> => {
+    return await messageRepository.getUserLastReadMessageInConversation({
+      to,
+      userId,
+    });
   },
 };
 

@@ -3,7 +3,8 @@ import RoleReadDto, {
   toReadDto as roleReadDto,
 } from "../../role/dto/RoleReadDto";
 
-import { IUser } from "../user.model";
+import { IUser, UserWithLastUnreadMessageInConversation } from "../user.model";
+import MessageReadDto from "../../message/dtos/MessageReadDto";
 
 type UserReadDto = {
   _id: mongoose.ObjectId;
@@ -15,6 +16,11 @@ type UserReadDto = {
   role?: RoleReadDto;
 };
 
+type UserReadDtoWithLastUnreadMessageInConversation = UserReadDto & {
+  to: string[];
+  lastReadMessageInConversation: MessageReadDto | null;
+};
+
 export const toReadDto = (user: IUser): UserReadDto => {
   return {
     _id: user._id,
@@ -24,6 +30,16 @@ export const toReadDto = (user: IUser): UserReadDto => {
     profilePicture: user.profilePicture,
     superRole: user.superRole,
     role: roleReadDto(user.role),
+  };
+};
+
+export const toReadDtoWithLastUnreadMessageInConversation = (
+  user: UserWithLastUnreadMessageInConversation
+): UserReadDtoWithLastUnreadMessageInConversation => {
+  return {
+    ...toReadDto(user),
+    to: user.to,
+    lastReadMessageInConversation: user.lastReadMessageInConversation,
   };
 };
 

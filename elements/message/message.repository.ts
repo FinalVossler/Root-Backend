@@ -60,10 +60,8 @@ const messageRepository = {
   markAllConversationMessagesAsReadByUser: async (
     to: string[],
     userId: mongoose.ObjectId
-  ): Promise<void> => {
+  ): Promise<IMessage | null> => {
     await Message.updateMany(
-      // { _id: { $in: messages.map((m) => m._id) } },
-      // Mark all messages in the conversation as read by the user instead of the passed messages
       {
         to: {
           $all: to.map((el) => new mongoose.Types.ObjectId(el)),
@@ -71,6 +69,22 @@ const messageRepository = {
       },
       { $addToSet: { read: userId } }
     );
+
+    const command: MessageGetBetweenUsersCommand = {
+      paginationCommand: {
+        limit: 1,
+        page: 1,
+      },
+      usersIds: to.map((el) => new mongoose.Types.ObjectId(el)),
+    };
+    const lastMarkedMessageAsRead: IMessage[] =
+      await messageRepository.getMessagesBetweenUsers(command);
+
+    if (lastMarkedMessageAsRead.length > 0) {
+      return lastMarkedMessageAsRead[0];
+    } else {
+      return null;
+    }
   },
   getTotalMessages: async (
     command: MessageGetBetweenUsersCommand
@@ -199,6 +213,30 @@ const messageRepository = {
     });
 
     return message;
+  },
+  getUserLastReadMessageInConversation: async ({
+    to,
+    userId,
+  }: {
+    to: string[];
+    userId: string;
+  }): Promise<IMessage | null> => {
+    const messages: IMessage[] = (await Message.find({
+      to: { $all: to },
+      numberOfParticipants: to.length,
+      read: { $in: new mongoose.Types.ObjectId(userId) },
+    })
+      .populate("files")
+      .populate("reactions")
+      .sort({ createdAt: -1 })
+      .limit(1)
+      .exec()) as IMessage[];
+
+    if (messages.length > 0) {
+      return messages[0];
+    } else {
+      return null;
+    }
   },
 };
 

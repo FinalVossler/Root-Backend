@@ -5,6 +5,7 @@ import File, { IFile } from "../file/file.model";
 import postRepository from "../post/post.repository";
 import fileRepository from "../file/file.repository";
 import { IRole } from "../role/role.model";
+import { IMessage } from "../message/message.model";
 
 export enum SuperRole {
   SuperAdmin = "SuperAdmin",
@@ -22,6 +23,11 @@ export interface IUser {
   passwordChangeToken: string;
   role?: IRole;
 }
+
+export type UserWithLastUnreadMessageInConversation = IUser & {
+  lastReadMessageInConversation: IMessage | null;
+  to: string[];
+};
 
 interface IUserModel extends mongoose.Model<IUser> {}
 
@@ -53,7 +59,7 @@ const UserSchema = new mongoose.Schema<IUser>(
     },
     profilePicture: {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: File.modelName,
+      ref: "file",
       required: false,
       default: null,
     },

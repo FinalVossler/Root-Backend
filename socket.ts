@@ -8,6 +8,8 @@ import NotificationMessageEnum from "./globalTypes/NotificationMessageEnum";
 import NotificationReadDto from "./elements/notification/dto/NotificationReadDto";
 import ReactionReadDto from "./elements/reaction/dtos/ReactionReadDto";
 import SocketTypingStateCommand from "./globalTypes/SocketTypingStateCommand";
+import { IUser } from "./elements/user/user.model";
+import { IMessage } from "./elements/message/message.model";
 
 const socketHandler: {
   io: socket.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
@@ -89,7 +91,8 @@ export const socketEmit = ({
     | NotificationReadDto
     | MessageReadDto
     | SocketTypingStateCommand
-    | { reaction: ReactionReadDto; message: MessageReadDto };
+    | { reaction: ReactionReadDto; message: MessageReadDto }
+    | { lastMarkedMessageAsRead: IMessage; by: IUser };
 }) => {
   const onlineConcernedUsersIds: string[] = userIds
     .map((userId) => userId.toString())

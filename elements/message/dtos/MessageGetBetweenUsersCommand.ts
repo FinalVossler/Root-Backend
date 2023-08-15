@@ -4,7 +4,7 @@ import PaginationCommand from "../../../globalTypes/PaginationCommand";
 
 type MessageGetBetweenUsersCommand = {
   paginationCommand: PaginationCommand;
-  usersIds: [mongoose.ObjectId];
+  usersIds: mongoose.Types.ObjectId[];
 };
 
 export default MessageGetBetweenUsersCommand;

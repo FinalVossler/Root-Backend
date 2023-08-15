@@ -18,14 +18,15 @@ const userRepository = {
     command: ChatGetContactsCommand,
     currentUser: IUser
   ): Promise<{ users: IUser[]; total: number }> => {
-    const users: IUser[] = (await User.find({
+    const users = await User.find({
       _id: { $nin: [currentUser._id] },
     })
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
       .limit(command.paginationCommand.limit)
-      .populate(populationOptions)) as IUser[];
+      .populate(populationOptions)
+      .exec();
 
     const total: number = await User.find({
       _id: { $nin: [currentUser._id] },
@@ -150,9 +151,9 @@ const userRepository = {
 
     return { users, total };
   },
-  getByIds: async (userIds: string[]): Promise<IUser[]> => {
+  getByIds: async (usersIds: string[]): Promise<IUser[]> => {
     const users: IUser[] = await User.find({
-      _id: { $in: userIds.map((id) => new mongoose.Types.ObjectId(id)) },
+      _id: { $in: usersIds.map((id) => new mongoose.Types.ObjectId(id)) },
     })
       .populate(populationOptions)
       .exec();

@@ -5,9 +5,12 @@ import ResponseDto from "../../globalTypes/ResponseDto";
 import UserLoginCommand from "./dtos/UserLoginCommand";
 import UserRegisterCommand from "./dtos/UserRegisterCommand";
 import userService from "./user.service";
-import UserReadDto, { toReadDto } from "./dtos/UserReadDto";
+import UserReadDto, {
+  toReadDto,
+  toReadDtoWithLastUnreadMessageInConversation,
+} from "./dtos/UserReadDto";
 import UserUpdateCommand from "./dtos/UserUpdateCommand";
-import { IUser } from "./user.model";
+import { IUser, UserWithLastUnreadMessageInConversation } from "./user.model";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import { IFile } from "../file/file.model";
@@ -74,6 +77,25 @@ router.get(
     return res.status(200).json({
       success: true,
       data: toReadDto(user),
+    });
+  }
+);
+
+router.get(
+  "/getUsersWithTheirLastUnreadMessagesInConversation",
+  protectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, any, { "usersIds[]": string[] }>,
+    res: Response<ResponseDto<UserReadDto[]>>
+  ) => {
+    const users: UserWithLastUnreadMessageInConversation[] =
+      await userService.getUsersWithTheirLastUnreadMessagesInConversation(
+        req.query["usersIds[]"]
+      );
+
+    return res.status(200).json({
+      success: true,
+      data: users.map((u) => toReadDtoWithLastUnreadMessageInConversation(u)),
     });
   }
 );

@@ -4,7 +4,7 @@ import { compare, genSalt, hash } from "bcrypt";
 import UserRegisterCommand from "./dtos/UserRegisterCommand";
 import UserLoginCommand from "./dtos/UserLoginCommand";
 import userRepository from "./user.repository";
-import { IUser } from "./user.model";
+import { IUser, UserWithLastUnreadMessageInConversation } from "./user.model";
 import UserUpdateCommand from "./dtos/UserUpdateCommand";
 import mongoose from "mongoose";
 import UserUpdateProfilePictureCommand from "./dtos/UserUpdateProfilePictureCommand";
@@ -16,6 +16,8 @@ import UsersGetCommand from "./dtos/UsersGetCommand";
 import UsersSearchCommand from "./dtos/UsersSearchCommand";
 import ChatGetContactsCommand from "./dtos/ChatGetContactsCommand";
 import UserSearchByRoleCommand from "./dtos/UserSearchByRoleCommand";
+import { IMessage } from "../message/message.model";
+import messageService from "../message/message.service";
 
 const userService = {
   generatePasswordHash: async (password: string): Promise<string> => {
@@ -205,6 +207,48 @@ const userService = {
     const users: IUser[] = await userRepository.getByIds(ids);
 
     return users;
+  },
+  getUsersWithTheirLastUnreadMessagesInConversation: async (
+    usersIds: string[]
+  ): Promise<UserWithLastUnreadMessageInConversation[]> => {
+    const users: IUser[] = await userRepository.getByIds(usersIds);
+
+    const promises: Promise<IMessage>[] = [];
+
+    const usersWithLastUnreadMessageInConversation: UserWithLastUnreadMessageInConversation[] =
+      [];
+
+    users.forEach((user) => {
+      console.log("user", user);
+      promises.push(
+        new Promise<IMessage>(async (resolve, reject) => {
+          const userLastReadMessageInConversation: IMessage =
+            await messageService.getUserLastReadMessageInConversation({
+              to: usersIds,
+              userId: user._id.toString(),
+            });
+          usersWithLastUnreadMessageInConversation.push({
+            firstName: user.firstName,
+            lastName: user.lastName,
+            profilePicture: user.profilePicture,
+            _id: user._id,
+            email: user.email,
+            password: user.password,
+            passwordChangeToken: user.passwordChangeToken,
+            superRole: user.superRole,
+            role: user.role,
+            lastReadMessageInConversation: userLastReadMessageInConversation,
+            to: usersIds,
+          });
+
+          resolve(userLastReadMessageInConversation);
+        })
+      );
+    });
+
+    await Promise.all(promises);
+
+    return usersWithLastUnreadMessageInConversation;
   },
   deleteUsers: async (usersIds: mongoose.ObjectId[]): Promise<void> => {
     await userRepository.deleteUsers(usersIds);

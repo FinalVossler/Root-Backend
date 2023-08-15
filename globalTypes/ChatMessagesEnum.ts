@@ -4,6 +4,7 @@ enum ChatMessagesEnum {
   ReaceiveReaction = "ReaceiveReaction",
   SendTypingState = "SendTypingState",
   ReceiveTypingState = "SendTypingState",
+  ReceiveLastMarkedMessageAsReadByUser = "ReceiveLastMarkedMessageAsReadByUser",
 }
 
 export default ChatMessagesEnum;
