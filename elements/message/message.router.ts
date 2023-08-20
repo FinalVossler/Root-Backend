@@ -12,7 +12,7 @@ import { IMessage, IPopulatedMessage } from "./message.model";
 import messageService from "./message.service";
 import { IUser } from "../user/user.model";
 import MessageGetLastConversations from "./dtos/MessageGetLastConversations";
-import MessageMarkMessagesAsReadByUserCommand from "./dtos/MessageMarkMessagesAsReadByUserCommand";
+import MessageMarkAllMessagesAsReadByUserCommand from "./dtos/MessageMarkAllMessagesAsReadByUserCommand";
 
 const router = express.Router();
 
@@ -110,7 +110,7 @@ router.post(
     req: ConnectedRequest<
       any,
       any,
-      MessageMarkMessagesAsReadByUserCommand,
+      MessageMarkAllMessagesAsReadByUserCommand,
       any
     >,
     res: Response<ResponseDto<number>>

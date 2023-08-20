@@ -50,20 +50,24 @@ const messageService = {
     to: string[];
     currentUser: IUser;
   }): Promise<IMessage | null> => {
-    const lastMarkedMessageAsRead: IMessage =
+    const lastMarkedMessageAsRead: IMessage | null =
       await messageRepository.markAllConversationMessagesAsReadByUser(
         to,
         currentUser._id
       );
 
-    socketEmit({
-      messageType: ChatMessagesEnum.ReceiveLastMarkedMessageAsReadByUser,
-      object: {
-        lastMarkedMessageAsRead: toReadDto(lastMarkedMessageAsRead),
-        by: currentUser,
-      },
-      userIds: to,
-    });
+    if (lastMarkedMessageAsRead) {
+      socketEmit({
+        messageType: ChatMessagesEnum.ReceiveLastMarkedMessageAsReadByUser,
+        object: {
+          lastMarkedMessageAsRead: lastMarkedMessageAsRead
+            ? toReadDto(lastMarkedMessageAsRead)
+            : null,
+          by: currentUser,
+        },
+        userIds: to,
+      });
+    }
 
     return lastMarkedMessageAsRead;
   },
