@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 
 import RoleCreateCommand from "./elements/role/dto/RoleCreateCommand";
 import roleRepository from "./elements/role/role.repository";
-import User from "./elements/user/user.model";
+import User, { SuperRole } from "./elements/user/user.model";
 
 import UserCreateCommand from "./elements/user/dtos/UserCreateCommand";
 import userRepository from "./elements/user/user.repository";
@@ -21,6 +21,7 @@ import { IRole } from "./elements/role/role.model";
         firstName: faker.name.firstName(),
         lastName: faker.name.lastName(),
         password: "rootroot",
+        superRole: SuperRole.Normal,
       };
 
       await userRepository.create(command);

@@ -321,6 +321,16 @@ router.post(
     });
 
     const command: UserCreateCommand = req.body;
+
+    if (
+      req.user.superRole !== SuperRole.SuperAdmin &&
+      command.superRole === SuperRole.SuperAdmin
+    ) {
+      throw new Error(
+        "Trying to set another user as a super admin while you aren't super admin yourself"
+      );
+    }
+
     const user: IUser = await userService.createUser(command);
 
     return res.status(200).send({
