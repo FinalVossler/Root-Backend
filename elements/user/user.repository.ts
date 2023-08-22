@@ -71,6 +71,7 @@ const userRepository = {
         lastName: command.lastName,
         email: command.email,
         role: command.roleId,
+        superRole: command.superRole,
       }
     ).exec();
 

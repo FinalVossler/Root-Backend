@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { IUser } from "../user.model";
+import { IUser, SuperRole } from "../user.model";
 
 type UserUpdateCommand = {
   _id: mongoose.ObjectId;
@@ -7,6 +7,7 @@ type UserUpdateCommand = {
   lastName: IUser["lastName"];
   email: IUser["email"];
   roleId?: string;
+  superRole: SuperRole;
 };
 
 export default UserUpdateCommand;

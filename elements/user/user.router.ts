@@ -10,7 +10,11 @@ import UserReadDto, {
   toReadDtoWithLastReadMessageInConversation,
 } from "./dtos/UserReadDto";
 import UserUpdateCommand from "./dtos/UserUpdateCommand";
-import { IUser, UserWithLastReadMessageInConversation } from "./user.model";
+import {
+  IUser,
+  SuperRole,
+  UserWithLastReadMessageInConversation,
+} from "./user.model";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import { IFile } from "../file/file.model";
@@ -179,6 +183,15 @@ router.put(
     const user: IUser = req.user;
     if (user._id.toString() !== command._id.toString()) {
       roleService.checkPermission({ user, permission: Permission.UpdateUser });
+    }
+
+    if (
+      user.superRole !== SuperRole.SuperAdmin &&
+      command.superRole === SuperRole.SuperAdmin
+    ) {
+      throw new Error(
+        "Trying to set another user as a super admin while you aren't super admin yourself"
+      );
     }
 
     const updatedUser: IUser = await userService.update(command);
