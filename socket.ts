@@ -10,6 +10,9 @@ import ReactionReadDto from "./elements/reaction/dtos/ReactionReadDto";
 import SocketTypingStateCommand from "./globalTypes/SocketTypingStateCommand";
 import { IUser } from "./elements/user/user.model";
 import { IMessage } from "./elements/message/message.model";
+import userService from "./elements/user/user.service";
+import emailService from "./elements/email/email.service";
+import websiteConfigurationService from "./elements/websiteConfiguration/websiteConfiguration.service";
 
 const socketHandler: {
   io: socket.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
@@ -88,7 +91,7 @@ const init = (server: http.Server) => {
   });
 };
 
-export const socketEmit = ({
+export const socketEmit = async ({
   userIds,
   messageType,
   object,
@@ -105,6 +108,50 @@ export const socketEmit = ({
   const onlineConcernedUsersIds: string[] = userIds
     .map((userId) => userId.toString())
     .filter((userId) => onlineUsers.has(userId.toString()));
+
+  if (messageType === ChatMessagesEnum.Receive) {
+    const offlineConcernedUsersIds: string[] = userIds
+      .map((userId) => userId.toString())
+      .filter(
+        (userId) =>
+          !onlineUsers.has(userId.toString()) ||
+          onlineUsers.get(userId.toString())?.length === 0 ||
+          onlineUsers.get(userId.toString()) === undefined
+      );
+
+    const sendEmailsToOfflineUsersPromises: Promise<void>[] = [];
+    if (offlineConcernedUsersIds.length > 0) {
+      const configuration = await websiteConfigurationService.get();
+
+      offlineConcernedUsersIds.forEach((userId) => {
+        sendEmailsToOfflineUsersPromises.push(
+          new Promise(async (resolve, reject) => {
+            const user: IUser = await userService.getById(userId);
+            if (user.hasMessagingEmailsActivated) {
+              try {
+                await emailService.sendEmail({
+                  subject: configuration.title + ": Message received",
+                  text:
+                    "Somebody messaged you on " +
+                    configuration.title +
+                    ".\nClick the following link: " +
+                    process.env.ORIGIN +
+                    ". You can deactivate this type of notifications in your profile settings",
+                  to: user.email,
+                });
+
+                resolve(null);
+              } catch {
+                reject(null);
+              }
+            }
+          })
+        );
+      });
+    }
+
+    Promise.all(sendEmailsToOfflineUsersPromises);
+  }
 
   if (onlineConcernedUsersIds.length > 0) {
     const socketIds: string[] = onlineConcernedUsersIds.reduce(

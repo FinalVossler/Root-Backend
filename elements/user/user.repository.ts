@@ -72,6 +72,7 @@ const userRepository = {
         email: command.email,
         role: command.roleId,
         superRole: command.superRole,
+        hasMessagingEmailsActivated: command.hasMessagingEmailsActivated,
       }
     ).exec();
 

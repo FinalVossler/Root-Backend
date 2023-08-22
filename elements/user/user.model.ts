@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { genSalt, hash } from "bcrypt";
 
-import File, { IFile } from "../file/file.model";
+import { IFile } from "../file/file.model";
 import postRepository from "../post/post.repository";
 import fileRepository from "../file/file.repository";
 import { IRole } from "../role/role.model";
@@ -22,6 +22,7 @@ export interface IUser {
   profilePicture: IFile;
   passwordChangeToken: string;
   role?: IRole;
+  hasMessagingEmailsActivated?: boolean;
 }
 
 export type UserWithLastReadMessageInConversation = IUser & {
@@ -70,6 +71,11 @@ const UserSchema = new mongoose.Schema<IUser>(
     role: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "role",
+      required: false,
+    },
+    hasMessagingEmailsActivated: {
+      type: mongoose.SchemaTypes.Boolean,
+      default: true,
       required: false,
     },
   },

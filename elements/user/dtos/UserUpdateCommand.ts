@@ -7,7 +7,8 @@ type UserUpdateCommand = {
   lastName: IUser["lastName"];
   email: IUser["email"];
   roleId?: string;
-  superRole: SuperRole;
+  superRole?: SuperRole;
+  hasMessagingEmailsActivated?: boolean;
 };
 
 export default UserUpdateCommand;

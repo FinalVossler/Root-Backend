@@ -17,7 +17,7 @@ mongoose();
 app.use(cors());
 
 app.use(express.json());
-app.use(loggerMiddleware);
+// app.use(loggerMiddleware);
 app.use(router);
 
 app.use(errorMiddleware);

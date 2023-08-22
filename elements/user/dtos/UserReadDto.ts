@@ -14,6 +14,7 @@ type UserReadDto = {
   profilePicture: IUser["profilePicture"];
   superRole: IUser["superRole"];
   role?: RoleReadDto;
+  hasMessagingEmailsActivated?: boolean;
 };
 
 type UserReadDtoWithLastReadMessageInConversation = UserReadDto & {
@@ -30,6 +31,7 @@ export const toReadDto = (user: IUser): UserReadDto => {
     profilePicture: user.profilePicture,
     superRole: user.superRole,
     role: roleReadDto(user.role),
+    hasMessagingEmailsActivated: user.hasMessagingEmailsActivated,
   };
 };
 
