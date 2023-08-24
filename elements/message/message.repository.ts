@@ -46,6 +46,14 @@ const messageRepository = {
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
       .limit(command.paginationCommand.limit)
+      .populate({
+        path: "reactions",
+        model: "reaction",
+        populate: {
+          path: "user",
+          model: "user",
+        },
+      })
       .exec()) as IMessage[];
 
     return messages.reverse();
@@ -264,6 +272,10 @@ const populationOptions = [
   {
     path: "reactions",
     model: "reaction",
+    populate: {
+      path: "user",
+      model: "user",
+    },
   },
 ];
 
