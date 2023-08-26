@@ -6,7 +6,6 @@ import http from "http";
 import mongoose from "./mongoose";
 import router from "./router";
 import errorMiddleware from "./middleware/errorMiddleware";
-import loggerMiddleware from "./middleware/loggerMiddleware";
 import socket from "./socket";
 
 const app = express();
@@ -17,7 +16,6 @@ mongoose();
 app.use(cors());
 
 app.use(express.json());
-// app.use(loggerMiddleware);
 app.use(router);
 
 app.use(errorMiddleware);

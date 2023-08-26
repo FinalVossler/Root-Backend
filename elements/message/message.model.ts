@@ -11,6 +11,7 @@ export interface IMessage {
   message: string;
   numberOfParticipants?: number;
   read: mongoose.ObjectId[];
+  readAt?: string[];
   files: IFile[];
   reactions?: IReaction[];
 
@@ -24,6 +25,7 @@ export interface IPopulatedMessage {
   to: IUser[];
   message: string;
   read: string[];
+  readAt?: string[];
   files: IFile[];
   reactions?: IReaction[];
   totalUnreadMessages?: number;
@@ -64,6 +66,11 @@ const MessageSchema = new mongoose.Schema<IMessage>(
       ],
       required: false,
     },
+    readAt: [
+      {
+        type: mongoose.SchemaTypes.String,
+      },
+    ],
     files: [
       {
         type: mongoose.SchemaTypes.ObjectId,

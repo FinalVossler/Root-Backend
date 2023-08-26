@@ -7,6 +7,7 @@ type MessageReadDto = {
   to: IMessage["to"] | IPopulatedMessage["to"];
   message: IMessage["message"];
   read: IMessage["read"] | IPopulatedMessage["read"];
+  readAt?: IMessage["readAt"];
   files: IMessage["files"];
   totalUnreadMessages?: number;
   reactions?: IMessage["reactions"];
@@ -23,6 +24,7 @@ export const toReadDto = (
     to: message.to,
     message: message.message,
     read: message.read,
+    readAt: message.readAt,
     files: message.files,
     reactions: message.reactions?.map((r) => reactionToReadDto(r)) || [],
     totalUnreadMessages: message["totalUnreadMessages"],

@@ -1,5 +1,3 @@
-import mongoose from "mongoose";
-
 import { IUser } from "../user/user.model";
 import MessageGetBetweenUsersCommand from "./dtos/MessageGetBetweenUsersCommand";
 import MessageGetLastConversations from "./dtos/MessageGetLastConversations";

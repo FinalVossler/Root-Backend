@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import moment from "moment";
 
 import MessageGetBetweenUsersCommand from "./dtos/MessageGetBetweenUsersCommand";
 import MessageSendCommand from "./dtos/MessageSendCommand";
@@ -7,6 +8,8 @@ import { IFile } from "../file/file.model";
 import fileRepository from "../file/file.repository";
 import { IUser } from "../user/user.model";
 import MessageGetLastConversations from "./dtos/MessageGetLastConversations";
+
+const getReadAtByUser = (userId: string) => userId + "-" + moment().toString();
 
 const messageRepository = {
   sendMessage: async (
@@ -23,6 +26,7 @@ const messageRepository = {
       to: command.to,
       message: command.message,
       read: [command.from],
+      readAt: [getReadAtByUser(command.from.toString())],
       files: createdFiles.map((el) => el._id),
     });
 
@@ -74,8 +78,11 @@ const messageRepository = {
         to: {
           $all: to.map((el) => new mongoose.Types.ObjectId(el)),
         },
+        read: { $nin: new mongoose.Types.ObjectId(userId.toString()) },
       },
-      { $addToSet: { read: userId } }
+      {
+        $addToSet: { read: userId, readAt: getReadAtByUser(userId.toString()) },
+      }
     );
 
     const command: MessageGetBetweenUsersCommand = {
