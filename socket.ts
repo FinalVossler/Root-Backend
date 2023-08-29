@@ -136,7 +136,7 @@ export const socketEmit = async ({
                     configuration.title +
                     ".\nClick the following link: " +
                     process.env.ORIGIN +
-                    ". You can deactivate this type of notifications in your profile settings",
+                    ". You can deactivate this notification in your profile settings.",
                   to: user.email,
                 });
 
