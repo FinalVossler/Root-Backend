@@ -35,7 +35,7 @@ const emailService = {
       "Click the following link to change your password " +
       process.env.ORIGIN +
       "/changePassword/" +
-      token;
+      token.replace(/\./g, "---");
 
     await emailService.sendEmail({
       to: user.email,
