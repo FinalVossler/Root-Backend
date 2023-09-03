@@ -17,6 +17,7 @@ export enum ReactionEnum {
   Shock = "Shock",
   Cry = "Cry",
   Angry = "Angry",
+  OK = "OK",
 }
 
 interface ReactionModel extends mongoose.Model<IReaction> {}
