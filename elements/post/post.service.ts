@@ -33,7 +33,7 @@ const postService = {
 
     return { posts, total };
   },
-  getById: async (postId: string): Promise<IPost> => {
+  getById: async (postId: string): Promise<IPost | null> => {
     return await postRepository.getById(postId);
   },
   update: async (
@@ -42,20 +42,31 @@ const postService = {
   ): Promise<IPost> => {
     const oldPost = await postRepository.getById(command._id);
 
+    if (!oldPost) {
+      throw new Error("Post doesn't exist");
+    }
+
     if (oldPost.posterId.toString() !== currentUser._id.toString()) {
       throw new Error("Unauthorized. The post isn't yours");
     }
 
-    const page: IPost = await postRepository.update(
+    const post: IPost | null = await postRepository.update(
       command,
       oldPost,
       currentUser
     );
 
-    return page;
+    if (!post) {
+      throw new Error("Post not found");
+    }
+
+    return post;
   },
   delete: async (postId: string, currentUser: IUser): Promise<void> => {
-    const post: IPost = await postService.getById(postId);
+    const post: IPost | null = await postService.getById(postId);
+    if (!post) {
+      throw new Error("Post doesn't exist");
+    }
     if (post.posterId.toString() !== currentUser._id.toString())
       throw new Error("Unauthorized to delete post");
 

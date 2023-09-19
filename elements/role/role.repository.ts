@@ -41,7 +41,7 @@ const roleRepository = {
     return createdEntityPermissions;
   },
   updateEntityPermissions: async (
-    commands: EntityPermissionUpdateCommand[],
+    commands: (EntityPermissionUpdateCommand | undefined)[],
     oldEntityPermissions: IEntityPermission[]
   ): Promise<IEntityPermission[]> => {
     const entityPermissionsUpdatePromises: Promise<IEntityPermission>[] = [];
@@ -51,15 +51,25 @@ const roleRepository = {
       entityPermissionsUpdatePromises.push(
         new Promise(async (resolve, reject) => {
           try {
-            const updatedEntityPermission: IEntityPermission =
-              await entityPermissionRepository.updateEntityPermission(
-                entityPermissionCommand,
-                oldEntityPermissions.find(
-                  (el) => el._id.toString() === entityPermissionCommand._id
-                )
+            const oldEntityPermission: IEntityPermission | undefined =
+              oldEntityPermissions.find(
+                (el) => el._id.toString() === entityPermissionCommand?._id
               );
-            updatedEntityPermissions.push(updatedEntityPermission);
-            resolve(updatedEntityPermission);
+            if (oldEntityPermission) {
+              if (entityPermissionCommand) {
+                const updatedEntityPermission: IEntityPermission =
+                  await entityPermissionRepository.updateEntityPermission(
+                    entityPermissionCommand,
+                    oldEntityPermission
+                  );
+                updatedEntityPermissions.push(updatedEntityPermission);
+                resolve(updatedEntityPermission);
+              } else {
+                reject(null);
+              }
+            } else {
+              reject(null);
+            }
           } catch (e) {
             reject(e);
           }
@@ -81,16 +91,23 @@ const roleRepository = {
       entityPermissions: createdEntityPermissions,
     });
 
-    const createdRole: IRole = await Role.findById(role._id).populate(
+    const createdRole: IRole | null = await Role.findById(role._id).populate(
       populationOptions
     );
 
+    if (!createdRole) {
+      throw new Error("Role not found after creation");
+    }
     return createdRole;
   },
   update: async (command: RoleUpdateCommand): Promise<IRole> => {
-    const role: IRole = await Role.findById(command._id).populate(
+    const role: IRole | null = await Role.findById(command._id).populate(
       populationOptions
     );
+
+    if (!role) {
+      throw new Error("Role not found");
+    }
 
     // Start entity permissions to delete
     const entityPermissionsToDelete: IEntityPermission[] =
@@ -114,15 +131,17 @@ const roleRepository = {
         )
       );
 
-    const entityPermissionsUpdateCommands: EntityPermissionUpdateCommand[] =
-      entityPermissionsToUpdate.map((entityPermission) => {
-        const updateCommand: EntityPermissionUpdateCommand =
-          command.entityPermissions.find(
-            (el) => el._id === entityPermission._id.toString()
-          );
+    const entityPermissionsUpdateCommands: (
+      | EntityPermissionUpdateCommand
+      | undefined
+    )[] = entityPermissionsToUpdate.map((entityPermission) => {
+      const updateCommand: EntityPermissionUpdateCommand | undefined =
+        command.entityPermissions.find(
+          (el) => el._id?.toString() === entityPermission._id.toString()
+        );
 
-        return updateCommand;
-      });
+      return updateCommand;
+    });
     const updatedEntityPermissions: IEntityPermission[] =
       await roleRepository.updateEntityPermissions(
         entityPermissionsUpdateCommands,
@@ -178,7 +197,7 @@ const roleRepository = {
 
     return { roles, total };
   },
-  deleteRoles: async (rolesIds: mongoose.ObjectId[]): Promise<void> => {
+  deleteRoles: async (rolesIds: mongoose.ObjectId[]): Promise<null> => {
     for (let i = 0; i < rolesIds.length; i++) {
       await Role.deleteOne({ _id: rolesIds[i] });
     }

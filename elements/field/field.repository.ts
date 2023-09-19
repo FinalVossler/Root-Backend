@@ -25,7 +25,7 @@ const fieldRepository = {
     const field = await Field.create({
       name: [{ language: command.language, text: command.name }],
       type: command.type,
-      options: command.options.map((option) => ({
+      options: command.options?.map((option) => ({
         label: [{ language: command.language, text: option.label }],
         value: option.value,
       })),
@@ -62,28 +62,33 @@ const fieldRepository = {
     return field;
   },
   update: async (command: FieldUpdateCommand): Promise<IField> => {
-    const field: IField = await Field.findById(command._id);
+    const field: IField | null = await Field.findById(command._id);
+
+    if (!field) {
+      throw new Error("Field not found");
+    }
 
     // Columns to delete
     const columnsToDelete: IFieldTableElement[] =
-      field.tableOptions?.columns.filter(
+      field.tableOptions?.columns?.filter(
         (c) =>
           !command.tableOptions?.columns.some(
             (cc) => cc._id?.toString() === c._id.toString()
           )
-      );
+      ) || [];
 
     await fieldTableElementRepository.deleteMany(
       columnsToDelete.map((c) => c._id.toString())
     );
 
     // Rows to delete
-    const rowsToDelete: IFieldTableElement[] = field.tableOptions?.rows.filter(
-      (r) =>
-        !command.tableOptions?.rows.some(
-          (cr) => cr._id?.toString() === r._id.toString()
-        )
-    );
+    const rowsToDelete: IFieldTableElement[] =
+      field.tableOptions?.rows?.filter(
+        (r) =>
+          !command.tableOptions?.rows.some(
+            (cr) => cr._id?.toString() === r._id.toString()
+          )
+      ) || [];
 
     await fieldTableElementRepository.deleteMany(
       rowsToDelete.map((c) => c._id.toString())
@@ -153,12 +158,12 @@ const fieldRepository = {
             oldValue: field.name,
           }),
           type: command.type,
-          options: command.options.map((option) => ({
+          options: command.options?.map((option) => ({
             value: option.value,
             label: getNewTranslatedTextsForUpdate({
               language: command.language,
               newText: option.label,
-              oldValue: field.options.find((op) => op.value === option.value)
+              oldValue: field.options?.find((op) => op.value === option.value)
                 ?.label,
             }),
           })),
@@ -217,7 +222,13 @@ const fieldRepository = {
     return newField;
   },
   getById: async (id: string): Promise<IField> => {
-    const field: IField = await Field.findById(id).populate(populationOptions);
+    const field: IField | null = await Field.findById(id).populate(
+      populationOptions
+    );
+
+    if (!field) {
+      throw new Error("Field not found");
+    }
     return field;
   },
   getFields: async (
@@ -241,7 +252,7 @@ const fieldRepository = {
       await Field.deleteOne({ _id: fieldsIds[i] });
     }
 
-    return null;
+    return;
   },
   search: async (
     command: FieldsSearchCommand
@@ -281,26 +292,26 @@ const fieldRepository = {
           try {
             const createdColumns: IFieldTableElement[] =
               await fieldTableElementRepository.createMany(
-                field.tableOptions.columns.map((column) => ({
+                field.tableOptions?.columns?.map((column) => ({
                   // language doesn't matter
                   language: "en",
                   name: column.name.map((translatedText) => ({
                     text: translatedText.text,
                     language: translatedText.language,
                   })),
-                }))
+                })) || []
               );
 
             const createdRows: IFieldTableElement[] =
               await fieldTableElementRepository.createMany(
-                field.tableOptions.rows.map((row) => ({
+                field.tableOptions?.rows.map((row) => ({
                   // language doesn't matter
                   language: "en",
                   name: row.name.map((translatedText) => ({
                     text: translatedText.text,
                     language: translatedText.language,
                   })),
-                }))
+                })) || []
               );
 
             const newField: IField = await Field.create({
@@ -309,7 +320,7 @@ const fieldRepository = {
                 text: el.text,
               })),
               type: field.type,
-              options: field.options.map((option) => ({
+              options: field.options?.map((option) => ({
                 label: option.label.map((el) => ({
                   language: el.language,
                   text: el.text,
@@ -317,13 +328,13 @@ const fieldRepository = {
                 value: option.value,
               })),
               tableOptions: {
-                name: field.tableOptions.name.map((translatedText) => ({
+                name: field.tableOptions?.name?.map((translatedText) => ({
                   text: translatedText.text,
                   language: translatedText.language,
                 })),
                 columns: createdColumns.map((col) => col._id.toString()),
                 rows: createdRows.map((row) => row._id.toString()),
-                yearTable: field.tableOptions.yearTable,
+                yearTable: field.tableOptions?.yearTable,
               },
               fieldEvents: {
                 name: field.fieldEvents.map((fieldEvent) => ({

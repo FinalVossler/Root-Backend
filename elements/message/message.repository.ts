@@ -223,9 +223,13 @@ const messageRepository = {
     return totalUnreadMessages;
   },
   getById: async (messageId: string): Promise<IMessage> => {
-    const message: IMessage = await Message.findOne({
+    const message: IMessage | null = await Message.findOne({
       _id: new mongoose.Types.ObjectId(messageId),
     });
+
+    if (!message) {
+      throw new Error("Message not found");
+    }
 
     return message;
   },

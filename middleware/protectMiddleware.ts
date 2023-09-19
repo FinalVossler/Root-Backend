@@ -37,7 +37,7 @@ const protectMiddleware = async (
       throw new Error("Unauthorized");
     }
   } else {
-    throw new Error("Please provde a token");
+    throw new Error("Please provide a token");
   }
 };
 

@@ -10,8 +10,7 @@ type RoleReadDto = {
   updatedAt: IRole["updatedAt"];
 };
 
-export const toReadDto = (role?: IRole): RoleReadDto => {
-  if (!role) return undefined;
+export const toReadDto = (role: IRole): RoleReadDto => {
   return {
     _id: role._id,
     name: role.name,

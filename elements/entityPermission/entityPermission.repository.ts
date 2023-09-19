@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
-import EntityEventNotification, {
-  IEntityEventNotification,
-} from "../entityEventNotification/entityEventNotification.model";
+import { IEntityEventNotification } from "../entityEventNotification/entityEventNotification.model";
 import EntityPermissionCreateCommand from "./dto/EntityPermissionCreateCommand";
 import EntityPermissionUpdateCommand from "./dto/EntityPermissionUpdateCommand";
 import EntityPermission, { IEntityPermission } from "./entityPermission.model";
@@ -53,20 +51,25 @@ const entityPermissionRepository = {
       entityEventNotificationUpdatePromises.push(
         new Promise(async (resolve, reject) => {
           try {
-            const updatedEntityEventNotification: IEntityEventNotification =
-              await entityEventNotificationRepository.update(
-                entityEventNotificationUpdateCommand,
-                oldEntityEventNotifications.find(
-                  (el) =>
-                    el._id.toString() ===
-                    entityEventNotificationUpdateCommand._id
-                )
-              );
-
-            updatedEntityEventNotifications.push(
-              updatedEntityEventNotification
+            const oldEntityEventNotification:
+              | IEntityEventNotification
+              | undefined = oldEntityEventNotifications.find(
+              (el) =>
+                el._id.toString() ===
+                entityEventNotificationUpdateCommand._id?.toString()
             );
-            resolve(updatedEntityEventNotification);
+            if (oldEntityEventNotification) {
+              const updatedEntityEventNotification: IEntityEventNotification =
+                await entityEventNotificationRepository.update(
+                  entityEventNotificationUpdateCommand,
+                  oldEntityEventNotification
+                );
+
+              updatedEntityEventNotifications.push(
+                updatedEntityEventNotification
+              );
+              resolve(updatedEntityEventNotification);
+            }
           } catch (e) {
             reject(e);
           }
@@ -176,9 +179,12 @@ const entityPermissionRepository = {
       }
     ).exec();
 
-    const entityPermission: IEntityPermission = await EntityPermission.findById(
-      command._id
-    );
+    const entityPermission: IEntityPermission | null =
+      await EntityPermission.findById(command._id);
+
+    if (!entityPermission) {
+      throw new Error("Entity permission not found");
+    }
 
     return entityPermission;
   },

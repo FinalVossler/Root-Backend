@@ -1,11 +1,25 @@
-import { toReadDto as fieldToReadDto } from "../../field/dto/FieldReadDto";
+import FieldReadDto, {
+  toReadDto as fieldToReadDto,
+} from "../../field/dto/FieldReadDto";
 import ModelStateReadDto from "../../modelState/dto/ModelStateReadDto";
-import { IModel } from "../model.model";
+import { IModelState } from "../../modelState/modelState.model";
+import { IModel, ModelFieldConditionTypeEnum } from "../model.model";
 
 type ModelReadDto = {
   _id: IModel["_id"];
   name: IModel["name"];
-  modelFields: IModel["modelFields"];
+  modelFields: {
+    field: FieldReadDto;
+    required: boolean;
+    conditions?: {
+      field?: FieldReadDto;
+      conditionType: ModelFieldConditionTypeEnum;
+      value?: number | string;
+      modelState?: IModelState;
+    }[];
+    states?: IModelState[];
+    mainField?: boolean;
+  };
   modelEvents?: IModel["modelEvents"];
   states?: ModelStateReadDto[];
   subStates?: ModelStateReadDto[];
@@ -18,11 +32,12 @@ export const toReadDto = (model: IModel): ModelReadDto => {
   return {
     _id: model._id,
     name: model.name,
+    //@ts-ignore
     modelFields: model.modelFields.map((modelField) => {
       return {
         field: fieldToReadDto(modelField.field),
         required: modelField.required,
-        conditions: modelField.conditions.map((condition) => ({
+        conditions: modelField.conditions?.map((condition) => ({
           field: condition.field ? fieldToReadDto(condition.field) : null,
           conditionType: condition.conditionType,
           value: condition.value,

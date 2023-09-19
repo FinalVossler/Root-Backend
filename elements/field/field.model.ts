@@ -121,7 +121,7 @@ FieldSchema.pre("deleteOne", async function (next) {
   // Delete field table elements on field deletion
   fieldTableElementRepository.deleteMany(
     (field.tableOptions?.columns.map((c) => c._id.toString()) || []).concat(
-      field.tableOptions?.rows.map((r) => r._id.toString())
+      field.tableOptions?.rows?.map((r) => r._id.toString()) || []
     )
   );
 

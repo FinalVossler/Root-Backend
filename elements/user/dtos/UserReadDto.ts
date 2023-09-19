@@ -30,7 +30,7 @@ export const toReadDto = (user: IUser): UserReadDto => {
     email: user.email,
     profilePicture: user.profilePicture,
     superRole: user.superRole,
-    role: roleReadDto(user.role),
+    role: user.role ? roleReadDto(user.role) : undefined,
     hasMessagingEmailsActivated: user.hasMessagingEmailsActivated,
   };
 };

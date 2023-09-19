@@ -57,7 +57,7 @@ MicroFrontendSchema.pre("deleteOne", async function (next) {
     const field: IField = fields[i];
     const newFieldEvents = field.fieldEvents.filter(
       (event) =>
-        event.microFrontend._id.toString() !== microFrontend._id.toString()
+        event.microFrontend?._id.toString() !== microFrontend._id.toString()
     );
 
     await Field.updateOne(
@@ -77,9 +77,9 @@ MicroFrontendSchema.pre("deleteOne", async function (next) {
 
   for (let i = 0; i < models.length; i++) {
     const model: IModel = models[i];
-    const newModelEvents = model.modelEvents.filter(
+    const newModelEvents = model.modelEvents?.filter(
       (event) =>
-        event.microFrontend._id.toString() !== microFrontend._id.toString()
+        event.microFrontend?._id.toString() !== microFrontend._id.toString()
     );
     Model.updateOne(
       { _id: model._id },

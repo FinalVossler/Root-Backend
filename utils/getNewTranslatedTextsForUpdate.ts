@@ -10,7 +10,7 @@ const getNewTranslatedTextsForUpdate = (options: {
   if (!oldValue) {
     return [{ text: newText, language }];
   }
-  const translatedText: ITranslatedText = oldValue.find(
+  const translatedText: ITranslatedText | undefined = oldValue.find(
     (el) => el.language === language
   );
   if (translatedText) {

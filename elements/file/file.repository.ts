@@ -57,23 +57,35 @@ const fileRepository = {
 
     return { files, total };
   },
-  get: async (fileId: mongoose.ObjectId | string): Promise<IFile> => {
-    const file: IFile = await File.findById(fileId);
+  get: async (fileId: mongoose.ObjectId | string): Promise<IFile | null> => {
+    const file: IFile | null = await File.findById(fileId);
 
     return file;
   },
-  create: async (file: IFile, currentUser: IUser = null): Promise<IFile> => {
+  create: async (
+    file: IFile,
+    currentUser: IUser | null = null
+  ): Promise<IFile> => {
     if (file._id) {
-      return await fileRepository.get(file._id);
+      const existingFile: IFile | null = await fileRepository.get(file._id);
+      if (existingFile) {
+        return existingFile;
+      }
     }
-    file.ownerId = currentUser ? currentUser?._id : null;
+
+    file.ownerId = currentUser ? currentUser?._id : undefined;
+
+    // In case the file that was passed has an id, but isn't found in the database
+    if (file._id) {
+      delete file._id;
+    }
     const newFile: IFile = (await File.create(file)) as IFile;
 
     return newFile;
   },
   createFiles: async (
     files: IFile[],
-    currentUser: IUser = null
+    currentUser: IUser | null = null
   ): Promise<IFile[]> => {
     let createdFiles: IFile[] = [];
     if (files && files.length > 0) {

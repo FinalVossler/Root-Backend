@@ -9,19 +9,26 @@ import NotificationReadDto from "./elements/notification/dto/NotificationReadDto
 import ReactionReadDto from "./elements/reaction/dtos/ReactionReadDto";
 import SocketTypingStateCommand from "./globalTypes/SocketTypingStateCommand";
 import { IUser } from "./elements/user/user.model";
-import { IMessage } from "./elements/message/message.model";
 import userService from "./elements/user/user.service";
 import emailService from "./elements/email/email.service";
 import websiteConfigurationService from "./elements/websiteConfiguration/websiteConfiguration.service";
 
 const socketHandler: {
-  io: socket.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
+  io: socket.Server<
+    DefaultEventsMap,
+    DefaultEventsMap,
+    DefaultEventsMap,
+    any
+  > | null;
 } = {
   io: null,
 };
 
 const onlineUsers = new Map<string, string[]>();
-const usersTypingStates = new Map<string, SocketTypingStateCommand[]>();
+const usersTypingStates = new Map<
+  string,
+  SocketTypingStateCommand[] | undefined
+>();
 
 const init = (server: http.Server) => {
   const io = new socket.Server(server, {
@@ -103,7 +110,7 @@ export const socketEmit = async ({
     | MessageReadDto
     | SocketTypingStateCommand
     | { reaction: ReactionReadDto; message: MessageReadDto }
-    | { lastMarkedMessageAsRead: MessageReadDto; by: IUser };
+    | { lastMarkedMessageAsRead: MessageReadDto | null; by: IUser };
 }) => {
   const onlineConcernedUsersIds: string[] = userIds
     .map((userId) => userId.toString())
@@ -140,7 +147,7 @@ export const socketEmit = async ({
                   to: user.email,
                 });
 
-                resolve(null);
+                resolve();
               } catch {
                 reject(null);
               }
@@ -155,11 +162,12 @@ export const socketEmit = async ({
 
   if (onlineConcernedUsersIds.length > 0) {
     const socketIds: string[] = onlineConcernedUsersIds.reduce(
+      //@ts-ignore
       (acc, userId) => acc.concat(onlineUsers.get(userId) || []),
       []
     );
 
-    socketHandler.io.to(socketIds).emit(messageType, object);
+    socketHandler.io?.to(socketIds).emit(messageType, object);
   }
 };
 

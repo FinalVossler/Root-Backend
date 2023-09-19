@@ -22,8 +22,12 @@ const fieldTableElementRepository = {
   update: async (
     command: FieldTableElementUpdateCommand
   ): Promise<IFieldTableElement> => {
-    const oldFieldTableElement: IFieldTableElement =
+    const oldFieldTableElement: IFieldTableElement | null =
       await FieldTableElement.findById(command._id);
+
+    if (!oldFieldTableElement) {
+      throw new Error("Old field table element not found");
+    }
 
     await FieldTableElement.updateOne(
       { _id: command._id },
@@ -38,8 +42,12 @@ const fieldTableElementRepository = {
       }
     );
 
-    const updatedTableElement: IFieldTableElement =
+    const updatedTableElement: IFieldTableElement | null =
       await FieldTableElement.findById(command._id).exec();
+
+    if (!updatedTableElement) {
+      throw new Error("Table element not found");
+    }
 
     return updatedTableElement;
   },

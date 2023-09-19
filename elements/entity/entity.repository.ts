@@ -75,9 +75,13 @@ const entityRepository = {
     command: EntityUpdateCommand,
     currentUser: IUser
   ): Promise<IEntity> => {
-    const entity: IEntity = await Entity.findById(command._id).populate(
+    const entity: IEntity | null = await Entity.findById(command._id).populate(
       populationOptions
     );
+
+    if (!entity) {
+      throw new Error("Entity not found");
+    }
 
     await entityRepository.combineEntityFieldValuesNewFilesAndSelectedOwnFiles(
       command.entityFieldValues
@@ -115,7 +119,7 @@ const entityRepository = {
                             e.field._id.toString() ===
                             entityFieldValue.fieldId.toString()
                         )
-                        ?.tableValues.find(
+                        ?.tableValues?.find(
                           (t) =>
                             t.column._id.toString() === tableValue.columnId &&
                             t.row._id.toString() === tableValue.rowId.toString()
@@ -137,7 +141,7 @@ const entityRepository = {
                                 e.field._id.toString() ===
                                 entityFieldValue.fieldId.toString()
                             )
-                            .yearTableValues.find(
+                            ?.yearTableValues?.find(
                               (t) =>
                                 t.row._id.toString() ===
                                 yearTableRowValues.rowId.toString()
@@ -159,9 +163,13 @@ const entityRepository = {
       }
     );
 
-    const newEntity: IEntity = await entityRepository.getById(
+    const newEntity: IEntity | undefined = await entityRepository.getById(
       command._id.toString()
     );
+
+    if (!newEntity) {
+      throw new Error("Entity not found");
+    }
 
     return newEntity;
   },
@@ -184,10 +192,10 @@ const entityRepository = {
   deleteEntities: async (entitiesIds: mongoose.ObjectId[]): Promise<void> => {
     await Entity.deleteMany({ _id: { $in: entitiesIds } });
   },
-  getById: async (entityId: string): Promise<IEntity> => {
-    const entity: IEntity = await (
+  getById: async (entityId: string): Promise<IEntity | undefined> => {
+    const entity: IEntity | undefined = await (
       await Entity.findById(entityId).exec()
-    ).populate(populationOptions);
+    )?.populate(populationOptions);
 
     return entity;
   },

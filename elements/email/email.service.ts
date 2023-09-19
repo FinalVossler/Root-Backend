@@ -22,7 +22,7 @@ const emailService = {
       command.message;
 
     await emailService.sendEmail({
-      to: conf.email,
+      to: conf.email || "",
       subject: "Email sent from website: " + conf.title,
       text: content,
     });
@@ -56,7 +56,7 @@ const emailService = {
       await websiteConfigurationRepository.get();
 
     await emailService.sendWithNodeMailerAndGoogleOAuth({
-      from: process.env.NODEMAILER_EMAIL,
+      from: process.env.NODEMAILER_EMAIL || "",
       subject,
       text,
       to,

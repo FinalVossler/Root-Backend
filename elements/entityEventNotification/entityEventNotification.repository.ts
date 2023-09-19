@@ -23,7 +23,9 @@ const entityEventNotificationRepository = {
     command: EntityEventNotificationUpdateCommand,
     oldEntityEventNotification: IEntityEventNotification
   ): Promise<IEntityEventNotification> => {
-    if (!command._id) return null;
+    if (!command._id) {
+      throw new Error("upating an event notification with no idea");
+    }
 
     await EntityEventNotification.updateOne(
       { _id: command._id },
@@ -44,8 +46,12 @@ const entityEventNotificationRepository = {
       }
     ).exec();
 
-    const entityEventNotification: IEntityEventNotification =
+    const entityEventNotification: IEntityEventNotification | null =
       await EntityEventNotification.findById(command._id);
+
+    if (!entityEventNotification) {
+      throw new Error("entity event notification not found");
+    }
 
     return entityEventNotification;
   },

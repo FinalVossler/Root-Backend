@@ -64,20 +64,21 @@ const modelRepository = {
     return model.populate(populationOptions);
   },
   update: async (command: ModelUpdateCommand): Promise<IModel> => {
-    const model: IModel = await Model.findById(command._id).populate(
+    const model: IModel | null = await Model.findById(command._id).populate(
       populationOptions
     );
 
-    if (!model) return null;
+    if (!model) throw new Error("Model doesn't exist");
 
     // Delete no long existing model states:
-    const noLongerExistingModelStatesIds = model.states
-      .filter((modelState: IModelState) => {
-        return !Boolean(
-          command.states.find((el) => el._id === modelState._id.toString())
-        );
-      })
-      .map((el) => el._id);
+    const noLongerExistingModelStatesIds =
+      model.states
+        ?.filter((modelState: IModelState) => {
+          return !Boolean(
+            command.states.find((el) => el._id === modelState._id.toString())
+          );
+        })
+        .map((el) => el._id) || [];
 
     await modelStateRepository.deleteMany(noLongerExistingModelStatesIds);
 
@@ -140,9 +141,13 @@ const modelRepository = {
       }
     );
 
-    const newModel: IModel = await Model.findById(command._id).populate(
+    const newModel: IModel | null = await Model.findById(command._id).populate(
       populationOptions
     );
+
+    if (!newModel) {
+      throw new Error("Model not found");
+    }
 
     return newModel;
   },

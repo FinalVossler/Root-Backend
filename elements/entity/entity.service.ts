@@ -34,7 +34,7 @@ const entityService = {
     const invalidFields: IModelField[] = [];
 
     model.modelFields.forEach((modelField: IModelField) => {
-      const commandField: EntityFieldValueCommand =
+      const commandField: EntityFieldValueCommand | undefined =
         entityFieldValueCommands.find(
           (el) => el.fieldId.toString() === modelField.field._id.toString()
         );
@@ -100,16 +100,16 @@ const entityService = {
       users.forEach((user) => {
         if (
           user.role?._id.toString() === currentUser.role?._id.toString() &&
-          !currentUserEntityPermissions.entityUserAssignmentPermissionsByRole
-            .canAssignToUserFromSameRole &&
-          !currentUserEntityPermissions.entityUserAssignmentPermissionsByRole.otherRoles.some(
+          !currentUserEntityPermissions?.entityUserAssignmentPermissionsByRole
+            ?.canAssignToUserFromSameRole &&
+          !currentUserEntityPermissions?.entityUserAssignmentPermissionsByRole?.otherRoles.some(
             (r) => r._id.toString() === currentUser.role?._id.toString()
           )
         ) {
           hasPermission = false;
         } else if (
           user.role?._id.toString() !== currentUser.role?._id.toString() &&
-          !currentUserEntityPermissions.entityUserAssignmentPermissionsByRole.otherRoles.some(
+          !currentUserEntityPermissions?.entityUserAssignmentPermissionsByRole?.otherRoles.some(
             (r) => r._id.toString() === user.role?._id.toString()
           )
         ) {
@@ -238,7 +238,15 @@ const entityService = {
     await entityRepository.deleteEntities(entitiesIds);
   },
   getById: async (entityId: string): Promise<IEntity> => {
-    return await entityRepository.getById(entityId);
+    const entity: IEntity | undefined = await entityRepository.getById(
+      entityId
+    );
+
+    if (!entity) {
+      throw new Error("Entity not found");
+    }
+
+    return entity;
   },
   search: async (
     command: EntitiesSearchCommand

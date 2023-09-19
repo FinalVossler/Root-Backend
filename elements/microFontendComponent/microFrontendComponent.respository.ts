@@ -34,8 +34,12 @@ const microFrontendComponentRepository = {
     return newMicroFrontend;
   },
   getById: async (id: string): Promise<IMicroFrontendComponent> => {
-    const microFrontendComponent: IMicroFrontendComponent =
+    const microFrontendComponent: IMicroFrontendComponent | null =
       await MicroFrontendComponent.findById(id);
+
+    if (!microFrontendComponent) {
+      throw new Error("MicroFrontend not found");
+    }
     return microFrontendComponent;
   },
   delete: async (
@@ -47,7 +51,7 @@ const microFrontendComponentRepository = {
       });
     }
 
-    return null;
+    return;
   },
   getByIds: async (ids: string[]): Promise<IMicroFrontendComponent[]> => {
     const microFrontends: IMicroFrontendComponent[] =

@@ -43,7 +43,7 @@ const pageRepository = {
         $set: {
           posts: command.posts,
           title: getNewTranslatedTextsForUpdate({
-            oldValue: page.title,
+            oldValue: page?.title,
             language: command.language,
             newText: command.title,
           }),
@@ -54,10 +54,18 @@ const pageRepository = {
       }
     );
 
-    return await pageRepository.getById(command._id);
+    const updatedPage: IPage | null = await pageRepository.getById(command._id);
+
+    if (!updatedPage) {
+      throw new Error("Page not found");
+    }
+
+    return updatedPage;
   },
-  getById: async (id: mongoose.ObjectId | string): Promise<IPage> => {
-    const page: IPage = await Page.findById(id).populate(populationOptions);
+  getById: async (id: mongoose.ObjectId | string): Promise<IPage | null> => {
+    const page: IPage | null = await Page.findById(id).populate(
+      populationOptions
+    );
 
     return page;
   },

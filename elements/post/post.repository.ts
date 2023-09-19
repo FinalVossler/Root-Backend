@@ -90,14 +90,14 @@ const postRepository = {
 
     return { posts, total };
   },
-  getById: async (postId: string): Promise<IPost> => {
+  getById: async (postId: string): Promise<IPost | null> => {
     return await Post.findById(postId).populate(populationOptions).exec();
   },
   update: async (
     command: PostUpdateCommand,
     oldPost: IPost,
     currentUser: IUser
-  ): Promise<IPost> => {
+  ): Promise<IPost | null> => {
     const createdFiles: IFile[] = await fileRepository.createFiles(
       command.files.filter((el) => !el._id),
       currentUser
@@ -114,20 +114,20 @@ const postRepository = {
           title: getNewTranslatedTextsForUpdate({
             oldValue: oldPost.title,
             language: command.language,
-            newText: command.title,
+            newText: command.title || "",
           }),
           children: command.children,
           content: getNewTranslatedTextsForUpdate({
             oldValue: oldPost.content,
             language: command.language,
-            newText: command.content,
+            newText: command.content || "",
           }),
           design: command.design,
           files: allFiles.map((el) => el._id),
           subTitle: getNewTranslatedTextsForUpdate({
             oldValue: oldPost.subTitle,
             language: command.language,
-            newText: command.subTitle,
+            newText: command.subTitle || "",
           }),
           code: command.code,
           visibility: command.visibility,

@@ -84,7 +84,7 @@ const userRepository = {
     command: UserUpdateProfilePictureCommand,
     currentUser: IUser
   ): Promise<IUser> => {
-    let picture: IFile = null;
+    let picture: IFile | null = null;
 
     if (!command.picture._id) {
       picture = await fileRepository.create(command.picture, currentUser);
@@ -167,7 +167,7 @@ const userRepository = {
       await User.deleteOne({ _id: usersIds[i] });
     }
 
-    return null;
+    return;
   },
   search: async (
     command: UsersSearchCommand,

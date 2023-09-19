@@ -87,7 +87,7 @@ const microFrontendRepository = {
         .filter((el) => Boolean(el._id))
         .map((el) => {
           const command: MicroFrontendComponentUpdateCommand = {
-            _id: el._id,
+            _id: el._id || "",
             name: el.name,
           };
 
@@ -99,7 +99,7 @@ const microFrontendRepository = {
       .filter(
         (el) =>
           !command.components.find(
-            (c) => c._id.toString() === el._id.toString()
+            (c) => c._id?.toString() === el._id.toString()
           )
       )
       .map((el) => el._id.toString());
@@ -117,9 +117,10 @@ const microFrontendRepository = {
           components: createdMicroFrontendsComponents
             .map((el) => el._id.toString())
             .concat(
+              //@ts-ignore
               command.components
                 .filter((el) => Boolean(el._id))
-                .map((el) => el._id.toString())
+                .map((el) => el._id?.toString()) || []
             ),
         },
       }
@@ -131,9 +132,14 @@ const microFrontendRepository = {
     return newMicroFrontend;
   },
   getById: async (id: string): Promise<IMicroFrontend> => {
-    const microFrontend: IMicroFrontend = await MicroFrontend.findById(
+    const microFrontend: IMicroFrontend | null = await MicroFrontend.findById(
       id
-    ).populate(populationOptions);
+    )?.populate(populationOptions);
+
+    if (!microFrontend) {
+      throw new Error("MicroFrontend not found");
+    }
+
     return microFrontend;
   },
   getMicroFrontends: async (
@@ -159,7 +165,7 @@ const microFrontendRepository = {
       await MicroFrontend.deleteOne({ _id: microFrontendsIds[i] });
     }
 
-    return null;
+    return;
   },
   search: async (
     command: MicroFrontendsSearchCommand

@@ -38,7 +38,7 @@ const userService = {
 
     return { users, total };
   },
-  getById: async (userId?: string): Promise<IUser> => {
+  getById: async (userId: string): Promise<IUser> => {
     const user: IUser = await userRepository.getById(userId);
 
     return user;
@@ -213,15 +213,15 @@ const userService = {
   ): Promise<UserWithLastReadMessageInConversation[]> => {
     const users: IUser[] = await userRepository.getByIds(usersIds);
 
-    const promises: Promise<IMessage>[] = [];
+    const promises: Promise<IMessage | null>[] = [];
 
     const usersWithLastReadMessageInConversation: UserWithLastReadMessageInConversation[] =
       [];
 
     users.forEach((user) => {
       promises.push(
-        new Promise<IMessage>(async (resolve, reject) => {
-          const userLastReadMessageInConversation: IMessage =
+        new Promise<IMessage | null>(async (resolve, reject) => {
+          const userLastReadMessageInConversation: IMessage | null =
             await messageService.getUserLastReadMessageInConversation({
               to: usersIds,
               userId: user._id.toString(),

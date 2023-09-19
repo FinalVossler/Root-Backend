@@ -143,7 +143,9 @@ ModelSchema.pre("deleteOne", async function (next) {
   // Delete model modelField states
   let statesIds: mongoose.Types.ObjectId[] = [];
   model.modelFields?.forEach((modelField) => {
-    statesIds = statesIds.concat(modelField.states.map((state) => state._id));
+    statesIds = statesIds.concat(
+      modelField.states?.map((state) => state._id) || []
+    );
   });
   if (statesIds.length > 0) {
     await modelStateRepository.deleteMany(statesIds);

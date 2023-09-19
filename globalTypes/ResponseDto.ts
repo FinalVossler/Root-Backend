@@ -1,6 +1,6 @@
 type ResponseDto<T> = {
   success: boolean;
-  data: T;
+  data: T | null;
 };
 
 export default ResponseDto;

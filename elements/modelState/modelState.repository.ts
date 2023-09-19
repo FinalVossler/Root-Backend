@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { models } from "mongoose";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
 import ModelStateCreateCommand from "./dto/ModelStateCreateCommand";
 import ModelStateUpdateCommand from "./dto/ModelStateUpdateCommand";
@@ -14,7 +14,14 @@ const modelStateRepository = {
     return modelState;
   },
   updateOne: async (command: ModelStateUpdateCommand): Promise<IModelState> => {
-    const oldModelState: IModelState = await ModelState.findById(command._id);
+    const oldModelState: IModelState | null = await ModelState.findById(
+      command._id
+    );
+
+    if (!oldModelState) {
+      throw new Error("Model state doesn't exist");
+    }
+
     await ModelState.updateOne(
       { _id: command._id },
       {
@@ -29,7 +36,15 @@ const modelStateRepository = {
       }
     ).exec();
 
-    return await ModelState.findById(command._id);
+    const modelState: IModelState | null = await ModelState.findById(
+      command._id
+    );
+
+    if (!modelState) {
+      throw new Error("Model state not found");
+    }
+
+    return modelState;
   },
   createMany: async (
     commands: ModelStateCreateCommand[]

@@ -68,7 +68,7 @@ const entityEventNotificationService = {
               .map((language) => {
                 return entityEventNotification.title.find(
                   (el) => el.language === language
-                ).text;
+                )?.text;
               })
               .join(" | ");
 
@@ -76,7 +76,7 @@ const entityEventNotificationService = {
               .map((language) => {
                 return entityEventNotification.text.find(
                   (el) => el.language === language
-                ).text;
+                )?.text;
               })
               .join("<br>");
 
@@ -129,7 +129,7 @@ const entityEventNotificationService = {
 
         // Create the in app notification
         const notificationCreateCommand: NotificationCreateCommand = {
-          imageId: currentUser.profilePicture._id?.toString(),
+          imageId: currentUser.profilePicture._id?.toString() || "",
           link: email.link,
           toIds: usersToNotifyForThisEmail.map((user) => user._id.toString()),
           text: email.notificationText,

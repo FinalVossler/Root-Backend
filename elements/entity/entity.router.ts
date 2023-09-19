@@ -165,9 +165,13 @@ router.delete(
     const entitiesIds: mongoose.ObjectId[] = req.body;
 
     if (entitiesIds.length > 0) {
-      const entity: IEntity = await entityRepository.getById(
+      const entity: IEntity | undefined = await entityRepository.getById(
         entitiesIds[0].toString()
       );
+
+      if (!entity) {
+        throw new Error("Entity not found");
+      }
 
       roleService.checkEntityPermission({
         user: req.user,
