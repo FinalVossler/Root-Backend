@@ -16,6 +16,7 @@ import modelSerivce from "../model/model.service";
 import { FieldType } from "../field/field.model";
 import userService from "../user/user.service";
 import { IEntityPermission } from "../entityPermission/entityPermission.model";
+import EntitiesSetCustomDataKeyValueCommand from "./dto/EntitiesSetCustomDataKeyValueCommand";
 
 const entityService = {
   verifyRequiredFields: async ({
@@ -254,6 +255,11 @@ const entityService = {
     const { entities, total } = await entityRepository.search(command);
 
     return { entities, total };
+  },
+  setCustomDataKeyValue: async (
+    command: EntitiesSetCustomDataKeyValueCommand
+  ): Promise<void> => {
+    await entityRepository.setCustomDataKeyValue(command);
   },
 };
 

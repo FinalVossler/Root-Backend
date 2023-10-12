@@ -12,6 +12,7 @@ export interface IEntity {
   model: IModel;
   entityFieldValues: IEntityFieldValue[];
   assignedUsers?: IUser[];
+  customData?: Object;
 
   createdAt: string;
   updatedAt: string;
@@ -98,6 +99,9 @@ const EntitySchema = new mongoose.Schema<IEntity>(
         ref: "user",
       },
     ],
+    customData: {
+      type: mongoose.SchemaTypes.String,
+    },
   },
   {
     timestamps: true,

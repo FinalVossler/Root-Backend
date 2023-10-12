@@ -9,6 +9,7 @@ type EntityReadDto = {
   model: IEntity["model"];
   entityFieldValues: IEntity["entityFieldValues"];
   assignedUsers: UserReadDto[];
+  customData?: Object;
 
   createdAt: IEntity["createdAt"];
   updatedAt: IEntity["updatedAt"];
@@ -21,6 +22,7 @@ export const toReadDto = (entity: IEntity): EntityReadDto => {
     entityFieldValues: entity.entityFieldValues,
     assignedUsers:
       entity.assignedUsers?.map((user) => userToReadDto(user)) || [],
+    customData: entity.customData,
 
     createdAt: entity.createdAt,
     updatedAt: entity.updatedAt,

@@ -16,6 +16,7 @@ import EntitiesSearchCommand from "./dto/EntitiesSearchCommand";
 import roleService from "../role/role.service";
 import { StaticPermission } from "../entityPermission/entityPermission.model";
 import entityRepository from "./entity.repository";
+import EntitiesSetCustomDataKeyValueCommand from "./dto/EntitiesSetCustomDataKeyValueCommand";
 
 const router = Router();
 
@@ -212,6 +213,24 @@ router.post(
         data: entities.map((p) => toReadDto(p)),
         total,
       },
+    });
+  }
+);
+
+router.post(
+  "/setCustomDataKeyValue",
+  protectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, EntitiesSetCustomDataKeyValueCommand, any>,
+    res: Response<ResponseDto<any>>
+  ) => {
+    const command: EntitiesSetCustomDataKeyValueCommand = req.body;
+
+    await entityService.setCustomDataKeyValue(command);
+
+    return res.status(200).send({
+      success: true,
+      data: {},
     });
   }
 );

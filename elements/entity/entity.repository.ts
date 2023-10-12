@@ -13,7 +13,7 @@ import EntitiesGetCommand from "./dto/EntitiesGetCommand";
 import fileRepository from "../file/file.repository";
 import { IUser } from "../user/user.model";
 import EntitiesSearchCommand from "./dto/EntitiesSearchCommand";
-import PaginationCommand from "../../globalTypes/PaginationCommand";
+import EntitiesSetCustomDataKeyValueCommand from "./dto/EntitiesSetCustomDataKeyValueCommand";
 
 const entityRepository = {
   combineEntityFieldValuesNewFilesAndSelectedOwnFiles: async (
@@ -250,6 +250,35 @@ const entityRepository = {
 
     return { entities, total };
   },
+  setCustomDataKeyValue: async (
+    command: EntitiesSetCustomDataKeyValueCommand
+  ): Promise<void> => {
+    const entity: IEntity | undefined = await entityRepository.getById(
+      command.entityId.toString()
+    );
+    if (!entity) {
+      throw new Error("Entity not found");
+    }
+    const newCustomData:
+      | EntitiesSetCustomDataKeyValueCommand["value"]
+      | undefined = { ...(entity.customData || {}) };
+
+    newCustomData[command.key] = command.value;
+
+    console.log("new custom data", JSON.stringify(newCustomData));
+    console.log("entity id", command.entityId);
+
+    await Entity.updateOne(
+      {
+        _id: command.entityId,
+      },
+      {
+        $set: {
+          customData: JSON.stringify(newCustomData),
+        },
+      }
+    );
+  },
 };
 
 const populationOptions = [
@@ -291,6 +320,9 @@ const populationOptions = [
   {
     path: "model",
     model: Model.modelName,
+  },
+  {
+    path: "customData",
   },
   {
     path: "assignedUsers",
