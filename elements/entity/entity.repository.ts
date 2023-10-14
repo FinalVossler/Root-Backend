@@ -259,14 +259,18 @@ const entityRepository = {
     if (!entity) {
       throw new Error("Entity not found");
     }
-    const newCustomData:
-      | EntitiesSetCustomDataKeyValueCommand["value"]
-      | undefined = { ...(entity.customData || {}) };
+    let oldCustomData;
+    try {
+      oldCustomData = JSON.parse(entity.customData || "{}");
+    } catch {
+      oldCustomData = {};
+    }
+
+    const newCustomData: EntitiesSetCustomDataKeyValueCommand["value"] = {
+      ...(oldCustomData || {}),
+    };
 
     newCustomData[command.key] = command.value;
-
-    console.log("new custom data", JSON.stringify(newCustomData));
-    console.log("entity id", command.entityId);
 
     await Entity.updateOne(
       {
