@@ -129,7 +129,7 @@ const entityEventNotificationService = {
 
         // Create the in app notification
         const notificationCreateCommand: NotificationCreateCommand = {
-          imageId: currentUser.profilePicture._id?.toString() || "",
+          imageId: currentUser.profilePicture?._id?.toString() || "",
           link: email.link,
           toIds: usersToNotifyForThisEmail.map((user) => user._id.toString()),
           text: email.notificationText,
