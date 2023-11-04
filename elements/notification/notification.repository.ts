@@ -7,7 +7,7 @@ const notificationRepository = {
     command: NotificationCreateCommand
   ): Promise<INotification> => {
     const notification: INotification = await Notification.create({
-      image: command.imageId,
+      image: command.imageId || undefined,
       link: command.link,
       text: command.text,
       to: command.toIds,
