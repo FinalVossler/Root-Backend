@@ -204,6 +204,7 @@ const entityService = {
     }
 
     // Now send the onAssigned event notificatiosn (email + inapp notifications)
+    console.log("newlyAssignedUsersIds", newlyAssignedUsersIds);
     if (newlyAssignedUsersIds.length > 0) {
       if (command.assignedUsersIds.length > 0) {
         entityEventNotificationService.notifyUsers(
