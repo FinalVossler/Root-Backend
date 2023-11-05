@@ -186,7 +186,7 @@ const entityService = {
     const assignmentPermissionGranted: boolean =
       await entityService.usersEntityAssignmentPermissionGranted({
         currentUser,
-        assignedUsersIds: command.assignedUsersIds,
+        assignedUsersIds: newlyAssignedUsersIds,
         modelId: command.modelId.toString(),
       });
     if (!assignmentPermissionGranted) {
