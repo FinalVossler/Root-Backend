@@ -84,6 +84,8 @@ const UserSchema = new mongoose.Schema<IUser>(
   }
 );
 
+UserSchema.index({ firstName: "text", lastName: "text", email: "text" });
+
 UserSchema.pre("save", async function (next) {
   const salt: string = await genSalt(10);
   this.password = await hash(this.password, salt);

@@ -174,11 +174,9 @@ const userRepository = {
     additionalConditions: any = {}
   ): Promise<{ users: IUser[]; total: number }> => {
     const query = User.find({
-      $or: [
-        { firstName: { $regex: command.firstNameOrLastNameOrEmail } },
-        { lastName: { $regex: command.firstNameOrLastNameOrEmail } },
-        { email: { $regex: command.firstNameOrLastNameOrEmail } },
-      ],
+      $text: {
+        $search: command.firstNameOrLastNameOrEmail,
+      },
       ...additionalConditions,
     });
 
