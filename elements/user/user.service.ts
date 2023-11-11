@@ -209,9 +209,10 @@ const userService = {
     return users;
   },
   getUsersWithTheirLastReadMessagesInConversation: async (
-    usersIds: string[]
+    usersIds: string[] | string
   ): Promise<UserWithLastReadMessageInConversation[]> => {
-    const users: IUser[] = await userRepository.getByIds(usersIds);
+    const usersIdsArray = typeof usersIds === "string" ? [usersIds] : usersIds;
+    const users: IUser[] = await userRepository.getByIds(usersIdsArray);
 
     const promises: Promise<IMessage | null>[] = [];
 
@@ -223,7 +224,7 @@ const userService = {
         new Promise<IMessage | null>(async (resolve, reject) => {
           const userLastReadMessageInConversation: IMessage | null =
             await messageService.getUserLastReadMessageInConversation({
-              to: usersIds,
+              to: usersIdsArray,
               userId: user._id.toString(),
             });
           usersWithLastReadMessageInConversation.push({
@@ -237,7 +238,7 @@ const userService = {
             superRole: user.superRole,
             role: user.role,
             lastReadMessageInConversation: userLastReadMessageInConversation,
-            to: usersIds,
+            to: usersIdsArray,
           });
 
           resolve(userLastReadMessageInConversation);

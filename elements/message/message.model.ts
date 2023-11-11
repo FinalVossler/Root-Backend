@@ -49,7 +49,7 @@ const MessageSchema = new mongoose.Schema<IMessage>(
     },
     to: {
       type: [mongoose.SchemaTypes.ObjectId],
-      ref: User.modelName,
+      ref: "user",
       required: true,
       index: true,
     },
@@ -61,7 +61,7 @@ const MessageSchema = new mongoose.Schema<IMessage>(
       type: [
         {
           type: mongoose.SchemaTypes.ObjectId,
-          ref: User.modelName,
+          ref: "user",
         },
       ],
       required: false,
@@ -75,7 +75,7 @@ const MessageSchema = new mongoose.Schema<IMessage>(
       {
         type: mongoose.SchemaTypes.ObjectId,
         required: false,
-        ref: File.modelName,
+        ref: "file",
         default: [],
       },
     ],

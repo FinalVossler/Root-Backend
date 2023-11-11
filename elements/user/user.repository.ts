@@ -188,10 +188,10 @@ const userRepository = {
       .populate(populationOptions);
 
     const total = await User.find({
-      $or: [
-        { firstName: { $regex: command.firstNameOrLastNameOrEmail } },
-        { lastName: { $regex: command.firstNameOrLastNameOrEmail } },
-      ],
+      $text: {
+        $search: command.firstNameOrLastNameOrEmail,
+      },
+      ...additionalConditions,
     }).count();
 
     return { users, total };
