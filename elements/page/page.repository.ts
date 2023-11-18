@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
+import slugify from "slugify";
 
 import PageCreateCommand from "./dto/PageCreateCommand";
 import PageUpdateCommand from "./dto/PageUpdateCommand";
 import Page, { IPage } from "./page.model";
 import Post from "../post/post.model";
 import File from "../file/file.model";
-import slugify from "slugify";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
 
 const pageRepository = {
@@ -47,6 +47,7 @@ const pageRepository = {
             language: command.language,
             newText: command.title,
           }),
+          slug: command.slug,
           // The slug is managed in the onCreate mongoose middleware
           showInHeader: command.showInHeader,
           showInSideMenu: command.showInSideMenu,
