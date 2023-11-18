@@ -85,7 +85,10 @@ const UserSchema = new mongoose.Schema<IUser>(
   }
 );
 
-UserSchema.index({ firstName: "text", lastName: "text", email: "text" });
+UserSchema.index(
+  { firstName: "text", lastName: "text", email: "text" },
+  { background: true }
+);
 
 UserSchema.pre("save", async function (next) {
   const salt: string = await genSalt(10);

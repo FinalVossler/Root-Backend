@@ -14,6 +14,7 @@ export enum PostDesign {
   Default = "Default",
   Spacing = "Spacing",
   Card = "Card",
+  fullWidthPicture = "FullWidthPicture",
   TitleAndText = "TitleAndText",
   Banner = "Banner",
   TitleImageAndText = "TitleImageAndText",

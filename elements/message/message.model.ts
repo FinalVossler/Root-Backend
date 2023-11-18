@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
-import File, { IFile } from "../file/file.model";
-import User, { IUser } from "../user/user.model";
+import { IFile } from "../file/file.model";
+import { IUser } from "../user/user.model";
 import Reaction, { IReaction } from "../reaction/reaction.model";
 
 export interface IMessage {

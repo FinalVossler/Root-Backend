@@ -155,16 +155,43 @@ const messageRepository = {
         },
       },
       {
-        $skip:
-          (command.paginationCommand.page - 1) *
-          command.paginationCommand.limit,
+        $facet: {
+          calculateTotal: [
+            {
+              $count: "total",
+            },
+          ],
+          data: [
+            {
+              $skip:
+                (command.paginationCommand.page - 1) *
+                command.paginationCommand.limit,
+            },
+            { $limit: command.paginationCommand.limit },
+            {
+              $lookup: {
+                from: "message",
+                localField: "id",
+                foreignField: "_id",
+                as: "message",
+              },
+            },
+          ],
+        },
       },
-      { $limit: command.paginationCommand.limit },
     ]).exec();
 
-    const messages: IPopulatedMessage[] = await messageRepository.getByIds(
-      lastConversationsLastMessagesIds.map((el) => el.id.toString())
+    console.log(
+      "lastConversationsLastMessagesIds",
+      lastConversationsLastMessagesIds[0].data
     );
+    console.log("count", lastConversationsLastMessagesIds[0].count);
+
+    const messages: IPopulatedMessage[] = await messageRepository.getByIds(
+      lastConversationsLastMessagesIds[0]["data"].map((el) => el.id.toString())
+    );
+
+    const total = lastConversationsLastMessagesIds[0].calculateTotal[0].total;
 
     // Fetch the total number of unread messages by the user for each message conversation
     const getConversationTotalUnreadMessagesPromises: Promise<number>[] = [];
@@ -185,32 +212,6 @@ const messageRepository = {
       );
     });
     await Promise.all(getConversationTotalUnreadMessagesPromises);
-
-    let total = 0;
-    try {
-      // TODO fetch the total:
-      total = (
-        await Message.aggregate([
-          {
-            $match: {
-              to: { $all: [currentUser._id] },
-            },
-          },
-          {
-            $group: {
-              _id: "$to",
-              id: { $last: "$_id" },
-              message: { $last: "$message" },
-            },
-          },
-          {
-            $count: "count",
-          },
-        ])
-      )[0].count;
-    } catch (e) {
-      total = 0;
-    }
 
     return { messages: messages.reverse(), total };
   },
