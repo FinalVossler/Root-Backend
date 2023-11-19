@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 import { IFile } from "../file/file.model";
+import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 
 export type Theme = {
   darkTextColor: string;
@@ -23,6 +24,7 @@ export type Theme = {
 export interface IWebsiteConfiguration {
   _id?: mongoose.ObjectId;
   title?: string;
+  description?: ITranslatedText[];
   email?: string;
   phoneNumber?: string;
   tabTitle?: string;
@@ -46,6 +48,7 @@ const WebsiteConfigurationSchema = new mongoose.Schema<IWebsiteConfiguration>(
     title: {
       type: mongoose.SchemaTypes.String,
     },
+    description: translatedTextSchema,
     email: {
       type: mongoose.SchemaTypes.String,
     },

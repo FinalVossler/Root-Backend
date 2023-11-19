@@ -3,6 +3,7 @@ import { Theme } from "../websiteConfiguration.model";
 
 type WebsiteConfigurationUpdateCommand = {
   title: string;
+  description: string;
   email: string;
   phoneNumber: string;
   tabTitle: string;
@@ -13,7 +14,8 @@ type WebsiteConfigurationUpdateCommand = {
   theme: Theme;
   tabIcon?: IFile;
   logo1?: IFile;
-  logo2?: IFile
+  logo2?: IFile;
+  language: string;
 };
 
 export default WebsiteConfigurationUpdateCommand;

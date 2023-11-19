@@ -1,3 +1,4 @@
+import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
 import { IFile } from "../file/file.model";
 import fileRepository from "../file/file.repository";
 import { IUser } from "../user/user.model";
@@ -9,7 +10,10 @@ import WebsiteConfiguration, {
 const websiteConfigurationRepository = {
   get: async (): Promise<IWebsiteConfiguration> => {
     const configurations: IWebsiteConfiguration[] =
-      await WebsiteConfiguration.find().populate("tabIcon").populate('logo1').populate('logo2');
+      await WebsiteConfiguration.find()
+        .populate("tabIcon")
+        .populate("logo1")
+        .populate("logo2");
 
     if (configurations.length === 0) {
       const newConfiguration: IWebsiteConfiguration =
@@ -26,17 +30,17 @@ const websiteConfigurationRepository = {
     const configuration: IWebsiteConfiguration =
       await websiteConfigurationRepository.get();
 
-    let tabIcon: IFile | undefined = command.tabIcon;
+    let tabIcon: IFile | undefined = command.tabIcon;
     if (command.tabIcon && !command.tabIcon._id) {
       tabIcon = await fileRepository.create(command.tabIcon);
     }
 
-    let logo1: IFile | undefined = command.logo1;
+    let logo1: IFile | undefined = command.logo1;
     if (command.logo1 && !command.logo1._id) {
       logo1 = await fileRepository.create(command.logo1);
     }
 
-    let logo2: IFile | undefined = command.logo2;
+    let logo2: IFile | undefined = command.logo2;
     if (command.logo2 && !command.logo2._id) {
       logo2 = await fileRepository.create(command.logo2);
     }
@@ -46,6 +50,11 @@ const websiteConfigurationRepository = {
       {
         $set: {
           title: command.title,
+          description: getNewTranslatedTextsForUpdate({
+            language: command.language,
+            newText: command.description,
+            oldValue: configuration.description,
+          }),
           email: command.email,
           phoneNumber: command.phoneNumber,
           mainLanguages: command.mainLanguages,
@@ -67,6 +76,12 @@ const websiteConfigurationRepository = {
     const configuration: IWebsiteConfiguration =
       await WebsiteConfiguration.create({
         title: "",
+        description: [
+          {
+            language: "en",
+            text: "Default app description",
+          },
+        ],
         email: "",
         tabTitle: "",
         phoneNumber: "",

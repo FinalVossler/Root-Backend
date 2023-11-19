@@ -4,6 +4,7 @@ import { IWebsiteConfiguration, Theme } from "../websiteConfiguration.model";
 type WebsiteConfigurationReadDto = {
   _id?: IWebsiteConfiguration["_id"];
   title: IWebsiteConfiguration["title"];
+  description: IWebsiteConfiguration["description"];
   tabTitle: IWebsiteConfiguration["tabTitle"];
   email: IWebsiteConfiguration["email"];
   phoneNumber: IWebsiteConfiguration["phoneNumber"];
@@ -24,6 +25,7 @@ export const toReadDto = (
   return {
     _id: websiteConfiguration._id,
     title: websiteConfiguration.title,
+    description: websiteConfiguration.description,
     tabTitle: websiteConfiguration.tabTitle,
     email: websiteConfiguration.email,
     phoneNumber: websiteConfiguration.phoneNumber,
@@ -35,7 +37,7 @@ export const toReadDto = (
     staticText: websiteConfiguration.staticText,
     tabIcon: websiteConfiguration.tabIcon,
     logo1: websiteConfiguration.logo1,
-    logo2: websiteConfiguration.logo2
+    logo2: websiteConfiguration.logo2,
   };
 };
 
