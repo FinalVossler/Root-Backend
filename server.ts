@@ -12,8 +12,6 @@ import socket from "./socket";
 
 const MAX_CPUS = 1;
 
-const numberOfCpus = Math.min(MAX_CPUS, os.cpus().length);
-
 const setupWorker = () => {
   const app = express();
   dotenvConfig();
@@ -36,14 +34,18 @@ const setupWorker = () => {
   socket(server);
 };
 
-if (cluster.isPrimary) {
-  for (let i = 0; i < numberOfCpus; i++) {
-    cluster.fork();
-  }
+setupWorker();
 
-  cluster.on("exit", () => {
-    cluster.fork();
-  });
-} else {
-  setupWorker();
-}
+// const numberOfCpus = Math.min(MAX_CPUS, os.cpus().length);
+
+// if (cluster.isPrimary) {
+//   for (let i = 0; i < numberOfCpus; i++) {
+//     cluster.fork();
+//   }
+
+//   cluster.on("exit", () => {
+//     cluster.fork();
+//   });
+// } else {
+//   setupWorker();
+// }
