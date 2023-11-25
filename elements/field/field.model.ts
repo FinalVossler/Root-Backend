@@ -28,6 +28,7 @@ export interface IField {
   _id: mongoose.ObjectId;
   name: ITranslatedText[];
   type: FieldType;
+  canChooseFromExistingFiles?: boolean;
   options?: FieldOption[];
   fieldEvents: IEvent[];
   tableOptions?: {
@@ -53,6 +54,11 @@ const FieldSchema = new mongoose.Schema<IField>(
       type: mongoose.SchemaTypes.String,
       required: true,
       default: FieldType.Text,
+    },
+    canChooseFromExistingFiles: {
+      type: mongoose.SchemaTypes.Boolean,
+      required: false,
+      default: true,
     },
     options: [
       {

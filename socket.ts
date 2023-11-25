@@ -12,6 +12,9 @@ import { IUser } from "./elements/user/user.model";
 import userService from "./elements/user/user.service";
 import emailService from "./elements/email/email.service";
 import websiteConfigurationService from "./elements/websiteConfiguration/websiteConfiguration.service";
+import socketRepository from "./elements/socket/socket.repository";
+import { ISocket } from "./elements/socket/socket.model";
+import { toReadDto } from "./elements/user/dtos/UserReadDto";
 
 const socketHandler: {
   io: socket.Server<
@@ -24,12 +27,6 @@ const socketHandler: {
   io: null,
 };
 
-const onlineUsers = new Map<string, string[]>();
-const usersTypingStates = new Map<
-  string,
-  SocketTypingStateCommand[] | undefined
->();
-
 const init = (server: http.Server) => {
   const io = new socket.Server(server, {
     cors: { origin: "*" },
@@ -40,50 +37,52 @@ const init = (server: http.Server) => {
   socketHandler.io = io;
 
   // Managing connections and disconnections
-  io.on("connection", (socket: socket.Socket) => {
+  io.on("connection", async (socket: socket.Socket) => {
     const userId: any = socket.handshake.query.userId;
     console.log("connecting", userId, "socket id", socket.id);
 
-    const userSocketsIds: string[] = onlineUsers.get(userId) || [];
+    await socketRepository.addSocketId(userId, socket.id);
 
-    onlineUsers.set(userId, [...userSocketsIds, socket.id]);
-
-    socket.on("disconnect", () => {
-      const userSocketsIds: string[] | undefined =
-        onlineUsers.get(userId) || [];
-
+    socket.on("disconnect", async () => {
       console.log("disconnecting", userId, "socket id", socket.id);
-      onlineUsers.set(
-        userId,
-        userSocketsIds.filter((socketId) => socketId !== socket.id)
+
+      // Send messages signaling to other users that this user is no longer typing because he just disconnected
+      const userSocket: ISocket | null = await socketRepository.getUserSocket(
+        userId
       );
-      usersTypingStates.set(userId, undefined);
+      if (userSocket) {
+        userSocket.typingStates.forEach((typingState) => {
+          const typingStateCommand: SocketTypingStateCommand = {
+            isTyping: false,
+            toUsersIds: typingState.toUsersIds,
+            user: toReadDto(userSocket.user),
+            userId: userId,
+          };
+
+          socketEmit({
+            messageType: ChatMessagesEnum.ReceiveTypingState,
+            object: typingStateCommand,
+            userIds: typingState.toUsersIds.filter((u) => u !== userId),
+          });
+        });
+      }
+
+      await socketRepository.deleteSocketId(userId, socket.id);
     });
 
     // Listening to typing states
     socket.on(
       ChatMessagesEnum.SendTypingState,
-      (socketTypingStateCommand: SocketTypingStateCommand) => {
-        const userTypingStates = usersTypingStates.get(
-          socketTypingStateCommand.userId
-        );
-
-        // If the user is tyuping, then we add the typing state to the map.
+      async (socketTypingStateCommand: SocketTypingStateCommand) => {
         if (socketTypingStateCommand.isTyping) {
-          usersTypingStates.set(socketTypingStateCommand.userId, [
-            ...(userTypingStates || []),
-            socketTypingStateCommand,
-          ]);
-        } else {
-          // If the user is not typing, then we remove the typing state from the map.
-          const newUserTypingStates = (userTypingStates || []).filter(
-            (el) =>
-              JSON.stringify(el.toUsersIds.sort()) ===
-              JSON.stringify(socketTypingStateCommand.toUsersIds.sort())
-          );
-          usersTypingStates.set(
+          await socketRepository.addTypingState(
             socketTypingStateCommand.userId,
-            newUserTypingStates
+            { toUsersIds: socketTypingStateCommand.toUsersIds }
+          );
+        } else {
+          await socketRepository.deleteTypingState(
+            socketTypingStateCommand.userId,
+            { toUsersIds: socketTypingStateCommand.toUsersIds }
           );
         }
         socketEmit({
@@ -112,19 +111,17 @@ export const socketEmit = async ({
     | { reaction: ReactionReadDto; message: MessageReadDto }
     | { lastMarkedMessageAsRead: MessageReadDto | null; by: IUser };
 }) => {
+  const { onlineUsersIds, onlineUsersSockets } =
+    await socketRepository.getOnlineUsers();
+
   const onlineConcernedUsersIds: string[] = userIds
     .map((userId) => userId.toString())
-    .filter((userId) => onlineUsers.has(userId.toString()));
+    .filter((userId) => onlineUsersIds.some((el) => el === userId.toString()));
 
   if (messageType === ChatMessagesEnum.Receive) {
     const offlineConcernedUsersIds: string[] = userIds
       .map((userId) => userId.toString())
-      .filter(
-        (userId) =>
-          !onlineUsers.has(userId.toString()) ||
-          onlineUsers.get(userId.toString())?.length === 0 ||
-          onlineUsers.get(userId.toString()) === undefined
-      );
+      .filter((userId) => !onlineUsersIds.some((el) => el === userId));
 
     const sendEmailsToOfflineUsersPromises: Promise<void>[] = [];
     if (offlineConcernedUsersIds.length > 0) {
@@ -163,7 +160,11 @@ export const socketEmit = async ({
   if (onlineConcernedUsersIds.length > 0) {
     const socketIds: string[] = onlineConcernedUsersIds.reduce(
       //@ts-ignore
-      (acc, userId) => acc.concat(onlineUsers.get(userId) || []),
+      (acc: string[], userId) =>
+        acc.concat(
+          onlineUsersSockets.find((el) => el.user._id.toString() === userId)
+            ?.socketIds || []
+        ),
       []
     );
 

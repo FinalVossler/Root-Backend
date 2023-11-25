@@ -6,6 +6,7 @@ type FieldReadDto = {
   _id: IField["_id"];
   name: IField["name"];
   type: IField["type"];
+  canChooseFromExistingFiles?: boolean;
   options?: IField["options"];
   fieldEvents: IField["fieldEvents"];
   tableOptions?: {
@@ -24,6 +25,7 @@ export const toReadDto = (field: IField): FieldReadDto => {
     _id: field._id,
     name: field.name,
     type: field.type,
+    canChooseFromExistingFiles: field.canChooseFromExistingFiles,
     options: field.options,
     fieldEvents: field.fieldEvents || [],
     tableOptions: field.tableOptions,

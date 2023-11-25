@@ -181,12 +181,6 @@ const messageRepository = {
       },
     ]).exec();
 
-    console.log(
-      "lastConversationsLastMessagesIds",
-      lastConversationsLastMessagesIds[0].data
-    );
-    console.log("count", lastConversationsLastMessagesIds[0].count);
-
     const messages: IPopulatedMessage[] = await messageRepository.getByIds(
       lastConversationsLastMessagesIds[0]["data"].map((el) => el.id.toString())
     );

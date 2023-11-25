@@ -5,6 +5,7 @@ import { IField } from "../field.model";
 type FieldCreateCommand = {
   name: string;
   type: IField["type"];
+  canChooseFromExistingFiles: boolean;
   fieldEvents: EventCommand[];
   options?: {
     label: string;

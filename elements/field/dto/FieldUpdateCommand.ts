@@ -6,6 +6,7 @@ type FieldUpdateCommand = {
   _id: string;
   name: string;
   type: IField["type"];
+  canChooseFromExistingFiles: boolean;
   fieldEvents: EventCommand[];
   language: string;
   options?: {

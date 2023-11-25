@@ -25,6 +25,7 @@ const fieldRepository = {
     const field = await Field.create({
       name: [{ language: command.language, text: command.name }],
       type: command.type,
+      canChooseFromExistingFiles: command.canChooseFromExistingFiles,
       options: command.options?.map((option) => ({
         label: [{ language: command.language, text: option.label }],
         value: option.value,
@@ -158,6 +159,7 @@ const fieldRepository = {
             oldValue: field.name,
           }),
           type: command.type,
+          canChooseFromExistingFiles: command.canChooseFromExistingFiles,
           options: command.options?.map((option) => ({
             value: option.value,
             label: getNewTranslatedTextsForUpdate({
@@ -320,6 +322,7 @@ const fieldRepository = {
                 text: el.text,
               })),
               type: field.type,
+              canChooseFromExistingFiles: field.canChooseFromExistingFiles,
               options: field.options?.map((option) => ({
                 label: option.label.map((el) => ({
                   language: el.language,
