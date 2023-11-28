@@ -193,7 +193,7 @@ const modelRepository = {
 
     return { models, total };
   },
-  deleteModels: async (modelsIds: mongoose.ObjectId[]): Promise<void> => {
+  deleteModels: async (modelsIds: mongoose.Types.ObjectId[]): Promise<void> => {
     for (let i = 0; i < modelsIds.length; i++) {
       await Model.deleteOne({ _id: modelsIds[i] });
     }

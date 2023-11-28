@@ -113,7 +113,7 @@ router.delete(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, mongoose.ObjectId[], any>,
+    req: ConnectedRequest<any, any, mongoose.Types.ObjectId[], any>,
     res: Response<ResponseDto<void>>
   ) => {
     roleService.checkPermission({
@@ -121,7 +121,7 @@ router.delete(
       permission: Permission.DeleteModel,
     });
 
-    const modelsIds: mongoose.ObjectId[] = req.body;
+    const modelsIds: mongoose.Types.ObjectId[] = req.body;
     await modelSerivce.deleteModels(modelsIds);
 
     return res.status(200).send({

@@ -14,7 +14,7 @@ export enum SuperRole {
 }
 
 export interface IUser {
-  _id: mongoose.ObjectId;
+  _id: mongoose.Types.ObjectId;
   firstName: string;
   lastName: string;
   email: string;
@@ -100,8 +100,10 @@ UserSchema.pre("save", async function (next) {
 UserSchema.pre("deleteOne", async function (next) {
   const user: IUser = (await this.model.findOne(this.getQuery())) as IUser;
 
-  await postRepository.deleteUserPosts(user._id.toString());
-  await fileRepository.deleteUserFiles(user._id.toString());
+  if (user?._id) {
+    await postRepository.deleteUserPosts(user._id.toString());
+    await fileRepository.deleteUserFiles(user._id.toString());
+  }
 
   next();
 });

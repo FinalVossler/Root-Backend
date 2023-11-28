@@ -160,10 +160,10 @@ router.delete(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, mongoose.ObjectId[], any>,
+    req: ConnectedRequest<any, any, mongoose.Types.ObjectId[], any>,
     res: Response<ResponseDto<void>>
   ) => {
-    const entitiesIds: mongoose.ObjectId[] = req.body;
+    const entitiesIds: mongoose.Types.ObjectId[] = req.body;
 
     if (entitiesIds.length > 0) {
       const entity: IEntity | undefined = await entityRepository.getById(

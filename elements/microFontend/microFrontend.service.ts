@@ -42,7 +42,7 @@ const microFrontendService = {
     return microFrontend;
   },
   deleteMicroFrontends: async (
-    microFrontendsIds: mongoose.ObjectId[]
+    microFrontendsIds: mongoose.Types.ObjectId[]
   ): Promise<void> => {
     await microFrontendRepository.deleteMicroFrontends(microFrontendsIds);
   },

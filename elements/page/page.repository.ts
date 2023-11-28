@@ -63,14 +63,16 @@ const pageRepository = {
 
     return updatedPage;
   },
-  getById: async (id: mongoose.ObjectId | string): Promise<IPage | null> => {
+  getById: async (
+    id: mongoose.Types.ObjectId | string
+  ): Promise<IPage | null> => {
     const page: IPage | null = await Page.findById(id).populate(
       populationOptions
     );
 
     return page;
   },
-  delete: async (id: mongoose.ObjectId | string): Promise<void> => {
+  delete: async (id: mongoose.Types.ObjectId | string): Promise<void> => {
     await Page.deleteOne({ _id: id }).exec();
   },
 };

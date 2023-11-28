@@ -8,7 +8,7 @@ export enum EntityEventNotificationTrigger {
 }
 
 export interface IEntityEventNotification {
-  _id: mongoose.ObjectId;
+  _id: mongoose.Types.ObjectId;
   title: ITranslatedText[];
   text: ITranslatedText[];
   trigger: EntityEventNotificationTrigger;

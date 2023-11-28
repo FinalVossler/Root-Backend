@@ -6,6 +6,7 @@ import UserLoginCommand from "./dtos/UserLoginCommand";
 import UserRegisterCommand from "./dtos/UserRegisterCommand";
 import userService from "./user.service";
 import UserReadDto, {
+  UserReadDtoWithLastReadMessageInConversation,
   toReadDto,
   toReadDtoWithLastReadMessageInConversation,
 } from "./dtos/UserReadDto";
@@ -90,7 +91,7 @@ router.get(
   protectMiddleware,
   async (
     req: ConnectedRequest<any, any, any, { "usersIds[]": string[] }>,
-    res: Response<ResponseDto<UserReadDto[]>>
+    res: Response<ResponseDto<UserReadDtoWithLastReadMessageInConversation[]>>
   ) => {
     const users: UserWithLastReadMessageInConversation[] =
       await userService.getUsersWithTheirLastReadMessagesInConversation(
@@ -369,7 +370,7 @@ router.delete(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, mongoose.ObjectId[], any>,
+    req: ConnectedRequest<any, any, mongoose.Types.ObjectId[], any>,
     res: Response<ResponseDto<void>>
   ) => {
     roleService.checkPermission({
@@ -377,7 +378,7 @@ router.delete(
       permission: Permission.DeleteUser,
     });
 
-    const usersIds: mongoose.ObjectId[] = req.body;
+    const usersIds: mongoose.Types.ObjectId[] = req.body;
     await userService.deleteUsers(usersIds);
 
     return res.status(200).send({

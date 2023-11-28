@@ -4,12 +4,12 @@ import { IFile } from "../file/file.model";
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 
 export interface INotification {
-  _id: mongoose.ObjectId;
+  _id: mongoose.Types.ObjectId;
   text: ITranslatedText[];
   link: string;
   image?: IFile;
-  clickedBy: mongoose.ObjectId[];
-  to: mongoose.ObjectId[];
+  clickedBy: mongoose.Types.ObjectId[];
+  to: mongoose.Types.ObjectId[];
 
   createdAt: string;
   updatedAt: string;

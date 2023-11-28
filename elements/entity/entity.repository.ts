@@ -189,7 +189,9 @@ const entityRepository = {
 
     return { entities, total };
   },
-  deleteEntities: async (entitiesIds: mongoose.ObjectId[]): Promise<void> => {
+  deleteEntities: async (
+    entitiesIds: mongoose.Types.ObjectId[]
+  ): Promise<void> => {
     await Entity.deleteMany({ _id: { $in: entitiesIds } });
   },
   getById: async (entityId: string): Promise<IEntity | undefined> => {

@@ -4,7 +4,7 @@ import PaginationCommand from "../../../globalTypes/PaginationCommand";
 import { PostVisibility } from "../post.model";
 
 type PostsGetCommand = {
-  userId: mongoose.ObjectId;
+  userId: mongoose.Types.ObjectId;
   visibilities: PostVisibility[];
   paginationCommand: PaginationCommand;
 };

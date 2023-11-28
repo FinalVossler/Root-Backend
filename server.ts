@@ -2,50 +2,35 @@ import express from "express";
 import cors from "cors";
 import { config as dotenvConfig } from "dotenv";
 import http from "http";
-import cluster from "node:cluster";
-import os from "node:os";
 
 import mongoose from "./mongoose";
 import router from "./router";
 import errorMiddleware from "./middleware/errorMiddleware";
 import socket from "./socket";
 
-const MAX_CPUS = 1;
+const app = express();
+dotenvConfig();
 
-const setupWorker = () => {
-  const app = express();
-  dotenvConfig();
+mongoose();
 
-  mongoose();
+app.use(cors());
 
-  app.use(cors());
+app.use(express.json());
 
-  app.use(express.json());
+app.use(router);
 
-  app.use(router);
+app.use(errorMiddleware);
 
-  app.use(errorMiddleware);
+const PORT = process.env.PORT || 5000;
 
-  const PORT = process.env.PORT || 5000;
+// Tests will automatically run on Port 0 by supertest:
+// Port 0 tells Unix to "Choose the first randomly available port that you find."
+if (process.env.NODE_ENV !== "test") {
   const server: http.Server = app.listen(PORT, () => {
     console.info("app is running on port " + PORT);
   });
 
   socket(server);
-};
+}
 
-setupWorker();
-
-// const numberOfCpus = Math.min(MAX_CPUS, os.cpus().length);
-
-// if (cluster.isPrimary) {
-//   for (let i = 0; i < numberOfCpus; i++) {
-//     cluster.fork();
-//   }
-
-//   cluster.on("exit", () => {
-//     cluster.fork();
-//   });
-// } else {
-//   setupWorker();
-// }
+export default app;

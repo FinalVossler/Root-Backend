@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { IUser, SuperRole } from "../user.model";
 
 type UserUpdateCommand = {
-  _id: mongoose.ObjectId;
+  _id: mongoose.Types.ObjectId;
   firstName: IUser["firstName"];
   lastName: IUser["lastName"];
   email: IUser["email"];

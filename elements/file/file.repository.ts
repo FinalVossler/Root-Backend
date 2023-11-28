@@ -57,7 +57,9 @@ const fileRepository = {
 
     return { files, total };
   },
-  get: async (fileId: mongoose.ObjectId | string): Promise<IFile | null> => {
+  get: async (
+    fileId: mongoose.Types.ObjectId | string
+  ): Promise<IFile | null> => {
     const file: IFile | null = await File.findById(fileId);
 
     return file;

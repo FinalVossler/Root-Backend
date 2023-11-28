@@ -41,7 +41,7 @@ export enum Permission {
 }
 
 export interface IRole {
-  _id: mongoose.ObjectId;
+  _id: mongoose.Types.ObjectId;
   name: ITranslatedText[];
   permissions: Permission[];
   entityPermissions: IEntityPermission[];

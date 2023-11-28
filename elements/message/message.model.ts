@@ -5,12 +5,12 @@ import { IUser } from "../user/user.model";
 import Reaction, { IReaction } from "../reaction/reaction.model";
 
 export interface IMessage {
-  _id: mongoose.ObjectId;
-  from: mongoose.ObjectId;
-  to: mongoose.ObjectId[];
+  _id: mongoose.Types.ObjectId;
+  from: mongoose.Types.ObjectId;
+  to: mongoose.Types.ObjectId[];
   message: string;
   numberOfParticipants?: number;
-  read: mongoose.ObjectId[];
+  read: mongoose.Types.ObjectId[];
   readAt?: string[];
   files: IFile[];
   reactions?: IReaction[];
@@ -20,7 +20,7 @@ export interface IMessage {
 }
 
 export interface IPopulatedMessage {
-  _id: mongoose.ObjectId;
+  _id: mongoose.Types.ObjectId;
   from: IUser;
   to: IUser[];
   message: string;

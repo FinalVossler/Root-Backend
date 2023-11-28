@@ -7,7 +7,7 @@ import { IUser, UserWithLastReadMessageInConversation } from "../user.model";
 import MessageReadDto from "../../message/dtos/MessageReadDto";
 
 type UserReadDto = {
-  _id: mongoose.ObjectId;
+  _id: mongoose.Types.ObjectId;
   firstName: IUser["firstName"];
   lastName: IUser["lastName"];
   email: IUser["email"];
@@ -17,7 +17,7 @@ type UserReadDto = {
   hasMessagingEmailsActivated?: boolean;
 };
 
-type UserReadDtoWithLastReadMessageInConversation = UserReadDto & {
+export type UserReadDtoWithLastReadMessageInConversation = UserReadDto & {
   to: string[];
   lastReadMessageInConversation: MessageReadDto | null;
 };

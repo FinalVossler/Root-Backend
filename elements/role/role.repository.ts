@@ -197,7 +197,7 @@ const roleRepository = {
 
     return { roles, total };
   },
-  deleteRoles: async (rolesIds: mongoose.ObjectId[]): Promise<null> => {
+  deleteRoles: async (rolesIds: mongoose.Types.ObjectId[]): Promise<null> => {
     for (let i = 0; i < rolesIds.length; i++) {
       await Role.deleteOne({ _id: rolesIds[i] });
     }

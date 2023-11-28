@@ -11,7 +11,7 @@ import { IModelState } from "../modelState/modelState.model";
 import modelStateRepository from "../modelState/modelState.repository";
 
 export interface IModel {
-  _id: mongoose.ObjectId;
+  _id: mongoose.Types.ObjectId;
   name: ITranslatedText[];
   modelFields: IModelField[];
   modelEvents?: IEvent[];

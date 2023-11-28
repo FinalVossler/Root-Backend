@@ -90,7 +90,7 @@ router.delete(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, mongoose.ObjectId[], any>,
+    req: ConnectedRequest<any, any, mongoose.Types.ObjectId[], any>,
     res: Response<ResponseDto<void>>
   ) => {
     roleService.checkPermission({
@@ -98,7 +98,7 @@ router.delete(
       permission: Permission.DeleteRole,
     });
 
-    const rolesIds: mongoose.ObjectId[] = req.body;
+    const rolesIds: mongoose.Types.ObjectId[] = req.body;
     await roleService.deleteRoles(rolesIds);
 
     return res.status(200).send({

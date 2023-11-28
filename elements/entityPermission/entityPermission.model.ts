@@ -15,7 +15,7 @@ export enum StaticPermission {
 }
 
 export interface IEntityPermission {
-  _id: mongoose.ObjectId;
+  _id: mongoose.Types.ObjectId;
   model: IModel;
   permissions: StaticPermission[];
   entityFieldPermissions: IFieldPermission[];

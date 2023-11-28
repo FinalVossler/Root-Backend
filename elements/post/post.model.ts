@@ -32,10 +32,10 @@ export enum PostDesign {
 }
 
 export interface IPost {
-  _id: mongoose.ObjectId;
+  _id: mongoose.Types.ObjectId;
   title?: ITranslatedText[];
   subTitle?: ITranslatedText[];
-  posterId: mongoose.ObjectId;
+  posterId: mongoose.Types.ObjectId;
   content?: ITranslatedText[];
   files: IFile[];
   visibility: PostVisibility;

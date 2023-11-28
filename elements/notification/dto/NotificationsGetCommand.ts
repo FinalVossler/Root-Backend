@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import PaginationCommand from "../../../globalTypes/PaginationCommand";
 
 type NotificationsGetCommand = {
-  userId: mongoose.ObjectId;
+  userId: mongoose.Types.ObjectId;
   paginationCommand: PaginationCommand;
 };
 

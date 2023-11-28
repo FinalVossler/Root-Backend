@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 type EntitiesSetCustomDataKeyValueCommand = {
-  entityId: mongoose.ObjectId;
+  entityId: mongoose.Types.ObjectId;
   key: string;
   value: Object;
 };

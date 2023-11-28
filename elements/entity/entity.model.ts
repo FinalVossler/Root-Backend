@@ -8,7 +8,7 @@ import { IModel } from "../model/model.model";
 import { IUser } from "../user/user.model";
 
 export interface IEntity {
-  _id: mongoose.ObjectId;
+  _id: mongoose.Types.ObjectId;
   model: IModel;
   entityFieldValues: IEntityFieldValue[];
   assignedUsers?: IUser[];

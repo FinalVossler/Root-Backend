@@ -96,7 +96,7 @@ const userService = {
     return user;
   },
   getByToken: async (token: string): Promise<IUser> => {
-    const signedUser: { _id: mongoose.ObjectId } = decode(token) as IUser;
+    const signedUser: { _id: mongoose.Types.ObjectId } = decode(token) as IUser;
 
     const user: IUser = await userRepository.getById(signedUser._id.toString());
 
@@ -250,7 +250,7 @@ const userService = {
 
     return usersWithLastReadMessageInConversation;
   },
-  deleteUsers: async (usersIds: mongoose.ObjectId[]): Promise<void> => {
+  deleteUsers: async (usersIds: mongoose.Types.ObjectId[]): Promise<void> => {
     await userRepository.deleteUsers(usersIds);
   },
   search: async (

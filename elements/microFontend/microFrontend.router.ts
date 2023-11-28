@@ -107,7 +107,7 @@ router.delete(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, mongoose.ObjectId[], any>,
+    req: ConnectedRequest<any, any, mongoose.Types.ObjectId[], any>,
     res: Response<ResponseDto<void>>
   ) => {
     roleService.checkPermission({
@@ -115,7 +115,7 @@ router.delete(
       permission: Permission.DeleteMicroFrontend,
     });
 
-    const microFrontendsIds: mongoose.ObjectId[] = req.body;
+    const microFrontendsIds: mongoose.Types.ObjectId[] = req.body;
     await microFrontendService.deleteMicroFrontends(microFrontendsIds);
 
     return res.status(200).send({

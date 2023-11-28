@@ -39,7 +39,7 @@ const modelSerivce = {
 
     return { models, total };
   },
-  deleteModels: async (modelsIds: mongoose.ObjectId[]): Promise<void> => {
+  deleteModels: async (modelsIds: mongoose.Types.ObjectId[]): Promise<void> => {
     await modelRepository.deleteModels(modelsIds);
   },
   search: async (

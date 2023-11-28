@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { IFile } from "../../file/file.model";
 
 type UserUpdateProfilePictureCommand = {
-  userId: mongoose.ObjectId;
+  userId: mongoose.Types.ObjectId;
   picture: IFile;
 };
 

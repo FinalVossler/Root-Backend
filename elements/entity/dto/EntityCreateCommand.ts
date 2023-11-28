@@ -3,14 +3,14 @@ import mongoose from "mongoose";
 import { IFile } from "../../file/file.model";
 
 type EntityCreateCommand = {
-  modelId: mongoose.ObjectId;
+  modelId: mongoose.Types.ObjectId;
   entityFieldValues: EntityFieldValueCommand[];
   assignedUsersIds: string[];
   language: string;
 };
 
 export type EntityFieldValueCommand = {
-  fieldId: mongoose.ObjectId;
+  fieldId: mongoose.Types.ObjectId;
   value: string;
   files: IFile[];
 

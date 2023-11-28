@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { IEntityEventNotification } from "../entityEventNotification/entityEventNotification.model";
 import {
   IEntityPermission,
   StaticPermission,
@@ -32,7 +31,7 @@ const roleService = {
 
     return { roles, total };
   },
-  deleteRoles: async (rolesIds: mongoose.ObjectId[]): Promise<void> => {
+  deleteRoles: async (rolesIds: mongoose.Types.ObjectId[]): Promise<void> => {
     await roleRepository.deleteRoles(rolesIds);
   },
 

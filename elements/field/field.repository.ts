@@ -249,7 +249,7 @@ const fieldRepository = {
 
     return { fields, total };
   },
-  deleteFields: async (fieldsIds: mongoose.ObjectId[]): Promise<void> => {
+  deleteFields: async (fieldsIds: mongoose.Types.ObjectId[]): Promise<void> => {
     for (let i = 0; i < fieldsIds.length; i++) {
       await Field.deleteOne({ _id: fieldsIds[i] });
     }
@@ -346,7 +346,11 @@ const fieldRepository = {
               },
             });
 
-            resolve(newField);
+            const populatedNewField = await fieldRepository.getById(
+              newField._id.toString()
+            );
+
+            resolve(populatedNewField);
           } catch (e) {
             reject(e);
           }

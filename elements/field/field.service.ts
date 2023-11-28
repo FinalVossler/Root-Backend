@@ -24,7 +24,7 @@ const fieldService = {
 
     return { fields, total };
   },
-  deleteFields: async (fieldsIds: mongoose.ObjectId[]): Promise<void> => {
+  deleteFields: async (fieldsIds: mongoose.Types.ObjectId[]): Promise<void> => {
     await fieldRepository.deleteFields(fieldsIds);
   },
   search: async (

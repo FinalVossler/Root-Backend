@@ -22,7 +22,7 @@ export type Theme = {
 };
 
 export interface IWebsiteConfiguration {
-  _id?: mongoose.ObjectId;
+  _id?: mongoose.Types.ObjectId;
   title?: string;
   description?: ITranslatedText[];
   email?: string;

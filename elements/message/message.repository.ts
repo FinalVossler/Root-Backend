@@ -71,7 +71,7 @@ const messageRepository = {
   },
   markAllConversationMessagesAsReadByUser: async (
     to: string[],
-    userId: mongoose.ObjectId
+    userId: mongoose.Types.ObjectId
   ): Promise<IMessage | null> => {
     await Message.updateMany(
       {

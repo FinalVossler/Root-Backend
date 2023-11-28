@@ -91,7 +91,7 @@ router.delete(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, mongoose.ObjectId[], any>,
+    req: ConnectedRequest<any, any, mongoose.Types.ObjectId[], any>,
     res: Response<ResponseDto<void>>
   ) => {
     roleService.checkPermission({
@@ -99,7 +99,8 @@ router.delete(
       permission: Permission.DeleteField,
     });
 
-    const fieldsIds: mongoose.ObjectId[] = req.body;
+    const fieldsIds: mongoose.Types.ObjectId[] = req.body;
+
     await fieldService.deleteFields(fieldsIds);
 
     return res.status(200).send({

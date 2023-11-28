@@ -25,7 +25,7 @@ export type FieldOption = {
 };
 
 export interface IField {
-  _id: mongoose.ObjectId;
+  _id: mongoose.Types.ObjectId;
   name: ITranslatedText[];
   type: FieldType;
   canChooseFromExistingFiles?: boolean;

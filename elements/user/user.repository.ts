@@ -67,12 +67,14 @@ const userRepository = {
     await User.updateOne(
       { _id: command._id },
       {
-        firstName: command.firstName,
-        lastName: command.lastName,
-        email: command.email,
-        role: command.roleId,
-        superRole: command.superRole,
-        hasMessagingEmailsActivated: command.hasMessagingEmailsActivated,
+        $set: {
+          firstName: command.firstName,
+          lastName: command.lastName,
+          email: command.email,
+          role: command.roleId,
+          superRole: command.superRole,
+          hasMessagingEmailsActivated: command.hasMessagingEmailsActivated,
+        },
       }
     ).exec();
 
@@ -162,7 +164,7 @@ const userRepository = {
 
     return users;
   },
-  deleteUsers: async (usersIds: mongoose.ObjectId[]): Promise<void> => {
+  deleteUsers: async (usersIds: mongoose.Types.ObjectId[]): Promise<void> => {
     for (let i = 0; i < usersIds.length; i++) {
       await User.deleteOne({ _id: usersIds[i] });
     }
