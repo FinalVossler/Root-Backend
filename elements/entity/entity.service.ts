@@ -181,7 +181,7 @@ const entityService = {
       (assignedNow) =>
         !oldAssignedUsers.some((u) => u._id.toString() === assignedNow)
     );
-    const entity: IEntity = await entityRepository.update(command, currentUser);
+    const entity: IEntity = await entityRepository.update(command);
 
     const assignmentPermissionGranted: boolean =
       await entityService.usersEntityAssignmentPermissionGranted({

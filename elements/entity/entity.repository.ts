@@ -71,10 +71,7 @@ const entityRepository = {
 
     return entity.populate(populationOptions);
   },
-  update: async (
-    command: EntityUpdateCommand,
-    currentUser: IUser
-  ): Promise<IEntity> => {
+  update: async (command: EntityUpdateCommand): Promise<IEntity> => {
     const entity: IEntity | null = await Entity.findById(command._id).populate(
       populationOptions
     );
