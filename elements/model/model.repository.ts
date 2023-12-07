@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
-import Model, { IModel, ModelFieldConditionTypeEnum } from "./model.model";
+import Model, { IModel } from "./model.model";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
 import ModelCreateCommand from "./dto/ModelCreateCommand";
 import ModelUpdateCommand from "./dto/ModelUpdateCommand";
 import ModelsGetCommand from "./dto/ModelsGetCommand";
 import ModelsSearchCommand from "./dto/ModelsSearchCommand";
-import { IEvent, IEventRequestHeader } from "../event/event.model";
+import { IEventRequestHeader } from "../event/event.model";
 import modelStateRepository from "../modelState/modelState.repository";
 import { IModelState } from "../modelState/modelState.model";
 import EventCommand from "../event/dto/EventCommand";

@@ -11,7 +11,7 @@ type UserReadDto = {
   firstName: IUser["firstName"];
   lastName: IUser["lastName"];
   email: IUser["email"];
-  profilePicture: IUser["profilePicture"];
+  profilePicture?: IUser["profilePicture"];
   superRole: IUser["superRole"];
   role?: RoleReadDto;
   hasMessagingEmailsActivated?: boolean;

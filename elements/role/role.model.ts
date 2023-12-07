@@ -86,6 +86,6 @@ RoleSchema.pre("deleteOne", async function (next) {
   next();
 });
 
-const model = mongoose.model<IRole, IRoleModel>("role", RoleSchema);
+const Role = mongoose.model<IRole, IRoleModel>("role", RoleSchema);
 
-export default model;
+export default Role;

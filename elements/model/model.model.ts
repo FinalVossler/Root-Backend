@@ -125,35 +125,39 @@ const ModelSchema = new mongoose.Schema<IModel>(
 );
 
 ModelSchema.pre("deleteOne", async function (next) {
-  const model: IModel = (await this.model.findOne(this.getQuery())) as IModel;
+  const model: IModel | undefined = (await this.model.findOne(
+    this.getQuery()
+  )) as IModel;
 
-  // Deleting the entities created based on the deleted model
-  await Entity.deleteMany({ model: model._id });
+  if (model) {
+    // Deleting the entities created based on the deleted model
+    await Entity.deleteMany({ model: model._id });
 
-  // Deleting the entities permissions using the deleted model
-  const modelEntityPermissions: IEntityPermission[] =
-    await entityPermissionSerivce.getModelEntityPermissions(
-      model._id.toString()
+    // Deleting the entities permissions using the deleted model
+    const modelEntityPermissions: IEntityPermission[] =
+      await entityPermissionSerivce.getModelEntityPermissions(
+        model._id.toString()
+      );
+
+    await entityPermissionRepository.deleteByIds(
+      modelEntityPermissions.map((ep) => ep._id.toString())
     );
 
-  await entityPermissionRepository.deleteByIds(
-    modelEntityPermissions.map((ep) => ep._id.toString())
-  );
-
-  // Delete model modelField states
-  let statesIds: mongoose.Types.ObjectId[] = [];
-  model.modelFields?.forEach((modelField) => {
-    statesIds = statesIds.concat(
-      modelField.states?.map((state) => state._id) || []
-    );
-  });
-  if (statesIds.length > 0) {
-    await modelStateRepository.deleteMany(statesIds);
+    // Delete model modelField states
+    let statesIds: mongoose.Types.ObjectId[] = [];
+    model.modelFields?.forEach((modelField) => {
+      statesIds = statesIds.concat(
+        modelField.states?.map((state) => state._id) || []
+      );
+    });
+    if (statesIds.length > 0) {
+      await modelStateRepository.deleteMany(statesIds);
+    }
   }
 
   next();
 });
 
-const model = mongoose.model<IModel, IModelModel>("model", ModelSchema);
+const Model = mongoose.model<IModel, IModelModel>("model", ModelSchema);
 
-export default model;
+export default Model;

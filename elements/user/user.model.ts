@@ -20,7 +20,7 @@ export interface IUser {
   email: string;
   password: string;
   superRole: SuperRole;
-  profilePicture: IFile;
+  profilePicture?: IFile;
   passwordChangeToken: string;
   role?: IRole;
   hasMessagingEmailsActivated?: boolean;
@@ -108,4 +108,6 @@ UserSchema.pre("deleteOne", async function (next) {
   next();
 });
 
-export default mongoose.model<IUser, IUserModel>("user", UserSchema);
+const User = mongoose.model<IUser, IUserModel>("user", UserSchema);
+
+export default User;

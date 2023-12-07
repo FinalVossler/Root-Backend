@@ -26,7 +26,9 @@ const EntityEventNotificationSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model<
+const EntityEventNotification = mongoose.model<
   IEntityEventNotification,
   IEntityEventNotificationModel
 >("entityEventNotification", EntityEventNotificationSchema);
+
+export default EntityEventNotification;

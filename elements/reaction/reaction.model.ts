@@ -39,7 +39,9 @@ const ReactionSchema = new mongoose.Schema<IReaction>(
   }
 );
 
-export default mongoose.model<IReaction, ReactionModel>(
+const Reaction = mongoose.model<IReaction, ReactionModel>(
   "reaction",
   ReactionSchema
 );
+
+export default Reaction;

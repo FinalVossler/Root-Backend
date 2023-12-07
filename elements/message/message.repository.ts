@@ -185,7 +185,8 @@ const messageRepository = {
       lastConversationsLastMessagesIds[0]["data"].map((el) => el.id.toString())
     );
 
-    const total = lastConversationsLastMessagesIds[0].calculateTotal[0].total;
+    const total =
+      lastConversationsLastMessagesIds?.[0].calculateTotal?.[0]?.total || 0;
 
     // Fetch the total number of unread messages by the user for each message conversation
     const getConversationTotalUnreadMessagesPromises: Promise<number>[] = [];

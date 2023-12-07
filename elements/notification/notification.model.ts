@@ -50,7 +50,9 @@ const NotificationSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model<INotification, INotificationModel>(
+const Notification = mongoose.model<INotification, INotificationModel>(
   "notification",
   NotificationSchema
 );
+
+export default Notification;

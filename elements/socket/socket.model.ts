@@ -32,4 +32,6 @@ const SocketSchema = new mongoose.Schema({
   ],
 });
 
-export default mongoose.model<ISocket, SocketModel>("socket", SocketSchema);
+const Socket = mongoose.model<ISocket, SocketModel>("socket", SocketSchema);
+
+export default Socket;

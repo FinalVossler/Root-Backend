@@ -120,7 +120,9 @@ EntityPermissionSchema.pre("deleteOne", async function (next) {
   next();
 });
 
-export default mongoose.model<IEntityPermission, IEntityPermissionModel>(
-  "entityPermission",
-  EntityPermissionSchema
-);
+const EntityPermission = mongoose.model<
+  IEntityPermission,
+  IEntityPermissionModel
+>("entityPermission", EntityPermissionSchema);
+
+export default EntityPermission;

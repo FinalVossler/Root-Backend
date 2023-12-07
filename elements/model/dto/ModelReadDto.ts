@@ -19,7 +19,7 @@ type ModelReadDto = {
     }[];
     states?: IModelState[];
     mainField?: boolean;
-  };
+  }[];
   modelEvents?: IModel["modelEvents"];
   states?: ModelStateReadDto[];
   subStates?: ModelStateReadDto[];

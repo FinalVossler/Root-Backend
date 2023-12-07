@@ -134,6 +134,6 @@ FieldSchema.pre("deleteOne", async function (next) {
   next();
 });
 
-const model = mongoose.model<IField, IFieldModel>("field", FieldSchema);
+const Field = mongoose.model<IField, IFieldModel>("field", FieldSchema);
 
-export default model;
+export default Field;

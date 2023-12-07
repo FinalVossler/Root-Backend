@@ -50,4 +50,6 @@ PageSchema.pre(
   }
 );
 
-export default mongoose.model<IPage, IPageModel>("page", PageSchema);
+const Page = mongoose.model<IPage, IPageModel>("page", PageSchema);
+
+export default Page;

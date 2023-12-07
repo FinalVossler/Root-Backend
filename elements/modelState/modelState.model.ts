@@ -32,7 +32,9 @@ const ModelStateSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model<IModelState, IModelStateModel>(
+const ModelState = mongoose.model<IModelState, IModelStateModel>(
   "modelState",
   ModelStateSchema
 );
+
+export default ModelState;

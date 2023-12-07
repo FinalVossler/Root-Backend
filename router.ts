@@ -14,6 +14,7 @@ import roleRouter from "./elements/role/role.router";
 import notificationRouter from "./elements/notification/notification.router";
 import microFrontendRouter from "./elements/microFontend/microFrontend.router";
 import reactionRouter from "./elements/reaction/reaction.router";
+import cypressRouter from "./elements/cypress/cypress.router";
 
 const router = Router();
 
@@ -31,6 +32,7 @@ router.use("/roles", roleRouter);
 router.use("/notifications", notificationRouter);
 router.use("/microFrontends", microFrontendRouter);
 router.use("/reactions", reactionRouter);
+router.use("/cypress", cypressRouter);
 
 router.use("/", (req: Request, res: Response) => {
   res.status(200).send("Hello!");

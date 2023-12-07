@@ -16,7 +16,9 @@ const FieldTableElementSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model<IFieldTableElement, IFieldTableElementModel>(
-  "fieldTableElement",
-  FieldTableElementSchema
-);
+const FieldTableElement = mongoose.model<
+  IFieldTableElement,
+  IFieldTableElementModel
+>("fieldTableElement", FieldTableElementSchema);
+
+export default FieldTableElement;

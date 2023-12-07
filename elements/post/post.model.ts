@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 
 import File, { IFile } from "../file/file.model";
 import TranslatedTextSchema, { ITranslatedText } from "../ITranslatedText";
-import User from "../user/user.model";
 
 export enum PostVisibility {
   Private = "Private",
@@ -101,6 +100,6 @@ const PostSchema = new mongoose.Schema<IPost>(
   }
 );
 
-const model = mongoose.model<IPost, IPostModel>("post", PostSchema);
+const Post = mongoose.model<IPost, IPostModel>("post", PostSchema);
 
-export default model;
+export default Post;

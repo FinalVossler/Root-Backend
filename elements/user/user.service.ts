@@ -60,6 +60,7 @@ const userService = {
   login: async (
     command: UserLoginCommand
   ): Promise<{ token: string; user: IUser }> => {
+    console.log("command", command);
     const user: IUser = await userRepository.getByEmail(command.email);
 
     if (user === null) {

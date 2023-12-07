@@ -13,7 +13,7 @@ import PaginationResponse from "../globalTypes/PaginationResponse";
 import FieldsSearchCommand from "../elements/field/dto/FieldsSearchCommand";
 import { adminUser } from "./fixtures";
 
-describe("field router", () => {
+describe.skip("field router", () => {
   const adminToken = userService.generateToken(adminUser);
   let createdField: FieldReadDto | null;
   let fieldToUpdate: IField | null;

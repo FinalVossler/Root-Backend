@@ -108,6 +108,6 @@ const EntitySchema = new mongoose.Schema<IEntity>(
   }
 );
 
-const model = mongoose.model<IEntity, IEntityModel>("entity", EntitySchema);
+const Entity = mongoose.model<IEntity, IEntityModel>("entity", EntitySchema);
 
-export default model;
+export default Entity;

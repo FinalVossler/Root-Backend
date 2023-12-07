@@ -116,4 +116,9 @@ MessageSchema.pre("deleteOne", async function (next) {
   next();
 });
 
-export default mongoose.model<IMessage, MessageModel>("message", MessageSchema);
+const Message = mongoose.model<IMessage, MessageModel>(
+  "message",
+  MessageSchema
+);
+
+export default Message;

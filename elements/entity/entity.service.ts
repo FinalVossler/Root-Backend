@@ -147,7 +147,7 @@ const entityService = {
       throw new Error(errorText);
     }
 
-    // Now send the onCreate event notifications (email + inapp notifications)
+    // Now send the onCreate event notifications (email + in app notifications)
     entityEventNotificationService.notifyUsers(
       command.modelId.toString(),
       EntityEventNotificationTrigger.OnCreate,
@@ -155,7 +155,7 @@ const entityService = {
       currentUser
     );
 
-    // Now send the onAssigned event notifications (email + inapp notifications)
+    // Now send the onAssigned event notifications (email + in app notifications)
     if (command.assignedUsersIds.length > 0) {
       entityEventNotificationService.notifyUsers(
         command.modelId.toString(),

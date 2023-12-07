@@ -42,4 +42,6 @@ const FileSchema = new mongoose.Schema<IFile>(
   }
 );
 
-export default mongoose.model<IFile, IFileModel>("file", FileSchema);
+const File = mongoose.model<IFile, IFileModel>("file", FileSchema);
+
+export default File;
