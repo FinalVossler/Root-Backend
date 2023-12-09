@@ -24,6 +24,8 @@ import userRepository from "../elements/user/user.repository";
 import UserCreateCommand from "../elements/user/dtos/UserCreateCommand";
 import EntitiesGetCommand from "../elements/entity/dto/EntitiesGetCommand";
 import PaginationResponse from "../globalTypes/PaginationResponse";
+import EntitiesSearchCommand from "../elements/entity/dto/EntitiesSearchCommand";
+import EntitiesSetCustomDataKeyValueCommand from "../elements/entity/dto/EntitiesSetCustomDataKeyValueCommand";
 
 jest.setTimeout(50000);
 describe("entity router", () => {
@@ -41,6 +43,9 @@ describe("entity router", () => {
   let assignedUser1: IUser | undefined;
   let assignedUser2: IUser | undefined;
   let entityToDelete: IEntity | undefined;
+  let entityToFindInSearch: IEntity | undefined;
+  let entityToNotFindInSearch: IEntity | undefined;
+  let searchByText: string = "Found";
 
   beforeAll(async () => {
     const promises: Promise<IField>[] = [];
@@ -113,6 +118,20 @@ describe("entity router", () => {
     });
     model1UnassignedEntity = await entityRepository.create(createEntityCommand);
     entityToDelete = await entityRepository.create(createEntityCommand);
+    entityToFindInSearch = await entityRepository.create({
+      ...createEntityCommand,
+      entityFieldValues: [
+        { ...entityField1ValueCommand1, value: searchByText },
+        { ...entityField1ValueCommand2, value: "Whatever" },
+      ],
+    });
+    entityToNotFindInSearch = await entityRepository.create({
+      ...createEntityCommand,
+      entityFieldValues: [
+        { ...entityField1ValueCommand1, value: "Nope" },
+        { ...entityField1ValueCommand2, value: "Nope" },
+      ],
+    });
   });
 
   afterAll(async () => {
@@ -168,11 +187,21 @@ describe("entity router", () => {
     if (entityToDelete) {
       promises.push(entityRepository.deleteEntities([entityToDelete._id]));
     }
+    if (entityToFindInSearch) {
+      promises.push(
+        entityRepository.deleteEntities([entityToFindInSearch._id])
+      );
+    }
+    if (entityToNotFindInSearch) {
+      promises.push(
+        entityRepository.deleteEntities([entityToNotFindInSearch._id])
+      );
+    }
 
     await Promise.all(promises);
   });
 
-  it.skip("should get by id", () => {
+  it("should get by id", () => {
     return request(app)
       .get("/entities/getEntity")
       .query({ entityId: entityToGetByIdAndToUseForModel1?._id.toString() })
@@ -201,7 +230,7 @@ describe("entity router", () => {
       });
   });
 
-  it.skip("should create entity", () => {
+  it("should create entity", () => {
     const entityField1ValueCommand1: EntityFieldValueCommand = {
       fieldId: (field1 as IField)._id,
       files: [],
@@ -248,7 +277,7 @@ describe("entity router", () => {
       });
   });
 
-  it.skip("should update an entity", async () => {
+  it("should update an entity", async () => {
     const entityField1ValueCommand1: EntityFieldValueCommand = {
       fieldId: (field1 as IField)._id,
       files: [],
@@ -337,7 +366,7 @@ describe("entity router", () => {
     );
   });
 
-  it.skip("should get entities by model", async () => {
+  it("should get entities by model", async () => {
     const model1EntitiesCommand: EntitiesGetCommand = {
       modelId: (model as IModel)?._id,
       paginationCommand: {
@@ -397,7 +426,7 @@ describe("entity router", () => {
     expect(foundModel2Entity).toEqual(true);
   });
 
-  it.skip("should get assigned entities by model", () => {
+  it("should get assigned entities by model", () => {
     const command: EntitiesGetCommand = {
       modelId: (model as IModel)._id,
       paginationCommand: {
@@ -477,5 +506,72 @@ describe("entity router", () => {
     );
 
     expect(foundDeletedEntity).toEqual(false);
+  });
+
+  it("should search for an entity", () => {
+    const command: EntitiesSearchCommand = {
+      modelId: (model as IModel)._id.toString(),
+      name: searchByText,
+      paginationCommand: {
+        limit: 10,
+        page: 1,
+      },
+    };
+    return request(app)
+      .post("/entities/search")
+      .send(command)
+      .set("Authorization", "Bearer " + adminToken)
+      .then((res) => {
+        const result: ResponseDto<PaginationResponse<EntityReadDto>> = res.body;
+
+        expect(result.success).toBeTruthy();
+        const isEntityThatShouldBeFoundFound: boolean = Boolean(
+          result.data?.data.some(
+            (el) => el._id.toString() === entityToFindInSearch?._id.toString()
+          )
+        );
+        const isEntityThatShouldntBeFoundFound: boolean = Boolean(
+          result.data?.data.some(
+            (el) =>
+              el._id.toString() === entityToNotFindInSearch?._id.toString()
+          )
+        );
+
+        expect(isEntityThatShouldBeFoundFound).toBeTruthy();
+        expect(isEntityThatShouldntBeFoundFound).toEqual(false);
+      });
+  });
+
+  it("should set custom data key value", async () => {
+    const command: EntitiesSetCustomDataKeyValueCommand = {
+      entityId: (entityToGetByIdAndToUseForModel1 as IEntity)?._id,
+      key: "testKey",
+      value: JSON.stringify({
+        a: "this is the value of a",
+        b: "this is the value of b",
+      }),
+    };
+
+    await request(app)
+      .post("/entities/setCustomDataKeyValue")
+      .send(command)
+      .expect(200)
+      .set("Authorization", "Bearer " + adminToken);
+
+    return request(app)
+      .get("/entities/getEntity")
+      .query({
+        entityId: (entityToGetByIdAndToUseForModel1 as IEntity)._id.toString(),
+      })
+      .set("Authorization", "Bearer " + adminToken)
+      .then((res) => {
+        const result: ResponseDto<EntityReadDto> = res.body;
+
+        expect(result.success).toBeTruthy();
+        expect(result.data?.customData).toBeDefined();
+        expect(result.data?.customData).toEqual(
+          JSON.stringify({ [command.key]: command.value })
+        );
+      });
   });
 });
