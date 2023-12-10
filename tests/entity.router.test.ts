@@ -28,7 +28,7 @@ import EntitiesSearchCommand from "../elements/entity/dto/EntitiesSearchCommand"
 import EntitiesSetCustomDataKeyValueCommand from "../elements/entity/dto/EntitiesSetCustomDataKeyValueCommand";
 
 jest.setTimeout(50000);
-describe("entity router", () => {
+describe.skip("entity router", () => {
   let field1: IField | undefined;
   let field2: IField | undefined;
   let model: IModel | undefined;

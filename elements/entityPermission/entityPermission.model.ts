@@ -79,12 +79,16 @@ const EntityPermissionSchema = new mongoose.Schema(
 );
 
 EntityPermissionSchema.pre("deleteOne", async function (next) {
-  const entityPermission: IEntityPermission = (await this.model
+  const entityPermission: IEntityPermission | undefined = (await this.model
     .findOne(this.getQuery())
     .populate({
       path: "entityEventNotifications",
       model: "entityEventNotification",
     })) as IEntityPermission;
+
+  if (!entityPermission) {
+    return;
+  }
 
   // Deleting the event notifications from the entity permission that's about to get deleted
   const entityEventNotifications: IEntityEventNotification[] =
