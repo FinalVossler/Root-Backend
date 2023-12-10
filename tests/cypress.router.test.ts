@@ -9,7 +9,7 @@ import UserReadDto from "../elements/user/dtos/UserReadDto";
 
 // Attention!!! This test should be skipped. It's only used to test the cypress preparation scripts
 // when we are about to run cypress tests
-jest.setTimeout(30000);
+jest.setTimeout(50000);
 describe.skip("cypress router", function () {
   const adminToken = userService.generateToken(adminUser);
 

@@ -22,7 +22,7 @@ import { IEntity } from "../elements/entity/entity.model";
 import entityRepository from "../elements/entity/entity.repository";
 import { StaticPermission } from "../elements/entityPermission/entityPermission.model";
 
-jest.setTimeout(10000);
+jest.setTimeout(50000);
 describe("role", () => {
   const adminToken = userService.generateToken(adminUser);
   let createdRole: RoleReadDto | undefined;

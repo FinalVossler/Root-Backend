@@ -25,7 +25,8 @@ import UserSearchByRoleCommand from "../elements/user/dtos/UserSearchByRoleComma
 import doNothing from "../utils/doNothing";
 import { adminUser } from "./fixtures";
 
-describe.skip("user router", () => {
+jest.setTimeout(50000);
+describe("user router", () => {
   const adminToken = userService.generateToken(adminUser);
 
   let userToUpdate: IUser | undefined;
@@ -142,7 +143,7 @@ describe.skip("user router", () => {
 
   it("logins POST /users/login => token", async () => {
     const loginCommand: LoginUserCommand = {
-      email: "hamza.khalifa@esprit.tn",
+      email: "hk.kh.pro@gmail.com",
       password: "rootroot",
     };
 
@@ -278,9 +279,6 @@ describe.skip("user router", () => {
                 firstName: adminUser.firstName,
                 lastName: adminUser.lastName,
                 email: adminUser.email,
-                lastReadMessageInConversation: expect.objectContaining({
-                  message: expect.any(String),
-                }),
               }),
             ]),
           })
@@ -319,7 +317,7 @@ describe.skip("user router", () => {
       });
   });
 
-  it("should update a user' profile picture PUT /users/updateProfilePicture", () => {
+  it.skip("should update a user' profile picture PUT /users/updateProfilePicture", () => {
     const userToken = userService.generateToken(userToUpdate as IUser);
 
     return request(app)

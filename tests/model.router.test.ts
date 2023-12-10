@@ -22,7 +22,8 @@ import ModelsGetCommand from "../elements/model/dto/ModelsGetCommand";
 import PaginationResponse from "../globalTypes/PaginationResponse";
 import ModelsSearchCommand from "../elements/model/dto/ModelsSearchCommand";
 
-describe.skip("model router", () => {
+jest.setTimeout(50000);
+describe("model router", () => {
   let createdModelId: mongoose.Types.ObjectId | undefined;
   let field1: IField | undefined;
   let field2: IField | undefined;

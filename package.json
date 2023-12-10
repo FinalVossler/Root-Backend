@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "nodemon server.ts",
     "start": "NODE_ENV=production&&node dist/server.js",
-    "test": "jest --watchAll --maxWorkers=1",
+    "test": "jest --watchAll",
+    "test:deploy": "jest",
+    "deploy": "npm run test:deploy && git add . && git commit -m \"$MESSAGE\" && git push origin HEAD",
     "postinstall": "tsc"
   },
   "engines": {

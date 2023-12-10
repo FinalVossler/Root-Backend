@@ -9,7 +9,7 @@ export const adminUser: IUser = {
   firstName: "Hamza",
   lastName: "Khalifa",
   _id: new mongoose.Types.ObjectId("640bf999128f95fd4cffa409"),
-  email: "hk.kh@gmail.tn",
+  email: "hk.kh.pro@gmail.com",
   superRole: SuperRole.SuperAdmin,
   profilePicture: {
     isImage: true,
