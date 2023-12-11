@@ -4,7 +4,7 @@ import Message from "../message/message.model";
 import Page from "../page/page.model";
 import Post from "../post/post.model";
 import User, { IUser } from "../user/user.model";
-import File from "../file/file.model";
+import File, { IFile } from "../file/file.model";
 import EntityEventNotification from "../entityEventNotification/entityEventNotification.model";
 import EntityPermission from "../entityPermission/entityPermission.model";
 import FieldTableElement from "../fieldTableElement/fieldTableElement.model";
@@ -14,6 +14,7 @@ import ModelState from "../modelState/modelState.model";
 import Notification from "../notification/notification.model";
 import Reaction from "../reaction/reaction.model";
 import Socket from "../socket/socket.model";
+import fileRepository from "../file/file.repository";
 
 const cypressService = {
   prepare: async (currentUser: IUser) => {
@@ -42,6 +43,18 @@ const cypressService = {
     await FieldTableElement.deleteMany({});
 
     await Notification.deleteMany({});
+  },
+  createFile: async (url: string, currentUser: IUser): Promise<IFile> => {
+    const file: IFile = {
+      isImage: true,
+      url,
+      uuid: "randomeuuid",
+      name: "Test file",
+      ownerId: currentUser._id,
+    };
+    const createdFile = await fileRepository.create(file);
+
+    return createdFile;
   },
 };
 
