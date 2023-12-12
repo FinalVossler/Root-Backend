@@ -21,6 +21,9 @@ import { IModel } from "../elements/model/model.model";
 import { IEntity } from "../elements/entity/entity.model";
 import entityRepository from "../elements/entity/entity.repository";
 import { StaticPermission } from "../elements/entityPermission/entityPermission.model";
+import RoleUpdateCommand from "../elements/role/dto/RoleUpdateCommand";
+import RolesGetCommand from "../elements/role/dto/RolesGetCommand";
+import PaginationResponse from "../globalTypes/PaginationResponse";
 
 jest.setTimeout(50000);
 describe("role", () => {
@@ -40,7 +43,7 @@ describe("role", () => {
           entityFieldPermissions: [
             {
               fieldId: (field1 as IField)?._id.toString(),
-              permissions: [StaticPermission.Create],
+              permissions: [StaticPermission.Read],
             },
           ],
           entityUserAssignmentPermissionsByRole: {
@@ -165,6 +168,82 @@ describe("role", () => {
         ).toEqual(
           command.entityPermissions.at(0)?.entityFieldPermissions.length
         );
+      });
+  });
+
+  it("should update a role", () => {
+    const command: RoleUpdateCommand = {
+      _id: (roleToUpdate as IRole)?._id.toString(),
+      language: "en",
+      name: "UpdatedRoleName",
+      entityPermissions: [
+        {
+          entityEventNotifications: [],
+          entityFieldPermissions: [
+            {
+              fieldId: (field1 as IField)?._id.toString(),
+              permissions: [StaticPermission.Read, StaticPermission.Update],
+            },
+          ],
+          entityUserAssignmentPermissionsByRole: {
+            canAssignToUserFromSameRole: false,
+            otherRolesIds: [],
+          },
+          language: "en",
+          modelId: model?._id.toString() || "",
+          permissions: [StaticPermission.Create, StaticPermission.Update],
+        },
+      ],
+      permissions: [
+        Permission.CreateModel,
+        Permission.CreateField,
+        Permission.UpdateField,
+        Permission.UpdateModel,
+      ],
+    };
+    return request(app)
+      .put("/roles/")
+      .set("Authorization", "Bearer " + adminToken)
+      .send(command)
+      .expect(200)
+      .then((res) => {
+        const result: ResponseDto<RoleReadDto> = res.body;
+
+        expect(result.success).toBeTruthy();
+        expect(result.data?.name.at(0)?.text).toEqual(command.name);
+        expect(
+          result.data?.entityPermissions.at(0)?.entityFieldPermissions.at(0)
+            ?.permissions.length
+        ).toEqual(2);
+        expect(
+          result.data?.entityPermissions.at(0)
+            ?.entityUserAssignmentPermissionsByRole?.canAssignToUserFromSameRole
+        ).toEqual(false);
+        expect(result?.data?.permissions.length).toEqual(
+          command.permissions.length
+        );
+      });
+  });
+
+  it("should get roles", () => {
+    const command: RolesGetCommand = {
+      paginationCommand: {
+        limit: 10,
+        page: 1,
+      },
+    };
+
+    return request(app)
+      .post("/roles/getRoles")
+      .set("Authorization", "Bearer " + adminToken)
+      .send(command)
+      .then((res) => {
+        const result: ResponseDto<PaginationResponse<RoleReadDto>> = res.body;
+
+        expect(result.success).toBeTruthy();
+        expect(result.data?.total).toEqual(expect.any(Number));
+        expect(result.data?.total).toBeGreaterThan(0);
+        expect(result.data?.data.length).toBeGreaterThan(0);
       });
   });
 });
