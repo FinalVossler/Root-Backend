@@ -24,18 +24,22 @@ import { StaticPermission } from "../elements/entityPermission/entityPermission.
 import RoleUpdateCommand from "../elements/role/dto/RoleUpdateCommand";
 import RolesGetCommand from "../elements/role/dto/RolesGetCommand";
 import PaginationResponse from "../globalTypes/PaginationResponse";
+import RolesSearchCommand from "../elements/role/dto/RolesSearchCommand";
 
 jest.setTimeout(50000);
 describe("role", () => {
   const adminToken = userService.generateToken(adminUser);
+  const roleToSearchName = "To find by search";
   let createdRole: RoleReadDto | undefined;
   let field1: IField | undefined;
   let field2: IField | undefined;
   let model: IModel | undefined;
   let entity: IEntity | undefined;
   let roleToUpdate: IRole | undefined;
+  let roleToDelete: IRole | undefined;
+  let roleToSearch: IRole | undefined;
 
-  const createCreateRoleCommand = () => {
+  const createCreateRoleCommand = (roleName?: string) => {
     const command: RoleCreateCommand = {
       entityPermissions: [
         {
@@ -56,7 +60,7 @@ describe("role", () => {
         },
       ],
       language: "en",
-      name: "Role1",
+      name: roleName || "Role Created by Cypress",
       permissions: [Permission.CreateField, Permission.CreateModel],
     };
 
@@ -101,6 +105,10 @@ describe("role", () => {
     entity = await entityRepository.create(createEntityCommand);
 
     roleToUpdate = await roleRepository.create(createCreateRoleCommand());
+    roleToDelete = await roleRepository.create(createCreateRoleCommand());
+    roleToSearch = await roleRepository.create(
+      createCreateRoleCommand(roleToSearchName)
+    );
   });
 
   afterAll(async () => {
@@ -122,6 +130,12 @@ describe("role", () => {
     }
     if (roleToUpdate) {
       promises.push(roleRepository.deleteRoles([roleToUpdate._id]));
+    }
+    if (roleToDelete) {
+      promises.push(roleRepository.deleteRoles([roleToDelete._id]));
+    }
+    if (roleToSearch) {
+      promises.push(roleRepository.deleteRoles([roleToSearch._id]));
     }
 
     await Promise.all(promises);
@@ -243,6 +257,70 @@ describe("role", () => {
         expect(result.success).toBeTruthy();
         expect(result.data?.total).toEqual(expect.any(Number));
         expect(result.data?.total).toBeGreaterThan(0);
+        expect(result.data?.data.length).toBeGreaterThan(0);
+      });
+  });
+
+  it("should delete a role", async () => {
+    const res = await request(app)
+      .delete("/roles/")
+      .send([roleToDelete?._id])
+      .set("Authorization", "Bearer " + adminToken)
+      .expect(200);
+
+    const result: ResponseDto<void> = res.body;
+
+    const command: RolesGetCommand = {
+      paginationCommand: {
+        limit: 10,
+        page: 1,
+      },
+    };
+
+    expect(result.success).toBeTruthy();
+    return request(app)
+      .post("/roles/getRoles")
+      .set("Authorization", "Bearer " + adminToken)
+      .send(command)
+      .expect(200)
+      .then((res) => {
+        const result: ResponseDto<PaginationResponse<RoleReadDto>> = res.body;
+
+        const foundDeletedRole: boolean = Boolean(
+          result.data?.data.some(
+            (el) => el._id.toString() === roleToDelete?._id.toString()
+          )
+        );
+
+        expect(foundDeletedRole).toEqual(false);
+      });
+  });
+
+  it("should find searched roole", () => {
+    const command: RolesSearchCommand = {
+      name: roleToSearchName,
+      paginationCommand: {
+        limit: 10,
+        page: 1,
+      },
+    };
+
+    return request(app)
+      .post("/roles/search")
+      .set("Authorization", "Bearer " + adminToken)
+      .send(command)
+      .then((res) => {
+        const result: ResponseDto<PaginationResponse<RoleReadDto>> = res.body;
+
+        const foundRole: boolean = Boolean(
+          result.data?.data.some(
+            (el) => el._id.toString() === roleToSearch?._id.toString()
+          )
+        );
+
+        expect(foundRole).toBeTruthy();
+        expect(result.success).toBeTruthy();
+        expect(result.data?.total).toEqual(expect.any(Number));
         expect(result.data?.data.length).toBeGreaterThan(0);
       });
   });
