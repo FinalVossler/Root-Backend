@@ -9,7 +9,8 @@
     "test": "jest --watchAll",
     "test:deploy": "jest",
     "deploy": "npm run test:deploy && git add . && git commit -m \"$MESSAGE\" && git push origin HEAD",
-    "postinstall": "tsc"
+    "postinstall": "tsc",
+    "build": "tsc"
   },
   "engines": {
     "node": "14.16.1"
