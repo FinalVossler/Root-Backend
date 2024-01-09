@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: root-front-host
+  labels:
+    app: root-front-host
+spec:
+  selector:
+    matchLabels:
+      app: root-front-host
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: root-front-host
+    spec:
+      containers:
+        - name: root-front-host
+          image: hamzakhalifa/root-front-host:latest
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: REACT_APP_BACKEND_URL
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: root-front-host
+spec:
+  selector:
+    app: root-front-host
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30001

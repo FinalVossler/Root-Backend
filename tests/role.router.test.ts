@@ -296,7 +296,7 @@ describe("role", () => {
       });
   });
 
-  it("should find searched roole", () => {
+  it("should find searched role", () => {
     const command: RolesSearchCommand = {
       name: roleToSearchName,
       paginationCommand: {

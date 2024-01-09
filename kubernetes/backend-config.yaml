@@ -1,0 +1,11 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: backend-config
+data:
+  GMAIL_MAIL_REFRESH_TOKEN: 1//04y8bUc3-3K4YCgYIARAAGAQSNwF-L9IrYaa1hhRKriIOaj2WL5h_Ukbc793DbkVcsGN76-8uS6nT7CB0fzdI4HURh8XJgtP08q4
+  GMAIL_OAUTH_CLIENT_ID: 280010498037-59de4n30l34r3rnq6oc19qo6gfmhi7lj.apps.googleusercontent.com
+  MONGO_URI: mongodb+srv://root:root@dev.ihdwjf1.mongodb.net/?retryWrites=true&w=majority
+  NODEMAILER_EMAIL: contact@erikusa.com
+  ORIGIN: root-front-host
+  TOKEN_EXPIRES_IN: 8h

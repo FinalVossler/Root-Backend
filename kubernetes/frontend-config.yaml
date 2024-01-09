@@ -1,0 +1,9 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: frontend-config
+  namespace: default
+data:
+  REACT_APP_BACKEND_URL: root-backend
+  REACT_APP_STRIPE_PUBLISHABLE_SECRET: pk_live_51MS4PICglqPnufN9ZzGNaJCLfp1btbuQcVsLDC01HSks5ZV4v7q42z0OmOOdc9wpqS7yKWzviBFStdMKlTG0C0sb006CKhEfU5
+  REACT_APP_UPLOAD_CARE_PUBLIC_KEY: 8defbd46d51016dbca37

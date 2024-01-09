@@ -29,22 +29,29 @@ import EntitiesSetCustomDataKeyValueCommand from "../elements/entity/dto/Entitie
 
 jest.setTimeout(50000);
 describe("entity router", () => {
+  const adminToken: string = userService.generateToken(adminUser);
+
   let field1: IField | undefined;
   let field2: IField | undefined;
   let model: IModel | undefined;
+
   let model2ToWhichEntitiesbyModelDontBelong: IModel | undefined;
+  let model3ToWhichUserIsAlsoAssigned: IModel | undefined;
+
   let entityToGetByIdAndToUseForModel1: IEntity | undefined;
   let entityThatBelongsToModel2: IEntity | undefined;
   let model1AssignedEntity: IEntity | undefined;
   let model1UnassignedEntity: IEntity | undefined;
+  let model3AssignedEntity: IEntity | undefined;
   let createdEntity: EntityReadDto | null;
   let entityToUpdate: IEntity | null;
-  const adminToken: string = userService.generateToken(adminUser);
-  let assignedUser1: IUser | undefined;
-  let assignedUser2: IUser | undefined;
   let entityToDelete: IEntity | undefined;
   let entityToFindInSearch: IEntity | undefined;
   let entityToNotFindInSearch: IEntity | undefined;
+
+  let assignedUser1: IUser | undefined;
+  let assignedUser2: IUser | undefined;
+
   let searchByText: string = "Found";
 
   beforeAll(async () => {
@@ -63,6 +70,9 @@ describe("entity router", () => {
     );
     model2ToWhichEntitiesbyModelDontBelong = await modelRepository.create(
       createCreateModelCommand("Entity test model 2", [field1, field2])
+    );
+    model3ToWhichUserIsAlsoAssigned = await modelRepository.create(
+      createCreateModelCommand("Entity test model 3", [field1, field2])
     );
 
     const entityField1ValueCommand1: EntityFieldValueCommand = {
@@ -117,6 +127,11 @@ describe("entity router", () => {
       assignedUsersIds: [assignedUser1._id.toString()],
     });
     model1UnassignedEntity = await entityRepository.create(createEntityCommand);
+    model3AssignedEntity = await entityRepository.create({
+      ...createEntityCommand,
+      assignedUsersIds: [assignedUser1._id.toString()],
+      modelId: model3ToWhichUserIsAlsoAssigned._id,
+    });
     entityToDelete = await entityRepository.create(createEntityCommand);
     entityToFindInSearch = await entityRepository.create({
       ...createEntityCommand,
@@ -151,6 +166,11 @@ describe("entity router", () => {
         ])
       );
     }
+    if (model3ToWhichUserIsAlsoAssigned) {
+      promises.push(
+        modelRepository.deleteModels([model3ToWhichUserIsAlsoAssigned._id])
+      );
+    }
     if (field1) {
       promises.push(fieldRepository.deleteFields([field1._id]));
     }
@@ -182,6 +202,11 @@ describe("entity router", () => {
     if (model1UnassignedEntity) {
       promises.push(
         entityRepository.deleteEntities([model1UnassignedEntity._id])
+      );
+    }
+    if (model3AssignedEntity) {
+      promises.push(
+        entityRepository.deleteEntities([model3AssignedEntity._id])
       );
     }
     if (entityToDelete) {
@@ -456,6 +481,30 @@ describe("entity router", () => {
 
         expect(foundTheAssignedEntity).toBeTruthy();
         expect(foundTheUnassignedEntity).toEqual(false);
+      });
+  });
+
+  it("should make sure the number of assigned entities by model is correct", () => {
+    const command: EntitiesGetCommand = {
+      modelId: (model3ToWhichUserIsAlsoAssigned as IModel)._id,
+      paginationCommand: {
+        limit: 30,
+        page: 1,
+      },
+    };
+    return request(app)
+      .post("/entities/getAssignedEntitiesByModel")
+      .set("Authorization", "Bearer " + adminToken)
+      .send(command)
+      .then((res) => {
+        const result: ResponseDto<PaginationResponse<EntityReadDto>> = res.body;
+
+        expect(result.success).toBeTruthy();
+
+        expect(result.data?.data.at(0)?._id.toString()).toEqual(
+          model3AssignedEntity?._id.toString()
+        );
+        expect(result.data?.data.length).toEqual(1);
       });
   });
 

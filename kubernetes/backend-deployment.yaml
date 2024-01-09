@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: root-backend
+  labels:
+    app: root-backend
+spec:
+  selector:
+    matchLabels:
+      app: root-backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: root-backend
+    spec:
+      containers:
+        - name: root-backend
+          image: hamzakhalifa/root-backend:latest
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-secret
+                  key: GMAIL_OAUTH_CLIENT_SECRET
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-secret
+                  key: UPLOAD_CARE_SECRT_KEY
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-secret
+                  key: JWT_SECRET
+
+            - name: GMAIL_MAIL_REFRESH_TOKEN
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: GMAIL_MAIL_REFRESH_TOKEN
+            - name: GMAIL_OAUTH_CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: GMAIL_OAUTH_CLIENT_ID
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: MONGO_URI
+            - name: NODEMAILER_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: NODEMAILER_EMAIL
+            - name: ORIGIN
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: ORIGIN
+            - name: TOKEN_EXPIRES_IN
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: TOKEN_EXPIRES_IN
+
+          ports:
+            - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: root-backend
+spec:
+  selector:
+    app: root-backend
+  # type: ClusterIP
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+      nodePort: 30002

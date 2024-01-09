@@ -8,7 +8,7 @@
     "start": "NODE_ENV=production&&node dist/server.js",
     "test": "jest --watchAll",
     "test:deploy": "jest",
-    "deploy": "npm run test:deploy && git add . && git commit -m \"$MESSAGE\" && git push origin HEAD",
+    "deploy": "npm run test:deploy && git add . && git commit -m \"$MESSAGE\" && git push origin HEAD && docker build hamzakhalifa/root-backend . && docker push hamzakhalifa/root-backend",
     "postinstall": "tsc",
     "build": "tsc"
   },

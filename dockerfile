@@ -2,7 +2,7 @@ FROM node:latest
 
 COPY ./package*.json ./
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src/root-backend
 
 COPY . .
 
