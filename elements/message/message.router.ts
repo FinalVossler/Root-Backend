@@ -45,6 +45,18 @@ router.post(
   ) => {
     const command = req.body;
 
+    const currentUser: IUser = req.user;
+
+    if (
+      !req.body.usersIds.find(
+        (userId) => userId.toString() === currentUser._id.toString()
+      )
+    ) {
+      throw new Error(
+        "you are trying to get messages in a conversation you don't belong to"
+      );
+    }
+
     const messages: IMessage[] = await messageService.getMessagesBetweenUsers(
       command
     );

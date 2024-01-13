@@ -105,13 +105,15 @@ MessageSchema.pre("deleteOne", async function (next) {
     .findOne(this.getQuery())
     .populate("files")) as IMessage;
 
-  const filesUuids: string[] = message.files.map((f) => f.uuid);
-  // TODO: we have file ids. Now we need to delete all in upload care
+  if (message) {
+    const filesUuids: string[] = message.files.map((f) => f.uuid);
+    // TODO: we have file ids. Now we need to delete all in upload care
 
-  // Delete all reactions to this message
-  Reaction.deleteMany({
-    message: new mongoose.Types.ObjectId(message._id.toString()),
-  });
+    // Delete all reactions to this message
+    Reaction.deleteMany({
+      message: new mongoose.Types.ObjectId(message._id.toString()),
+    });
+  }
 
   next();
 });

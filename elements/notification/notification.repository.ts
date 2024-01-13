@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import NotificationCreateCommand from "./dto/NotificationCreateCommand";
 import NotificationsGetCommand from "./dto/NotificationsGetCommand";
 import Notification, { INotification } from "./notification.model";
@@ -68,6 +69,11 @@ const notificationRepository = {
       },
       { $addToSet: { clickedBy: userId } }
     );
+  },
+  deleteByIds: async (notificationIds: string[]): Promise<void> => {
+    await Notification.deleteMany({
+      _id: { $in: notificationIds.map((n) => new mongoose.Types.ObjectId()) },
+    });
   },
 };
 
