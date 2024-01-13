@@ -1,5 +1,5 @@
 import { IFile } from "../../file/file.model";
-import { Theme } from "../websiteConfiguration.model";
+import { ITheme } from "../websiteConfiguration.model";
 
 type WebsiteConfigurationUpdateCommand = {
   title: string;
@@ -11,7 +11,7 @@ type WebsiteConfigurationUpdateCommand = {
   withChat: boolean;
   withRegistration: boolean;
   withTaskManagement: boolean;
-  theme: Theme;
+  theme: ITheme;
   tabIcon?: IFile;
   logo1?: IFile;
   logo2?: IFile;

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { IFile } from "../file/file.model";
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 
-export type Theme = {
+export interface ITheme {
   darkTextColor: string;
   lightTextColor: string;
   primary: string;
@@ -19,7 +19,7 @@ export type Theme = {
   transparentBackground: string;
   subContentBackgroundColor: string;
   boxShadow: string;
-};
+}
 
 export interface IWebsiteConfiguration {
   _id?: mongoose.Types.ObjectId;
@@ -32,7 +32,7 @@ export interface IWebsiteConfiguration {
   withChat?: boolean;
   withRegistration?: boolean;
   withTaskManagement?: boolean;
-  theme: Theme;
+  theme: ITheme;
   tabIcon: IFile;
   logo1?: IFile;
   logo2?: IFile;

@@ -1,5 +1,5 @@
 import { FileReadDto } from "../../file/dto/FileReadDto";
-import { IWebsiteConfiguration, Theme } from "../websiteConfiguration.model";
+import { IWebsiteConfiguration, ITheme } from "../websiteConfiguration.model";
 
 type WebsiteConfigurationReadDto = {
   _id?: IWebsiteConfiguration["_id"];
@@ -12,7 +12,7 @@ type WebsiteConfigurationReadDto = {
   withChat: IWebsiteConfiguration["withChat"];
   withRegistration: IWebsiteConfiguration["withRegistration"];
   withTaskManagement: IWebsiteConfiguration["withTaskManagement"];
-  theme: Theme;
+  theme: ITheme;
   staticText: IWebsiteConfiguration["staticText"];
   tabIcon?: FileReadDto;
   logo1?: FileReadDto;

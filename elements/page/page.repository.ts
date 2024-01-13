@@ -75,6 +75,13 @@ const pageRepository = {
   delete: async (id: mongoose.Types.ObjectId | string): Promise<void> => {
     await Page.deleteOne({ _id: id }).exec();
   },
+  deleteByIds: async (
+    ids: mongoose.Types.ObjectId[] | string[]
+  ): Promise<void> => {
+    await Page.deleteOne({
+      _id: { $in: ids.map((el) => new mongoose.Types.ObjectId(el)) },
+    }).exec();
+  },
 };
 
 const populationOptions = [

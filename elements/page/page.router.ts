@@ -10,6 +10,7 @@ import { IPage } from "./page.model";
 import pageService from "./page.service";
 import roleService from "../role/role.service";
 import { Permission } from "../role/role.model";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -78,7 +79,7 @@ router.delete(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, any, { pageId: string }>,
+    req: ConnectedRequest<any, any, mongoose.Types.ObjectId[], any>,
     res: Response<ResponseDto<void>>
   ) => {
     roleService.checkPermission({
@@ -86,9 +87,9 @@ router.delete(
       permission: Permission.DeletePage,
     });
 
-    const pageId: string = req.query.pageId;
+    const pagesIds = req.body;
 
-    await pageService.delete(pageId);
+    await pageService.deleteByIds(pagesIds.map((pageId) => pageId.toString()));
 
     return res.status(200).json({
       success: true,
