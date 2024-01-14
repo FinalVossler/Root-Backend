@@ -27,7 +27,7 @@ import PaginationResponse from "../globalTypes/PaginationResponse";
 import RolesSearchCommand from "../elements/role/dto/RolesSearchCommand";
 
 jest.setTimeout(50000);
-describe("role", () => {
+describe("roles", () => {
   const adminToken = userService.generateToken(adminUser);
   const roleToSearchName = "To find by search";
   let createdRole: RoleReadDto | undefined;

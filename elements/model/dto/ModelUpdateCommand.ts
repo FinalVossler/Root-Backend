@@ -12,7 +12,7 @@ type ModelUpdateCommand = {
       fieldId: string;
       conditionType: ModelFieldConditionTypeEnum;
       value: number | string;
-      modelStateId?: string[];
+      modelStateId?: string;
     }[];
     modelStatesIds: string[];
     mainField: boolean;

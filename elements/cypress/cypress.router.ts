@@ -11,7 +11,7 @@ import { FileReadDto, toReadDto } from "../file/dto/FileReadDto";
 const router = express.Router();
 
 router.post(
-  "/prepare",
+  "/clean",
   protectMiddleware,
   async (
     req: ConnectedRequest<any, any, any, any>,
@@ -19,7 +19,7 @@ router.post(
   ) => {
     const currentUser: IUser = req.user;
 
-    await cypressService.prepare(currentUser);
+    await cypressService.clean(currentUser);
 
     res.status(200).json({
       data: null,
@@ -44,6 +44,24 @@ router.post(
 
     res.status(200).json({
       data: toReadDto(file),
+      success: true,
+    });
+  }
+);
+
+router.post(
+  "/prepareMarketMaven",
+  protectMiddleware,
+  async (
+    req: ConnectedRequest<any, any, any, any>,
+    res: Response<ResponseDto<void>>
+  ) => {
+    const currentUser = req.user;
+
+    await cypressService.prepareMarketMaven();
+
+    res.status(200).json({
+      data: null,
       success: true,
     });
   }

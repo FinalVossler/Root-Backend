@@ -70,7 +70,7 @@ const modelRepository = {
 
     if (!model) throw new Error("Model doesn't exist");
 
-    // Delete no long existing model states:
+    // Delete no longer existing model states:
     const noLongerExistingModelStatesIds =
       model.states
         ?.filter((modelState: IModelState) => {

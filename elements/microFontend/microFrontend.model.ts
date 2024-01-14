@@ -90,7 +90,9 @@ MicroFrontendSchema.pre("deleteOne", async function (next) {
   next();
 });
 
-export default mongoose.model<IMicroFrontend, IMicroFrontendModel>(
+const MicroFrontend = mongoose.model<IMicroFrontend, IMicroFrontendModel>(
   "microFrontend",
   MicroFrontendSchema
 );
+
+export default MicroFrontend;
