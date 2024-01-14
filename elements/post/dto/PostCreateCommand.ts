@@ -2,9 +2,9 @@ import { IPost } from "../post.model";
 
 type PostCreateCommand = {
   title?: string;
-  subTitle?: IPost["subTitle"];
+  subTitle?: string;
   posterId: IPost["posterId"];
-  content?: IPost["content"];
+  content?: string;
   files: IPost["files"];
   visibility: IPost["visibility"];
   design: IPost["design"];
