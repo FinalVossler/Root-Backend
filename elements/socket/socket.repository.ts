@@ -16,7 +16,7 @@ const socketRepository = {
 
     if (socket) {
       if (socket?.socketIds.length === 1 && socket?.socketIds[0] === socketId) {
-        await SocketModel.remove({
+        await SocketModel.deleteOne({
           user: new mongoose.Types.ObjectId(userId),
         });
       } else {

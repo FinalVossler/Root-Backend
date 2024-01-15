@@ -1,6 +1,6 @@
 import { Response, NextFunction } from "express";
-import { SuperRole } from "../elements/user/user.model";
 import ConnectedRequest from "../globalTypes/ConnectedRequest";
+import { SuperRoleEnum } from "roottypes";
 
 const superAdminProtectMiddleware = async (
   req: ConnectedRequest<any, any, any, any>,
@@ -13,7 +13,7 @@ const superAdminProtectMiddleware = async (
     );
   }
 
-  if (req.user.superRole !== SuperRole.SuperAdmin) {
+  if (req.user.superRole !== SuperRoleEnum.SuperAdmin) {
     throw new Error("Unauthorized");
   }
   next();

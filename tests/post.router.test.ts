@@ -1,34 +1,38 @@
 import request from "supertest";
-import PostCreateCommand from "../elements/post/dto/PostCreateCommand";
-import { IPost, PostDesign, PostVisibility } from "../elements/post/post.model";
+import { IPost } from "../elements/post/post.model";
 import { adminUser } from "./fixtures";
 import app from "../server";
 import userService from "../elements/user/user.service";
 import ResponseDto from "../globalTypes/ResponseDto";
-import PostReadDto from "../elements/post/dto/PostReadDto";
 import postRepository from "../elements/post/post.repository";
-import PostUpdateCommand from "../elements/post/dto/PostUpdateCommand";
-import PostsGetCommand from "../elements/post/dto/PostsGetCommand";
 import PaginationResponse from "../globalTypes/PaginationResponse";
-import PostsSearchCommand from "../elements/post/dto/PostsSearchCommand";
+import {
+  IPostCreateCommand,
+  IPostReadDto,
+  IPostUpdateCommand,
+  IPostsGetCommand,
+  IPostsSearchCommand,
+  PostDesignEnum,
+  PostVisibilityEnum,
+} from "roottypes";
 
 jest.setTimeout(50000);
 const adminToken: string = userService.generateToken(adminUser);
 describe("Posts", () => {
-  let createdPost: PostReadDto | undefined;
+  let createdPost: IPostReadDto | undefined;
   let postToUpdate: IPost | undefined;
   let postToDelete: IPost | undefined;
   let postToFindInSearch: IPost | undefined;
   let postToNotFindInSearch: IPost | undefined;
 
   beforeAll(async () => {
-    const command: PostCreateCommand = {
+    const command: IPostCreateCommand = {
       children: [],
-      design: PostDesign.Default,
+      design: PostDesignEnum.Default,
       files: [],
       language: "en",
-      posterId: adminUser._id,
-      visibility: PostVisibility.Public,
+      posterId: adminUser._id.toString(),
+      visibility: PostVisibilityEnum.Public,
       title: "Post to update title",
       code: "",
       content: "This is the post to update content",
@@ -71,13 +75,13 @@ describe("Posts", () => {
   });
 
   it("should create a post", () => {
-    const command: PostCreateCommand = {
+    const command: IPostCreateCommand = {
       children: [],
-      design: PostDesign.Default,
+      design: PostDesignEnum.Default,
       files: [],
       language: "en",
-      posterId: adminUser._id,
-      visibility: PostVisibility.Public,
+      posterId: adminUser._id.toString(),
+      visibility: PostVisibilityEnum.Public,
       title: "Post title",
       code: "",
       content: "This is the post content",
@@ -91,25 +95,25 @@ describe("Posts", () => {
       .expect(200)
 
       .then((res) => {
-        const result: ResponseDto<PostReadDto> = res.body;
+        const result: ResponseDto<IPostReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.title?.at(0)?.text).toEqual(command.title);
         expect(result.data?.subTitle?.at(0)?.text).toEqual(command.subTitle);
         expect(result.data?.content?.at(0)?.text).toEqual(command.content);
 
-        createdPost = result.data as PostReadDto;
+        createdPost = result.data as IPostReadDto;
       });
   });
 
   it("should get user posts", () => {
-    const command: PostsGetCommand = {
+    const command: IPostsGetCommand = {
       paginationCommand: {
         limit: 10,
         page: 1,
       },
-      userId: adminUser._id,
-      visibilities: [PostVisibility.Private, PostVisibility.Public],
+      userId: adminUser._id.toString(),
+      visibilities: [PostVisibilityEnum.Private, PostVisibilityEnum.Public],
     };
 
     return request(app)
@@ -118,7 +122,7 @@ describe("Posts", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<PostReadDto>> = res.body;
+        const result: ResponseDto<PaginationResponse<IPostReadDto>> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.total).toBeGreaterThan(0);
@@ -126,14 +130,14 @@ describe("Posts", () => {
   });
 
   it("should search for posts", () => {
-    const command: PostsSearchCommand = {
+    const command: IPostsSearchCommand = {
       paginationCommand: {
         limit: 10,
         page: 1,
       },
-      posterId: adminUser._id,
+      posterId: adminUser._id.toString(),
       title: postToFindInSearch?.title?.at(0)?.text || "",
-      visibilities: [PostVisibility.Private, PostVisibility.Public],
+      visibilities: [PostVisibilityEnum.Private, PostVisibilityEnum.Public],
     };
 
     return request(app)
@@ -142,7 +146,7 @@ describe("Posts", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<PostReadDto>> = res.body;
+        const result: ResponseDto<PaginationResponse<IPostReadDto>> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(
@@ -159,13 +163,13 @@ describe("Posts", () => {
   });
 
   it("should update a post", () => {
-    const command: PostUpdateCommand = {
+    const command: IPostUpdateCommand = {
       _id: (postToUpdate as IPost)?._id.toString(),
       children: [],
-      design: PostDesign.Banner,
+      design: PostDesignEnum.Banner,
       files: [],
       language: "en",
-      visibility: PostVisibility.Private,
+      visibility: PostVisibilityEnum.Private,
       title: "Updated post title",
       code: "",
       content: "This is the updated post content",
@@ -179,7 +183,7 @@ describe("Posts", () => {
       .expect(200)
 
       .then((res) => {
-        const result: ResponseDto<PostReadDto> = res.body;
+        const result: ResponseDto<IPostReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.title?.at(0)?.text).toEqual(command.title);
@@ -188,7 +192,7 @@ describe("Posts", () => {
         expect(result.data?.design).toEqual(command.design);
         expect(result.data?.visibility).toEqual(command.visibility);
 
-        createdPost = result.data as PostReadDto;
+        createdPost = result.data as IPostReadDto;
       });
   });
 
@@ -200,13 +204,13 @@ describe("Posts", () => {
       .expect(200);
 
     // Now make sure that the post was deleted
-    const command: PostsGetCommand = {
+    const command: IPostsGetCommand = {
       paginationCommand: {
         limit: 10,
         page: 1,
       },
-      userId: adminUser._id,
-      visibilities: [PostVisibility.Private, PostVisibility.Public],
+      userId: adminUser._id.toString(),
+      visibilities: [PostVisibilityEnum.Private, PostVisibilityEnum.Public],
     };
 
     return request(app)
@@ -215,7 +219,7 @@ describe("Posts", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<PostReadDto>> = res.body;
+        const result: ResponseDto<PaginationResponse<IPostReadDto>> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(

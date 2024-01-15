@@ -1,19 +1,23 @@
 import request from "supertest";
 import { IPopulatedMessage } from "../elements/message/message.model";
-import MessageSendCommand from "../elements/message/dtos/MessageSendCommand";
-import { IUser, SuperRole } from "../elements/user/user.model";
+import { IUser } from "../elements/user/user.model";
 import userService from "../elements/user/user.service";
 import { adminUser } from "./fixtures";
-import UserCreateCommand from "../elements/user/dtos/UserCreateCommand";
 import messageRepository from "../elements/message/message.repository";
 import app from "../server";
-import MessageReadDto from "../elements/message/dtos/MessageReadDto";
 import ResponseDto from "../globalTypes/ResponseDto";
 import userRepository from "../elements/user/user.repository";
-import MessageGetBetweenUsersCommand from "../elements/message/dtos/MessageGetBetweenUsersCommand";
 import PaginationResponse from "../globalTypes/PaginationResponse";
-import MessageMarkAllMessagesAsReadByUserCommand from "../elements/message/dtos/MessageMarkAllMessagesAsReadByUserCommand";
-import MessageGetLastConversations from "../elements/message/dtos/MessageGetLastConversations";
+import {
+  IMessageGetBetweenUsersCommand,
+  IMessageGetLastConversations,
+  IMessageMarkAllMessagesAsReadByUserCommand,
+  IMessageReadDto,
+  IMessageSendCommand,
+  IPopulatedMessageReadDto,
+  IUserCreateCommand,
+  SuperRoleEnum,
+} from "roottypes";
 
 const adminToken = userService.generateToken(adminUser);
 
@@ -32,34 +36,34 @@ describe("messages", () => {
   const lastMessageMessage: string = "Last message";
 
   beforeAll(async () => {
-    const user1CreateCommand: UserCreateCommand = {
+    const user1CreateCommand: IUserCreateCommand = {
       email: "user1ForMessages@gmail.com",
       firstName: "User1ForMessagesFirstName ",
       lastName: "User1ForMessagesLastName",
       password: "rootroot",
-      superRole: SuperRole.Normal,
+      superRole: SuperRoleEnum.Normal,
     };
     user1 = await userRepository.getByEmail(user1CreateCommand.email);
     if (!user1) {
       user1 = await userService.createUser(user1CreateCommand);
     }
-    const user2CreateCommand: UserCreateCommand = {
+    const user2CreateCommand: IUserCreateCommand = {
       email: "user2ForMessages@gmail.com",
       firstName: "User2ForMessagesFirstName ",
       lastName: "User2ForMessagesLastName",
       password: "rootroot",
-      superRole: SuperRole.Normal,
+      superRole: SuperRoleEnum.Normal,
     };
     user2 = await userRepository.getByEmail(user2CreateCommand.email);
     if (!user2) {
       user2 = await userService.createUser(user2CreateCommand);
     }
-    const user3CreateCommand: UserCreateCommand = {
+    const user3CreateCommand: IUserCreateCommand = {
       email: "user3ForMessages@gmail.com",
       firstName: "User3ForMessagesFirstName ",
       lastName: "User3ForMessagesLastName",
       password: "rootroot",
-      superRole: SuperRole.Normal,
+      superRole: SuperRoleEnum.Normal,
     };
     user3ForTotalUnreadMessages = await userRepository.getByEmail(
       user3CreateCommand.email
@@ -70,12 +74,12 @@ describe("messages", () => {
       );
     }
 
-    const user4CreateCommand: UserCreateCommand = {
+    const user4CreateCommand: IUserCreateCommand = {
       email: "userEForMessages@gmail.com",
       firstName: "UserEForMessagesFirstName ",
       lastName: "UserEForMessagesLastName",
       password: "rootroot",
-      superRole: SuperRole.Normal,
+      superRole: SuperRoleEnum.Normal,
     };
     user4ForLastMessageInConversation = await userRepository.getByEmail(
       user4CreateCommand.email
@@ -87,11 +91,11 @@ describe("messages", () => {
     }
 
     // sending message between admin user and user1
-    const messageToDeleteSendCommand: MessageSendCommand = {
+    const messageToDeleteSendCommand: IMessageSendCommand = {
       files: [],
-      from: adminUser._id,
+      from: adminUser._id.toString(),
       message: "Message to delete",
-      to: [adminUser._id, user1._id],
+      to: [adminUser._id.toString(), user1._id.toString()],
     };
     messageToDelete = await messageRepository.sendMessage(
       messageToDeleteSendCommand,
@@ -101,11 +105,14 @@ describe("messages", () => {
     // sending messages between user 1 and user 2
     const messagesBetweenUser1AndUser2Promises = Array.from({ length: 6 }).map(
       (el) => {
-        const messageSendCommand: MessageSendCommand = {
+        const messageSendCommand: IMessageSendCommand = {
           files: [],
-          from: (user1 as IUser)._id,
+          from: (user1 as IUser)._id.toString(),
           message: "Message to delete",
-          to: [(user1 as IUser)?._id, (user2 as IUser)._id],
+          to: [
+            (user1 as IUser)?._id.toString(),
+            (user2 as IUser)._id.toString(),
+          ],
         };
 
         return messageRepository.sendMessage(
@@ -122,13 +129,13 @@ describe("messages", () => {
     // sending messages between admin and user 3
     const messagesBetweenAdminAndUser3Promises = Array.from({ length: 6 }).map(
       (el) => {
-        const messageSendCommand: MessageSendCommand = {
+        const messageSendCommand: IMessageSendCommand = {
           files: [],
-          from: (adminUser as IUser)._id,
+          from: (adminUser as IUser)._id.toString(),
           message: "Message to delete",
           to: [
-            (adminUser as IUser)?._id,
-            (user3ForTotalUnreadMessages as IUser)._id,
+            (adminUser as IUser)?._id.toString(),
+            (user3ForTotalUnreadMessages as IUser)._id.toString(),
           ],
         };
 
@@ -144,13 +151,13 @@ describe("messages", () => {
     );
 
     // sending messages between admin and user 4
-    const messageFromAdminToUser4SendCommand: MessageSendCommand = {
+    const messageFromAdminToUser4SendCommand: IMessageSendCommand = {
       files: [],
-      from: (adminUser as IUser)._id,
+      from: (adminUser as IUser)._id.toString(),
       message: "Message to delete",
       to: [
-        (adminUser as IUser)?._id,
-        (user4ForLastMessageInConversation as IUser)._id,
+        (adminUser as IUser)?._id.toString(),
+        (user4ForLastMessageInConversation as IUser)._id.toString(),
       ],
     };
     const messagesBetweenAdminAndUser4Promises = Array.from({ length: 6 }).map(
@@ -180,20 +187,22 @@ describe("messages", () => {
       );
     }
     if (user1) {
-      promises.push(userRepository.deleteUsers([user1._id]));
+      promises.push(userRepository.deleteUsers([user1._id.toString()]));
     }
 
     if (user2) {
-      promises.push(userRepository.deleteUsers([user2._id]));
+      promises.push(userRepository.deleteUsers([user2._id.toString()]));
     }
     if (user3ForTotalUnreadMessages) {
       promises.push(
-        userRepository.deleteUsers([user3ForTotalUnreadMessages._id])
+        userRepository.deleteUsers([user3ForTotalUnreadMessages._id.toString()])
       );
     }
     if (user4ForLastMessageInConversation) {
       promises.push(
-        userRepository.deleteUsers([user4ForLastMessageInConversation._id])
+        userRepository.deleteUsers([
+          user4ForLastMessageInConversation._id.toString(),
+        ])
       );
     }
     promises.push(
@@ -209,11 +218,11 @@ describe("messages", () => {
   });
 
   it("should send a message from a user to another", () => {
-    const command: MessageSendCommand = {
+    const command: IMessageSendCommand = {
       files: [],
-      from: adminUser._id,
+      from: adminUser._id.toString(),
       message: "message sent",
-      to: [adminUser._id, (user1 as IUser)?._id],
+      to: [adminUser._id.toString(), (user1 as IUser)?._id.toString()],
     };
 
     return request(app)
@@ -222,7 +231,7 @@ describe("messages", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<MessageReadDto> = res.body;
+        const result: ResponseDto<IPopulatedMessageReadDto> = res.body;
 
         expect(result.data?.files.length).toEqual(0);
         expect(result.data?.from._id.toString()).toEqual(
@@ -234,12 +243,15 @@ describe("messages", () => {
   });
 
   it("should get the messages between two users", () => {
-    const command: MessageGetBetweenUsersCommand = {
+    const command: IMessageGetBetweenUsersCommand = {
       paginationCommand: {
         limit: 10,
         page: 1,
       },
-      usersIds: [(user1 as IUser)._id, (user2 as IUser)._id],
+      usersIds: [
+        (user1 as IUser)._id.toString(),
+        (user2 as IUser)._id.toString(),
+      ],
     };
     const user1Token = userService.generateToken(user1 as IUser);
     return request(app)
@@ -248,7 +260,7 @@ describe("messages", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<MessageReadDto>> =
+        const result: ResponseDto<PaginationResponse<IMessageReadDto>> =
           res.body;
 
         expect(result.success).toBeTruthy();
@@ -267,12 +279,15 @@ describe("messages", () => {
   });
 
   it("shouldn't be able to get the messages for a user that doesn't belong to a conversation", () => {
-    const command: MessageGetBetweenUsersCommand = {
+    const command: IMessageGetBetweenUsersCommand = {
       paginationCommand: {
         limit: 10,
         page: 1,
       },
-      usersIds: [(user1 as IUser)?._id, (user2 as IUser)._id],
+      usersIds: [
+        (user1 as IUser)?._id.toString(),
+        (user2 as IUser)._id.toString(),
+      ],
     };
     return request(app)
       .post("/messages/get")
@@ -308,7 +323,7 @@ describe("messages", () => {
   });
 
   it("should mark conversation messages as read by user", async () => {
-    const command: MessageMarkAllMessagesAsReadByUserCommand = {
+    const command: IMessageMarkAllMessagesAsReadByUserCommand = {
       to: [(user1 as IUser)?._id.toString(), (user2 as IUser)._id.toString()],
     };
     await request(app)
@@ -368,7 +383,7 @@ describe("messages", () => {
     );
 
     // Now mark the messages of a conversation (user1 and user3) as read and check the total unread messages again:
-    const command: MessageMarkAllMessagesAsReadByUserCommand = {
+    const command: IMessageMarkAllMessagesAsReadByUserCommand = {
       to: [
         (user1 as IUser)?._id.toString(),
         (user3ForTotalUnreadMessages as IUser)._id.toString(),
@@ -401,7 +416,7 @@ describe("messages", () => {
   });
 
   it("should get last conversations last messages", () => {
-    const command: MessageGetLastConversations = {
+    const command: IMessageGetLastConversations = {
       paginationCommand: {
         limit: 10,
         page: 1,
@@ -417,7 +432,7 @@ describe("messages", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<MessageReadDto>> =
+        const result: ResponseDto<PaginationResponse<IMessageReadDto>> =
           res.body;
 
         expect(result.success).toBeTruthy();

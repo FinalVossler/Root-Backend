@@ -1,16 +1,18 @@
 import { IUser } from "../user/user.model";
-import MessageGetBetweenUsersCommand from "./dtos/MessageGetBetweenUsersCommand";
-import MessageGetLastConversations from "./dtos/MessageGetLastConversations";
-import MessageSendCommand from "./dtos/MessageSendCommand";
 import { IMessage, IPopulatedMessage } from "./message.model";
 import messageRepository from "./message.repository";
 import { socketEmit } from "../../socket";
-import ChatMessagesEnum from "../../globalTypes/ChatMessagesEnum";
-import { toReadDto } from "./dtos/MessageReadDto";
+import { populatedMessageToReadDto } from "./messageToReadDto";
+import {
+  ChatMessagesEnum,
+  IMessageGetBetweenUsersCommand,
+  IMessageGetLastConversations,
+  IMessageSendCommand,
+} from "roottypes";
 
 const messageService = {
   sendMessage: async (
-    command: MessageSendCommand,
+    command: IMessageSendCommand,
     currentUser: IUser
   ): Promise<IPopulatedMessage> => {
     const populatedMessage: IPopulatedMessage =
@@ -18,14 +20,14 @@ const messageService = {
 
     socketEmit({
       messageType: ChatMessagesEnum.Receive,
-      object: toReadDto(populatedMessage),
+      object: populatedMessageToReadDto(populatedMessage),
       userIds: populatedMessage.to.map((user) => user._id.toString()),
     });
 
     socketEmit({
       messageType: ChatMessagesEnum.ReceiveLastMarkedMessageAsReadByUser,
       object: {
-        lastMarkedMessageAsRead: toReadDto(populatedMessage),
+        lastMarkedMessageAsRead: populatedMessageToReadDto(populatedMessage),
         by: currentUser,
       },
       userIds: populatedMessage.to.map((user) => user._id.toString()),
@@ -34,9 +36,9 @@ const messageService = {
     return populatedMessage;
   },
   getMessagesBetweenUsers: async (
-    command: MessageGetBetweenUsersCommand
-  ): Promise<IMessage[]> => {
-    const messages: IMessage[] =
+    command: IMessageGetBetweenUsersCommand
+  ): Promise<IPopulatedMessage[]> => {
+    const messages: IPopulatedMessage[] =
       await messageRepository.getMessagesBetweenUsers(command);
 
     return messages;
@@ -47,8 +49,8 @@ const messageService = {
   }: {
     to: string[];
     currentUser: IUser;
-  }): Promise<IMessage | null> => {
-    const lastMarkedMessageAsRead: IMessage | null =
+  }): Promise<IPopulatedMessage | null> => {
+    const lastMarkedMessageAsRead: IPopulatedMessage | null =
       await messageRepository.markAllConversationMessagesAsReadByUser(
         to,
         currentUser._id
@@ -59,7 +61,7 @@ const messageService = {
         messageType: ChatMessagesEnum.ReceiveLastMarkedMessageAsReadByUser,
         object: {
           lastMarkedMessageAsRead: lastMarkedMessageAsRead
-            ? toReadDto(lastMarkedMessageAsRead)
+            ? populatedMessageToReadDto(lastMarkedMessageAsRead)
             : null,
           by: currentUser,
         },
@@ -70,7 +72,7 @@ const messageService = {
     return lastMarkedMessageAsRead;
   },
   getTotalMessagesBetweenUsers: async (
-    command: MessageGetBetweenUsersCommand
+    command: IMessageGetBetweenUsersCommand
   ): Promise<number> => {
     const total: number = await messageRepository.getTotalMessages(command);
 
@@ -88,7 +90,9 @@ const messageService = {
     return total;
   },
   deleteMessage: async (messageId: string, currentUser: IUser) => {
-    const message: IMessage = await messageRepository.getMessage(messageId);
+    const message: IPopulatedMessage = await messageRepository.getMessage(
+      messageId
+    );
 
     if (!message) {
       throw new Error("Message already deleted");
@@ -102,12 +106,12 @@ const messageService = {
 
     socketEmit({
       messageType: ChatMessagesEnum.Delete,
-      object: toReadDto(message),
+      object: populatedMessageToReadDto(message),
       userIds: message.to.map((userId) => userId.toString()),
     });
   },
   getLastConversationsLastMessages: async (
-    command: MessageGetLastConversations,
+    command: IMessageGetLastConversations,
     currentUser: IUser
   ): Promise<{ messages: IPopulatedMessage[]; total: number }> => {
     return await messageRepository.getLastConversationsLastMessages(

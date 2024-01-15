@@ -1,14 +1,16 @@
-import NotificationCreateCommand from "./dto/NotificationCreateCommand";
-import NotificationsGetCommand from "./dto/NotificationsGetCommand";
 import { INotification } from "./notification.model";
 import notificationRepository from "./notification.repository";
 import { socketEmit } from "../../socket";
-import NotificationMessageEnum from "../../globalTypes/NotificationMessageEnum";
-import { toReadDto } from "./dto/NotificationReadDto";
+import {
+  INotificationCreateCommand,
+  INotificationsGetCommand,
+  NotificationMessageEnum,
+} from "roottypes";
+import { notificationToReadDto } from "./notification.toReadDto";
 
 const notificationService = {
   create: async (
-    command: NotificationCreateCommand
+    command: INotificationCreateCommand
   ): Promise<INotification> => {
     const notification: INotification = await notificationRepository.create(
       command
@@ -16,14 +18,14 @@ const notificationService = {
 
     socketEmit({
       messageType: NotificationMessageEnum.Receive,
-      object: toReadDto(notification),
+      object: notificationToReadDto(notification),
       userIds: notification.to.map((userId) => userId.toString()),
     });
 
     return notification;
   },
   getUserNotifications: async (
-    command: NotificationsGetCommand
+    command: INotificationsGetCommand
   ): Promise<{
     notifications: INotification[];
     total: number;

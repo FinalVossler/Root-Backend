@@ -1,22 +1,24 @@
+import {
+  EntityEventNotificationTriggerEnum,
+  INotificationCreateCommand,
+} from "roottypes";
 import emailService from "../email/email.service";
 import { IEntity } from "../entity/entity.model";
 import { IEntityPermission } from "../entityPermission/entityPermission.model";
 import { ITranslatedText } from "../ITranslatedText";
-import NotificationCreateCommand from "../notification/dto/NotificationCreateCommand";
 import notificationService from "../notification/notification.service";
 import { IRole } from "../role/role.model";
 import roleService from "../role/role.service";
 import { IUser } from "../user/user.model";
 import userService from "../user/user.service";
-import {
-  EntityEventNotificationTrigger,
-  IEntityEventNotification,
-} from "./entityEventNotification.model";
+import { IEntityEventNotification } from "./entityEventNotification.model";
+import { IFile } from "../file/file.model";
+import { IModel } from "../model/model.model";
 
 const entityEventNotificationService = {
   notifyUsers: async (
     modelId: string,
-    trigger: EntityEventNotificationTrigger,
+    trigger: EntityEventNotificationTriggerEnum,
     entity: IEntity,
     currentUser: IUser,
     usersIdsToNotify?: string[]
@@ -37,7 +39,7 @@ const entityEventNotificationService = {
 
       const role: IRole = roles[i];
       role.entityPermissions.forEach((entityPermission: IEntityPermission) => {
-        if (entityPermission.model._id.toString() !== modelId) {
+        if ((entityPermission.model as IModel)._id.toString() !== modelId) {
           return;
         }
 
@@ -124,12 +126,13 @@ const entityEventNotificationService = {
 
       emails.forEach((email) => {
         const usersToNotifyForThisEmail: IUser[] = allUsersToNotifiy.filter(
-          (u) => u.role?._id.toString() === email.forRole._id.toString()
+          (u) =>
+            (u.role as IRole)?._id.toString() === email.forRole._id.toString()
         );
 
         // Create the in app notification
-        const notificationCreateCommand: NotificationCreateCommand = {
-          imageId: currentUser.profilePicture?._id?.toString() || "",
+        const notificationCreateCommand: INotificationCreateCommand = {
+          imageId: (currentUser.profilePicture as IFile)?._id?.toString() || "",
           link: email.link,
           toIds: usersToNotifyForThisEmail.map((user) => user._id.toString()),
           text: email.notificationText,

@@ -1,8 +1,6 @@
 import request from "supertest";
-import mongoose from "mongoose";
 
 import app from "../server";
-import ModelCreateCommand from "../elements/model/dto/ModelCreateCommand";
 import fieldRepository from "../elements/field/field.repository";
 import { IField } from "../elements/field/field.model";
 import modelRepository from "../elements/model/model.repository";
@@ -12,19 +10,25 @@ import {
   createCreateFieldCommand,
   createCreateModelCommand,
 } from "./fixtures";
-import ModelReadDto from "../elements/model/dto/ModelReadDto";
 import ResponseDto from "../globalTypes/ResponseDto";
-import { ModelStateType } from "../elements/modelState/modelState.model";
-import ModelUpdateCommand from "../elements/model/dto/ModelUpdateCommand";
 import { IModel } from "../elements/model/model.model";
-import { EventTriggerEnum, EventTypeEnum } from "../elements/event/event.model";
-import ModelsGetCommand from "../elements/model/dto/ModelsGetCommand";
 import PaginationResponse from "../globalTypes/PaginationResponse";
-import ModelsSearchCommand from "../elements/model/dto/ModelsSearchCommand";
+import {
+  EventTriggerEnum,
+  EventTypeEnum,
+  IFieldReadDto,
+  IModelCreateCommand,
+  IModelReadDto,
+  IModelStateReadDto,
+  IModelUpdateCommand,
+  IModelsGetCommand,
+  IModelsSearchCommand,
+  ModelStateTypeEnum,
+} from "roottypes";
 
 jest.setTimeout(50000);
 describe("model router", () => {
-  let createdModelId: mongoose.Types.ObjectId | undefined;
+  let createdModelId: string | undefined;
   let field1: IField | undefined;
   let field2: IField | undefined;
   let modelToUpdate: IModel | undefined;
@@ -50,27 +54,27 @@ describe("model router", () => {
 
   afterAll(async () => {
     if (field1) {
-      await fieldRepository.deleteFields([field1._id]);
+      await fieldRepository.deleteFields([field1._id.toString()]);
     }
     if (field2) {
-      await fieldRepository.deleteFields([field2._id]);
+      await fieldRepository.deleteFields([field2._id.toString()]);
     }
     if (createdModelId) {
       await modelRepository.deleteModels([createdModelId]);
     }
     if (modelToUpdate) {
-      await modelRepository.deleteModels([modelToUpdate._id]);
+      await modelRepository.deleteModels([modelToUpdate._id.toString()]);
     }
     if (modelToDelete) {
-      await modelRepository.deleteModels([modelToDelete._id]);
+      await modelRepository.deleteModels([modelToDelete._id.toString()]);
     }
     if (modelToSearch) {
-      await modelRepository.deleteModels([modelToSearch._id]);
+      await modelRepository.deleteModels([modelToSearch._id.toString()]);
     }
   });
 
   it("should create a model", () => {
-    const command: ModelCreateCommand = {
+    const command: IModelCreateCommand = {
       language: "en",
       modelEvents: [],
       modelFields: [
@@ -87,7 +91,7 @@ describe("model router", () => {
           exclusive: false,
           language: "en",
           name: "state 1",
-          stateType: ModelStateType.ParentState,
+          stateType: ModelStateTypeEnum.ParentState,
         },
       ],
       subStates: [
@@ -95,7 +99,7 @@ describe("model router", () => {
           exclusive: false,
           language: "en",
           name: "sub state 1",
-          stateType: ModelStateType.SubState,
+          stateType: ModelStateTypeEnum.SubState,
         },
       ],
     };
@@ -105,28 +109,31 @@ describe("model router", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<ModelReadDto> = res.body;
+        const result: ResponseDto<IModelReadDto> = res.body;
 
-        createdModelId = result.data?._id;
+        createdModelId = result.data?._id.toString();
 
         expect(result.success).toBeTruthy();
         expect(result.data?.name[0].text).toEqual(command.name);
-        expect(result.data?.modelFields.at(0)?.field._id.toString()).toEqual(
-          field1?._id.toString()
-        );
+        expect(
+          (
+            result.data?.modelFields.at(0)?.field as IFieldReadDto
+          )._id.toString()
+        ).toEqual(field1?._id.toString());
         expect(result.data?.modelFields.length).toEqual(1);
-        expect(result.data?.states?.at(0)?.name.at(0)?.text).toEqual(
-          command.states.at(0)?.name
-        );
-        expect(result.data?.subStates?.at(0)?.name.at(0)?.text).toEqual(
-          command.subStates.at(0)?.name
-        );
+        expect(
+          (result.data?.states as IModelStateReadDto[])?.at(0)?.name.at(0)?.text
+        ).toEqual(command.states.at(0)?.name);
+        expect(
+          (result.data?.subStates as IModelStateReadDto[])?.at(0)?.name.at(0)
+            ?.text
+        ).toEqual(command.subStates.at(0)?.name);
         expect(result.data?.modelEvents?.length).toEqual(0);
       });
   });
 
   it("should update a model", () => {
-    const command: ModelUpdateCommand = {
+    const command: IModelUpdateCommand = {
       _id: modelToUpdate?._id.toString() || "",
       language: "en",
       modelEvents: [
@@ -162,13 +169,13 @@ describe("model router", () => {
           exclusive: false,
           language: "en",
           name: "state 1 updated",
-          stateType: ModelStateType.ParentState,
+          stateType: ModelStateTypeEnum.ParentState,
         },
         {
           exclusive: false,
           language: "en",
           name: "state 2 updated",
-          stateType: ModelStateType.ParentState,
+          stateType: ModelStateTypeEnum.ParentState,
         },
       ],
       subStates: [
@@ -176,7 +183,7 @@ describe("model router", () => {
           exclusive: false,
           language: "en",
           name: "sub state 2 updated",
-          stateType: ModelStateType.SubState,
+          stateType: ModelStateTypeEnum.SubState,
         },
       ],
     };
@@ -186,26 +193,31 @@ describe("model router", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<ModelReadDto> = res.body;
+        const result: ResponseDto<IModelReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.name[0].text).toEqual(command.name);
         expect(result.data?.modelFields?.length).toEqual(
           command.modelFields.length
         );
-        expect(result.data?.modelFields.at(0)?.field._id.toString()).toEqual(
-          command.modelFields.at(0)?.fieldId
+        expect(
+          (
+            result.data?.modelFields.at(0)?.field as IFieldReadDto
+          )._id.toString()
+        ).toEqual(command.modelFields.at(0)?.fieldId);
+        expect((result.data?.states as IModelStateReadDto[])?.length).toEqual(
+          command.states.length
         );
-        expect(result.data?.states?.length).toEqual(command.states.length);
-        expect(result.data?.states?.at(0)?.name.at(0)?.text).toEqual(
-          command.states.at(0)?.name
-        );
-        expect(result.data?.subStates?.length).toEqual(
-          command.subStates.length
-        );
-        expect(result.data?.subStates?.at(0)?.name.at(0)?.text).toEqual(
-          command.subStates.at(0)?.name
-        );
+        expect(
+          (result.data?.states as IModelStateReadDto[])?.at(0)?.name.at(0)?.text
+        ).toEqual(command.states.at(0)?.name);
+        expect(
+          (result.data?.subStates as IModelStateReadDto[])?.length
+        ).toEqual(command.subStates.length);
+        expect(
+          (result.data?.subStates as IModelStateReadDto[])?.at(0)?.name.at(0)
+            ?.text
+        ).toEqual(command.subStates.at(0)?.name);
         expect(result.data?.modelEvents?.length).toEqual(
           command.modelEvents.length
         );
@@ -213,7 +225,7 @@ describe("model router", () => {
   });
 
   it("should get models", () => {
-    const command: ModelsGetCommand = {
+    const command: IModelsGetCommand = {
       paginationCommand: {
         limit: 10,
         page: 1,
@@ -226,7 +238,7 @@ describe("model router", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<ModelReadDto>> = res.body;
+        const result: ResponseDto<PaginationResponse<IModelReadDto>> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.total).toEqual(expect.any(Number));
@@ -259,7 +271,7 @@ describe("model router", () => {
   });
 
   it("should search a model", () => {
-    const command: ModelsSearchCommand = {
+    const command: IModelsSearchCommand = {
       name: modelToSearchName,
       paginationCommand: {
         limit: 10,
@@ -271,7 +283,7 @@ describe("model router", () => {
       .send(command)
       .set("Authorization", "Bearer " + adminToken)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<ModelReadDto>> = res.body;
+        const result: ResponseDto<PaginationResponse<IModelReadDto>> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.total).toEqual(expect.any(Number));

@@ -1,13 +1,13 @@
 import nodemailer from "nodemailer";
+import { IEmailSendCommand } from "roottypes";
 
 import { IUser } from "../user/user.model";
 import { IWebsiteConfiguration } from "../websiteConfiguration/websiteConfiguration.model";
 import websiteConfigurationRepository from "../websiteConfiguration/websiteConfiguration.repository";
-import EmailSendCommand from "./dto/EmailSendCommand";
 import { google } from "googleapis";
 
 const emailService = {
-  sendContactEmail: async (command: EmailSendCommand): Promise<void> => {
+  sendContactEmail: async (command: IEmailSendCommand): Promise<void> => {
     const conf: IWebsiteConfiguration =
       await websiteConfigurationRepository.get();
 

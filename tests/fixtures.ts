@@ -1,16 +1,20 @@
 import mongoose from "mongoose";
 
-import { IUser, SuperRole } from "../elements/user/user.model";
-import { FieldType, IField } from "../elements/field/field.model";
-import ModelCreateCommand from "../elements/model/dto/ModelCreateCommand";
-import { ModelStateType } from "../elements/modelState/modelState.model";
+import { IUser } from "../elements/user/user.model";
+import { IField } from "../elements/field/field.model";
+import {
+  FieldTypeEnum,
+  IModelCreateCommand,
+  ModelStateTypeEnum,
+  SuperRoleEnum,
+} from "roottypes";
 
 export const adminUser: IUser = {
   firstName: "Hamza",
   lastName: "Khalifa",
-  _id: new mongoose.Types.ObjectId("640bf999128f95fd4cffa409"),
+  _id: "640bf999128f95fd4cffa409",
   email: "hk.kh.pro@gmail.com",
-  superRole: SuperRole.SuperAdmin,
+  superRole: SuperRoleEnum.SuperAdmin,
   profilePicture: {
     isImage: true,
     url: "",
@@ -31,13 +35,13 @@ export const createCreateFieldCommand = (fieldName) => ({
     rows: [],
     yearTable: false,
   },
-  type: FieldType.Text,
+  type: FieldTypeEnum.Text,
 });
 
 export const createCreateModelCommand = (
   modelName: string,
   fields: IField[]
-): ModelCreateCommand => ({
+): IModelCreateCommand => ({
   language: "en",
   modelEvents: [],
   modelFields: fields.map((field) => ({
@@ -52,7 +56,7 @@ export const createCreateModelCommand = (
       exclusive: false,
       language: "en",
       name: "state 1",
-      stateType: ModelStateType.ParentState,
+      stateType: ModelStateTypeEnum.ParentState,
     },
   ],
   subStates: [
@@ -60,7 +64,7 @@ export const createCreateModelCommand = (
       exclusive: false,
       language: "en",
       name: "sub state 1",
-      stateType: ModelStateType.SubState,
+      stateType: ModelStateTypeEnum.SubState,
     },
   ],
 });

@@ -3,12 +3,15 @@ import mongoose from "mongoose";
 import MicroFrontendComponent, {
   IMicroFrontendComponent,
 } from "./microFrontendComponent.model";
-import MicroFrontendComponentCreateCommand from "./dto/MicroFrontendComponentCreateCommand";
-import MicroFrontendUpdateCommand from "./dto/MicroFrontendComponentUpdateCommand";
+import {
+  IMicroFrontendComponentCreateCommand,
+  IMicroFrontendComponentUpdateCommand,
+  IMicroFrontendUpdateCommand,
+} from "roottypes";
 
 const microFrontendComponentRepository = {
   create: async (
-    command: MicroFrontendComponentCreateCommand
+    command: IMicroFrontendComponentCreateCommand
   ): Promise<IMicroFrontendComponent> => {
     const microFrontendComponent = await MicroFrontendComponent.create({
       name: command.name,
@@ -17,7 +20,7 @@ const microFrontendComponentRepository = {
     return microFrontendComponent;
   },
   update: async (
-    command: MicroFrontendUpdateCommand
+    command: IMicroFrontendComponentUpdateCommand
   ): Promise<IMicroFrontendComponent> => {
     await MicroFrontendComponent.updateOne(
       { _id: command._id },

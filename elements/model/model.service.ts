@@ -1,25 +1,27 @@
 import mongoose from "mongoose";
 
-import ModelCreateCommand from "./dto/ModelCreateCommand";
-import ModelsGetCommand from "./dto/ModelsGetCommand";
-import ModelsSearchCommand from "./dto/ModelsSearchCommand";
-import ModelUpdateCommand from "./dto/ModelUpdateCommand";
 import { IModel } from "./model.model";
 import modelRepository from "./model.repository";
+import {
+  IModelCreateCommand,
+  IModelUpdateCommand,
+  IModelsGetCommand,
+  IModelsSearchCommand,
+} from "roottypes";
 
 const modelSerivce = {
-  createModel: async (command: ModelCreateCommand): Promise<IModel> => {
+  createModel: async (command: IModelCreateCommand): Promise<IModel> => {
     const model: IModel = await modelRepository.create(command);
 
     return model;
   },
-  updateModel: async (command: ModelUpdateCommand): Promise<IModel> => {
+  updateModel: async (command: IModelUpdateCommand): Promise<IModel> => {
     const model: IModel = await modelRepository.update(command);
 
     return model;
   },
   getModels: async (
-    command: ModelsGetCommand
+    command: IModelsGetCommand
   ): Promise<{ models: IModel[]; total: number }> => {
     const { models, total } = await modelRepository.getModels(command);
 
@@ -29,7 +31,7 @@ const modelSerivce = {
     return await modelRepository.getById(id);
   },
   getModelsByIds: async (
-    command: ModelsGetCommand,
+    command: IModelsGetCommand,
     ids: string[]
   ): Promise<{ models: IModel[]; total: number }> => {
     const { models, total } = await modelRepository.getModelsByIds(
@@ -39,11 +41,11 @@ const modelSerivce = {
 
     return { models, total };
   },
-  deleteModels: async (modelsIds: mongoose.Types.ObjectId[]): Promise<void> => {
+  deleteModels: async (modelsIds: string[]): Promise<void> => {
     await modelRepository.deleteModels(modelsIds);
   },
   search: async (
-    command: ModelsSearchCommand
+    command: IModelsSearchCommand
   ): Promise<{ models: IModel[]; total: number }> => {
     const { models, total } = await modelRepository.search(command);
 

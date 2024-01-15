@@ -11,7 +11,7 @@ export interface IEntity {
   _id: mongoose.Types.ObjectId;
   model: IModel;
   entityFieldValues: IEntityFieldValue[];
-  assignedUsers?: IUser[];
+  assignedUsers?: (IUser | string)[];
   customData?: string;
 
   createdAt: string;
@@ -19,21 +19,21 @@ export interface IEntity {
 }
 
 export interface IEntityFieldValue {
-  field: IField;
+  field: IField | string;
   value: ITranslatedText[];
-  files: IFile[];
+  files: (IFile | string)[];
   tableValues?: IEntityTableFieldCaseValue[];
   yearTableValues?: IEntityYearTableFieldRowValues[];
 }
 
 export interface IEntityTableFieldCaseValue {
-  column: IFieldTableElement;
-  row: IFieldTableElement;
+  column: IFieldTableElement | string;
+  row: IFieldTableElement | string;
   value: ITranslatedText[];
 }
 
 export interface IEntityYearTableFieldRowValues {
-  row: IFieldTableElement;
+  row: IFieldTableElement | string;
   values: {
     year: number;
     value: ITranslatedText[];

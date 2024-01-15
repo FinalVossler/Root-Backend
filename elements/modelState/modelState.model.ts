@@ -1,16 +1,12 @@
 import mongoose from "mongoose";
 
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
-
-export enum ModelStateType {
-  ParentState = "ParentState",
-  SubState = "SubState",
-}
+import { ModelStateTypeEnum } from "roottypes";
 
 export interface IModelState {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   name: ITranslatedText[];
-  stateType: ModelStateType;
+  stateType: ModelStateTypeEnum;
   // Means that it will block entities from showing in other states
   exlusive?: boolean;
 }

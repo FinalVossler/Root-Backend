@@ -1,22 +1,24 @@
 import { Router, Response } from "express";
-import mongoose from "mongoose";
 
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
 import protectMiddleware from "../../middleware/protectMiddleware";
-import EntityCreateCommand from "./dto/EntityCreateCommand";
-import EntityReadDto, { toReadDto } from "./dto/EntityReadDto";
 import entityService from "./entity.service";
 import { IEntity } from "./entity.model";
-import EntityUpdateCommand from "./dto/EntityUpdateCommand";
-import EntitiesGetCommand from "./dto/EntitiesGetCommand";
 import { IUser } from "../user/user.model";
-import EntitiesSearchCommand from "./dto/EntitiesSearchCommand";
 import roleService from "../role/role.service";
-import { StaticPermission } from "../entityPermission/entityPermission.model";
 import entityRepository from "./entity.repository";
-import EntitiesSetCustomDataKeyValueCommand from "./dto/EntitiesSetCustomDataKeyValueCommand";
+import {
+  IEntitiesGetCommand,
+  IEntitiesSearchCommand,
+  IEntitiesSetCustomDataKeyValueCommand,
+  IEntityCreateCommand,
+  IEntityReadDto,
+  IEntityUpdateCommand,
+  StaticPermissionEnum,
+} from "roottypes";
+import { entityToReadDto } from "./entity.toReadDto";
 
 const router = Router();
 
@@ -25,21 +27,26 @@ router.get(
   protectMiddleware,
   async (
     req: ConnectedRequest<any, any, any, { entityId: string }>,
-    res: Response<ResponseDto<EntityReadDto>>
+    res: Response<ResponseDto<IEntityReadDto>>
   ) => {
     const currentUser: IUser = req.user;
 
+    console.log("entityId", req.query.entityId);
+
     const entity: IEntity = await entityService.getById(req.query.entityId);
+    console.log("entity", JSON.stringify(entity));
 
     roleService.checkEntityPermission({
       user: currentUser,
-      staticPermission: StaticPermission.Read,
+      staticPermission: StaticPermissionEnum.Read,
       modelId: entity.model._id.toString(),
     });
 
+    console.log("got the entity and checked permission");
+
     return res.status(200).send({
       success: true,
-      data: toReadDto(entity),
+      data: entityToReadDto(entity),
     });
   }
 );
@@ -48,15 +55,15 @@ router.post(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, EntityCreateCommand, any>,
-    res: Response<ResponseDto<EntityReadDto>>
+    req: ConnectedRequest<any, any, IEntityCreateCommand, any>,
+    res: Response<ResponseDto<IEntityReadDto>>
   ) => {
-    const command: EntityCreateCommand = req.body;
+    const command: IEntityCreateCommand = req.body;
     const currentUser: IUser = req.user;
 
     roleService.checkEntityPermission({
       user: currentUser,
-      staticPermission: StaticPermission.Create,
+      staticPermission: StaticPermissionEnum.Create,
       modelId: req.body.modelId.toString(),
     });
 
@@ -67,7 +74,7 @@ router.post(
 
     return res.status(200).send({
       success: true,
-      data: toReadDto(entity),
+      data: entityToReadDto(entity),
     });
   }
 );
@@ -76,15 +83,15 @@ router.put(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, EntityUpdateCommand, any>,
-    res: Response<ResponseDto<EntityReadDto>>
+    req: ConnectedRequest<any, any, IEntityUpdateCommand, any>,
+    res: Response<ResponseDto<IEntityReadDto>>
   ) => {
-    const command: EntityUpdateCommand = req.body;
+    const command: IEntityUpdateCommand = req.body;
     const currentUser: IUser = req.user;
 
     roleService.checkEntityPermission({
       user: currentUser,
-      staticPermission: StaticPermission.Update,
+      staticPermission: StaticPermissionEnum.Update,
       modelId: req.body.modelId.toString(),
     });
 
@@ -95,7 +102,7 @@ router.put(
 
     return res.status(200).send({
       success: true,
-      data: toReadDto(entity),
+      data: entityToReadDto(entity),
     });
   }
 );
@@ -104,14 +111,14 @@ router.post(
   "/getEntitiesByModel",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, EntitiesGetCommand, any>,
-    res: Response<ResponseDto<PaginationResponse<EntityReadDto>>>
+    req: ConnectedRequest<any, any, IEntitiesGetCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<IEntityReadDto>>>
   ) => {
-    const command: EntitiesGetCommand = req.body;
+    const command: IEntitiesGetCommand = req.body;
 
     roleService.checkEntityPermission({
       user: req.user,
-      staticPermission: StaticPermission.Read,
+      staticPermission: StaticPermissionEnum.Read,
       modelId: command.modelId.toString(),
     });
 
@@ -120,7 +127,7 @@ router.post(
     return res.status(200).send({
       success: true,
       data: {
-        data: entities.map((e) => toReadDto(e)),
+        data: entities.map((e) => entityToReadDto(e)),
         total,
       },
     });
@@ -131,14 +138,14 @@ router.post(
   "/getAssignedEntitiesByModel",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, EntitiesGetCommand, any>,
-    res: Response<ResponseDto<PaginationResponse<EntityReadDto>>>
+    req: ConnectedRequest<any, any, IEntitiesGetCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<IEntityReadDto>>>
   ) => {
-    const command: EntitiesGetCommand = req.body;
+    const command: IEntitiesGetCommand = req.body;
 
     roleService.checkEntityPermission({
       user: req.user,
-      staticPermission: StaticPermission.Read,
+      staticPermission: StaticPermissionEnum.Read,
       modelId: command.modelId.toString(),
     });
 
@@ -149,7 +156,7 @@ router.post(
     return res.status(200).send({
       success: true,
       data: {
-        data: entities.map((e) => toReadDto(e)),
+        data: entities.map((e) => entityToReadDto(e)),
         total,
       },
     });
@@ -160,10 +167,10 @@ router.delete(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, mongoose.Types.ObjectId[], any>,
+    req: ConnectedRequest<any, any, string[], any>,
     res: Response<ResponseDto<void>>
   ) => {
-    const entitiesIds: mongoose.Types.ObjectId[] = req.body;
+    const entitiesIds: string[] = req.body;
 
     if (entitiesIds.length > 0) {
       const entity: IEntity | undefined = await entityRepository.getById(
@@ -176,7 +183,7 @@ router.delete(
 
       roleService.checkEntityPermission({
         user: req.user,
-        staticPermission: StaticPermission.Read,
+        staticPermission: StaticPermissionEnum.Read,
         modelId: entity.model._id.toString(),
       });
 
@@ -194,14 +201,14 @@ router.post(
   "/search",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, EntitiesSearchCommand, any>,
-    res: Response<ResponseDto<PaginationResponse<EntityReadDto>>>
+    req: ConnectedRequest<any, any, IEntitiesSearchCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<IEntityReadDto>>>
   ) => {
-    const command: EntitiesSearchCommand = req.body;
+    const command: IEntitiesSearchCommand = req.body;
 
     roleService.checkEntityPermission({
       user: req.user,
-      staticPermission: StaticPermission.Read,
+      staticPermission: StaticPermissionEnum.Read,
       modelId: command.modelId.toString(),
     });
 
@@ -210,7 +217,7 @@ router.post(
     return res.status(200).send({
       success: true,
       data: {
-        data: entities.map((p) => toReadDto(p)),
+        data: entities.map((p) => entityToReadDto(p)),
         total,
       },
     });
@@ -221,10 +228,10 @@ router.post(
   "/setCustomDataKeyValue",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, EntitiesSetCustomDataKeyValueCommand, any>,
+    req: ConnectedRequest<any, any, IEntitiesSetCustomDataKeyValueCommand, any>,
     res: Response<ResponseDto<any>>
   ) => {
-    const command: EntitiesSetCustomDataKeyValueCommand = req.body;
+    const command: IEntitiesSetCustomDataKeyValueCommand = req.body;
 
     await entityService.setCustomDataKeyValue(command);
 

@@ -8,7 +8,7 @@ export interface IPage {
   _id: mongoose.Types.ObjectId;
   title: ITranslatedText[];
   slug: string;
-  posts: IPost[];
+  posts: (IPost | string)[];
   showInHeader?: boolean;
   showInSideMenu?: boolean;
 }

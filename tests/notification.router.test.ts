@@ -1,16 +1,19 @@
 import request from "supertest";
-import NotificationCreateCommand from "../elements/notification/dto/NotificationCreateCommand";
 import notificationRepository from "../elements/notification/notification.repository";
 import { INotification } from "../elements/notification/notification.model";
-import { IUser, SuperRole } from "../elements/user/user.model";
-import UserCreateCommand from "../elements/user/dtos/UserCreateCommand";
+import { IUser } from "../elements/user/user.model";
 import userRepository from "../elements/user/user.repository";
 import app from "../server";
 import PaginationResponse from "../globalTypes/PaginationResponse";
 import ResponseDto from "../globalTypes/ResponseDto";
-import NotificationReadDto from "../elements/notification/dto/NotificationReadDto";
-import NotificationsGetCommand from "../elements/notification/dto/NotificationsGetCommand";
 import userService from "../elements/user/user.service";
+import {
+  INotificationCreateCommand,
+  INotificationReadDto,
+  INotificationsGetCommand,
+  IUserCreateCommand,
+  SuperRoleEnum,
+} from "roottypes";
 
 jest.setTimeout(50000);
 describe("Notifications", () => {
@@ -21,25 +24,25 @@ describe("Notifications", () => {
   let userForMarkingAllNotificationsAsClicked: IUser | undefined;
 
   beforeAll(async () => {
-    const userCreateCommand: UserCreateCommand = {
+    const userCreateCommand: IUserCreateCommand = {
       email: "notificationTestUser@gmail.com",
       firstName: "notificationTestUserFirstName",
       lastName: "notificationTestUserLastName",
       password: "rootroot",
-      superRole: SuperRole.Normal,
+      superRole: SuperRoleEnum.Normal,
     };
     user = await userRepository.getByEmail(userCreateCommand.email);
     if (!user) {
       user = await userRepository.create(userCreateCommand);
     }
 
-    const userForMakingNotificationsAsReadCreateCommand: UserCreateCommand = {
+    const userForMakingNotificationsAsReadCreateCommand: IUserCreateCommand = {
       email: "notificationTestUserForMarkingNotificationsAsClicked@gmail.com",
       firstName:
         "notificationTestUserForMarkingNotificationsAsClickedFirstName",
       lastName: "notificationTestUserForMarkingNotificationsAsClickedLastName",
       password: "rootroot",
-      superRole: SuperRole.Normal,
+      superRole: SuperRoleEnum.Normal,
     };
     userForMarkingAllNotificationsAsClicked = await userRepository.getByEmail(
       userForMakingNotificationsAsReadCreateCommand.email
@@ -50,7 +53,7 @@ describe("Notifications", () => {
       );
     }
 
-    const command: NotificationCreateCommand = {
+    const command: INotificationCreateCommand = {
       imageId: "",
       link: "https//facebook.com",
       text: [
@@ -81,12 +84,12 @@ describe("Notifications", () => {
     const promises: Promise<void>[] = [];
 
     if (user) {
-      promises.push(userRepository.deleteUsers([user._id]));
+      promises.push(userRepository.deleteUsers([user._id.toString()]));
     }
     if (userForMarkingAllNotificationsAsClicked) {
       promises.push(
         userRepository.deleteUsers([
-          userForMarkingAllNotificationsAsClicked._id,
+          userForMarkingAllNotificationsAsClicked._id.toString(),
         ])
       );
     }
@@ -106,12 +109,12 @@ describe("Notifications", () => {
   });
 
   it("should get userNotifications", () => {
-    const command: NotificationsGetCommand = {
+    const command: INotificationsGetCommand = {
       paginationCommand: {
         limit: 10,
         page: 1,
       },
-      userId: (user as IUser)?._id,
+      userId: (user as IUser)?._id.toString(),
     };
     return request(app)
       .post("/notifications/getUserNotifications")
@@ -119,7 +122,7 @@ describe("Notifications", () => {
       .expect(200)
       .then((res) => {
         const result: ResponseDto<{
-          paginationResponse: PaginationResponse<NotificationReadDto>;
+          paginationResponse: PaginationResponse<INotificationReadDto>;
           totalUnclicked: number;
         }> = res.body;
 
@@ -142,12 +145,12 @@ describe("Notifications", () => {
     expect(result.success).toBeTruthy();
 
     // Now get the notifications, find the one we just marked as clicked by, and make sure that it is indeed clicked by user
-    const command: NotificationsGetCommand = {
+    const command: INotificationsGetCommand = {
       paginationCommand: {
         limit: 10,
         page: 1,
       },
-      userId: (user as IUser)?._id,
+      userId: (user as IUser)?._id.toString(),
     };
 
     return request(app)
@@ -156,7 +159,7 @@ describe("Notifications", () => {
       .expect(200)
       .then((res) => {
         const result: ResponseDto<{
-          paginationResponse: PaginationResponse<NotificationReadDto>;
+          paginationResponse: PaginationResponse<INotificationReadDto>;
           totalUnclicked: number;
         }> = res.body;
 
@@ -188,12 +191,14 @@ describe("Notifications", () => {
     expect(result.success).toBeTruthy();
 
     // Now get the notifications, and make sure all are marked as clicked
-    const command: NotificationsGetCommand = {
+    const command: INotificationsGetCommand = {
       paginationCommand: {
         limit: 10,
         page: 1,
       },
-      userId: (userForMarkingAllNotificationsAsClicked as IUser)?._id,
+      userId: (
+        userForMarkingAllNotificationsAsClicked as IUser
+      )?._id.toString(),
     };
 
     return request(app)
@@ -202,7 +207,7 @@ describe("Notifications", () => {
       .expect(200)
       .then((res) => {
         const result: ResponseDto<{
-          paginationResponse: PaginationResponse<NotificationReadDto>;
+          paginationResponse: PaginationResponse<INotificationReadDto>;
           totalUnclicked: number;
         }> = res.body;
 

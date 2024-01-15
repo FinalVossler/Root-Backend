@@ -3,21 +3,22 @@ import mongoose from "mongoose";
 import Entity, { IEntity } from "./entity.model";
 import Model from "../model/model.model";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
-import Field from "../field/field.model";
+import Field, { IField } from "../field/field.model";
 import File, { IFile } from "../file/file.model";
-import EntityCreateCommand, {
-  EntityFieldValueCommand,
-} from "./dto/EntityCreateCommand";
-import EntityUpdateCommand from "./dto/EntityUpdateCommand";
-import EntitiesGetCommand from "./dto/EntitiesGetCommand";
 import fileRepository from "../file/file.repository";
-import { IUser } from "../user/user.model";
-import EntitiesSearchCommand from "./dto/EntitiesSearchCommand";
-import EntitiesSetCustomDataKeyValueCommand from "./dto/EntitiesSetCustomDataKeyValueCommand";
+import {
+  IEntitiesGetCommand,
+  IEntitiesSearchCommand,
+  IEntitiesSetCustomDataKeyValueCommand,
+  IEntityCreateCommand,
+  IEntityFieldValueCommand,
+  IEntityUpdateCommand,
+} from "roottypes";
+import { IFieldTableElement } from "../fieldTableElement/fieldTableElement.model";
 
 const entityRepository = {
   combineEntityFieldValuesNewFilesAndSelectedOwnFiles: async (
-    entityFieldValues: EntityFieldValueCommand[]
+    entityFieldValues: IEntityFieldValueCommand[]
   ) => {
     const createFilesPromises: Promise<IFile[]>[] = [];
     entityFieldValues.forEach(async (entityFieldValue) => {
@@ -27,10 +28,10 @@ const entityRepository = {
         );
 
         const allFiles = createdFiles.concat(
-          entityFieldValue.files.filter((el) => el._id)
+          (entityFieldValue.files as IFile[]).filter((el) => el._id)
         );
 
-        entityFieldValue.files = allFiles;
+        (entityFieldValue.files as IFile[]) = allFiles;
 
         resolve(allFiles);
       });
@@ -40,7 +41,7 @@ const entityRepository = {
 
     await Promise.all(createFilesPromises);
   },
-  create: async (command: EntityCreateCommand): Promise<IEntity> => {
+  create: async (command: IEntityCreateCommand): Promise<IEntity> => {
     await entityRepository.combineEntityFieldValuesNewFilesAndSelectedOwnFiles(
       command.entityFieldValues
     );
@@ -71,7 +72,7 @@ const entityRepository = {
 
     return entity.populate(populationOptions);
   },
-  update: async (command: EntityUpdateCommand): Promise<IEntity> => {
+  update: async (command: IEntityUpdateCommand): Promise<IEntity> => {
     const entity: IEntity | null = await Entity.findById(command._id).populate(
       populationOptions
     );
@@ -99,7 +100,7 @@ const entityRepository = {
                   newText: entityFieldValue.value,
                   oldValue: entity.entityFieldValues.find(
                     (el) =>
-                      el.field._id.toString() ===
+                      (el.field as IField)._id.toString() ===
                       entityFieldValue.fieldId.toString()
                   )?.value,
                 }),
@@ -113,13 +114,15 @@ const entityRepository = {
                       entity.entityFieldValues
                         .find(
                           (e) =>
-                            e.field._id.toString() ===
+                            (e.field as IField)._id.toString() ===
                             entityFieldValue.fieldId.toString()
                         )
                         ?.tableValues?.find(
                           (t) =>
-                            t.column._id.toString() === tableValue.columnId &&
-                            t.row._id.toString() === tableValue.rowId.toString()
+                            (t.column as IFieldTableElement)._id.toString() ===
+                              tableValue.columnId &&
+                            (t.row as IFieldTableElement)._id.toString() ===
+                              tableValue.rowId.toString()
                         )?.value || [],
                   }),
                 })),
@@ -135,12 +138,12 @@ const entityRepository = {
                           entity.entityFieldValues
                             .find(
                               (e) =>
-                                e.field._id.toString() ===
+                                (e.field as IField)._id.toString() ===
                                 entityFieldValue.fieldId.toString()
                             )
                             ?.yearTableValues?.find(
                               (t) =>
-                                t.row._id.toString() ===
+                                (t.row as IFieldTableElement)._id.toString() ===
                                 yearTableRowValues.rowId.toString()
                             )
                             ?.values.find(
@@ -171,7 +174,7 @@ const entityRepository = {
     return newEntity;
   },
   getEntitiesByModel: async (
-    command: EntitiesGetCommand
+    command: IEntitiesGetCommand
   ): Promise<{ total: number; entities: IEntity[] }> => {
     const entities: IEntity[] = await Entity.find({ model: command.modelId })
       .sort({ createAt: -1 })
@@ -186,20 +189,24 @@ const entityRepository = {
 
     return { entities, total };
   },
-  deleteEntities: async (
-    entitiesIds: mongoose.Types.ObjectId[]
-  ): Promise<void> => {
-    await Entity.deleteMany({ _id: { $in: entitiesIds } });
+  deleteEntities: async (entitiesIds: string[]): Promise<void> => {
+    await Entity.deleteMany({
+      _id: {
+        $in: entitiesIds.map(
+          (entityId) => new mongoose.Types.ObjectId(entityId)
+        ),
+      },
+    });
   },
   getById: async (entityId: string): Promise<IEntity | undefined> => {
     const entity: IEntity | undefined = await (
-      await Entity.findById(entityId).exec()
+      await Entity.findById(new mongoose.Types.ObjectId(entityId)).exec()
     )?.populate(populationOptions);
 
     return entity;
   },
   getAssignedEntitiesByModel: async (
-    command: EntitiesGetCommand
+    command: IEntitiesGetCommand
   ): Promise<{ total: number; entities: IEntity[] }> => {
     const findCondition = {
       assignedUsers: { $exists: true, $ne: [] },
@@ -220,7 +227,7 @@ const entityRepository = {
     return { entities, total };
   },
   search: async (
-    command: EntitiesSearchCommand
+    command: IEntitiesSearchCommand
   ): Promise<{ entities: IEntity[]; total: number }> => {
     const query = Entity.find({
       model: { _id: command.modelId },
@@ -250,7 +257,7 @@ const entityRepository = {
     return { entities, total };
   },
   setCustomDataKeyValue: async (
-    command: EntitiesSetCustomDataKeyValueCommand
+    command: IEntitiesSetCustomDataKeyValueCommand
   ): Promise<void> => {
     const entity: IEntity | undefined = await entityRepository.getById(
       command.entityId.toString()
@@ -265,7 +272,7 @@ const entityRepository = {
       oldCustomData = {};
     }
 
-    const newCustomData: EntitiesSetCustomDataKeyValueCommand["value"] = {
+    const newCustomData: IEntitiesSetCustomDataKeyValueCommand["value"] = {
       ...(oldCustomData || {}),
     };
 

@@ -1,8 +1,8 @@
+import { IWebsiteConfigurationUpdateCommand } from "roottypes";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
 import { IFile } from "../file/file.model";
 import fileRepository from "../file/file.repository";
 import { IUser } from "../user/user.model";
-import WebsiteConfigurationUpdateCommand from "./dto/WebsiteConfigurationUpdateCommand";
 import WebsiteConfiguration, {
   IWebsiteConfiguration,
 } from "./websiteConfiguration.model";
@@ -24,23 +24,22 @@ const websiteConfigurationRepository = {
     return configurations[0];
   },
   update: async (
-    command: WebsiteConfigurationUpdateCommand,
-    currentUser: IUser
+    command: IWebsiteConfigurationUpdateCommand
   ): Promise<IWebsiteConfiguration> => {
     const configuration: IWebsiteConfiguration =
       await websiteConfigurationRepository.get();
 
-    let tabIcon: IFile | undefined = command.tabIcon;
+    let tabIcon: IFile | undefined = command.tabIcon as IFile;
     if (command.tabIcon && !command.tabIcon._id) {
       tabIcon = await fileRepository.create(command.tabIcon);
     }
 
-    let logo1: IFile | undefined = command.logo1;
+    let logo1: IFile | undefined = command.logo1 as IFile;
     if (command.logo1 && !command.logo1._id) {
       logo1 = await fileRepository.create(command.logo1);
     }
 
-    let logo2: IFile | undefined = command.logo2;
+    let logo2: IFile | undefined = command.logo2 as IFile;
     if (command.logo2 && !command.logo2._id) {
       logo2 = await fileRepository.create(command.logo2);
     }

@@ -12,8 +12,8 @@ export interface IMessage {
   numberOfParticipants?: number;
   read: mongoose.Types.ObjectId[];
   readAt?: string[];
-  files: IFile[];
-  reactions?: IReaction[];
+  files: (IFile | string)[];
+  reactions?: (IReaction | string)[];
 
   createdAt: string;
   updatedAt: string;
@@ -106,7 +106,7 @@ MessageSchema.pre("deleteOne", async function (next) {
     .populate("files")) as IMessage;
 
   if (message) {
-    const filesUuids: string[] = message.files.map((f) => f.uuid);
+    const filesUuids: string[] = (message.files as IFile[]).map((f) => f.uuid);
     // TODO: we have file ids. Now we need to delete all in upload care
 
     // Delete all reactions to this message

@@ -1,22 +1,28 @@
 import request from "supertest";
-import { FieldType, IField } from "../elements/field/field.model";
+import { IField } from "../elements/field/field.model";
 
 import app from "../server";
-import FieldCreateCommand from "../elements/field/dto/FieldCreateCommand";
 import ResponseDto from "../globalTypes/ResponseDto";
-import FieldReadDto from "../elements/field/dto/FieldReadDto";
 import fieldRepository from "../elements/field/field.repository";
 import userService from "../elements/user/user.service";
-import FieldUpdateCommand from "../elements/field/dto/FieldUpdateCommand";
-import FieldsGetCommand from "../elements/field/dto/FieldsGetCommand";
 import PaginationResponse from "../globalTypes/PaginationResponse";
-import FieldsSearchCommand from "../elements/field/dto/FieldsSearchCommand";
 import { adminUser } from "./fixtures";
+import {
+  FieldTypeEnum,
+  IFieldCreateCommand,
+  IFieldReadDto,
+  IFieldTableElementReadDto,
+  IFieldUpdateCommand,
+  IFieldsGetCommand,
+  IFieldsSearchCommand,
+} from "roottypes";
+import { IFieldTableElement } from "../elements/fieldTableElement/fieldTableElement.model";
+import FieldTableElement from "../elements/fieldTableElement/fieldTableElement.model";
 
 jest.setTimeout(50000);
 describe("field router", () => {
   const adminToken = userService.generateToken(adminUser);
-  let createdField: FieldReadDto | null;
+  let createdField: IFieldReadDto | null;
   let fieldToUpdate: IField | null;
   let fieldToDelete: IField | null;
   let fieldToSearch: IField | null;
@@ -28,7 +34,7 @@ describe("field router", () => {
       fieldEvents: [],
       language: "en",
       name: "Field to update",
-      type: FieldType.Text,
+      type: FieldTypeEnum.Text,
       tableOptions: {
         columns: [],
         name: "",
@@ -42,7 +48,7 @@ describe("field router", () => {
       fieldEvents: [],
       language: "en",
       name: "Field to delete",
-      type: FieldType.File,
+      type: FieldTypeEnum.File,
       tableOptions: {
         columns: [],
         name: "",
@@ -56,7 +62,7 @@ describe("field router", () => {
       fieldEvents: [],
       language: "en",
       name: "Field to search",
-      type: FieldType.Paragraph,
+      type: FieldTypeEnum.Paragraph,
       tableOptions: {
         columns: [],
         name: "",
@@ -70,7 +76,7 @@ describe("field router", () => {
       fieldEvents: [],
       language: "en",
       name: "Field to copy",
-      type: FieldType.Selector,
+      type: FieldTypeEnum.Selector,
       options: [
         { label: "Option 1", value: "option1" },
         { label: "Option 2", value: "option2" },
@@ -95,21 +101,21 @@ describe("field router", () => {
       await fieldRepository.deleteFields([createdField?._id]);
     }
     if (fieldToUpdate?._id) {
-      await fieldRepository.deleteFields([fieldToUpdate?._id]);
+      await fieldRepository.deleteFields([fieldToUpdate?._id.toString()]);
     }
     if (fieldToSearch?._id) {
-      await fieldRepository.deleteFields([fieldToSearch?._id]);
+      await fieldRepository.deleteFields([fieldToSearch?._id.toString()]);
     }
     if (fieldToCopy?._id) {
-      await fieldRepository.deleteFields([fieldToCopy?._id]);
+      await fieldRepository.deleteFields([fieldToCopy?._id.toString()]);
     }
   });
 
   it("should create a field", () => {
-    const command: FieldCreateCommand = {
+    const command: IFieldCreateCommand = {
       name: "Field 1",
       language: "en",
-      type: FieldType.Text,
+      type: FieldTypeEnum.Text,
       tableOptions: {
         name: "",
         columns: [],
@@ -125,7 +131,7 @@ describe("field router", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<FieldReadDto> = res.body;
+        const result: ResponseDto<IFieldReadDto> = res.body;
 
         createdField = result.data;
         expect(result.data?.name[0].text).toEqual(command.name);
@@ -142,10 +148,10 @@ describe("field router", () => {
   });
 
   it("should update a field", () => {
-    const command: FieldUpdateCommand = {
+    const command: IFieldUpdateCommand = {
       _id: fieldToUpdate?._id.toString() || "",
       name: "Updated field name",
-      type: FieldType.Number,
+      type: FieldTypeEnum.Number,
       canChooseFromExistingFiles: true,
       language: "en",
       fieldEvents: [],
@@ -162,7 +168,7 @@ describe("field router", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<FieldReadDto> = res.body;
+        const result: ResponseDto<IFieldReadDto> = res.body;
 
         expect(result.data?.name[0].text).toEqual(command.name);
         expect(result.data?.type).toEqual(command.type);
@@ -178,7 +184,7 @@ describe("field router", () => {
   });
 
   it("should get fields", () => {
-    const command: FieldsGetCommand = {
+    const command: IFieldsGetCommand = {
       paginationCommand: {
         limit: 10,
         page: 1,
@@ -190,10 +196,12 @@ describe("field router", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<FieldReadDto>> = res.body;
+        const result: ResponseDto<PaginationResponse<IFieldReadDto>> = res.body;
 
         expect(result.data?.total).toEqual(expect.any(Number));
-        expect(Object.values(FieldType)).toContain(result.data?.data[0].type);
+        expect(Object.values(FieldTypeEnum)).toContain(
+          result.data?.data[0].type
+        );
         expect(result?.data?.data).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -222,7 +230,7 @@ describe("field router", () => {
   });
 
   it("should search for field", () => {
-    const command: FieldsSearchCommand = {
+    const command: IFieldsSearchCommand = {
       name: fieldToSearch?.name[0].text || "",
       paginationCommand: {
         limit: 10,
@@ -236,7 +244,7 @@ describe("field router", () => {
       .set("Authorization", "Bearer " + adminToken)
       .send(command)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<FieldReadDto>> = res.body;
+        const result: ResponseDto<PaginationResponse<IFieldReadDto>> = res.body;
 
         expect(result.data?.data[0].name[0].text).toEqual(
           fieldToSearch?.name[0].text
@@ -258,7 +266,7 @@ describe("field router", () => {
       .set("Authorization", "Bearer " + adminToken)
       .send(command)
       .then((res) => {
-        const result: ResponseDto<FieldReadDto[]> = res.body;
+        const result: ResponseDto<IFieldReadDto[]> = res.body;
 
         expect(result.data?.[0].name[0].text).toEqual(
           fieldToCopy?.name[0].text
@@ -274,11 +282,22 @@ describe("field router", () => {
           fieldToCopy?.options?.[0].value
         );
 
-        expect(result?.data?.[0].tableOptions?.columns[0].name[0].text).toEqual(
-          fieldToCopy?.tableOptions?.columns[0].name[0].text
+        expect(
+          (
+            result?.data?.[0].tableOptions
+              ?.columns as IFieldTableElementReadDto[]
+          )[0].name[0].text
+        ).toEqual(
+          (fieldToCopy?.tableOptions?.columns as IFieldTableElement[])[0]
+            .name[0].text
         );
-        expect(result?.data?.[0].tableOptions?.rows[0].name[0].text).toEqual(
-          fieldToCopy?.tableOptions?.rows[0].name[0].text
+        expect(
+          (
+            result?.data?.[0].tableOptions?.rows as IFieldTableElementReadDto[]
+          )[0].name[0].text
+        ).toEqual(
+          (fieldToCopy?.tableOptions?.rows as IFieldTableElement[])[0].name[0]
+            .text
         );
         expect(result?.data?.[0].tableOptions?.name?.[0].text).toEqual(
           fieldToCopy?.tableOptions?.name?.[0].text

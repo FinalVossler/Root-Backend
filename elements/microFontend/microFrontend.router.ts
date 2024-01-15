@@ -6,15 +6,17 @@ import ResponseDto from "../../globalTypes/ResponseDto";
 import { IMicroFrontend } from "./microFrontend.model";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
 import microFrontendService from "./microFrontend.service";
-import { toReadDto } from "./dto/MicroFrontendReadDto";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import roleService from "../role/role.service";
-import { Permission } from "../role/role.model";
-import MicroFrontendCreateCommand from "./dto/MicroFrontendCreateCommand";
-import MicroFrontendReadDto from "./dto/MicroFrontendReadDto";
-import MicroFrontendsGetCommand from "./dto/MicroFrontendsGetCommand";
-import MicroFrontendsSearchCommand from "./dto/MicroFrontendsSearchCommand";
-import MicroFrontendUpdateCommand from "./dto/MicroFrontendUpdateCommand";
+import {
+  IMicroFrontendCreateCommand,
+  IMicroFrontendReadDto,
+  IMicroFrontendUpdateCommand,
+  IMicroFrontendsGetCommand,
+  IMicroFrontendsSearchCommand,
+  PermissionEnum,
+} from "roottypes";
+import { microFrontendToReadDto } from "./microFrontend.toReadDto";
 
 const router = Router();
 
@@ -22,21 +24,21 @@ router.post(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, MicroFrontendCreateCommand, any>,
-    res: Response<ResponseDto<MicroFrontendReadDto>>
+    req: ConnectedRequest<any, any, IMicroFrontendCreateCommand, any>,
+    res: Response<ResponseDto<IMicroFrontendReadDto>>
   ) => {
     roleService.checkPermission({
       user: req.user,
-      permission: Permission.CreateMicroFrontend,
+      permission: PermissionEnum.CreateMicroFrontend,
     });
 
-    const command: MicroFrontendCreateCommand = req.body;
+    const command: IMicroFrontendCreateCommand = req.body;
     const microFrontend: IMicroFrontend =
       await microFrontendService.createMicroFrontend(command);
 
     return res.status(200).send({
       success: true,
-      data: toReadDto(microFrontend),
+      data: microFrontendToReadDto(microFrontend),
     });
   }
 );
@@ -45,22 +47,22 @@ router.put(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, MicroFrontendUpdateCommand, any>,
-    res: Response<ResponseDto<MicroFrontendReadDto>>
+    req: ConnectedRequest<any, any, IMicroFrontendUpdateCommand, any>,
+    res: Response<ResponseDto<IMicroFrontendReadDto>>
   ) => {
     roleService.checkPermission({
       user: req.user,
-      permission: Permission.UpdateMicroFrontend,
+      permission: PermissionEnum.UpdateMicroFrontend,
     });
 
-    const command: MicroFrontendUpdateCommand = req.body;
+    const command: IMicroFrontendUpdateCommand = req.body;
 
     const microFrontend: IMicroFrontend =
       await microFrontendService.updateMicroFrontend(command);
 
     return res.status(200).send({
       success: true,
-      data: toReadDto(microFrontend),
+      data: microFrontendToReadDto(microFrontend),
     });
   }
 );
@@ -68,17 +70,17 @@ router.put(
 router.post(
   "/getMicroFrontends",
   async (
-    req: ConnectedRequest<any, any, MicroFrontendsGetCommand, any>,
-    res: Response<ResponseDto<PaginationResponse<MicroFrontendReadDto>>>
+    req: ConnectedRequest<any, any, IMicroFrontendsGetCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<IMicroFrontendReadDto>>>
   ) => {
-    const command: MicroFrontendsGetCommand = req.body;
+    const command: IMicroFrontendsGetCommand = req.body;
     const { microFrontends, total } =
       await microFrontendService.getMicroFrontends(command);
 
     return res.status(200).send({
       success: true,
       data: {
-        data: microFrontends.map((p) => toReadDto(p)),
+        data: microFrontends.map((p) => microFrontendToReadDto(p)),
         total,
       },
     });
@@ -89,7 +91,7 @@ router.get(
   "/getById",
   async (
     req: ConnectedRequest<any, any, any, { microFrontendId: string }>,
-    res: Response<ResponseDto<MicroFrontendReadDto>>
+    res: Response<ResponseDto<IMicroFrontendReadDto>>
   ) => {
     const id: string = req.query.microFrontendId;
     const microFrontend: IMicroFrontend = await microFrontendService.getById(
@@ -98,7 +100,7 @@ router.get(
 
     return res.status(200).send({
       success: true,
-      data: toReadDto(microFrontend),
+      data: microFrontendToReadDto(microFrontend),
     });
   }
 );
@@ -112,7 +114,7 @@ router.delete(
   ) => {
     roleService.checkPermission({
       user: req.user,
-      permission: Permission.DeleteMicroFrontend,
+      permission: PermissionEnum.DeleteMicroFrontend,
     });
 
     const microFrontendsIds: mongoose.Types.ObjectId[] = req.body;
@@ -129,10 +131,10 @@ router.post(
   "/search",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, MicroFrontendsSearchCommand, any>,
-    res: Response<ResponseDto<PaginationResponse<MicroFrontendReadDto>>>
+    req: ConnectedRequest<any, any, IMicroFrontendsSearchCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<IMicroFrontendReadDto>>>
   ) => {
-    const command: MicroFrontendsSearchCommand = req.body;
+    const command: IMicroFrontendsSearchCommand = req.body;
 
     const { microFrontends, total } = await microFrontendService.search(
       command
@@ -141,7 +143,7 @@ router.post(
     return res.status(200).send({
       success: true,
       data: {
-        data: microFrontends.map((p) => toReadDto(p)),
+        data: microFrontends.map((p) => microFrontendToReadDto(p)),
         total,
       },
     });

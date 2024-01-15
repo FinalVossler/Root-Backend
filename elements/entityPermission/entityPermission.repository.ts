@@ -1,16 +1,18 @@
 import mongoose from "mongoose";
 
 import { IEntityEventNotification } from "../entityEventNotification/entityEventNotification.model";
-import EntityPermissionCreateCommand from "./dto/EntityPermissionCreateCommand";
-import EntityPermissionUpdateCommand from "./dto/EntityPermissionUpdateCommand";
 import EntityPermission, { IEntityPermission } from "./entityPermission.model";
-import EntityEventNotificationCreateCommand from "../entityEventNotification/dto/EntityEventNotificationCreateCommand";
-import EntityEventNotificationUpdateCommand from "../entityEventNotification/dto/EntityEventNotificationUpdateCommand";
 import entityEventNotificationRepository from "../entityEventNotification/entityEventNotification.repository";
+import {
+  IEntityEventNotificationCreateCommand,
+  IEntityEventNotificationUpdateCommand,
+  IEntityPermissionCreateCommand,
+  IEntityPermissionUpdateCommand,
+} from "roottypes";
 
 const entityPermissionRepository = {
   createEntityEventNotifications: async (
-    command: EntityEventNotificationCreateCommand[]
+    command: IEntityEventNotificationCreateCommand[]
   ): Promise<IEntityEventNotification[]> => {
     const entityEventNotificationCreationPromises: Promise<IEntityEventNotification>[] =
       [];
@@ -40,7 +42,7 @@ const entityPermissionRepository = {
     return createdEntityEventNotifications;
   },
   updateEntityEventNotifications: async (
-    command: EntityEventNotificationUpdateCommand[],
+    command: IEntityEventNotificationUpdateCommand[],
     oldEntityEventNotifications: IEntityEventNotification[]
   ): Promise<IEntityEventNotification[]> => {
     const entityEventNotificationUpdatePromises: Promise<IEntityEventNotification>[] =
@@ -82,7 +84,7 @@ const entityPermissionRepository = {
     return updatedEntityEventNotifications;
   },
   create: async (
-    command: EntityPermissionCreateCommand
+    command: IEntityPermissionCreateCommand
   ): Promise<IEntityPermission> => {
     const entityEventNotifications: IEntityEventNotification[] =
       await entityPermissionRepository.createEntityEventNotifications(
@@ -110,7 +112,7 @@ const entityPermissionRepository = {
     return entityPermission;
   },
   updateEntityPermission: async (
-    command: EntityPermissionUpdateCommand,
+    command: IEntityPermissionUpdateCommand,
     oldEntityPermission: IEntityPermission
   ): Promise<IEntityPermission> => {
     // Start events to delete
@@ -127,7 +129,7 @@ const entityPermissionRepository = {
     // End events to delete
 
     // Start events to update
-    const entityEventNotificationsToUpdate: EntityEventNotificationUpdateCommand[] =
+    const entityEventNotificationsToUpdate: IEntityEventNotificationUpdateCommand[] =
       command.entityEventNotifications.filter((toAdd) =>
         oldEntityPermission.entityEventNotifications.find(
           (existing) => existing._id.toString() === toAdd._id
@@ -141,7 +143,7 @@ const entityPermissionRepository = {
     // End events to update
 
     // Start events to create
-    const entityEventNotificationsToCreate: EntityEventNotificationCreateCommand[] =
+    const entityEventNotificationsToCreate: IEntityEventNotificationCreateCommand[] =
       command.entityEventNotifications.filter((toAdd) => !toAdd._id);
 
     const createdEntityEventNotifications: IEntityEventNotification[] =

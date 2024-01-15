@@ -9,7 +9,7 @@ export interface IMicroFrontend {
   _id: mongoose.Types.ObjectId;
   name: string;
   remoteEntry: string;
-  components: IMicroFrontendComponent[];
+  components: (IMicroFrontendComponent | string)[];
 
   createdAt: string;
   updatedAt: string;

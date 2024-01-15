@@ -1,20 +1,24 @@
 import socket from "socket.io";
 import http from "http";
 
-import ChatMessagesEnum from "./globalTypes/ChatMessagesEnum";
-import MessageReadDto from "./elements/message/dtos/MessageReadDto";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
-import NotificationMessageEnum from "./globalTypes/NotificationMessageEnum";
-import NotificationReadDto from "./elements/notification/dto/NotificationReadDto";
-import ReactionReadDto from "./elements/reaction/dtos/ReactionReadDto";
-import SocketTypingStateCommand from "./globalTypes/SocketTypingStateCommand";
 import { IUser } from "./elements/user/user.model";
 import userService from "./elements/user/user.service";
 import emailService from "./elements/email/email.service";
 import websiteConfigurationService from "./elements/websiteConfiguration/websiteConfiguration.service";
 import socketRepository from "./elements/socket/socket.repository";
 import { ISocket } from "./elements/socket/socket.model";
-import { toReadDto } from "./elements/user/dtos/UserReadDto";
+import {
+  ChatMessagesEnum,
+  IMessageReadDto,
+  INotificationReadDto,
+  IPopulatedMessageReadDto,
+  IReactionReadDto,
+  ISocketTypingStateCommand,
+  IUserReadDto,
+  NotificationMessageEnum,
+} from "roottypes";
+import { userToReadDto } from "./elements/user/user.toReadDto";
 
 const socketHandler: {
   io: socket.Server<
@@ -52,10 +56,10 @@ const init = (server: http.Server) => {
       );
       if (userSocket) {
         userSocket.typingStates.forEach((typingState) => {
-          const typingStateCommand: SocketTypingStateCommand = {
+          const typingStateCommand: ISocketTypingStateCommand = {
             isTyping: false,
             toUsersIds: typingState.toUsersIds,
-            user: toReadDto(userSocket.user),
+            user: userToReadDto(userSocket.user) as IUserReadDto,
             userId: userId,
           };
 
@@ -73,7 +77,7 @@ const init = (server: http.Server) => {
     // Listening to typing states
     socket.on(
       ChatMessagesEnum.SendTypingState,
-      async (socketTypingStateCommand: SocketTypingStateCommand) => {
+      async (socketTypingStateCommand: ISocketTypingStateCommand) => {
         if (socketTypingStateCommand.isTyping) {
           await socketRepository.addTypingState(
             socketTypingStateCommand.userId,
@@ -105,11 +109,11 @@ export const socketEmit = async ({
   userIds: string[];
   messageType: ChatMessagesEnum | NotificationMessageEnum;
   object:
-    | NotificationReadDto
-    | MessageReadDto
-    | SocketTypingStateCommand
-    | { reaction: ReactionReadDto; message: MessageReadDto }
-    | { lastMarkedMessageAsRead: MessageReadDto | null; by: IUser };
+    | INotificationReadDto
+    | IPopulatedMessageReadDto
+    | ISocketTypingStateCommand
+    | { reaction: IReactionReadDto; message: IMessageReadDto }
+    | { lastMarkedMessageAsRead: IPopulatedMessageReadDto | null; by: IUser };
 }) => {
   const { onlineUsersIds, onlineUsersSockets } =
     await socketRepository.getOnlineUsers();

@@ -1,17 +1,20 @@
 import { IFile } from "../file/file.model";
 import fileRepository from "../file/file.repository";
-import PostCreateCommand from "./dto/PostCreateCommand";
-import PostsSearchCommand from "./dto/PostsSearchCommand";
-import PostsGetCommand from "./dto/PostsGetCommand";
-import Post, { IPost, PostVisibility } from "./post.model";
+import Post, { IPost } from "./post.model";
 import File from "../file/file.model";
 import { IUser } from "../user/user.model";
-import PostUpdateCommand from "./dto/PostUpdateCommand";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
+import {
+  IPostCreateCommand,
+  IPostUpdateCommand,
+  IPostsGetCommand,
+  IPostsSearchCommand,
+  PostVisibilityEnum,
+} from "roottypes";
 
 const postRepository = {
   create: async (
-    command: PostCreateCommand,
+    command: IPostCreateCommand,
     currentUser: IUser
   ): Promise<IPost> => {
     const createdFiles: IFile[] = await fileRepository.createFiles(
@@ -19,14 +22,16 @@ const postRepository = {
       currentUser
     );
 
-    const allFiles = createdFiles.concat(command.files.filter((el) => el._id));
+    const allFiles = createdFiles.concat(
+      (command.files as IFile[]).filter((el) => el._id)
+    );
 
     const post = await Post.create({
       title: [{ text: command.title, language: command.language }],
       subTitle: [{ text: command.subTitle, language: command.language }],
       content: [{ text: command.content, language: command.language }],
       files: allFiles.map((f) => f._id),
-      posterId: command.posterId,
+      poster: command.posterId,
       visibility: command.visibility,
       design: command.design,
       children: command.children,
@@ -38,13 +43,15 @@ const postRepository = {
     return post;
   },
   getUserPosts: async (
-    command: PostsGetCommand,
+    command: IPostsGetCommand,
     currentUser: IUser
   ): Promise<{ posts: IPost[]; total: number }> => {
     let visibilities = [...command.visibilities];
     // if the current user isn't the same as the user making the request, then we must force removing the "private" visibility from the request
     if (currentUser._id.toString() !== command.userId.toString()) {
-      visibilities = visibilities.filter((el) => el !== PostVisibility.Private);
+      visibilities = visibilities.filter(
+        (el) => el !== PostVisibilityEnum.Private
+      );
     }
 
     const posts: IPost[] = await Post.find({
@@ -67,7 +74,7 @@ const postRepository = {
     return { posts, total };
   },
   search: async (
-    command: PostsSearchCommand
+    command: IPostsSearchCommand
   ): Promise<{ posts: IPost[]; total: number }> => {
     const query = Post.find({
       title: { $elemMatch: { text: { $regex: command.title } } },
@@ -94,7 +101,7 @@ const postRepository = {
     return await Post.findById(postId).populate(populationOptions).exec();
   },
   update: async (
-    command: PostUpdateCommand,
+    command: IPostUpdateCommand,
     oldPost: IPost,
     currentUser: IUser
   ): Promise<IPost | null> => {
@@ -104,7 +111,7 @@ const postRepository = {
     );
 
     const allFiles: IFile[] = createdFiles.concat(
-      command.files.filter((el) => el._id)
+      (command.files as IFile[]).filter((el) => el._id)
     );
 
     await Post.updateOne(

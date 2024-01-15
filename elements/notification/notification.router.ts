@@ -4,24 +4,24 @@ import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
 import ResponseDto from "../../globalTypes/ResponseDto";
 import protectMiddleware from "../../middleware/protectMiddleware";
-import NotificationReadDto, { toReadDto } from "./dto/NotificationReadDto";
-import NotificationsGetCommand from "./dto/NotificationsGetCommand";
 import notificationService from "./notification.service";
+import { INotificationReadDto, INotificationsGetCommand } from "roottypes";
+import { notificationToReadDto } from "./notification.toReadDto";
 
 const router = Router();
 
 router.post(
   "/getUserNotifications",
   async (
-    req: ConnectedRequest<any, any, NotificationsGetCommand, any>,
+    req: ConnectedRequest<any, any, INotificationsGetCommand, any>,
     res: Response<
       ResponseDto<{
-        paginationResponse: PaginationResponse<NotificationReadDto>;
+        paginationResponse: PaginationResponse<INotificationReadDto>;
         totalUnclicked: number;
       }>
     >
   ) => {
-    const command: NotificationsGetCommand = req.body;
+    const command: INotificationsGetCommand = req.body;
     const { notifications, total, totalUnclicked } =
       await notificationService.getUserNotifications(command);
 
@@ -30,7 +30,7 @@ router.post(
       data: {
         totalUnclicked,
         paginationResponse: {
-          data: notifications.map((p) => toReadDto(p)),
+          data: notifications.map((p) => notificationToReadDto(p)),
           total,
         },
       },

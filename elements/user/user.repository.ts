@@ -1,21 +1,23 @@
 import mongoose from "mongoose";
 
-import UserUpdateProfilePictureCommand from "./dtos/UserUpdateProfilePictureCommand";
-import UserRegisterCommand from "./dtos/UserRegisterCommand";
-import UserUpdateCommand from "./dtos/UserUpdateCommand";
 import fileRepository from "../file/file.repository";
 
 import User, { IUser } from "./user.model";
 import { IFile } from "../file/file.model";
-import UserCreateCommand from "./dtos/UserCreateCommand";
-import UsersGetCommand from "./dtos/UsersGetCommand";
-import UsersSearchCommand from "./dtos/UsersSearchCommand";
-import ChatGetContactsCommand from "./dtos/ChatGetContactsCommand";
-import UserSearchByRoleCommand from "./dtos/UserSearchByRoleCommand";
+import {
+  IChatGetContactsCommand,
+  IUserCreateCommand,
+  IUserRegisterCommand,
+  IUserSearchByRoleCommand,
+  IUserUpdateCommand,
+  IUserUpdateProfilePictureCommand,
+  IUsersGetCommand,
+  IUsersSearchCommand,
+} from "roottypes";
 
 const userRepository = {
   chatGetContacts: async (
-    command: ChatGetContactsCommand,
+    command: IChatGetContactsCommand,
     currentUser: IUser
   ): Promise<{ users: IUser[]; total: number }> => {
     const users = await User.find({
@@ -34,7 +36,7 @@ const userRepository = {
 
     return { users, total };
   },
-  save: async (command: UserRegisterCommand): Promise<IUser> => {
+  save: async (command: IUserRegisterCommand): Promise<IUser> => {
     const user: IUser = (await User.create(command)) as IUser;
 
     return user;
@@ -63,7 +65,7 @@ const userRepository = {
   deleteByEmail: async (email: string) => {
     await User.deleteOne({ email }).exec();
   },
-  update: async (command: UserUpdateCommand): Promise<IUser> => {
+  update: async (command: IUserUpdateCommand): Promise<IUser> => {
     await User.updateOne(
       { _id: command._id },
       {
@@ -83,7 +85,7 @@ const userRepository = {
     return user;
   },
   updateProfilePicture: async (
-    command: UserUpdateProfilePictureCommand,
+    command: IUserUpdateProfilePictureCommand,
     currentUser: IUser
   ): Promise<IUser> => {
     let picture: IFile | null = null;
@@ -125,7 +127,7 @@ const userRepository = {
       }
     );
   },
-  create: async (command: UserCreateCommand): Promise<IUser> => {
+  create: async (command: IUserCreateCommand): Promise<IUser> => {
     const user: IUser = await User.create({
       firstName: command.firstName,
       lastName: command.lastName,
@@ -137,7 +139,7 @@ const userRepository = {
     return await userRepository.getById(user._id.toString());
   },
   getUsers: async (
-    command: UsersGetCommand
+    command: IUsersGetCommand
   ): Promise<{ total: number; users: IUser[] }> => {
     const findQuery = command.roleId
       ? { role: new mongoose.Types.ObjectId(command.roleId) }
@@ -164,15 +166,15 @@ const userRepository = {
 
     return users;
   },
-  deleteUsers: async (usersIds: mongoose.Types.ObjectId[]): Promise<void> => {
+  deleteUsers: async (usersIds: string[]): Promise<void> => {
     for (let i = 0; i < usersIds.length; i++) {
-      await User.deleteOne({ _id: usersIds[i] });
+      await User.deleteOne({ _id: new mongoose.Types.ObjectId(usersIds[i]) });
     }
 
     return;
   },
   search: async (
-    command: UsersSearchCommand,
+    command: IUsersSearchCommand,
     additionalConditions: any = {}
   ): Promise<{ users: IUser[]; total: number }> => {
     const query = User.find({
@@ -206,7 +208,7 @@ const userRepository = {
     return users;
   },
   searchByRole: async (
-    command: UserSearchByRoleCommand
+    command: IUserSearchByRoleCommand
   ): Promise<{ users: IUser[]; total: number }> => {
     const { users, total } = await userRepository.search(
       command.searchCommand,

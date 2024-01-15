@@ -3,18 +3,20 @@ import mongoose from "mongoose";
 import { IRole } from "./role.model";
 import Role from "./role.model";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
-import RoleCreateCommand from "./dto/RoleCreateCommand";
-import RoleUpdateCommand from "./dto/RoleUpdateCommand";
-import RolesGetCommand from "./dto/RolesGetCommand";
-import RolesSearchCommand from "./dto/RolesSearchCommand";
 import { IEntityPermission } from "../entityPermission/entityPermission.model";
 import entityPermissionRepository from "../entityPermission/entityPermission.repository";
-import EntityPermissionCreateCommand from "../entityPermission/dto/EntityPermissionCreateCommand";
-import EntityPermissionUpdateCommand from "../entityPermission/dto/EntityPermissionUpdateCommand";
+import {
+  IEntityPermissionCreateCommand,
+  IEntityPermissionUpdateCommand,
+  IRoleCreateCommand,
+  IRoleUpdateCommand,
+  IRolesGetCommand,
+  IRolesSearchCommand,
+} from "roottypes";
 
 const roleRepository = {
   createEntityPermissions: async (
-    command: EntityPermissionCreateCommand[]
+    command: IEntityPermissionCreateCommand[]
   ): Promise<IEntityPermission[]> => {
     const entityPermissionsCreationPromises: Promise<IEntityPermission>[] = [];
     const createdEntityPermissions: IEntityPermission[] = [];
@@ -41,7 +43,7 @@ const roleRepository = {
     return createdEntityPermissions;
   },
   updateEntityPermissions: async (
-    commands: (EntityPermissionUpdateCommand | undefined)[],
+    commands: (IEntityPermissionUpdateCommand | undefined)[],
     oldEntityPermissions: IEntityPermission[]
   ): Promise<IEntityPermission[]> => {
     const entityPermissionsUpdatePromises: Promise<IEntityPermission>[] = [];
@@ -81,7 +83,7 @@ const roleRepository = {
 
     return updatedEntityPermissions;
   },
-  create: async (command: RoleCreateCommand): Promise<IRole> => {
+  create: async (command: IRoleCreateCommand): Promise<IRole> => {
     const createdEntityPermissions: IEntityPermission[] =
       await roleRepository.createEntityPermissions(command.entityPermissions);
 
@@ -100,7 +102,7 @@ const roleRepository = {
     }
     return createdRole;
   },
-  update: async (command: RoleUpdateCommand): Promise<IRole> => {
+  update: async (command: IRoleUpdateCommand): Promise<IRole> => {
     const role: IRole | null = await Role.findById(command._id).populate(
       populationOptions
     );
@@ -110,13 +112,14 @@ const roleRepository = {
     }
 
     // Start entity permissions to delete
-    const entityPermissionsToDelete: IEntityPermission[] =
-      role.entityPermissions.filter(
-        (existing) =>
-          !command.entityPermissions.find(
-            (toAdd) => toAdd._id === existing._id.toString()
-          )
-      );
+    const entityPermissionsToDelete: IEntityPermission[] = (
+      role.entityPermissions as IEntityPermission[]
+    ).filter(
+      (existing) =>
+        !command.entityPermissions.find(
+          (toAdd) => toAdd._id === existing._id.toString()
+        )
+    );
 
     await entityPermissionRepository.deleteByIds(
       entityPermissionsToDelete.map((e) => e._id.toString())
@@ -124,18 +127,19 @@ const roleRepository = {
     // End entity permissions to delete
 
     // Start entity permissions to update
-    const entityPermissionsToUpdate: IEntityPermission[] =
-      role.entityPermissions.filter((existing) =>
-        command.entityPermissions.find(
-          (toAdd) => toAdd._id === existing._id.toString()
-        )
-      );
+    const entityPermissionsToUpdate: IEntityPermission[] = (
+      role.entityPermissions as IEntityPermission[]
+    ).filter((existing) =>
+      command.entityPermissions.find(
+        (toAdd) => toAdd._id === existing._id.toString()
+      )
+    );
 
     const entityPermissionsUpdateCommands: (
-      | EntityPermissionUpdateCommand
+      | IEntityPermissionUpdateCommand
       | undefined
     )[] = entityPermissionsToUpdate.map((entityPermission) => {
-      const updateCommand: EntityPermissionUpdateCommand | undefined =
+      const updateCommand: IEntityPermissionUpdateCommand | undefined =
         command.entityPermissions.find(
           (el) => el._id?.toString() === entityPermission._id.toString()
         );
@@ -150,7 +154,7 @@ const roleRepository = {
     // End entity permissions to update
 
     // Start entity permissions to create
-    const entityPermissionsToCreate: EntityPermissionCreateCommand[] =
+    const entityPermissionsToCreate: IEntityPermissionCreateCommand[] =
       command.entityPermissions.filter((toAdd) => !toAdd._id);
 
     const createdEntityPermissions: IEntityPermission[] =
@@ -182,7 +186,7 @@ const roleRepository = {
     return newRole as IRole;
   },
   getRoles: async (
-    command: RolesGetCommand
+    command: IRolesGetCommand
   ): Promise<{ total: number; roles: IRole[] }> => {
     const roles: IRole[] = await Role.find({})
       .sort({ createdAt: -1 })
@@ -197,15 +201,15 @@ const roleRepository = {
 
     return { roles, total };
   },
-  deleteRoles: async (rolesIds: mongoose.Types.ObjectId[]): Promise<null> => {
+  deleteRoles: async (rolesIds: string[]): Promise<null> => {
     for (let i = 0; i < rolesIds.length; i++) {
-      await Role.deleteOne({ _id: rolesIds[i] });
+      await Role.deleteOne({ _id: new mongoose.Types.ObjectId(rolesIds[i]) });
     }
 
     return null;
   },
   search: async (
-    command: RolesSearchCommand
+    command: IRolesSearchCommand
   ): Promise<{ roles: IRole[]; total: number }> => {
     const query = Role.find({
       name: { $elemMatch: { text: { $regex: command.name } } },
@@ -237,7 +241,7 @@ const roleRepository = {
   },
 };
 
-const populationOptions = [
+export const populationOptions = [
   {
     path: "entityPermissions",
     model: "entityPermission",

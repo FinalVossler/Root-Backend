@@ -1,19 +1,21 @@
 import mongoose from "mongoose";
 import moment from "moment";
 
-import MessageGetBetweenUsersCommand from "./dtos/MessageGetBetweenUsersCommand";
-import MessageSendCommand from "./dtos/MessageSendCommand";
 import Message, { IMessage, IPopulatedMessage } from "./message.model";
 import { IFile } from "../file/file.model";
 import fileRepository from "../file/file.repository";
 import { IUser } from "../user/user.model";
-import MessageGetLastConversations from "./dtos/MessageGetLastConversations";
+import {
+  IMessageGetBetweenUsersCommand,
+  IMessageGetLastConversations,
+  IMessageSendCommand,
+} from "roottypes";
 
 const getReadAtByUser = (userId: string) => userId + "-" + moment().toString();
 
 const messageRepository = {
   sendMessage: async (
-    command: MessageSendCommand,
+    command: IMessageSendCommand,
     currentUser: IUser
   ): Promise<IPopulatedMessage> => {
     let createdFiles: IFile[] = await fileRepository.createFiles(
@@ -37,28 +39,18 @@ const messageRepository = {
     return populatedMessage;
   },
   getMessagesBetweenUsers: async (
-    command: MessageGetBetweenUsersCommand
-  ): Promise<IMessage[]> => {
-    const messages: IMessage[] = (await Message.find({
+    command: IMessageGetBetweenUsersCommand
+  ): Promise<IPopulatedMessage[]> => {
+    const messages: IPopulatedMessage[] = await Message.find({
       to: { $all: command.usersIds },
       numberOfParticipants: command.usersIds.length,
     })
-      .populate("files")
-      .populate("reactions")
       .sort({ createdAt: -1 })
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
       .limit(command.paginationCommand.limit)
-      .populate({
-        path: "reactions",
-        model: "reaction",
-        populate: {
-          path: "user",
-          model: "user",
-        },
-      })
-      .exec()) as IMessage[];
+      .populate(populationOptions);
 
     return messages.reverse();
   },
@@ -71,8 +63,8 @@ const messageRepository = {
   },
   markAllConversationMessagesAsReadByUser: async (
     to: string[],
-    userId: mongoose.Types.ObjectId
-  ): Promise<IMessage | null> => {
+    userId: string
+  ): Promise<IPopulatedMessage | null> => {
     await Message.updateMany(
       {
         to: {
@@ -85,14 +77,14 @@ const messageRepository = {
       }
     );
 
-    const command: MessageGetBetweenUsersCommand = {
+    const command: IMessageGetBetweenUsersCommand = {
       paginationCommand: {
         limit: 1,
         page: 1,
       },
-      usersIds: to.map((el) => new mongoose.Types.ObjectId(el)),
+      usersIds: to,
     };
-    const lastMarkedMessageAsRead: IMessage[] =
+    const lastMarkedMessageAsRead: IPopulatedMessage[] =
       await messageRepository.getMessagesBetweenUsers(command);
 
     if (lastMarkedMessageAsRead.length > 0) {
@@ -102,7 +94,7 @@ const messageRepository = {
     }
   },
   getTotalMessages: async (
-    command: MessageGetBetweenUsersCommand
+    command: IMessageGetBetweenUsersCommand
   ): Promise<number> => {
     const count: number = await Message.find({
       to: { $all: command.usersIds },
@@ -126,14 +118,14 @@ const messageRepository = {
   deleteMessage: async (messageId: string) => {
     await Message.deleteOne({ _id: messageId }).exec();
   },
-  getMessage: async (messageId: string): Promise<IMessage> => {
-    const message: IMessage = (await Message.findById(
+  getMessage: async (messageId: string): Promise<IPopulatedMessage> => {
+    const message: IPopulatedMessage = (await Message.findById(
       messageId
-    ).exec()) as IMessage;
+    ).populate(populationOptions)) as IPopulatedMessage;
     return message;
   },
   getLastConversationsLastMessages: async (
-    command: MessageGetLastConversations,
+    command: IMessageGetLastConversations,
     currentUser: IUser
   ): Promise<{ messages: IPopulatedMessage[]; total: number }> => {
     const lastConversationsLastMessagesIds = await Message.aggregate([

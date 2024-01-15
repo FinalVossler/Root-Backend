@@ -1,14 +1,17 @@
 import mongoose from "mongoose";
 
 import { IUser } from "../user/user.model";
-import FileGetUnownedAndSelectedFilesCommand from "./dto/FileGetUnownedAndSelectedFilesCommand";
-import FileGetUserAndSelectedFilesCommand from "./dto/FileGetUserAndSelectedFilesCommand";
 import File, { IFile } from "./file.model";
+import {
+  IFileCommand,
+  IFileGetUnownedAndSelectedFilesCommand,
+  IFileGetUserAndSelectedFilesCommand,
+} from "roottypes";
 
 const fileRepository = {
   getUserFiles: async (
     user: IUser,
-    command: FileGetUserAndSelectedFilesCommand
+    command: IFileGetUserAndSelectedFilesCommand
   ): Promise<{ files: IFile[]; total: number }> => {
     const files: IFile[] = await File.find({ ownerId: user._id })
       .skip(
@@ -33,7 +36,7 @@ const fileRepository = {
     return { files, total };
   },
   getUnownedFiles: async (
-    command: FileGetUnownedAndSelectedFilesCommand
+    command: IFileGetUnownedAndSelectedFilesCommand
   ): Promise<{ files: IFile[]; total: number }> => {
     const files: IFile[] = await File.find({ ownerId: null })
       .skip(
@@ -65,7 +68,7 @@ const fileRepository = {
     return file;
   },
   create: async (
-    file: IFile,
+    file: IFileCommand,
     currentUser: IUser | null = null
   ): Promise<IFile> => {
     if (file._id) {
@@ -75,7 +78,7 @@ const fileRepository = {
       }
     }
 
-    file.ownerId = currentUser ? currentUser?._id : undefined;
+    file.ownerId = currentUser ? currentUser?._id.toString() : undefined;
 
     // In case the file that was passed has an id, but isn't found in the database
     if (file._id) {
@@ -86,7 +89,7 @@ const fileRepository = {
     return newFile;
   },
   createFiles: async (
-    files: IFile[],
+    files: IFileCommand[],
     currentUser: IUser | null = null
   ): Promise<IFile[]> => {
     let createdFiles: IFile[] = [];

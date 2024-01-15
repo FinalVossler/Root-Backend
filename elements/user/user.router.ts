@@ -1,34 +1,34 @@
 import express, { Response, Request } from "express";
-import mongoose from "mongoose";
 
 import ResponseDto from "../../globalTypes/ResponseDto";
-import UserLoginCommand from "./dtos/UserLoginCommand";
-import UserRegisterCommand from "./dtos/UserRegisterCommand";
 import userService from "./user.service";
-import UserReadDto, {
-  UserReadDtoWithLastReadMessageInConversation,
-  toReadDto,
-  toReadDtoWithLastReadMessageInConversation,
-} from "./dtos/UserReadDto";
-import UserUpdateCommand from "./dtos/UserUpdateCommand";
-import {
-  IUser,
-  SuperRole,
-  UserWithLastReadMessageInConversation,
-} from "./user.model";
+import { IUser, IUserWithLastReadMessageInConversation } from "./user.model";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import { IFile } from "../file/file.model";
-import UserChangePasswordCommand from "./dtos/UserChangePasswordCommand";
-import UserForgotPasswordChangePasswordCommand from "./dtos/UserForgotPasswordChangePasswordCommand";
-import UserCreateCommand from "./dtos/UserCreateCommand";
-import UsersGetCommand from "./dtos/UsersGetCommand";
-import PaginationResponse from "../../globalTypes/PaginationResponse";
-import UsersSearchCommand from "./dtos/UsersSearchCommand";
-import ChatGetContactsCommand from "./dtos/ChatGetContactsCommand";
 import roleService from "../role/role.service";
-import { Permission } from "../role/role.model";
-import UserSearchByRoleCommand from "./dtos/UserSearchByRoleCommand";
+import {
+  IChatGetContactsCommand,
+  IFileCommand,
+  IUserChangePasswordCommand,
+  IUserCreateCommand,
+  IUserForgotPasswordChangePasswordCommand,
+  IUserLoginCommand,
+  IUserReadDto,
+  IUserReadDtoWithLastReadMessageInConversationReadDto,
+  IUserRegisterCommand,
+  IUserSearchByRoleCommand,
+  IUserUpdateCommand,
+  IUsersGetCommand,
+  IUsersSearchCommand,
+  PermissionEnum,
+  SuperRoleEnum,
+} from "roottypes";
+import PaginationResponse from "../../globalTypes/PaginationResponse";
+import {
+  userToReadDto,
+  userToReadDtoWithLastReadMessageInConversation,
+} from "./user.toReadDto";
 
 const router = express.Router();
 
@@ -36,10 +36,10 @@ router.post(
   "/getChatContacts",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, ChatGetContactsCommand, any>,
-    res: Response<ResponseDto<PaginationResponse<UserReadDto>>>
+    req: ConnectedRequest<any, any, IChatGetContactsCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<IUserReadDto>>>
   ) => {
-    const command: ChatGetContactsCommand = req.body;
+    const command: IChatGetContactsCommand = req.body;
     const { users, total } = await userService.chatGetContacts(
       command,
       req.user
@@ -48,25 +48,27 @@ router.post(
     return res.status(200).json({
       success: true,
       data: {
-        data: users.map((user) => toReadDto(user)),
+        data: users.map(
+          (user) => userToReadDto(user) as IUserReadDto as IUserReadDto
+        ),
         total,
       },
     });
   }
 );
 
-router.get(
+router.post(
   "/getContactsByIds",
   async (
-    req: ConnectedRequest<any, any, any, { usersIds: string }>,
-    res: Response<ResponseDto<UserReadDto[]>>
+    req: ConnectedRequest<any, any, { usersIds: string[] }, any>,
+    res: Response<ResponseDto<IUserReadDto[]>>
   ) => {
-    const usersIds: string[] = req.query.usersIds.split(",");
+    const usersIds: string[] = req.body.usersIds;
     const users: IUser[] = await userService.getContactsByIds(usersIds);
 
     return res.status(200).json({
       success: true,
-      data: users.map((u) => toReadDto(u)),
+      data: users.map((u) => userToReadDto(u) as IUserReadDto),
     });
   }
 );
@@ -75,32 +77,34 @@ router.get(
   "/getUser",
   async (
     req: ConnectedRequest<any, any, any, { userId: string }>,
-    res: Response<ResponseDto<UserReadDto>>
+    res: Response<ResponseDto<IUserReadDto>>
   ) => {
     const user: IUser = await userService.getById(req.query.userId);
 
     return res.status(200).json({
       success: true,
-      data: toReadDto(user),
+      data: userToReadDto(user) as IUserReadDto,
     });
   }
 );
 
-router.get(
+router.post(
   "/getUsersWithTheirLastReadMessagesInConversation",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, any, { "usersIds[]": string[] }>,
-    res: Response<ResponseDto<UserReadDtoWithLastReadMessageInConversation[]>>
+    req: ConnectedRequest<any, any, { usersIds: string[] }, any>,
+    res: Response<
+      ResponseDto<IUserReadDtoWithLastReadMessageInConversationReadDto[]>
+    >
   ) => {
-    const users: UserWithLastReadMessageInConversation[] =
+    const users: IUserWithLastReadMessageInConversation[] =
       await userService.getUsersWithTheirLastReadMessagesInConversation(
-        req.query["usersIds[]"]
+        req.body.usersIds
       );
 
     return res.status(200).json({
       success: true,
-      data: users.map((u) => toReadDtoWithLastReadMessageInConversation(u)),
+      data: users.map((u) => userToReadDtoWithLastReadMessageInConversation(u)),
     });
   }
 );
@@ -110,7 +114,7 @@ router.get(
   protectMiddleware,
   async (
     req: ConnectedRequest<any, any, any, any>,
-    res: Response<ResponseDto<UserReadDto>>
+    res: Response<ResponseDto<IUserReadDto>>
   ) => {
     const user: IUser | undefined = req.user;
 
@@ -120,7 +124,7 @@ router.get(
 
     return res.status(200).json({
       success: true,
-      data: toReadDto(user),
+      data: userToReadDto(user) as IUserReadDto,
     });
   }
 );
@@ -130,11 +134,11 @@ router.post(
   async (
     req: Request<
       any,
-      ResponseDto<{ token: string; expiresIn: string; user: UserReadDto }>,
-      UserRegisterCommand
+      ResponseDto<{ token: string; expiresIn: string; user: IUserReadDto }>,
+      IUserRegisterCommand
     >,
     res: Response<
-      ResponseDto<{ token: string; expiresIn: string; user: UserReadDto }>
+      ResponseDto<{ token: string; expiresIn: string; user: IUserReadDto }>
     >
   ) => {
     const { token, user } = await userService.register(req.body);
@@ -145,7 +149,7 @@ router.post(
         token,
         // @ts-ignore
         expiresIn: process.env.TOKEN_EXPIRES_IN,
-        user: toReadDto(user),
+        user: userToReadDto(user) as IUserReadDto,
       },
     });
   }
@@ -154,9 +158,9 @@ router.post(
 router.post(
   "/login",
   async (
-    req: Request<any, any, UserLoginCommand>,
+    req: Request<any, any, IUserLoginCommand>,
     res: Response<
-      ResponseDto<{ token: string; expiresIn: string; user: UserReadDto }>
+      ResponseDto<{ token: string; expiresIn: string; user: IUserReadDto }>
     >
   ) => {
     var { user, token } = await userService.login(req.body);
@@ -167,7 +171,7 @@ router.post(
         token,
         //@ts-ignore
         expiresIn: process.env.TOKEN_EXPIRES_IN,
-        user: toReadDto(user),
+        user: userToReadDto(user) as IUserReadDto,
       },
     });
   }
@@ -177,18 +181,21 @@ router.put(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, UserUpdateCommand, any>,
-    res: Response<ResponseDto<UserReadDto>>
+    req: ConnectedRequest<any, any, IUserUpdateCommand, any>,
+    res: Response<ResponseDto<IUserReadDto>>
   ) => {
-    const command: UserUpdateCommand = req.body;
+    const command: IUserUpdateCommand = req.body;
     const user: IUser = req.user;
     if (user._id.toString() !== command._id.toString()) {
-      roleService.checkPermission({ user, permission: Permission.UpdateUser });
+      roleService.checkPermission({
+        user,
+        permission: PermissionEnum.UpdateUser,
+      });
     }
 
     if (
-      user.superRole !== SuperRole.SuperAdmin &&
-      command.superRole === SuperRole.SuperAdmin
+      user.superRole !== SuperRoleEnum.SuperAdmin &&
+      command.superRole === SuperRoleEnum.SuperAdmin
     ) {
       throw new Error(
         "Trying to set another user as a super admin while you aren't super admin yourself"
@@ -199,7 +206,7 @@ router.put(
 
     return res.status(200).json({
       success: true,
-      data: updatedUser,
+      data: userToReadDto(updatedUser) as IUserReadDto,
     });
   }
 );
@@ -209,22 +216,22 @@ router.put(
   protectMiddleware,
   async (
     req: ConnectedRequest<any, any, IFile, any>,
-    res: Response<ResponseDto<UserReadDto>>
+    res: Response<ResponseDto<IUserReadDto>>
   ) => {
     let user: IUser = req.user;
     const profilePicture: IFile = req.body;
 
     user = await userService.updateProfilePictre(
       {
-        userId: user._id,
-        picture: profilePicture,
+        userId: user._id.toString(),
+        picture: profilePicture as IFileCommand,
       },
       req.user
     );
 
     return res.status(200).json({
       success: true,
-      data: toReadDto(user),
+      data: userToReadDto(user) as IUserReadDto,
     });
   }
 );
@@ -253,12 +260,12 @@ router.post(
     req: ConnectedRequest<
       any,
       ResponseDto<void>,
-      UserChangePasswordCommand,
+      IUserChangePasswordCommand,
       any
     >,
     res: Response<ResponseDto<void>>
   ) => {
-    const command: UserChangePasswordCommand = req.body;
+    const command: IUserChangePasswordCommand = req.body;
 
     await userService.changePassword(command, req.user);
 
@@ -275,12 +282,12 @@ router.post(
     req: Request<
       any,
       ResponseDto<void>,
-      UserForgotPasswordChangePasswordCommand,
+      IUserForgotPasswordChangePasswordCommand,
       any
     >,
     res: Response<ResponseDto<void>>
   ) => {
-    const command: UserForgotPasswordChangePasswordCommand = req.body;
+    const command: IUserForgotPasswordChangePasswordCommand = req.body;
 
     await userService.forgotPasswordChangePassword(command);
 
@@ -313,19 +320,19 @@ router.post(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, UserCreateCommand, any>,
-    res: Response<ResponseDto<UserReadDto>>
+    req: ConnectedRequest<any, any, IUserCreateCommand, any>,
+    res: Response<ResponseDto<IUserReadDto>>
   ) => {
     roleService.checkPermission({
       user: req.user,
-      permission: Permission.CreateUser,
+      permission: PermissionEnum.CreateUser,
     });
 
-    const command: UserCreateCommand = req.body;
+    const command: IUserCreateCommand = req.body;
 
     if (
-      req.user.superRole !== SuperRole.SuperAdmin &&
-      command.superRole === SuperRole.SuperAdmin
+      req.user.superRole !== SuperRoleEnum.SuperAdmin &&
+      command.superRole === SuperRoleEnum.SuperAdmin
     ) {
       throw new Error(
         "Trying to set another user as a super admin while you aren't super admin yourself"
@@ -336,7 +343,7 @@ router.post(
 
     return res.status(200).send({
       success: true,
-      data: toReadDto(user),
+      data: userToReadDto(user) as IUserReadDto,
     });
   }
 );
@@ -345,21 +352,21 @@ router.post(
   "/getUsers",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, UsersGetCommand, any>,
-    res: Response<ResponseDto<PaginationResponse<UserReadDto>>>
+    req: ConnectedRequest<any, any, IUsersGetCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<IUserReadDto>>>
   ) => {
     roleService.checkPermission({
       user: req.user,
-      permission: Permission.ReadUser,
+      permission: PermissionEnum.ReadUser,
     });
 
-    const command: UsersGetCommand = req.body;
+    const command: IUsersGetCommand = req.body;
     const { users, total } = await userService.getUsers(command);
 
     return res.status(200).send({
       success: true,
       data: {
-        data: users.map((p) => toReadDto(p)),
+        data: users.map((p) => userToReadDto(p) as IUserReadDto),
         total,
       },
     });
@@ -370,15 +377,15 @@ router.delete(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, mongoose.Types.ObjectId[], any>,
+    req: ConnectedRequest<any, any, string[], any>,
     res: Response<ResponseDto<void>>
   ) => {
     roleService.checkPermission({
       user: req.user,
-      permission: Permission.DeleteUser,
+      permission: PermissionEnum.DeleteUser,
     });
 
-    const usersIds: mongoose.Types.ObjectId[] = req.body;
+    const usersIds: string[] = req.body;
     await userService.deleteUsers(usersIds);
 
     return res.status(200).send({
@@ -391,17 +398,17 @@ router.delete(
 router.post(
   "/search",
   async (
-    req: ConnectedRequest<any, any, UsersSearchCommand, any>,
-    res: Response<ResponseDto<PaginationResponse<UserReadDto>>>
+    req: ConnectedRequest<any, any, IUsersSearchCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<IUserReadDto>>>
   ) => {
-    const command: UsersSearchCommand = req.body;
+    const command: IUsersSearchCommand = req.body;
 
     const { users, total } = await userService.search(command);
 
     return res.status(200).send({
       success: true,
       data: {
-        data: users.map((p) => toReadDto(p)),
+        data: users.map((p) => userToReadDto(p) as IUserReadDto),
         total,
       },
     });
@@ -411,17 +418,17 @@ router.post(
 router.post(
   "/searchByRole",
   async (
-    req: ConnectedRequest<any, any, UserSearchByRoleCommand, any>,
-    res: Response<ResponseDto<PaginationResponse<UserReadDto>>>
+    req: ConnectedRequest<any, any, IUserSearchByRoleCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<IUserReadDto>>>
   ) => {
-    const command: UserSearchByRoleCommand = req.body;
+    const command: IUserSearchByRoleCommand = req.body;
 
     const { users, total } = await userService.searchByRole(command);
 
     return res.status(200).send({
       success: true,
       data: {
-        data: users.map((p) => toReadDto(p)),
+        data: users.map((p) => userToReadDto(p) as IUserReadDto),
         total,
       },
     });

@@ -1,11 +1,13 @@
 import mongoose from "mongoose";
-import NotificationCreateCommand from "./dto/NotificationCreateCommand";
-import NotificationsGetCommand from "./dto/NotificationsGetCommand";
 import Notification, { INotification } from "./notification.model";
+import {
+  INotificationCreateCommand,
+  INotificationsGetCommand,
+} from "roottypes";
 
 const notificationRepository = {
   create: async (
-    command: NotificationCreateCommand
+    command: INotificationCreateCommand
   ): Promise<INotification> => {
     const notification: INotification = await Notification.create({
       image: command.imageId || undefined,
@@ -17,7 +19,7 @@ const notificationRepository = {
     return notification;
   },
   getUserNotifications: async (
-    command: NotificationsGetCommand
+    command: INotificationsGetCommand
   ): Promise<{
     notifications: INotification[];
     total: number;

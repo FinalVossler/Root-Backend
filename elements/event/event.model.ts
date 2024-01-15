@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { IMicroFrontend } from "../microFontend/microFrontend.model";
+import { EventTriggerEnum, EventTypeEnum } from "roottypes";
 
 export interface IEvent {
   eventTrigger: EventTriggerEnum;
@@ -19,18 +20,6 @@ export interface IEvent {
   // Microfrontend redirection
   microFrontend?: IMicroFrontend;
   microFrontendComponentId?: string;
-}
-
-export enum EventTriggerEnum {
-  OnCreate = "OnCreate",
-  OnUpdate = "OnUpdate",
-  OnClick = "OnClick",
-}
-
-export enum EventTypeEnum {
-  ApiCall = "ApiCall",
-  Redirection = "Redirection",
-  MicroFrontendRedirection = "MicroFrontendRedirection",
 }
 
 export interface IEventRequestHeader {

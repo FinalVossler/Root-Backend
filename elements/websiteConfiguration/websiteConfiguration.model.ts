@@ -33,9 +33,9 @@ export interface IWebsiteConfiguration {
   withRegistration?: boolean;
   withTaskManagement?: boolean;
   theme: ITheme;
-  tabIcon: IFile;
-  logo1?: IFile;
-  logo2?: IFile;
+  tabIcon?: IFile | string;
+  logo1?: IFile | string;
+  logo2?: IFile | string;
 
   staticText?: any;
 }

@@ -1,11 +1,12 @@
 import mongoose, { models } from "mongoose";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
-import ModelStateCreateCommand from "./dto/ModelStateCreateCommand";
-import ModelStateUpdateCommand from "./dto/ModelStateUpdateCommand";
 import ModelState, { IModelState } from "./modelState.model";
+import { IModelStateCreateCommand, IModelStateUpdateCommand } from "roottypes";
 
 const modelStateRepository = {
-  createOne: async (command: ModelStateCreateCommand): Promise<IModelState> => {
+  createOne: async (
+    command: IModelStateCreateCommand
+  ): Promise<IModelState> => {
     const modelState: IModelState = await ModelState.create({
       name: [{ language: command.language, text: command.name }],
       stateType: command.stateType,
@@ -13,7 +14,9 @@ const modelStateRepository = {
     });
     return modelState;
   },
-  updateOne: async (command: ModelStateUpdateCommand): Promise<IModelState> => {
+  updateOne: async (
+    command: IModelStateUpdateCommand
+  ): Promise<IModelState> => {
     const oldModelState: IModelState | null = await ModelState.findById(
       command._id
     );
@@ -47,7 +50,7 @@ const modelStateRepository = {
     return modelState;
   },
   createMany: async (
-    commands: ModelStateCreateCommand[]
+    commands: IModelStateCreateCommand[]
   ): Promise<IModelState[]> => {
     const promises: Promise<IModelState>[] = commands.map((command) => {
       return new Promise<IModelState>(async (resolve, reject) => {
@@ -61,7 +64,7 @@ const modelStateRepository = {
     const modelStates: IModelState[] = await Promise.all(promises);
     return modelStates;
   },
-  updateMany: async (commands: ModelStateUpdateCommand[]) => {
+  updateMany: async (commands: IModelStateUpdateCommand[]) => {
     const promises: Promise<IModelState>[] = commands.map((command) => {
       return new Promise<IModelState>(async (resolve, reject) => {
         if (command._id) {
@@ -84,9 +87,9 @@ const modelStateRepository = {
     const modelStates: IModelState[] = await Promise.all(promises);
     return modelStates;
   },
-  deleteMany: async (ids: mongoose.Types.ObjectId[]): Promise<void> => {
+  deleteMany: async (ids: string[]): Promise<void> => {
     await ModelState.deleteMany({
-      _id: { $in: ids },
+      _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
     });
   },
 };

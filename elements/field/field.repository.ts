@@ -1,20 +1,22 @@
 import mongoose from "mongoose";
 
-import FieldCreateCommand from "./dto/FieldCreateCommand";
-import FieldUpdateCommand from "./dto/FieldUpdateCommand";
 import { IField } from "./field.model";
 import Field from "./field.model";
-import FieldsGetCommand from "./dto/FieldsGetCommand";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
-import FieldsSearchCommand from "./dto/FieldsSearchCommand";
 import { IEventRequestHeader } from "../event/event.model";
 import { IFieldTableElement } from "../fieldTableElement/fieldTableElement.model";
 import fieldTableElementRepository from "../fieldTableElement/fieldTableElement.repository";
-import FieldTableElementCreateCommand from "../fieldTableElement/dto/FieldTableElementCreateCommand";
-import EventCommand from "../event/dto/EventCommand";
+import {
+  IEventCommand,
+  IFieldCreateCommand,
+  IFieldTableElementCreateCommand,
+  IFieldUpdateCommand,
+  IFieldsGetCommand,
+  IFieldsSearchCommand,
+} from "roottypes";
 
 const fieldRepository = {
-  create: async (command: FieldCreateCommand): Promise<IField> => {
+  create: async (command: IFieldCreateCommand): Promise<IField> => {
     const createdColumns: IFieldTableElement[] =
       await fieldTableElementRepository.createMany(
         command.tableOptions.columns
@@ -30,8 +32,8 @@ const fieldRepository = {
         label: [{ language: command.language, text: option.label }],
         value: option.value,
       })),
-      fieldEvents: command.fieldEvents.map<EventCommand>(
-        (fieldEvent: EventCommand) => ({
+      fieldEvents: command.fieldEvents.map<IEventCommand>(
+        (fieldEvent: IEventCommand) => ({
           eventTrigger: fieldEvent.eventTrigger,
           eventType: fieldEvent.eventType,
           redirectionToSelf: fieldEvent.redirectionToSelf,
@@ -62,7 +64,7 @@ const fieldRepository = {
 
     return field;
   },
-  update: async (command: FieldUpdateCommand): Promise<IField> => {
+  update: async (command: IFieldUpdateCommand): Promise<IField> => {
     const field: IField | null = await Field.findById(command._id);
 
     if (!field) {
@@ -71,10 +73,11 @@ const fieldRepository = {
 
     // Columns to delete
     const columnsToDelete: IFieldTableElement[] =
-      field.tableOptions?.columns?.filter(
+      (field.tableOptions?.columns as IFieldTableElement[])?.filter(
         (c) =>
           !command.tableOptions?.columns.some(
-            (cc) => cc._id?.toString() === c._id.toString()
+            (cc) =>
+              cc._id?.toString() === (c as IFieldTableElement)._id.toString()
           )
       ) || [];
 
@@ -84,7 +87,7 @@ const fieldRepository = {
 
     // Rows to delete
     const rowsToDelete: IFieldTableElement[] =
-      field.tableOptions?.rows?.filter(
+      (field.tableOptions?.rows as IFieldTableElement[])?.filter(
         (r) =>
           !command.tableOptions?.rows.some(
             (cr) => cr._id?.toString() === r._id.toString()
@@ -101,7 +104,7 @@ const fieldRepository = {
         command.tableOptions.columns
           .filter((c) => !Boolean(c._id))
           .map((command) => {
-            const createCommand: FieldTableElementCreateCommand = {
+            const createCommand: IFieldTableElementCreateCommand = {
               language: command.language,
               name: command.name,
             };
@@ -116,7 +119,7 @@ const fieldRepository = {
         command.tableOptions.rows
           .filter((r) => !Boolean(r._id))
           .map((command) => {
-            const createCommand: FieldTableElementCreateCommand = {
+            const createCommand: IFieldTableElementCreateCommand = {
               language: command.language,
               name: command.name,
             };
@@ -130,7 +133,8 @@ const fieldRepository = {
       await fieldTableElementRepository.updateMany(
         command.tableOptions.columns.filter((cc) =>
           field.tableOptions?.columns.some(
-            (c) => c._id.toString() === cc._id?.toString()
+            (c) =>
+              (c as IFieldTableElement)._id.toString() === cc._id?.toString()
           )
         )
       );
@@ -140,7 +144,8 @@ const fieldRepository = {
       await fieldTableElementRepository.updateMany(
         command.tableOptions.rows.filter((cc) =>
           field.tableOptions?.rows.some(
-            (c) => c._id.toString() === cc._id?.toString()
+            (c) =>
+              (c as IFieldTableElement)._id.toString() === cc._id?.toString()
           )
         )
       );
@@ -169,8 +174,8 @@ const fieldRepository = {
                 ?.label,
             }),
           })),
-          fieldEvents: command.fieldEvents.map<EventCommand>(
-            (fieldEvent: EventCommand) => ({
+          fieldEvents: command.fieldEvents.map<IEventCommand>(
+            (fieldEvent: IEventCommand) => ({
               eventTrigger: fieldEvent.eventTrigger,
               eventType: fieldEvent.eventType,
               redirectionToSelf: fieldEvent.redirectionToSelf,
@@ -234,7 +239,7 @@ const fieldRepository = {
     return field;
   },
   getFields: async (
-    command: FieldsGetCommand
+    command: IFieldsGetCommand
   ): Promise<{ total: number; fields: IField[] }> => {
     const fields: IField[] = await Field.find({})
       .sort({ createdAt: -1 })
@@ -249,15 +254,15 @@ const fieldRepository = {
 
     return { fields, total };
   },
-  deleteFields: async (fieldsIds: mongoose.Types.ObjectId[]): Promise<void> => {
+  deleteFields: async (fieldsIds: string[]): Promise<void> => {
     for (let i = 0; i < fieldsIds.length; i++) {
-      await Field.deleteOne({ _id: fieldsIds[i] });
+      await Field.deleteOne({ _id: new mongoose.Types.ObjectId(fieldsIds[i]) });
     }
 
     return;
   },
   search: async (
-    command: FieldsSearchCommand
+    command: IFieldsSearchCommand
   ): Promise<{ fields: IField[]; total: number }> => {
     const query = Field.find({
       name: { $elemMatch: { text: { $regex: command.name } } },
@@ -297,10 +302,12 @@ const fieldRepository = {
                 field.tableOptions?.columns?.map((column) => ({
                   // language doesn't matter
                   language: "en",
-                  name: column.name.map((translatedText) => ({
-                    text: translatedText.text,
-                    language: translatedText.language,
-                  })),
+                  name: (column as IFieldTableElement).name.map(
+                    (translatedText) => ({
+                      text: translatedText.text,
+                      language: translatedText.language,
+                    })
+                  ),
                 })) || []
               );
 
@@ -309,10 +316,12 @@ const fieldRepository = {
                 field.tableOptions?.rows.map((row) => ({
                   // language doesn't matter
                   language: "en",
-                  name: row.name.map((translatedText) => ({
-                    text: translatedText.text,
-                    language: translatedText.language,
-                  })),
+                  name: (row as IFieldTableElement).name.map(
+                    (translatedText) => ({
+                      text: translatedText.text,
+                      language: translatedText.language,
+                    })
+                  ),
                 })) || []
               );
 

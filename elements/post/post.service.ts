@@ -1,14 +1,16 @@
-import PostCreateCommand from "./dto/PostCreateCommand";
-import PostsSearchCommand from "./dto/PostsSearchCommand";
-import PostsGetCommand from "./dto/PostsGetCommand";
 import { IPost } from "./post.model";
 import postRepository from "./post.repository";
 import { IUser } from "../user/user.model";
-import PostUpdateCommand from "./dto/PostUpdateCommand";
+import {
+  IPostCreateCommand,
+  IPostUpdateCommand,
+  IPostsGetCommand,
+  IPostsSearchCommand,
+} from "roottypes";
 
 const postService = {
   create: async (
-    command: PostCreateCommand,
+    command: IPostCreateCommand,
     currentUser: IUser
   ): Promise<IPost> => {
     const post: IPost = await postRepository.create(command, currentUser);
@@ -16,7 +18,7 @@ const postService = {
     return post;
   },
   getUserPosts: async (
-    command: PostsGetCommand,
+    command: IPostsGetCommand,
     currentUser: IUser
   ): Promise<{ posts: IPost[]; total: number }> => {
     const { posts, total } = await postRepository.getUserPosts(
@@ -27,7 +29,7 @@ const postService = {
     return { posts, total };
   },
   search: async (
-    command: PostsSearchCommand
+    command: IPostsSearchCommand
   ): Promise<{ posts: IPost[]; total: number }> => {
     const { posts, total } = await postRepository.search(command);
 
@@ -37,7 +39,7 @@ const postService = {
     return await postRepository.getById(postId);
   },
   update: async (
-    command: PostUpdateCommand,
+    command: IPostUpdateCommand,
     currentUser: IUser
   ): Promise<IPost> => {
     const oldPost = await postRepository.getById(command._id);
@@ -46,7 +48,7 @@ const postService = {
       throw new Error("Post doesn't exist");
     }
 
-    if (oldPost.posterId.toString() !== currentUser._id.toString()) {
+    if (oldPost.poster.toString() !== currentUser._id.toString()) {
       throw new Error("Unauthorized. The post isn't yours");
     }
 
@@ -67,7 +69,7 @@ const postService = {
     if (!post) {
       throw new Error("Post doesn't exist");
     }
-    if (post.posterId.toString() !== currentUser._id.toString())
+    if (post.poster.toString() !== currentUser._id.toString())
       throw new Error("Unauthorized to delete post");
 
     await postRepository.delete(postId);

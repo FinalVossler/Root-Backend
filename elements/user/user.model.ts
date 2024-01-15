@@ -6,30 +6,25 @@ import postRepository from "../post/post.repository";
 import fileRepository from "../file/file.repository";
 import { IRole } from "../role/role.model";
 import { IMessage } from "../message/message.model";
-import messageRepository from "../message/message.repository";
-
-export enum SuperRole {
-  SuperAdmin = "SuperAdmin",
-  Normal = "Normal",
-}
+import { SuperRoleEnum } from "roottypes";
 
 export interface IUser {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   firstName: string;
   lastName: string;
   email: string;
   password: string;
-  superRole: SuperRole;
-  profilePicture?: IFile;
+  superRole: SuperRoleEnum;
+  profilePicture?: IFile | string;
   passwordChangeToken: string;
-  role?: IRole;
+  role?: IRole | string;
   hasMessagingEmailsActivated?: boolean;
 }
 
-export type UserWithLastReadMessageInConversation = IUser & {
+export interface IUserWithLastReadMessageInConversation extends IUser {
   lastReadMessageInConversation: IMessage | null;
   to: string[];
-};
+}
 
 interface IUserModel extends mongoose.Model<IUser> {}
 
@@ -57,7 +52,7 @@ const UserSchema = new mongoose.Schema<IUser>(
     superRole: {
       type: mongoose.SchemaTypes.String,
       required: false,
-      default: SuperRole.Normal,
+      default: SuperRoleEnum.Normal,
     },
     profilePicture: {
       type: mongoose.SchemaTypes.ObjectId,

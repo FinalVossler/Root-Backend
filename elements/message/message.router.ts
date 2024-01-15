@@ -1,18 +1,24 @@
 import express, { Response } from "express";
-import mongoose from "mongoose";
 
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
 import protectMiddleware from "../../middleware/protectMiddleware";
-import MessageGetBetweenUsersCommand from "./dtos/MessageGetBetweenUsersCommand";
-import MessageReadDto, { toReadDto } from "./dtos/MessageReadDto";
-import MessageSendCommand from "./dtos/MessageSendCommand";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
 import { IMessage, IPopulatedMessage } from "./message.model";
 import messageService from "./message.service";
 import { IUser } from "../user/user.model";
-import MessageGetLastConversations from "./dtos/MessageGetLastConversations";
-import MessageMarkAllMessagesAsReadByUserCommand from "./dtos/MessageMarkAllMessagesAsReadByUserCommand";
+import {
+  IMessageGetBetweenUsersCommand,
+  IMessageGetLastConversations,
+  IMessageMarkAllMessagesAsReadByUserCommand,
+  IMessageReadDto,
+  IMessageSendCommand,
+  IPopulatedMessageReadDto,
+} from "roottypes";
+import {
+  messageToReadDto,
+  populatedMessageToReadDto,
+} from "./messageToReadDto";
 
 const router = express.Router();
 
@@ -20,8 +26,8 @@ router.post(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, MessageSendCommand, any>,
-    res: Response<ResponseDto<MessageReadDto>>
+    req: ConnectedRequest<any, any, IMessageSendCommand, any>,
+    res: Response<ResponseDto<IPopulatedMessageReadDto>>
   ) => {
     const command = req.body;
     const message: IPopulatedMessage = await messageService.sendMessage(
@@ -31,7 +37,7 @@ router.post(
 
     return res.status(200).json({
       success: true,
-      data: toReadDto(message),
+      data: populatedMessageToReadDto(message),
     });
   }
 );
@@ -40,8 +46,8 @@ router.post(
   "/get",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, MessageGetBetweenUsersCommand, any>,
-    res: Response<ResponseDto<PaginationResponse<MessageReadDto>>>
+    req: ConnectedRequest<any, any, IMessageGetBetweenUsersCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<IPopulatedMessageReadDto>>>
   ) => {
     const command = req.body;
 
@@ -57,9 +63,8 @@ router.post(
       );
     }
 
-    const messages: IMessage[] = await messageService.getMessagesBetweenUsers(
-      command
-    );
+    const messages: IPopulatedMessage[] =
+      await messageService.getMessagesBetweenUsers(command);
 
     const total: number = await messageService.getTotalMessagesBetweenUsers(
       command
@@ -68,7 +73,7 @@ router.post(
     return res.status(200).json({
       success: true,
       data: {
-        data: messages.map((message) => toReadDto(message)),
+        data: messages.map((message) => populatedMessageToReadDto(message)),
         total,
       },
     });
@@ -122,7 +127,7 @@ router.post(
     req: ConnectedRequest<
       any,
       any,
-      MessageMarkAllMessagesAsReadByUserCommand,
+      IMessageMarkAllMessagesAsReadByUserCommand,
       any
     >,
     res: Response<ResponseDto<number>>
@@ -148,8 +153,8 @@ router.post(
   "/getLastConversationsLastMessages",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, MessageGetLastConversations, any>,
-    res: Response<ResponseDto<PaginationResponse<MessageReadDto>>>
+    req: ConnectedRequest<any, any, IMessageGetLastConversations, any>,
+    res: Response<ResponseDto<PaginationResponse<IPopulatedMessageReadDto>>>
   ) => {
     const { messages, total } =
       await messageService.getLastConversationsLastMessages(req.body, req.user);
@@ -157,7 +162,7 @@ router.post(
     return res.status(200).json({
       success: true,
       data: {
-        data: messages.map((m) => toReadDto(m)),
+        data: messages.map((m) => populatedMessageToReadDto(m)),
         total,
       },
     });

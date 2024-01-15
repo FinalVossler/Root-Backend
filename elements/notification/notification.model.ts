@@ -2,14 +2,15 @@ import mongoose from "mongoose";
 
 import { IFile } from "../file/file.model";
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
+import { IUserReadDto } from "roottypes";
 
 export interface INotification {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   text: ITranslatedText[];
   link: string;
-  image?: IFile;
-  clickedBy: mongoose.Types.ObjectId[];
-  to: mongoose.Types.ObjectId[];
+  image?: IFile | string;
+  clickedBy: string[];
+  to: (IUserReadDto | string)[];
 
   createdAt: string;
   updatedAt: string;

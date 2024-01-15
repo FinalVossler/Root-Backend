@@ -1,23 +1,25 @@
 import { decode, sign, verify } from "jsonwebtoken";
 import { compare, genSalt, hash } from "bcrypt";
 
-import UserRegisterCommand from "./dtos/UserRegisterCommand";
-import UserLoginCommand from "./dtos/UserLoginCommand";
 import userRepository from "./user.repository";
-import { IUser, UserWithLastReadMessageInConversation } from "./user.model";
-import UserUpdateCommand from "./dtos/UserUpdateCommand";
+import { IUser, IUserWithLastReadMessageInConversation } from "./user.model";
 import mongoose from "mongoose";
-import UserUpdateProfilePictureCommand from "./dtos/UserUpdateProfilePictureCommand";
 import emailService from "../email/email.service";
-import UserChangePasswordCommand from "./dtos/UserChangePasswordCommand";
-import UserForgotPasswordChangePasswordCommand from "./dtos/UserForgotPasswordChangePasswordCommand";
-import UserCreateCommand from "./dtos/UserCreateCommand";
-import UsersGetCommand from "./dtos/UsersGetCommand";
-import UsersSearchCommand from "./dtos/UsersSearchCommand";
-import ChatGetContactsCommand from "./dtos/ChatGetContactsCommand";
-import UserSearchByRoleCommand from "./dtos/UserSearchByRoleCommand";
 import { IMessage } from "../message/message.model";
 import messageService from "../message/message.service";
+import {
+  IChatGetContactsCommand,
+  IUserChangePasswordCommand,
+  IUserCreateCommand,
+  IUserForgotPasswordChangePasswordCommand,
+  IUserLoginCommand,
+  IUserRegisterCommand,
+  IUserSearchByRoleCommand,
+  IUserUpdateCommand,
+  IUserUpdateProfilePictureCommand,
+  IUsersGetCommand,
+  IUsersSearchCommand,
+} from "roottypes";
 
 const userService = {
   generatePasswordHash: async (password: string): Promise<string> => {
@@ -28,7 +30,7 @@ const userService = {
     return passwordHash;
   },
   chatGetContacts: async (
-    command: ChatGetContactsCommand,
+    command: IChatGetContactsCommand,
     currentUser: IUser
   ): Promise<{ users: IUser[]; total: number }> => {
     const { users, total } = await userRepository.chatGetContacts(
@@ -49,7 +51,7 @@ const userService = {
     return users;
   },
   register: async (
-    command: UserRegisterCommand
+    command: IUserRegisterCommand
   ): Promise<{ user: IUser; token: string }> => {
     const user: IUser = await userRepository.save(command);
 
@@ -58,7 +60,7 @@ const userService = {
     return { token, user };
   },
   login: async (
-    command: UserLoginCommand
+    command: IUserLoginCommand
   ): Promise<{ token: string; user: IUser }> => {
     const user: IUser = await userRepository.getByEmail(command.email);
 
@@ -79,13 +81,13 @@ const userService = {
 
     return { token, user };
   },
-  update: async (command: UserUpdateCommand): Promise<IUser> => {
+  update: async (command: IUserUpdateCommand): Promise<IUser> => {
     const user: IUser = await userRepository.update(command);
 
     return user;
   },
   updateProfilePictre: async (
-    command: UserUpdateProfilePictureCommand,
+    command: IUserUpdateProfilePictureCommand,
     currentUser: IUser
   ): Promise<IUser> => {
     const user: IUser = await userRepository.updateProfilePicture(
@@ -96,7 +98,7 @@ const userService = {
     return user;
   },
   getByToken: async (token: string): Promise<IUser> => {
-    const signedUser: { _id: mongoose.Types.ObjectId } = decode(token) as IUser;
+    const signedUser: { _id: string } = decode(token) as IUser;
 
     const user: IUser = await userRepository.getById(signedUser._id.toString());
 
@@ -138,7 +140,7 @@ const userService = {
     await emailService.sendChangePasswordEmail(currentUser, token);
   },
   changePassword: async (
-    command: UserChangePasswordCommand,
+    command: IUserChangePasswordCommand,
     currentUser: IUser
   ): Promise<void> => {
     const validOldPassword: boolean = await compare(
@@ -157,7 +159,7 @@ const userService = {
     await userRepository.changePassword(newPasswordHash, currentUser);
   },
   forgotPasswordChangePassword: async (
-    command: UserForgotPasswordChangePasswordCommand
+    command: IUserForgotPasswordChangePasswordCommand
   ): Promise<void> => {
     const currentUser: IUser = await userService.getByToken(command.token);
 
@@ -191,13 +193,13 @@ const userService = {
       throw new Error("Token expired");
     }
   },
-  createUser: async (command: UserCreateCommand): Promise<IUser> => {
+  createUser: async (command: IUserCreateCommand): Promise<IUser> => {
     const user: IUser = await userRepository.create(command);
 
     return user;
   },
   getUsers: async (
-    command: UsersGetCommand
+    command: IUsersGetCommand
   ): Promise<{ users: IUser[]; total: number }> => {
     const { users, total } = await userRepository.getUsers(command);
 
@@ -209,14 +211,14 @@ const userService = {
     return users;
   },
   getUsersWithTheirLastReadMessagesInConversation: async (
-    usersIds: string[] | string
-  ): Promise<UserWithLastReadMessageInConversation[]> => {
+    usersIds: string[]
+  ): Promise<IUserWithLastReadMessageInConversation[]> => {
     const usersIdsArray = typeof usersIds === "string" ? [usersIds] : usersIds;
     const users: IUser[] = await userRepository.getByIds(usersIdsArray);
 
     const promises: Promise<IMessage | null>[] = [];
 
-    const usersWithLastReadMessageInConversation: UserWithLastReadMessageInConversation[] =
+    const usersWithLastReadMessageInConversation: IUserWithLastReadMessageInConversation[] =
       [];
 
     users.forEach((user) => {
@@ -250,11 +252,11 @@ const userService = {
 
     return usersWithLastReadMessageInConversation;
   },
-  deleteUsers: async (usersIds: mongoose.Types.ObjectId[]): Promise<void> => {
+  deleteUsers: async (usersIds: string[]): Promise<void> => {
     await userRepository.deleteUsers(usersIds);
   },
   search: async (
-    command: UsersSearchCommand
+    command: IUsersSearchCommand
   ): Promise<{ users: IUser[]; total: number }> => {
     const { users, total } = await userRepository.search(command);
 
@@ -264,7 +266,7 @@ const userService = {
     return await userRepository.getRoleUsers(roleId);
   },
   searchByRole: async (
-    command: UserSearchByRoleCommand
+    command: IUserSearchByRoleCommand
   ): Promise<{ users: IUser[]; total: number }> => {
     const { users, total } = await userRepository.searchByRole(command);
 

@@ -1,5 +1,4 @@
-import PageCreateCommand from "./dto/PageCreateCommand";
-import PageUpdateCommand from "./dto/PageUpdateCommand";
+import { IPageCreateCommand, IPageUpdateCommand } from "roottypes";
 import { IPage } from "./page.model";
 import pageRepository from "./page.repository";
 
@@ -9,12 +8,12 @@ const pageService = {
 
     return pages;
   },
-  create: async (command: PageCreateCommand): Promise<IPage> => {
+  create: async (command: IPageCreateCommand): Promise<IPage> => {
     const page: IPage = await pageRepository.create(command);
 
     return page;
   },
-  update: async (command: PageUpdateCommand): Promise<IPage> => {
+  update: async (command: IPageUpdateCommand): Promise<IPage> => {
     const page: IPage = await pageRepository.update(command);
 
     return page;

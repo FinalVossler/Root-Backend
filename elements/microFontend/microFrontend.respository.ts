@@ -1,21 +1,23 @@
 import mongoose from "mongoose";
 
 import MicroFrontend, { IMicroFrontend } from "./microFrontend.model";
-import MicroFrontendCreateCommand from "./dto/MicroFrontendCreateCommand";
-import MicroFrontendUpdateCommand from "./dto/MicroFrontendUpdateCommand";
-import MicroFrontendsGetCommand from "./dto/MicroFrontendsGetCommand";
-import MicroFrontendsSearchCommand from "./dto/MicroFrontendsSearchCommand";
 import { IMicroFrontendComponent } from "../microFontendComponent/microFrontendComponent.model";
 import microFrontendComponentRepository from "../microFontendComponent/microFrontendComponent.respository";
-import MicroFrontendComponentUpdateCommand from "../microFontendComponent/dto/MicroFrontendComponentUpdateCommand";
-import MicroFrontendComponentCreateCommand from "../microFontendComponent/dto/MicroFrontendComponentCreateCommand";
+import {
+  IMicroFrontendComponentCreateCommand,
+  IMicroFrontendComponentUpdateCommand,
+  IMicroFrontendCreateCommand,
+  IMicroFrontendUpdateCommand,
+  IMicroFrontendsGetCommand,
+  IMicroFrontendsSearchCommand,
+} from "roottypes";
 
 const microFrontendRepository = {
   createMicroFrontendComponents: async (
-    commands: MicroFrontendComponentCreateCommand[]
+    commands: IMicroFrontendComponentCreateCommand[]
   ): Promise<IMicroFrontendComponent[]> => {
     const createComponentsPromises: Promise<IMicroFrontendComponent>[] = [];
-    commands.forEach((command: MicroFrontendComponentCreateCommand) => {
+    commands.forEach((command: IMicroFrontendComponentCreateCommand) => {
       createComponentsPromises.push(
         new Promise<IMicroFrontendComponent>(async (resolve) => {
           const microFrontendComponent: IMicroFrontendComponent =
@@ -32,10 +34,10 @@ const microFrontendRepository = {
     return createdMicroFrontendsComponents;
   },
   updatMicroFrontendComponents: async (
-    updateCommands: MicroFrontendComponentUpdateCommand[]
+    updateCommands: IMicroFrontendComponentUpdateCommand[]
   ): Promise<IMicroFrontendComponent[]> => {
     const createComponentsPromises: Promise<IMicroFrontendComponent>[] = [];
-    updateCommands.forEach((command: MicroFrontendComponentUpdateCommand) => {
+    updateCommands.forEach((command: IMicroFrontendComponentUpdateCommand) => {
       createComponentsPromises.push(
         new Promise<IMicroFrontendComponent>(async (resolve) => {
           const microFrontendComponent: IMicroFrontendComponent =
@@ -52,7 +54,7 @@ const microFrontendRepository = {
     return createdMicroFrontendsComponents;
   },
   create: async (
-    command: MicroFrontendCreateCommand
+    command: IMicroFrontendCreateCommand
   ): Promise<IMicroFrontend> => {
     const createdMicroFrontendsComponents: IMicroFrontendComponent[] =
       await microFrontendRepository.createMicroFrontendComponents(
@@ -68,7 +70,7 @@ const microFrontendRepository = {
     return microFrontend;
   },
   update: async (
-    command: MicroFrontendUpdateCommand
+    command: IMicroFrontendUpdateCommand
   ): Promise<IMicroFrontend> => {
     const oldMicroFrontend: IMicroFrontend =
       await microFrontendRepository.getById(command._id);
@@ -86,7 +88,7 @@ const microFrontendRepository = {
       command.components
         .filter((el) => Boolean(el._id))
         .map((el) => {
-          const command: MicroFrontendComponentUpdateCommand = {
+          const command: IMicroFrontendComponentUpdateCommand = {
             _id: el._id || "",
             name: el.name,
           };
@@ -95,7 +97,9 @@ const microFrontendRepository = {
         })
     );
 
-    const componentsToDeleteIds: string[] = oldMicroFrontend.components
+    const componentsToDeleteIds: string[] = (
+      oldMicroFrontend.components as IMicroFrontendComponent[]
+    )
       .filter(
         (el) =>
           !command.components.find(
@@ -143,7 +147,7 @@ const microFrontendRepository = {
     return microFrontend;
   },
   getMicroFrontends: async (
-    command: MicroFrontendsGetCommand
+    command: IMicroFrontendsGetCommand
   ): Promise<{ total: number; microFrontends: IMicroFrontend[] }> => {
     const microFrontends: IMicroFrontend[] = await MicroFrontend.find({})
       .sort({ createdAt: -1 })
@@ -168,7 +172,7 @@ const microFrontendRepository = {
     return;
   },
   search: async (
-    command: MicroFrontendsSearchCommand
+    command: IMicroFrontendsSearchCommand
   ): Promise<{ microFrontends: IMicroFrontend[]; total: number }> => {
     const query = MicroFrontend.find({
       name: { $regex: command.name },

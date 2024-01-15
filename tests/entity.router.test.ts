@@ -1,7 +1,4 @@
 import request from "supertest";
-import EntityCreateCommand, {
-  EntityFieldValueCommand,
-} from "../elements/entity/dto/EntityCreateCommand";
 import { IEntity } from "../elements/entity/entity.model";
 import entityRepository from "../elements/entity/entity.repository";
 import { IField } from "../elements/field/field.model";
@@ -14,18 +11,24 @@ import {
   adminUser,
 } from "./fixtures";
 import app from "../server";
-import EntityReadDto from "../elements/entity/dto/EntityReadDto";
 import ResponseDto from "../globalTypes/ResponseDto";
 import userService from "../elements/user/user.service";
-import EntityUpdateCommand from "../elements/entity/dto/EntityUpdateCommand";
-import mongoose from "mongoose";
-import { IUser, SuperRole } from "../elements/user/user.model";
+import { IUser } from "../elements/user/user.model";
 import userRepository from "../elements/user/user.repository";
-import UserCreateCommand from "../elements/user/dtos/UserCreateCommand";
-import EntitiesGetCommand from "../elements/entity/dto/EntitiesGetCommand";
 import PaginationResponse from "../globalTypes/PaginationResponse";
-import EntitiesSearchCommand from "../elements/entity/dto/EntitiesSearchCommand";
-import EntitiesSetCustomDataKeyValueCommand from "../elements/entity/dto/EntitiesSetCustomDataKeyValueCommand";
+import {
+  IEntitiesGetCommand,
+  IEntitiesSearchCommand,
+  IEntitiesSetCustomDataKeyValueCommand,
+  IEntityCreateCommand,
+  IEntityFieldValueCommand,
+  IEntityReadDto,
+  IEntityUpdateCommand,
+  IModelReadDto,
+  IUserCreateCommand,
+  IUserReadDto,
+  SuperRoleEnum,
+} from "roottypes";
 
 jest.setTimeout(50000);
 describe("entity router", () => {
@@ -43,7 +46,7 @@ describe("entity router", () => {
   let model1AssignedEntity: IEntity | undefined;
   let model1UnassignedEntity: IEntity | undefined;
   let model3AssignedEntity: IEntity | undefined;
-  let createdEntity: EntityReadDto | null;
+  let createdEntity: IEntityReadDto | null;
   let entityToUpdate: IEntity | null;
   let entityToDelete: IEntity | undefined;
   let entityToFindInSearch: IEntity | undefined;
@@ -75,25 +78,25 @@ describe("entity router", () => {
       createCreateModelCommand("Entity test model 3", [field1, field2])
     );
 
-    const entityField1ValueCommand1: EntityFieldValueCommand = {
-      fieldId: field1._id,
+    const entityField1ValueCommand1: IEntityFieldValueCommand = {
+      fieldId: field1._id.toString(),
       files: [],
       tableValues: [],
       value: "Value 1",
       yearTableValues: [],
     };
-    const entityField1ValueCommand2: EntityFieldValueCommand = {
-      fieldId: field2._id,
+    const entityField1ValueCommand2: IEntityFieldValueCommand = {
+      fieldId: field2._id.toString(),
       files: [],
       tableValues: [],
       value: "Value 2",
       yearTableValues: [],
     };
-    const createEntityCommand: EntityCreateCommand = {
+    const createEntityCommand: IEntityCreateCommand = {
       assignedUsersIds: [],
       entityFieldValues: [entityField1ValueCommand1, entityField1ValueCommand2],
       language: "en",
-      modelId: model._id,
+      modelId: model._id.toString(),
     };
     entityToGetByIdAndToUseForModel1 = await entityRepository.create(
       createEntityCommand
@@ -101,24 +104,24 @@ describe("entity router", () => {
     entityToUpdate = await entityRepository.create(createEntityCommand);
     entityThatBelongsToModel2 = await entityRepository.create({
       ...createEntityCommand,
-      modelId: model2ToWhichEntitiesbyModelDontBelong._id,
+      modelId: model2ToWhichEntitiesbyModelDontBelong._id.toString(),
     });
 
-    const assignedUser1CreateCommand: UserCreateCommand = {
+    const assignedUser1CreateCommand: IUserCreateCommand = {
       email: "assignedUser1@updating.com",
       firstName: "assignedUser1FirstName",
       lastName: "assignedUser1LastName",
       password: "assignedUser1Password",
-      superRole: SuperRole.Normal,
+      superRole: SuperRoleEnum.Normal,
     };
     assignedUser1 = await userRepository.create(assignedUser1CreateCommand);
 
-    const assignedUser2CreateCommand: UserCreateCommand = {
+    const assignedUser2CreateCommand: IUserCreateCommand = {
       email: "assignedUser2@updating.com",
       firstName: "assignedUser2FirstName",
       lastName: "assignedUser2LastName",
       password: "assignedUser2Password",
-      superRole: SuperRole.Normal,
+      superRole: SuperRoleEnum.Normal,
     };
     assignedUser2 = await userRepository.create(assignedUser2CreateCommand);
 
@@ -130,7 +133,7 @@ describe("entity router", () => {
     model3AssignedEntity = await entityRepository.create({
       ...createEntityCommand,
       assignedUsersIds: [assignedUser1._id.toString()],
-      modelId: model3ToWhichUserIsAlsoAssigned._id,
+      modelId: model3ToWhichUserIsAlsoAssigned._id.toString(),
     });
     entityToDelete = await entityRepository.create(createEntityCommand);
     entityToFindInSearch = await entityRepository.create({
@@ -153,35 +156,43 @@ describe("entity router", () => {
     const promises: Promise<any>[] = [];
     if (entityToGetByIdAndToUseForModel1) {
       promises.push(
-        entityRepository.deleteEntities([entityToGetByIdAndToUseForModel1._id])
+        entityRepository.deleteEntities([
+          entityToGetByIdAndToUseForModel1._id.toString(),
+        ])
       );
     }
     if (model) {
-      promises.push(modelRepository.deleteModels([model._id]));
+      promises.push(modelRepository.deleteModels([model._id.toString()]));
     }
     if (model2ToWhichEntitiesbyModelDontBelong) {
       promises.push(
         modelRepository.deleteModels([
-          model2ToWhichEntitiesbyModelDontBelong._id,
+          model2ToWhichEntitiesbyModelDontBelong._id.toString(),
         ])
       );
     }
     if (model3ToWhichUserIsAlsoAssigned) {
       promises.push(
-        modelRepository.deleteModels([model3ToWhichUserIsAlsoAssigned._id])
+        modelRepository.deleteModels([
+          model3ToWhichUserIsAlsoAssigned._id.toString(),
+        ])
       );
     }
     if (field1) {
-      promises.push(fieldRepository.deleteFields([field1._id]));
+      promises.push(fieldRepository.deleteFields([field1._id.toString()]));
     }
     if (field2) {
-      promises.push(fieldRepository.deleteFields([field2._id]));
+      promises.push(fieldRepository.deleteFields([field2._id.toString()]));
     }
     if (createdEntity) {
-      promises.push(entityRepository.deleteEntities([createdEntity._id]));
+      promises.push(
+        entityRepository.deleteEntities([createdEntity._id.toString()])
+      );
     }
     if (entityToUpdate) {
-      promises.push(entityRepository.deleteEntities([entityToUpdate._id]));
+      promises.push(
+        entityRepository.deleteEntities([entityToUpdate._id.toString()])
+      );
     }
     if (assignedUser1) {
       promises.push(userRepository.deleteByEmail(assignedUser1.email));
@@ -191,35 +202,41 @@ describe("entity router", () => {
     }
     if (entityThatBelongsToModel2) {
       promises.push(
-        entityRepository.deleteEntities([entityThatBelongsToModel2._id])
+        entityRepository.deleteEntities([
+          entityThatBelongsToModel2._id.toString(),
+        ])
       );
     }
     if (model1AssignedEntity) {
       promises.push(
-        entityRepository.deleteEntities([model1AssignedEntity._id])
+        entityRepository.deleteEntities([model1AssignedEntity._id.toString()])
       );
     }
     if (model1UnassignedEntity) {
       promises.push(
-        entityRepository.deleteEntities([model1UnassignedEntity._id])
+        entityRepository.deleteEntities([model1UnassignedEntity._id.toString()])
       );
     }
     if (model3AssignedEntity) {
       promises.push(
-        entityRepository.deleteEntities([model3AssignedEntity._id])
+        entityRepository.deleteEntities([model3AssignedEntity._id.toString()])
       );
     }
     if (entityToDelete) {
-      promises.push(entityRepository.deleteEntities([entityToDelete._id]));
+      promises.push(
+        entityRepository.deleteEntities([entityToDelete._id.toString()])
+      );
     }
     if (entityToFindInSearch) {
       promises.push(
-        entityRepository.deleteEntities([entityToFindInSearch._id])
+        entityRepository.deleteEntities([entityToFindInSearch._id.toString()])
       );
     }
     if (entityToNotFindInSearch) {
       promises.push(
-        entityRepository.deleteEntities([entityToNotFindInSearch._id])
+        entityRepository.deleteEntities([
+          entityToNotFindInSearch._id.toString(),
+        ])
       );
     }
 
@@ -232,7 +249,7 @@ describe("entity router", () => {
       .query({ entityId: entityToGetByIdAndToUseForModel1?._id.toString() })
       .set("Authorization", "Bearer " + adminToken)
       .then((res) => {
-        const result: ResponseDto<EntityReadDto> = res.body;
+        const result: ResponseDto<IEntityReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?._id.toString()).toEqual(
@@ -249,32 +266,32 @@ describe("entity router", () => {
           entityToGetByIdAndToUseForModel1?.entityFieldValues[1].value.at(0)
             ?.text
         );
-        expect(result.data?.model._id.toString()).toEqual(
+        expect((result.data?.model as IModelReadDto)._id.toString()).toEqual(
           entityToGetByIdAndToUseForModel1?.model._id.toString()
         );
       });
   });
 
   it("should create entity", () => {
-    const entityField1ValueCommand1: EntityFieldValueCommand = {
-      fieldId: (field1 as IField)._id,
+    const entityField1ValueCommand1: IEntityFieldValueCommand = {
+      fieldId: (field1 as IField)._id.toString(),
       files: [],
       tableValues: [],
       value: "Value 1",
       yearTableValues: [],
     };
-    const entityField1ValueCommand2: EntityFieldValueCommand = {
-      fieldId: (field2 as IField)._id,
+    const entityField1ValueCommand2: IEntityFieldValueCommand = {
+      fieldId: (field2 as IField)._id.toString(),
       files: [],
       tableValues: [],
       value: "Value 2",
       yearTableValues: [],
     };
-    const createEntityCommand: EntityCreateCommand = {
+    const createEntityCommand: IEntityCreateCommand = {
       assignedUsersIds: [],
       entityFieldValues: [entityField1ValueCommand1, entityField1ValueCommand2],
       language: "en",
-      modelId: (model as IModel)._id,
+      modelId: (model as IModel)._id.toString(),
     };
     return request(app)
       .post("/entities/")
@@ -282,7 +299,7 @@ describe("entity router", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<EntityReadDto> = res.body;
+        const result: ResponseDto<IEntityReadDto> = res.body;
 
         createdEntity = result.data;
 
@@ -296,41 +313,41 @@ describe("entity router", () => {
         expect(result.data?.entityFieldValues[1].value.at(0)?.text).toEqual(
           entityField1ValueCommand2.value
         );
-        expect(result.data?.model._id.toString()).toEqual(
+        expect((result.data?.model as IModelReadDto)._id.toString()).toEqual(
           model?._id.toString()
         );
       });
   });
 
   it("should update an entity", async () => {
-    const entityField1ValueCommand1: EntityFieldValueCommand = {
-      fieldId: (field1 as IField)._id,
+    const entityField1ValueCommand1: IEntityFieldValueCommand = {
+      fieldId: (field1 as IField)._id.toString(),
       files: [],
       tableValues: [],
       value: "updated Value 1",
       yearTableValues: [],
     };
-    const entityField1ValueCommand2: EntityFieldValueCommand = {
-      fieldId: (field2 as IField)._id,
+    const entityField1ValueCommand2: IEntityFieldValueCommand = {
+      fieldId: (field2 as IField)._id.toString(),
       files: [],
       tableValues: [],
       value: "updated Value 2",
       yearTableValues: [],
     };
 
-    const command: EntityUpdateCommand = {
-      _id: new mongoose.Types.ObjectId(entityToUpdate?._id || ""),
+    const command: IEntityUpdateCommand = {
+      _id: entityToUpdate?._id.toString() || "",
       assignedUsersIds: [(assignedUser1 as IUser)._id.toString()],
       entityFieldValues: [entityField1ValueCommand1, entityField1ValueCommand2],
       language: "en",
-      modelId: (model as IModel)._id,
+      modelId: (model as IModel)._id.toString(),
     };
 
     const res = await request(app)
       .put("/entities/")
       .set("Authorization", "Bearer " + adminToken)
       .send(command);
-    const result: ResponseDto<EntityReadDto> = res.body;
+    const result: ResponseDto<IEntityReadDto> = res.body;
 
     expect(result.success).toBeTruthy();
     expect(result.data?.entityFieldValues.at(0)?.value.at(0)?.text).toEqual(
@@ -340,16 +357,16 @@ describe("entity router", () => {
       entityField1ValueCommand2.value
     );
     expect(result?.data?.assignedUsers.length).toEqual(1);
-    expect(result?.data?.assignedUsers.at(0)?.email).toEqual(
-      assignedUser1?.email
-    );
+    expect(
+      (result?.data?.assignedUsers as IUserReadDto[]).at(0)?.email
+    ).toEqual(assignedUser1?.email);
 
     // Update in a different language:
 
     const field1InFrench = "Valeur en Français de field1";
     const field2InFrench = "Valeur en Français de field2";
-    const commandInFrench: EntityUpdateCommand = {
-      _id: new mongoose.Types.ObjectId(entityToUpdate?._id || ""),
+    const commandInFrench: IEntityUpdateCommand = {
+      _id: entityToUpdate?._id.toString() || "",
       assignedUsersIds: [
         (assignedUser1 as IUser)._id.toString(),
         (assignedUser2 as IUser)._id.toString(),
@@ -359,14 +376,14 @@ describe("entity router", () => {
         { ...entityField1ValueCommand2, value: field2InFrench },
       ],
       language: "fr",
-      modelId: (model as IModel)._id,
+      modelId: (model as IModel)._id.toString(),
     };
 
     const res2 = await request(app)
       .put("/entities/")
       .set("Authorization", "Bearer " + adminToken)
       .send(commandInFrench);
-    const result2: ResponseDto<EntityReadDto> = res2.body;
+    const result2: ResponseDto<IEntityReadDto> = res2.body;
 
     expect(result2.success).toBeTruthy();
     expect(result2.data?.entityFieldValues.at(0)?.value.at(0)?.text).toEqual(
@@ -383,17 +400,17 @@ describe("entity router", () => {
     );
 
     expect(result2?.data?.assignedUsers.length).toEqual(2);
-    expect(result2?.data?.assignedUsers.at(0)?.email).toEqual(
-      assignedUser1?.email
-    );
-    expect(result2?.data?.assignedUsers.at(1)?.email).toEqual(
-      assignedUser2?.email
-    );
+    expect(
+      (result2?.data?.assignedUsers as IUserReadDto[]).at(0)?.email
+    ).toEqual(assignedUser1?.email);
+    expect(
+      (result2?.data?.assignedUsers as IUserReadDto[]).at(1)?.email
+    ).toEqual(assignedUser2?.email);
   });
 
   it("should get entities by model", async () => {
-    const model1EntitiesCommand: EntitiesGetCommand = {
-      modelId: (model as IModel)?._id,
+    const model1EntitiesCommand: IEntitiesGetCommand = {
+      modelId: (model as IModel)?._id.toString(),
       paginationCommand: {
         limit: 50,
         page: 1,
@@ -403,7 +420,7 @@ describe("entity router", () => {
       .post("/entities/getEntitiesByModel")
       .send(model1EntitiesCommand)
       .set("Authorization", "Bearer " + adminToken);
-    const result: ResponseDto<PaginationResponse<EntityReadDto>> = res.body;
+    const result: ResponseDto<PaginationResponse<IEntityReadDto>> = res.body;
 
     expect(result.success).toBeTruthy();
 
@@ -421,8 +438,10 @@ describe("entity router", () => {
     expect(foundModel1Entity).toEqual(true);
     expect(foundModel2Entity).toEqual(false);
 
-    const model2EntitiesCommand: EntitiesGetCommand = {
-      modelId: (model2ToWhichEntitiesbyModelDontBelong as IModel)?._id,
+    const model2EntitiesCommand: IEntitiesGetCommand = {
+      modelId: (
+        model2ToWhichEntitiesbyModelDontBelong as IModel
+      )?._id.toString(),
       paginationCommand: {
         limit: 50,
         page: 1,
@@ -432,7 +451,7 @@ describe("entity router", () => {
       .post("/entities/getEntitiesByModel")
       .send(model2EntitiesCommand)
       .set("Authorization", "Bearer " + adminToken);
-    const result2: ResponseDto<PaginationResponse<EntityReadDto>> = res2.body;
+    const result2: ResponseDto<PaginationResponse<IEntityReadDto>> = res2.body;
 
     expect(result2.success).toBeTruthy();
 
@@ -452,8 +471,8 @@ describe("entity router", () => {
   });
 
   it("should get assigned entities by model", () => {
-    const command: EntitiesGetCommand = {
-      modelId: (model as IModel)._id,
+    const command: IEntitiesGetCommand = {
+      modelId: (model as IModel)._id.toString(),
       paginationCommand: {
         limit: 30,
         page: 1,
@@ -464,7 +483,8 @@ describe("entity router", () => {
       .set("Authorization", "Bearer " + adminToken)
       .send(command)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<EntityReadDto>> = res.body;
+        const result: ResponseDto<PaginationResponse<IEntityReadDto>> =
+          res.body;
 
         expect(result.success).toBeTruthy();
 
@@ -485,8 +505,8 @@ describe("entity router", () => {
   });
 
   it("should make sure the number of assigned entities by model is correct", () => {
-    const command: EntitiesGetCommand = {
-      modelId: (model3ToWhichUserIsAlsoAssigned as IModel)._id,
+    const command: IEntitiesGetCommand = {
+      modelId: (model3ToWhichUserIsAlsoAssigned as IModel)._id.toString(),
       paginationCommand: {
         limit: 30,
         page: 1,
@@ -497,7 +517,8 @@ describe("entity router", () => {
       .set("Authorization", "Bearer " + adminToken)
       .send(command)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<EntityReadDto>> = res.body;
+        const result: ResponseDto<PaginationResponse<IEntityReadDto>> =
+          res.body;
 
         expect(result.success).toBeTruthy();
 
@@ -509,8 +530,8 @@ describe("entity router", () => {
   });
 
   it("should delete an entity", async () => {
-    const getModel1EntitiesCommand: EntitiesGetCommand = {
-      modelId: (model as IModel)?._id,
+    const getModel1EntitiesCommand: IEntitiesGetCommand = {
+      modelId: (model as IModel)?._id.toString(),
       paginationCommand: {
         limit: 50,
         page: 1,
@@ -522,7 +543,7 @@ describe("entity router", () => {
       .send(getModel1EntitiesCommand)
       .expect(200)
       .set("Authorization", "Bearer " + adminToken);
-    const result1: ResponseDto<PaginationResponse<EntityReadDto>> = res1.body;
+    const result1: ResponseDto<PaginationResponse<IEntityReadDto>> = res1.body;
 
     let foundDeletedEntity: boolean = Boolean(
       result1.data?.data.some(
@@ -544,7 +565,7 @@ describe("entity router", () => {
       .post("/entities/getEntitiesByModel")
       .send(getModel1EntitiesCommand)
       .set("Authorization", "Bearer " + adminToken);
-    const result3: ResponseDto<PaginationResponse<EntityReadDto>> = res3.body;
+    const result3: ResponseDto<PaginationResponse<IEntityReadDto>> = res3.body;
 
     expect(result3.success).toBeTruthy();
 
@@ -558,7 +579,7 @@ describe("entity router", () => {
   });
 
   it("should search for an entity", () => {
-    const command: EntitiesSearchCommand = {
+    const command: IEntitiesSearchCommand = {
       modelId: (model as IModel)._id.toString(),
       name: searchByText,
       paginationCommand: {
@@ -571,7 +592,8 @@ describe("entity router", () => {
       .send(command)
       .set("Authorization", "Bearer " + adminToken)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<EntityReadDto>> = res.body;
+        const result: ResponseDto<PaginationResponse<IEntityReadDto>> =
+          res.body;
 
         expect(result.success).toBeTruthy();
         const isEntityThatShouldBeFoundFound: boolean = Boolean(
@@ -592,8 +614,8 @@ describe("entity router", () => {
   });
 
   it("should set custom data key value", async () => {
-    const command: EntitiesSetCustomDataKeyValueCommand = {
-      entityId: (entityToGetByIdAndToUseForModel1 as IEntity)?._id,
+    const command: IEntitiesSetCustomDataKeyValueCommand = {
+      entityId: (entityToGetByIdAndToUseForModel1 as IEntity)?._id.toString(),
       key: "testKey",
       value: JSON.stringify({
         a: "this is the value of a",
@@ -614,7 +636,7 @@ describe("entity router", () => {
       })
       .set("Authorization", "Bearer " + adminToken)
       .then((res) => {
-        const result: ResponseDto<EntityReadDto> = res.body;
+        const result: ResponseDto<IEntityReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.customData).toBeDefined();

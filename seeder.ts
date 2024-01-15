@@ -21,7 +21,7 @@ import { IRole } from "./elements/role/role.model";
         firstName: faker.name.firstName(),
         lastName: faker.name.lastName(),
         password: "rootroot",
-        superRole: SuperRole.Normal,
+        superRole: SuperRoleEnum.Normal,
       };
 
       await userRepository.create(command);

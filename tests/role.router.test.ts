@@ -1,6 +1,5 @@
 import request from "supertest";
-import RoleCreateCommand from "../elements/role/dto/RoleCreateCommand";
-import { IRole, Permission } from "../elements/role/role.model";
+import { IRole } from "../elements/role/role.model";
 import app from "../server";
 import userService from "../elements/user/user.service";
 import {
@@ -9,28 +8,33 @@ import {
   createCreateModelCommand,
 } from "./fixtures";
 import ResponseDto from "../globalTypes/ResponseDto";
-import RoleReadDto from "../elements/role/dto/RoleReadDto";
 import roleRepository from "../elements/role/role.repository";
-import EntityCreateCommand, {
-  EntityFieldValueCommand,
-} from "../elements/entity/dto/EntityCreateCommand";
 import { IField } from "../elements/field/field.model";
 import fieldRepository from "../elements/field/field.repository";
 import modelRepository from "../elements/model/model.repository";
 import { IModel } from "../elements/model/model.model";
 import { IEntity } from "../elements/entity/entity.model";
 import entityRepository from "../elements/entity/entity.repository";
-import { StaticPermission } from "../elements/entityPermission/entityPermission.model";
-import RoleUpdateCommand from "../elements/role/dto/RoleUpdateCommand";
-import RolesGetCommand from "../elements/role/dto/RolesGetCommand";
 import PaginationResponse from "../globalTypes/PaginationResponse";
-import RolesSearchCommand from "../elements/role/dto/RolesSearchCommand";
+import {
+  IEntityCreateCommand,
+  IEntityFieldValueCommand,
+  IEntityPermissionReadDto,
+  IModelReadDto,
+  IRoleCreateCommand,
+  IRoleReadDto,
+  IRoleUpdateCommand,
+  IRolesGetCommand,
+  IRolesSearchCommand,
+  PermissionEnum,
+  StaticPermissionEnum,
+} from "roottypes";
 
 jest.setTimeout(50000);
 describe("roles", () => {
   const adminToken = userService.generateToken(adminUser);
   const roleToSearchName = "To find by search";
-  let createdRole: RoleReadDto | undefined;
+  let createdRole: IRoleReadDto | undefined;
   let field1: IField | undefined;
   let field2: IField | undefined;
   let model: IModel | undefined;
@@ -40,14 +44,14 @@ describe("roles", () => {
   let roleToSearch: IRole | undefined;
 
   const createCreateRoleCommand = (roleName?: string) => {
-    const command: RoleCreateCommand = {
+    const command: IRoleCreateCommand = {
       entityPermissions: [
         {
           entityEventNotifications: [],
           entityFieldPermissions: [
             {
               fieldId: (field1 as IField)?._id.toString(),
-              permissions: [StaticPermission.Read],
+              permissions: [StaticPermissionEnum.Read],
             },
           ],
           entityUserAssignmentPermissionsByRole: {
@@ -56,12 +60,12 @@ describe("roles", () => {
           },
           language: "en",
           modelId: model?._id.toString() || "",
-          permissions: [StaticPermission.Read, StaticPermission.Update],
+          permissions: [StaticPermissionEnum.Read, StaticPermissionEnum.Update],
         },
       ],
       language: "en",
       name: roleName || "Role Created by Cypress",
-      permissions: [Permission.CreateField, Permission.CreateModel],
+      permissions: [PermissionEnum.CreateField, PermissionEnum.CreateModel],
     };
 
     return command;
@@ -82,25 +86,25 @@ describe("roles", () => {
       createCreateModelCommand("Entity test model", [field1, field2])
     );
 
-    const entityField1ValueCommand1: EntityFieldValueCommand = {
-      fieldId: field1._id,
+    const entityField1ValueCommand1: IEntityFieldValueCommand = {
+      fieldId: field1._id.toString(),
       files: [],
       tableValues: [],
       value: "Value 1",
       yearTableValues: [],
     };
-    const entityField1ValueCommand2: EntityFieldValueCommand = {
-      fieldId: field2._id,
+    const entityField1ValueCommand2: IEntityFieldValueCommand = {
+      fieldId: field2._id.toString(),
       files: [],
       tableValues: [],
       value: "Value 2",
       yearTableValues: [],
     };
-    const createEntityCommand: EntityCreateCommand = {
+    const createEntityCommand: IEntityCreateCommand = {
       assignedUsersIds: [],
       entityFieldValues: [entityField1ValueCommand1, entityField1ValueCommand2],
       language: "en",
-      modelId: model._id,
+      modelId: model._id.toString(),
     };
     entity = await entityRepository.create(createEntityCommand);
 
@@ -114,35 +118,35 @@ describe("roles", () => {
   afterAll(async () => {
     const promises: Promise<any>[] = [];
     if (field1) {
-      promises.push(fieldRepository.deleteFields([field1._id]));
+      promises.push(fieldRepository.deleteFields([field1._id.toString()]));
     }
     if (field2) {
-      promises.push(fieldRepository.deleteFields([field2._id]));
+      promises.push(fieldRepository.deleteFields([field2._id.toString()]));
     }
     if (model) {
-      promises.push(modelRepository.deleteModels([model._id]));
+      promises.push(modelRepository.deleteModels([model._id.toString()]));
     }
     if (entity) {
-      promises.push(entityRepository.deleteEntities([entity._id]));
+      promises.push(entityRepository.deleteEntities([entity._id.toString()]));
     }
     if (createdRole) {
-      promises.push(roleRepository.deleteRoles([createdRole._id]));
+      promises.push(roleRepository.deleteRoles([createdRole._id.toString()]));
     }
     if (roleToUpdate) {
-      promises.push(roleRepository.deleteRoles([roleToUpdate._id]));
+      promises.push(roleRepository.deleteRoles([roleToUpdate._id.toString()]));
     }
     if (roleToDelete) {
-      promises.push(roleRepository.deleteRoles([roleToDelete._id]));
+      promises.push(roleRepository.deleteRoles([roleToDelete._id.toString()]));
     }
     if (roleToSearch) {
-      promises.push(roleRepository.deleteRoles([roleToSearch._id]));
+      promises.push(roleRepository.deleteRoles([roleToSearch._id.toString()]));
     }
 
     await Promise.all(promises);
   });
 
   it("should create a role", () => {
-    const command: RoleCreateCommand = createCreateRoleCommand();
+    const command: IRoleCreateCommand = createCreateRoleCommand();
 
     return request(app)
       .post("/roles/")
@@ -150,9 +154,9 @@ describe("roles", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<RoleReadDto> = res.body;
+        const result: ResponseDto<IRoleReadDto> = res.body;
 
-        createdRole = result.data as RoleReadDto;
+        createdRole = result.data as IRoleReadDto;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.name.at(0)?.text).toEqual(command.name);
@@ -167,18 +171,24 @@ describe("roles", () => {
         });
         // An example of a permission that shouldn't be found
         const foundPermissionCreateUser: boolean = Boolean(
-          result.data?.permissions.some((el) => el === Permission.CreateUser)
+          result.data?.permissions.some(
+            (el) => el === PermissionEnum.CreateUser
+          )
         );
         expect(foundPermissionCreateUser).toEqual(false);
         expect(result.data?.entityPermissions.length).toEqual(1);
         expect(
-          result.data?.entityPermissions.at(0)?.model._id.toString()
+          (
+            (result.data?.entityPermissions as IEntityPermissionReadDto[]).at(0)
+              ?.model as IModelReadDto
+          )._id.toString()
         ).toEqual(command.entityPermissions.at(0)?.modelId.toString());
         expect(result.data?.permissions.length).toEqual(
           command.permissions.length
         );
         expect(
-          result.data?.entityPermissions.at(0)?.entityFieldPermissions.length
+          (result.data?.entityPermissions as IEntityPermissionReadDto[]).at(0)
+            ?.entityFieldPermissions.length
         ).toEqual(
           command.entityPermissions.at(0)?.entityFieldPermissions.length
         );
@@ -186,7 +196,7 @@ describe("roles", () => {
   });
 
   it("should update a role", () => {
-    const command: RoleUpdateCommand = {
+    const command: IRoleUpdateCommand = {
       _id: (roleToUpdate as IRole)?._id.toString(),
       language: "en",
       name: "UpdatedRoleName",
@@ -196,7 +206,10 @@ describe("roles", () => {
           entityFieldPermissions: [
             {
               fieldId: (field1 as IField)?._id.toString(),
-              permissions: [StaticPermission.Read, StaticPermission.Update],
+              permissions: [
+                StaticPermissionEnum.Read,
+                StaticPermissionEnum.Update,
+              ],
             },
           ],
           entityUserAssignmentPermissionsByRole: {
@@ -205,14 +218,17 @@ describe("roles", () => {
           },
           language: "en",
           modelId: model?._id.toString() || "",
-          permissions: [StaticPermission.Create, StaticPermission.Update],
+          permissions: [
+            StaticPermissionEnum.Create,
+            StaticPermissionEnum.Update,
+          ],
         },
       ],
       permissions: [
-        Permission.CreateModel,
-        Permission.CreateField,
-        Permission.UpdateField,
-        Permission.UpdateModel,
+        PermissionEnum.CreateModel,
+        PermissionEnum.CreateField,
+        PermissionEnum.UpdateField,
+        PermissionEnum.UpdateModel,
       ],
     };
     return request(app)
@@ -221,16 +237,17 @@ describe("roles", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<RoleReadDto> = res.body;
+        const result: ResponseDto<IRoleReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.name.at(0)?.text).toEqual(command.name);
         expect(
-          result.data?.entityPermissions.at(0)?.entityFieldPermissions.at(0)
-            ?.permissions.length
+          (result.data?.entityPermissions as IEntityPermissionReadDto[])
+            .at(0)
+            ?.entityFieldPermissions.at(0)?.permissions.length
         ).toEqual(2);
         expect(
-          result.data?.entityPermissions.at(0)
+          (result.data?.entityPermissions as IEntityPermissionReadDto[]).at(0)
             ?.entityUserAssignmentPermissionsByRole?.canAssignToUserFromSameRole
         ).toEqual(false);
         expect(result?.data?.permissions.length).toEqual(
@@ -240,7 +257,7 @@ describe("roles", () => {
   });
 
   it("should get roles", () => {
-    const command: RolesGetCommand = {
+    const command: IRolesGetCommand = {
       paginationCommand: {
         limit: 10,
         page: 1,
@@ -252,7 +269,7 @@ describe("roles", () => {
       .set("Authorization", "Bearer " + adminToken)
       .send(command)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<RoleReadDto>> = res.body;
+        const result: ResponseDto<PaginationResponse<IRoleReadDto>> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.total).toEqual(expect.any(Number));
@@ -270,7 +287,7 @@ describe("roles", () => {
 
     const result: ResponseDto<void> = res.body;
 
-    const command: RolesGetCommand = {
+    const command: IRolesGetCommand = {
       paginationCommand: {
         limit: 10,
         page: 1,
@@ -284,7 +301,7 @@ describe("roles", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<RoleReadDto>> = res.body;
+        const result: ResponseDto<PaginationResponse<IRoleReadDto>> = res.body;
 
         const foundDeletedRole: boolean = Boolean(
           result.data?.data.some(
@@ -297,7 +314,7 @@ describe("roles", () => {
   });
 
   it("should find searched role", () => {
-    const command: RolesSearchCommand = {
+    const command: IRolesSearchCommand = {
       name: roleToSearchName,
       paginationCommand: {
         limit: 10,
@@ -310,7 +327,7 @@ describe("roles", () => {
       .set("Authorization", "Bearer " + adminToken)
       .send(command)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<RoleReadDto>> = res.body;
+        const result: ResponseDto<PaginationResponse<IRoleReadDto>> = res.body;
 
         const foundRole: boolean = Boolean(
           result.data?.data.some(

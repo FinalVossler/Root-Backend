@@ -1,12 +1,12 @@
 import { IUser } from "../user/user.model";
-import ReactionCreateCommand from "./dtos/ReactionCreateCommand";
 import Reaction, { IReaction } from "./reaction.model";
 import Message, { IMessage } from "../message/message.model";
 import mongoose from "mongoose";
+import { IReactionCreateCommand } from "roottypes";
 
 const reactionRepository = {
   create: async (
-    command: ReactionCreateCommand,
+    command: IReactionCreateCommand,
     currentUser: IUser
   ): Promise<IReaction> => {
     // check if the reaction already exists:
@@ -25,10 +25,12 @@ const reactionRepository = {
       ])
       .exec();
 
-    let existingReaction: IReaction | undefined | null =
-      message?.reactions?.find(
-        (el) => el.user._id.toString() === currentUser._id.toString()
-      );
+    let existingReaction: IReaction | undefined | null = (
+      message?.reactions as IReaction[]
+    )?.find(
+      (reaction) =>
+        (reaction.user as IUser)._id.toString() === currentUser._id.toString()
+    );
     if (existingReaction) {
       existingReaction = await Reaction.findOneAndUpdate(
         { _id: existingReaction._id },

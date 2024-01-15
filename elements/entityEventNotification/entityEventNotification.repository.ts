@@ -1,14 +1,16 @@
 import mongoose from "mongoose";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
-import EntityEventNotificationCreateCommand from "./dto/EntityEventNotificationCreateCommand";
-import EntityEventNotificationUpdateCommand from "./dto/EntityEventNotificationUpdateCommand";
 import EntityEventNotification, {
   IEntityEventNotification,
 } from "./entityEventNotification.model";
+import {
+  IEntityEventNotificationCreateCommand,
+  IEntityEventNotificationUpdateCommand,
+} from "roottypes";
 
 const entityEventNotificationRepository = {
   create: async (
-    command: EntityEventNotificationCreateCommand
+    command: IEntityEventNotificationCreateCommand
   ): Promise<IEntityEventNotification> => {
     const entityEventNotification: IEntityEventNotification =
       await EntityEventNotification.create({
@@ -20,7 +22,7 @@ const entityEventNotificationRepository = {
     return entityEventNotification;
   },
   update: async (
-    command: EntityEventNotificationUpdateCommand,
+    command: IEntityEventNotificationUpdateCommand,
     oldEntityEventNotification: IEntityEventNotification
   ): Promise<IEntityEventNotification> => {
     if (!command._id) {

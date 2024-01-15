@@ -2,17 +2,19 @@ import mongoose from "mongoose";
 
 import Model, { IModel } from "./model.model";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
-import ModelCreateCommand from "./dto/ModelCreateCommand";
-import ModelUpdateCommand from "./dto/ModelUpdateCommand";
-import ModelsGetCommand from "./dto/ModelsGetCommand";
-import ModelsSearchCommand from "./dto/ModelsSearchCommand";
 import { IEventRequestHeader } from "../event/event.model";
 import modelStateRepository from "../modelState/modelState.repository";
 import { IModelState } from "../modelState/modelState.model";
-import EventCommand from "../event/dto/EventCommand";
+import {
+  IEventCommand,
+  IModelCreateCommand,
+  IModelUpdateCommand,
+  IModelsGetCommand,
+  IModelsSearchCommand,
+} from "roottypes";
 
 const modelRepository = {
-  create: async (command: ModelCreateCommand): Promise<IModel> => {
+  create: async (command: IModelCreateCommand): Promise<IModel> => {
     // create model states first:
     const modelStates: IModelState[] = await modelStateRepository.createMany(
       command.states
@@ -36,8 +38,8 @@ const modelRepository = {
         states: modelField.modelStatesIds,
         mainField: modelField.mainField,
       })),
-      modelEvents: command.modelEvents.map<EventCommand>(
-        (modelEvent: EventCommand) => ({
+      modelEvents: command.modelEvents.map<IEventCommand>(
+        (modelEvent: IEventCommand) => ({
           eventTrigger: modelEvent.eventTrigger,
           eventType: modelEvent.eventType,
           redirectionToSelf: modelEvent.redirectionToSelf,
@@ -63,7 +65,7 @@ const modelRepository = {
 
     return model.populate(populationOptions);
   },
-  update: async (command: ModelUpdateCommand): Promise<IModel> => {
+  update: async (command: IModelUpdateCommand): Promise<IModel> => {
     const model: IModel | null = await Model.findById(command._id).populate(
       populationOptions
     );
@@ -114,8 +116,8 @@ const modelRepository = {
             states: modelField.modelStatesIds,
             mainField: modelField.mainField,
           })),
-          modelEvents: command.modelEvents.map<EventCommand>(
-            (modelEvent: EventCommand) => ({
+          modelEvents: command.modelEvents.map<IEventCommand>(
+            (modelEvent: IEventCommand) => ({
               eventTrigger: modelEvent.eventTrigger,
               eventType: modelEvent.eventType,
               redirectionToSelf: modelEvent.redirectionToSelf,
@@ -152,7 +154,7 @@ const modelRepository = {
     return newModel;
   },
   getModels: async (
-    command: ModelsGetCommand
+    command: IModelsGetCommand
   ): Promise<{ total: number; models: IModel[] }> => {
     const models: IModel[] = await Model.find({})
       .sort({ createAt: -1 })
@@ -175,7 +177,7 @@ const modelRepository = {
     return model;
   },
   getModelsByIds: async (
-    command: ModelsGetCommand,
+    command: IModelsGetCommand,
     ids: string[]
   ): Promise<{ total: number; models: IModel[] }> => {
     const models: IModel[] = await Model.find({
@@ -193,13 +195,13 @@ const modelRepository = {
 
     return { models, total };
   },
-  deleteModels: async (modelsIds: mongoose.Types.ObjectId[]): Promise<void> => {
+  deleteModels: async (modelsIds: string[]): Promise<void> => {
     for (let i = 0; i < modelsIds.length; i++) {
-      await Model.deleteOne({ _id: modelsIds[i] });
+      await Model.deleteOne({ _id: new mongoose.Types.ObjectId(modelsIds[i]) });
     }
   },
   search: async (
-    command: ModelsSearchCommand
+    command: IModelsSearchCommand
   ): Promise<{ models: IModel[]; total: number }> => {
     const query = Model.find({
       name: { $elemMatch: { text: { $regex: command.name } } },

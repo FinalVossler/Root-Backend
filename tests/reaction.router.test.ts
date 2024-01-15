@@ -1,23 +1,27 @@
 import request from "supertest";
 
 import Message, { IPopulatedMessage } from "../elements/message/message.model";
-import { IUser, SuperRole } from "../elements/user/user.model";
+import { IUser } from "../elements/user/user.model";
 import userRepository from "../elements/user/user.repository";
-import UserCreateCommand from "../elements/user/dtos/UserCreateCommand";
-import MessageSendCommand from "../elements/message/dtos/MessageSendCommand";
 import { adminUser } from "./fixtures";
 import messageRepository from "../elements/message/message.repository";
-import ReactionCreateCommand from "../elements/reaction/dtos/ReactionCreateCommand";
 import Reaction, {
   IReaction,
   ReactionEnum,
 } from "../elements/reaction/reaction.model";
 import app from "../server";
 import userService from "../elements/user/user.service";
-import ReactionReadDto from "../elements/reaction/dtos/ReactionReadDto";
 import ResponseDto from "../globalTypes/ResponseDto";
 import reactionRepository from "../elements/reaction/reaction.repository";
 import mongoose from "mongoose";
+import {
+  IMessageSendCommand,
+  IReactionCreateCommand,
+  IReactionReadDto,
+  IUserCreateCommand,
+  IUserReadDto,
+  SuperRoleEnum,
+} from "roottypes";
 
 jest.setTimeout(50000);
 describe("reactions", () => {
@@ -30,21 +34,21 @@ describe("reactions", () => {
   const adminToken = userService.generateToken(adminUser);
 
   beforeAll(async () => {
-    const userCreateCommand: UserCreateCommand = {
+    const userCreateCommand: IUserCreateCommand = {
       email: "reactionUser@gmail.com",
       firstName: "reactionUserFirstName",
       lastName: "reactionUserLastname",
       password: "rootroot",
-      superRole: SuperRole.Normal,
+      superRole: SuperRoleEnum.Normal,
     };
     user = await userRepository.create(userCreateCommand);
     fetchedAdminUser = await userRepository.getByEmail(adminUser.email);
 
-    const messageCreateCommand: MessageSendCommand = {
+    const messageCreateCommand: IMessageSendCommand = {
       files: [],
-      from: fetchedAdminUser._id,
+      from: fetchedAdminUser._id.toString(),
       message: "This is the sent message",
-      to: [user._id, fetchedAdminUser._id],
+      to: [user._id.toString(), fetchedAdminUser._id.toString()],
     };
 
     message = await messageRepository.sendMessage(
@@ -55,7 +59,7 @@ describe("reactions", () => {
       messageCreateCommand,
       adminUser
     );
-    const createReactCommand: ReactionCreateCommand = {
+    const createReactCommand: IReactionCreateCommand = {
       messageId: message?._id.toString() || "",
       reaction: ReactionEnum.Love,
     };
@@ -69,7 +73,7 @@ describe("reactions", () => {
   afterAll(async () => {
     const promises: Promise<any>[] = [];
     if (user) {
-      promises.push(userRepository.deleteUsers([user._id]));
+      promises.push(userRepository.deleteUsers([user._id.toString()]));
     }
     if (message) {
       promises.push(messageRepository.deleteMessage(message._id.toString()));
@@ -86,7 +90,7 @@ describe("reactions", () => {
   });
 
   it("should react to a message", () => {
-    const createReactCommand: ReactionCreateCommand = {
+    const createReactCommand: IReactionCreateCommand = {
       messageId: message?._id.toString() || "",
       reaction: ReactionEnum.Love,
     };
@@ -97,18 +101,18 @@ describe("reactions", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<ReactionReadDto> = res.body;
+        const result: ResponseDto<IReactionReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.reaction).toEqual(createReactCommand.reaction);
-        expect(result.data?.user._id.toString()).toEqual(
+        expect((result.data?.user as IUserReadDto)._id.toString()).toEqual(
           fetchedAdminUser?._id.toString()
         );
       });
   });
 
   it("when we react a second time to a message, the reaction should be updated instead of creating a new one", async () => {
-    const newReactCommand: ReactionCreateCommand = {
+    const newReactCommand: IReactionCreateCommand = {
       messageId: messageToReactToTwice?._id.toString() || "",
       reaction: ReactionEnum.Laugh,
     };
@@ -125,10 +129,14 @@ describe("reactions", () => {
       .populate("reactions")
       .populate("reactions.user");
     const superAdminReactions = updatedMessage?.reactions?.filter(
-      (el) => el.user._id.toString() === fetchedAdminUser?._id.toString()
+      (reaction) =>
+        ((reaction as IReaction).user as IUserReadDto)._id.toString() ===
+        fetchedAdminUser?._id.toString()
     );
 
     expect(superAdminReactions?.length).toEqual(1);
-    expect(superAdminReactions?.[0].reaction).toEqual(newReactCommand.reaction);
+    expect((superAdminReactions as IReactionReadDto[])?.[0].reaction).toEqual(
+      newReactCommand.reaction
+    );
   });
 });

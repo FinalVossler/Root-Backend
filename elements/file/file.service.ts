@@ -1,21 +1,22 @@
-import PaginationCommand from "../../globalTypes/PaginationCommand";
+import {
+  IFileGetUnownedAndSelectedFilesCommand,
+  IFileGetUserAndSelectedFilesCommand,
+} from "roottypes";
 import { IUser } from "../user/user.model";
-import FileGetUnownedAndSelectedFilesCommand from "./dto/FileGetUnownedAndSelectedFilesCommand";
-import FileGetUserAndSelectedFilesCommand from "./dto/FileGetUserAndSelectedFilesCommand";
 import { IFile } from "./file.model";
 import fileRepository from "./file.repository";
 
 const fileService = {
   getUserFiles: async (
     user: IUser,
-    command: FileGetUserAndSelectedFilesCommand
+    command: IFileGetUserAndSelectedFilesCommand
   ): Promise<{ files: IFile[]; total: number }> => {
     const { files, total } = await fileRepository.getUserFiles(user, command);
 
     return { files, total };
   },
   getUnownedFiles: async (
-    command: FileGetUnownedAndSelectedFilesCommand
+    command: IFileGetUnownedAndSelectedFilesCommand
   ): Promise<{ files: IFile[]; total: number }> => {
     const { files, total } = await fileRepository.getUnownedFiles(command);
 

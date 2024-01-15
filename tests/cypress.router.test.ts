@@ -2,10 +2,9 @@ import request from "supertest";
 import userService from "../elements/user/user.service";
 import { adminUser } from "./fixtures";
 import app from "../server";
-import UsersGetCommand from "../elements/user/dtos/UsersGetCommand";
 import ResponseDto from "../globalTypes/ResponseDto";
 import PaginationResponse from "../globalTypes/PaginationResponse";
-import UserReadDto from "../elements/user/dtos/UserReadDto";
+import { IUserReadDto, IUsersGetCommand } from "roottypes";
 
 // Attention!!! This test suite should be skipped. It's only used to test the cypress preparation scripts
 // when we are about to run cypress tests
@@ -19,7 +18,7 @@ describe.skip("cypress router", function () {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200);
 
-    const getUsersCommand: UsersGetCommand = {
+    const getUsersCommand: IUsersGetCommand = {
       paginationCommand: {
         limit: 10,
         page: 1,
@@ -31,7 +30,7 @@ describe.skip("cypress router", function () {
       .send(getUsersCommand)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<UserReadDto>> = res.body;
+        const result: ResponseDto<PaginationResponse<IUserReadDto>> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.total).toEqual(1);

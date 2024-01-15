@@ -9,6 +9,7 @@ import entityPermissionRepository from "../entityPermission/entityPermission.rep
 import EventSchema, { IEvent } from "../event/event.model";
 import { IModelState } from "../modelState/modelState.model";
 import modelStateRepository from "../modelState/modelState.repository";
+import { populationOptions } from "./model.repository";
 
 export interface IModel {
   _id: mongoose.Types.ObjectId;
@@ -24,7 +25,7 @@ export interface IModel {
 
 //#region model fields
 export interface IModelField {
-  field: IField;
+  field: IField | string;
   required: boolean;
   conditions?: IModelFieldCondition[];
   states?: IModelState[];
@@ -32,10 +33,10 @@ export interface IModelField {
 }
 
 export interface IModelFieldCondition {
-  field?: IField;
+  field?: IField | string;
   conditionType: ModelFieldConditionTypeEnum;
   value?: number | string;
-  modelState?: IModelState;
+  modelState?: IModelState | string;
 }
 
 export enum ModelFieldConditionTypeEnum {
@@ -94,12 +95,6 @@ const ModelSchema = new mongoose.Schema<IModel>(
             ref: "modelState",
           },
         ],
-        subStates: [
-          {
-            type: mongoose.SchemaTypes.ObjectId,
-            ref: "modelState",
-          },
-        ],
         mainField: {
           type: mongoose.SchemaTypes.Boolean,
           required: false,
@@ -126,9 +121,9 @@ const ModelSchema = new mongoose.Schema<IModel>(
 );
 
 ModelSchema.pre("deleteOne", async function (next) {
-  const model: IModel | undefined = (await this.model.findOne(
-    this.getQuery()
-  )) as IModel;
+  const model: IModel | undefined = (await this.model
+    .findOne(this.getQuery())
+    .populate(populationOptions)) as IModel;
 
   if (model) {
     // Deleting the entities created based on the deleted model
@@ -145,7 +140,7 @@ ModelSchema.pre("deleteOne", async function (next) {
     );
 
     // Delete model modelField states
-    let statesIds: mongoose.Types.ObjectId[] = [];
+    let statesIds: string[] = [];
     model.modelFields?.forEach((modelField) => {
       statesIds = statesIds.concat(
         modelField.states?.map((state) => state._id) || []

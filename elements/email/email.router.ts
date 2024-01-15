@@ -1,8 +1,8 @@
 import express, { Response } from "express";
+import { IEmailSendCommand } from "roottypes";
 
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
-import EmailSendCommand from "./dto/EmailSendCommand";
 import emailService from "./email.service";
 
 const router = express.Router();
@@ -10,10 +10,10 @@ const router = express.Router();
 router.post(
   "/",
   async (
-    req: ConnectedRequest<any, any, EmailSendCommand, any>,
+    req: ConnectedRequest<any, any, IEmailSendCommand, any>,
     res: Response<ResponseDto<void>>
   ) => {
-    const command: EmailSendCommand = req.body;
+    const command: IEmailSendCommand = req.body;
 
     await emailService.sendContactEmail(command);
 

@@ -7,19 +7,9 @@ import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 import Model, { IModel } from "../model/model.model";
 import { populationOptions } from "../model/model.repository";
 import { populationOptions as fieldPopulationOptions } from "../field/field.repository";
+import { FieldTypeEnum } from "roottypes";
 
-export enum FieldType {
-  Number = "Number",
-  Text = "Text",
-  Paragraph = "Paragraph",
-  File = "File",
-  Selector = "Selector",
-  Button = "Button",
-  Table = "Table",
-  IFrame = "IFrame",
-}
-
-export type FieldOption = {
+export type IFieldOption = {
   value: string;
   label: ITranslatedText[];
 };
@@ -27,14 +17,14 @@ export type FieldOption = {
 export interface IField {
   _id: mongoose.Types.ObjectId;
   name: ITranslatedText[];
-  type: FieldType;
+  type: FieldTypeEnum;
   canChooseFromExistingFiles?: boolean;
-  options?: FieldOption[];
+  options?: IFieldOption[];
   fieldEvents: IEvent[];
   tableOptions?: {
     name?: ITranslatedText[];
-    columns: IFieldTableElement[];
-    rows: IFieldTableElement[];
+    columns: (IFieldTableElement | string)[];
+    rows: (IFieldTableElement | string)[];
     yearTable: boolean;
   };
 
@@ -53,7 +43,7 @@ const FieldSchema = new mongoose.Schema<IField>(
     type: {
       type: mongoose.SchemaTypes.String,
       required: true,
-      default: FieldType.Text,
+      default: FieldTypeEnum.Text,
     },
     canChooseFromExistingFiles: {
       type: mongoose.SchemaTypes.Boolean,
@@ -108,7 +98,8 @@ FieldSchema.pre("deleteOne", async function (next) {
   models.forEach((model) => {
     const promise = new Promise(async (resolve, reject) => {
       const newModelFields = model.modelFields.filter(
-        (modelField) => modelField.field._id.toString() !== field._id.toString()
+        (modelField) =>
+          (modelField.field as IField)._id.toString() !== field._id.toString()
       );
 
       await Model.updateOne(
@@ -126,8 +117,14 @@ FieldSchema.pre("deleteOne", async function (next) {
 
   // Delete field table elements on field deletion
   fieldTableElementRepository.deleteMany(
-    (field.tableOptions?.columns.map((c) => c._id.toString()) || []).concat(
-      field.tableOptions?.rows?.map((r) => r._id.toString()) || []
+    (
+      field.tableOptions?.columns.map((c) =>
+        (c as IFieldTableElement)._id.toString()
+      ) || []
+    ).concat(
+      field.tableOptions?.rows?.map((r) =>
+        (r as IFieldTableElement)._id.toString()
+      ) || []
     )
   );
 

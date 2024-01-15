@@ -1,16 +1,20 @@
 import request from "supertest";
-import PageCreateCommand from "../elements/page/dto/PageCreateCommand";
 import pageRepository from "../elements/page/page.repository";
-import { IPost, PostDesign, PostVisibility } from "../elements/post/post.model";
-import PostCreateCommand from "../elements/post/dto/PostCreateCommand";
+import { IPost } from "../elements/post/post.model";
 import { adminUser } from "./fixtures";
 import postRepository from "../elements/post/post.repository";
 import { IPage } from "../elements/page/page.model";
 import app from "../server";
 import ResponseDto from "../globalTypes/ResponseDto";
-import PageReadDto from "../elements/page/dto/PageReadDto";
 import userService from "../elements/user/user.service";
-import PageUpdateCommand from "../elements/page/dto/PageUpdateCommand";
+import {
+  IPageCreateCommand,
+  IPageReadDto,
+  IPageUpdateCommand,
+  IPostCreateCommand,
+  PostDesignEnum,
+  PostVisibilityEnum,
+} from "roottypes";
 
 jest.setTimeout(50000);
 const adminToken = userService.generateToken(adminUser);
@@ -24,13 +28,13 @@ describe("Pages", () => {
 
   beforeAll(async () => {
     // Posts creation
-    const postCreateCommand: PostCreateCommand = {
+    const postCreateCommand: IPostCreateCommand = {
       children: [],
-      design: PostDesign.Default,
+      design: PostDesignEnum.Default,
       files: [],
       language: "en",
-      posterId: adminUser._id,
-      visibility: PostVisibility.Public,
+      posterId: adminUser._id.toString(),
+      visibility: PostVisibilityEnum.Public,
       title: "Post 1 Title for pages test",
     };
 
@@ -44,7 +48,7 @@ describe("Pages", () => {
     );
 
     // Pages creation
-    const pageCreateCommand: PageCreateCommand = {
+    const pageCreateCommand: IPageCreateCommand = {
       language: "en",
       posts: [post1._id.toString(), post2._id.toString()],
       showInHeader: true,
@@ -88,7 +92,7 @@ describe("Pages", () => {
       .get("/pages/")
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PageReadDto[]> = res.body;
+        const result: ResponseDto<IPageReadDto[]> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(
@@ -105,7 +109,7 @@ describe("Pages", () => {
   });
 
   it("should create a page", () => {
-    const pageCreateCommand: PageCreateCommand = {
+    const pageCreateCommand: IPageCreateCommand = {
       language: "en",
       posts: [(post1 as IPost)._id.toString(), (post2 as IPost)._id.toString()],
       showInHeader: true,
@@ -119,7 +123,7 @@ describe("Pages", () => {
       .send(pageCreateCommand)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PageReadDto> = res.body;
+        const result: ResponseDto<IPageReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.title.at(0)?.text).toEqual(pageCreateCommand.title);
@@ -128,7 +132,7 @@ describe("Pages", () => {
   });
 
   it("should update a page", () => {
-    const pageUpdateCommand: PageUpdateCommand = {
+    const pageUpdateCommand: IPageUpdateCommand = {
       _id: (page3ToUpdate as IPage)?._id.toString(),
       language: "en",
       posts: [(post1 as IPost)?._id.toString()],
@@ -143,7 +147,7 @@ describe("Pages", () => {
       .send(pageUpdateCommand)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PageReadDto> = res.body;
+        const result: ResponseDto<IPageReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.title.at(0)?.text).toEqual(pageUpdateCommand.title);
@@ -155,7 +159,7 @@ describe("Pages", () => {
     // Make sure that the page we are about to delete exists in the list of pages
     const getPagesRes = await request(app).get("/pages/").expect(200);
 
-    const getPagesResult: ResponseDto<PageReadDto[]> = getPagesRes.body;
+    const getPagesResult: ResponseDto<IPageReadDto[]> = getPagesRes.body;
 
     expect(getPagesResult.success).toBeTruthy();
     expect(
@@ -179,7 +183,7 @@ describe("Pages", () => {
       .get("/pages/")
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PageReadDto[]> = res.body;
+        const result: ResponseDto<IPageReadDto[]> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(

@@ -3,14 +3,17 @@ import express, { Response } from "express";
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
 import protectMiddleware from "../../middleware/protectMiddleware";
-import PageCreateCommand from "./dto/PageCreateCommand";
-import PageReadDto, { toReadDto } from "./dto/PageReadDto";
-import PageUpdateCommand from "./dto/PageUpdateCommand";
 import { IPage } from "./page.model";
 import pageService from "./page.service";
 import roleService from "../role/role.service";
-import { Permission } from "../role/role.model";
 import mongoose from "mongoose";
+import {
+  IPageCreateCommand,
+  IPageReadDto,
+  IPageUpdateCommand,
+  PermissionEnum,
+} from "roottypes";
+import { pageToReadDto } from "./pageToReadDto";
 
 const router = express.Router();
 
@@ -18,12 +21,12 @@ router.get(
   "/",
   async (
     req: ConnectedRequest<any, any, any, any>,
-    res: Response<ResponseDto<PageReadDto[]>>
+    res: Response<ResponseDto<IPageReadDto[]>>
   ) => {
     const pages: IPage[] = await pageService.get();
 
     return res.status(200).json({
-      data: pages.map((p) => toReadDto(p)),
+      data: pages.map((p) => pageToReadDto(p)),
       success: true,
     });
   }
@@ -33,20 +36,20 @@ router.post(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, PageCreateCommand, any>,
-    res: Response<ResponseDto<PageReadDto>>
+    req: ConnectedRequest<any, any, IPageCreateCommand, any>,
+    res: Response<ResponseDto<IPageReadDto>>
   ) => {
     roleService.checkPermission({
       user: req.user,
-      permission: Permission.CreatePage,
+      permission: PermissionEnum.CreatePage,
     });
 
-    const command: PageCreateCommand = req.body;
+    const command: IPageCreateCommand = req.body;
 
     const page: IPage = await pageService.create(command);
 
     return res.status(200).json({
-      data: toReadDto(page),
+      data: pageToReadDto(page),
       success: true,
     });
   }
@@ -56,20 +59,20 @@ router.put(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, PageUpdateCommand, any>,
-    res: Response<ResponseDto<PageReadDto>>
+    req: ConnectedRequest<any, any, IPageUpdateCommand, any>,
+    res: Response<ResponseDto<IPageReadDto>>
   ) => {
     roleService.checkPermission({
       user: req.user,
-      permission: Permission.UpdatePage,
+      permission: PermissionEnum.UpdatePage,
     });
 
-    const command: PageUpdateCommand = req.body;
+    const command: IPageUpdateCommand = req.body;
 
     const page: IPage = await pageService.update(command);
 
     return res.status(200).json({
-      data: toReadDto(page),
+      data: pageToReadDto(page),
       success: true,
     });
   }
@@ -84,7 +87,7 @@ router.delete(
   ) => {
     roleService.checkPermission({
       user: req.user,
-      permission: Permission.DeletePage,
+      permission: PermissionEnum.DeletePage,
     });
 
     const pagesIds = req.body;

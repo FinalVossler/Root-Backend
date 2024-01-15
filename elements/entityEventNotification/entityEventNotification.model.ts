@@ -1,17 +1,13 @@
 import mongoose from "mongoose";
 
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
-
-export enum EntityEventNotificationTrigger {
-  OnCreate = "OnCreate",
-  OnAssigned = "OnAssigned",
-}
+import { EntityEventNotificationTriggerEnum } from "roottypes";
 
 export interface IEntityEventNotification {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   title: ITranslatedText[];
   text: ITranslatedText[];
-  trigger: EntityEventNotificationTrigger;
+  trigger: EntityEventNotificationTriggerEnum;
 }
 
 interface IEntityEventNotificationModel

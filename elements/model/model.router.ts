@@ -6,15 +6,20 @@ import ResponseDto from "../../globalTypes/ResponseDto";
 import { IModel } from "./model.model";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
 import protectMiddleware from "../../middleware/protectMiddleware";
-import ModelCreateCommand from "./dto/ModelCreateCommand";
 import modelSerivce from "./model.service";
-import ModelReadDto, { toReadDto } from "./dto/ModelReadDto";
-import ModelUpdateCommand from "./dto/ModelUpdateCommand";
-import ModelsGetCommand from "./dto/ModelsGetCommand";
-import ModelsSearchCommand from "./dto/ModelsSearchCommand";
 import roleService from "../role/role.service";
-import { Permission } from "../role/role.model";
-import { StaticPermission } from "../entityPermission/entityPermission.model";
+import {
+  IModelCreateCommand,
+  IModelReadDto,
+  IModelUpdateCommand,
+  IModelsGetCommand,
+  IModelsSearchCommand,
+  PermissionEnum,
+  StaticPermissionEnum,
+} from "roottypes";
+import { modelToReadDto } from "./modelToReadDto";
+import { IEntityPermission } from "../entityPermission/entityPermission.model";
+import { IRole } from "../role/role.model";
 
 const router = Router();
 
@@ -22,20 +27,20 @@ router.post(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, ModelCreateCommand, any>,
-    res: Response<ResponseDto<ModelReadDto>>
+    req: ConnectedRequest<any, any, IModelCreateCommand, any>,
+    res: Response<ResponseDto<IModelReadDto>>
   ) => {
     roleService.checkPermission({
       user: req.user,
-      permission: Permission.CreateModel,
+      permission: PermissionEnum.CreateModel,
     });
 
-    const command: ModelCreateCommand = req.body;
+    const command: IModelCreateCommand = req.body;
     const model: IModel = await modelSerivce.createModel(command);
 
     return res.status(200).send({
       success: true,
-      data: toReadDto(model),
+      data: modelToReadDto(model) as IModelReadDto,
     });
   }
 );
@@ -44,20 +49,20 @@ router.put(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, ModelUpdateCommand, any>,
-    res: Response<ResponseDto<ModelReadDto>>
+    req: ConnectedRequest<any, any, IModelUpdateCommand, any>,
+    res: Response<ResponseDto<IModelReadDto>>
   ) => {
     roleService.checkPermission({
       user: req.user,
-      permission: Permission.UpdateModel,
+      permission: PermissionEnum.UpdateModel,
     });
 
-    const command: ModelUpdateCommand = req.body;
+    const command: IModelUpdateCommand = req.body;
     const model: IModel = await modelSerivce.updateModel(command);
 
     return res.status(200).send({
       success: true,
-      data: toReadDto(model),
+      data: modelToReadDto(model) as IModelReadDto,
     });
   }
 );
@@ -66,43 +71,44 @@ router.post(
   "/getModels",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, ModelsGetCommand, any>,
-    res: Response<ResponseDto<PaginationResponse<ModelReadDto>>>
+    req: ConnectedRequest<any, any, IModelsGetCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<IModelReadDto>>>
   ) => {
     // Models are always parsed at the beginning for the menu, so we need a try and catch for permission checking in case we don't have direct access to them.
     try {
       roleService.checkPermission({
         user: req.user,
-        permission: Permission.ReadModel,
+        permission: PermissionEnum.ReadModel,
       });
     } catch (e) {
       // If we can't read the models, we should at least be able to read the entities to which we have read access (and that are based on the models)
       const { models, total } = await modelSerivce.getModelsByIds(
         req.body,
-        req.user?.role?.entityPermissions
+        ((req.user?.role as IRole)?.entityPermissions as IEntityPermission[])
           ?.filter(
             (ePermission) =>
-              ePermission.permissions.indexOf(StaticPermission.Read) !== -1
+              ePermission.permissions.indexOf(StaticPermissionEnum.Read) !== -1
           )
-          .map((ePermission) => ePermission.model._id.toString()) || []
+          .map((ePermission) => (ePermission.model as IModel)._id.toString()) ||
+          []
       );
 
       return res.status(200).send({
         success: true,
         data: {
-          data: models.map((m) => toReadDto(m)),
+          data: models.map((m) => modelToReadDto(m) as IModelReadDto),
           total,
         },
       });
     }
 
-    const command: ModelsGetCommand = req.body;
+    const command: IModelsGetCommand = req.body;
     const { models, total } = await modelSerivce.getModels(command);
 
     return res.status(200).send({
       success: true,
       data: {
-        data: models.map((m) => toReadDto(m)),
+        data: models.map((m) => modelToReadDto(m) as IModelReadDto),
         total,
       },
     });
@@ -113,15 +119,15 @@ router.delete(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, mongoose.Types.ObjectId[], any>,
+    req: ConnectedRequest<any, any, string[], any>,
     res: Response<ResponseDto<void>>
   ) => {
     roleService.checkPermission({
       user: req.user,
-      permission: Permission.DeleteModel,
+      permission: PermissionEnum.DeleteModel,
     });
 
-    const modelsIds: mongoose.Types.ObjectId[] = req.body;
+    const modelsIds: string[] = req.body;
     await modelSerivce.deleteModels(modelsIds);
 
     return res.status(200).send({
@@ -135,22 +141,22 @@ router.post(
   "/search",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, ModelsSearchCommand, any>,
-    res: Response<ResponseDto<PaginationResponse<ModelReadDto>>>
+    req: ConnectedRequest<any, any, IModelsSearchCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<IModelReadDto>>>
   ) => {
     roleService.checkPermission({
       user: req.user,
-      permission: Permission.ReadModel,
+      permission: PermissionEnum.ReadModel,
     });
 
-    const command: ModelsSearchCommand = req.body;
+    const command: IModelsSearchCommand = req.body;
 
     const { models, total } = await modelSerivce.search(command);
 
     return res.status(200).send({
       success: true,
       data: {
-        data: models.map((p) => toReadDto(p)),
+        data: models.map((p) => modelToReadDto(p) as IModelReadDto),
         total,
       },
     });

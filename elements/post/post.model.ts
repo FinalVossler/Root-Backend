@@ -1,45 +1,20 @@
 import mongoose from "mongoose";
 
-import File, { IFile } from "../file/file.model";
+import { IFile } from "../file/file.model";
 import TranslatedTextSchema, { ITranslatedText } from "../ITranslatedText";
-
-export enum PostVisibility {
-  Private = "Private",
-  Public = "Public",
-  Connections = "Connections",
-}
-
-export enum PostDesign {
-  Default = "Default",
-  Spacing = "Spacing",
-  Card = "Card",
-  fullWidthPicture = "FullWidthPicture",
-  TitleAndText = "TitleAndText",
-  Banner = "Banner",
-  TitleImageAndText = "TitleImageAndText",
-  ChildrenContainer = "ChildrenContainer",
-  RotatingCarzd = "RotatingCard",
-  AnimatedTitle = "AnimatedTitle",
-  UnderlinedTitle = "UnderinedTitle",
-  Footer = "Footer",
-  ContactForm = "ContactForm",
-  Person = "Person",
-  Card2 = "Card2",
-  Video = "Video",
-  ModelForm = "ModelForm",
-  ModelList = "ModelList",
-}
+import { PostDesignEnum, PostVisibilityEnum } from "roottypes";
+import { IUser } from "../user/user.model";
 
 export interface IPost {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   title?: ITranslatedText[];
   subTitle?: ITranslatedText[];
-  posterId: mongoose.Types.ObjectId;
+  poster: IUser | string;
   content?: ITranslatedText[];
-  files: IFile[];
-  visibility: PostVisibility;
-  design: PostDesign;
-  children: IPost[];
+  files: (IFile | string)[];
+  visibility: PostVisibilityEnum;
+  design: PostDesignEnum;
+  children: (IPost | string)[];
   code?: string;
 
   createdAt: string;
@@ -62,7 +37,7 @@ const PostSchema = new mongoose.Schema<IPost>(
       type: mongoose.SchemaTypes.String,
       required: false,
     },
-    posterId: {
+    poster: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "user",
       required: true,
@@ -75,17 +50,17 @@ const PostSchema = new mongoose.Schema<IPost>(
       {
         type: mongoose.SchemaTypes.ObjectId,
         required: false,
-        ref: File.modelName,
+        ref: "file",
         default: [],
       },
     ],
     visibility: {
       type: mongoose.SchemaTypes.String,
-      default: PostVisibility.Public,
+      default: PostVisibilityEnum.Public,
     },
     design: {
       type: mongoose.SchemaTypes.String,
-      default: PostDesign.Default,
+      default: PostDesignEnum.Default,
     },
     children: [
       {

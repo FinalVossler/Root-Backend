@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 import { IUser } from "../user/user.model";
 
 export interface IReaction {
-  _id: mongoose.Types.ObjectId;
-  user: IUser;
+  _id: string;
+  user: IUser | string;
   reaction: ReactionEnum;
 
   createdAt: string;

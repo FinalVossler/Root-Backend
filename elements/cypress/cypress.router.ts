@@ -6,7 +6,8 @@ import protectMiddleware from "../../middleware/protectMiddleware";
 import { IUser } from "../user/user.model";
 import cypressService from "./cypress.service";
 import { IFile } from "../file/file.model";
-import { FileReadDto, toReadDto } from "../file/dto/FileReadDto";
+import { IFileReadDto } from "roottypes";
+import { fileToReadDto } from "../file/file.toReadDto";
 
 const router = express.Router();
 
@@ -33,7 +34,7 @@ router.post(
   protectMiddleware,
   async (
     req: ConnectedRequest<any, any, { url: string }, any>,
-    res: Response<ResponseDto<FileReadDto>>
+    res: Response<ResponseDto<IFileReadDto>>
   ) => {
     const currentUser = req.user;
 
@@ -43,7 +44,7 @@ router.post(
     );
 
     res.status(200).json({
-      data: toReadDto(file),
+      data: fileToReadDto(file) as IFileReadDto,
       success: true,
     });
   }

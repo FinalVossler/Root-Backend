@@ -3,48 +3,14 @@ import mongoose from "mongoose";
 import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
 import { IEntityPermission } from "../entityPermission/entityPermission.model";
 import entityPermissionRepository from "../entityPermission/entityPermission.repository";
-
-export enum Permission {
-  EditConfiguration = "EditConfiguration",
-
-  CreatePage = "CreatePage",
-  ReadPage = "ReadPage",
-  UpdatePage = "UpdatePage",
-  DeletePage = "DeletePage",
-
-  CreatePost = "CreatePost",
-
-  CreateField = "CreateField",
-  ReadField = "ReadField",
-  UpdateField = "UpdateField",
-  DeleteField = "DeleteField",
-
-  CreateModel = "CreateModel",
-  ReadModel = "ReadModel",
-  UpdateModel = "UpdateModel",
-  DeleteModel = "DeleteModel",
-
-  CreateUser = "CreateUser",
-  ReadUser = "ReadUser",
-  UpdateUser = "UpdateUser",
-  DeleteUser = "DeleteUser",
-
-  CreateRole = "CreateRole",
-  ReadRole = "ReadRole",
-  UpdateRole = "UpdateRole",
-  DeleteRole = "DeleteRole",
-
-  ReadMicroFrontend = "ReadMicroFrontend",
-  CreateMicroFrontend = "CreateMicroFrontend",
-  UpdateMicroFrontend = "UpdateMicroFrontend",
-  DeleteMicroFrontend = "DeleteMicroFrontend",
-}
+import { PermissionEnum } from "roottypes";
+import { populationOptions } from "./role.repository";
 
 export interface IRole {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   name: ITranslatedText[];
-  permissions: Permission[];
-  entityPermissions: IEntityPermission[];
+  permissions: PermissionEnum[];
+  entityPermissions: (IEntityPermission | string)[];
 
   createdAt: string;
   updatedAt: string;
@@ -77,12 +43,14 @@ const RoleSchema = new mongoose.Schema<IRole>(
 );
 
 RoleSchema.pre("deleteOne", async function (next) {
-  const role: IRole = (await this.model.findOne(this.getQuery())) as IRole;
+  const role: IRole = (await this.model
+    .findOne(this.getQuery())
+    .populate(populationOptions)) as IRole;
 
   if (!role) return;
 
   await entityPermissionRepository.deleteByIds(
-    role.entityPermissions.map((p) => p._id.toString())
+    (role.entityPermissions as IEntityPermission[]).map((p) => p._id.toString())
   );
 
   next();

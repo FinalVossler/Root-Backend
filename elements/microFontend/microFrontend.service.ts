@@ -1,15 +1,17 @@
 import mongoose from "mongoose";
 
-import MicroFrontendCreateCommand from "./dto/MicroFrontendCreateCommand";
 import { IMicroFrontend } from "./microFrontend.model";
 import microFrontendRepository from "./microFrontend.respository";
-import MicroFrontendUpdateCommand from "./dto/MicroFrontendUpdateCommand";
-import MicroFrontendsGetCommand from "./dto/MicroFrontendsGetCommand";
-import MicroFrontendsSearchCommand from "./dto/MicroFrontendsSearchCommand";
+import {
+  IMicroFrontendCreateCommand,
+  IMicroFrontendUpdateCommand,
+  IMicroFrontendsGetCommand,
+  IMicroFrontendsSearchCommand,
+} from "roottypes";
 
 const microFrontendService = {
   createMicroFrontend: async (
-    command: MicroFrontendCreateCommand
+    command: IMicroFrontendCreateCommand
   ): Promise<IMicroFrontend> => {
     const microFrontend: IMicroFrontend = await microFrontendRepository.create(
       command
@@ -18,7 +20,7 @@ const microFrontendService = {
     return microFrontend;
   },
   updateMicroFrontend: async (
-    command: MicroFrontendUpdateCommand
+    command: IMicroFrontendUpdateCommand
   ): Promise<IMicroFrontend> => {
     const microFrontend: IMicroFrontend = await microFrontendRepository.update(
       command
@@ -27,7 +29,7 @@ const microFrontendService = {
     return microFrontend;
   },
   getMicroFrontends: async (
-    command: MicroFrontendsGetCommand
+    command: IMicroFrontendsGetCommand
   ): Promise<{ microFrontends: IMicroFrontend[]; total: number }> => {
     const { microFrontends, total } =
       await microFrontendRepository.getMicroFrontends(command);
@@ -47,7 +49,7 @@ const microFrontendService = {
     await microFrontendRepository.deleteMicroFrontends(microFrontendsIds);
   },
   search: async (
-    command: MicroFrontendsSearchCommand
+    command: IMicroFrontendsSearchCommand
   ): Promise<{ microFrontends: IMicroFrontend[]; total: number }> => {
     const { microFrontends, total } = await microFrontendRepository.search(
       command

@@ -1,13 +1,15 @@
+import {
+  IFieldTableElementCreateCommand,
+  IFieldTableElementUpdateCommand,
+} from "roottypes";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
-import FieldTableElementCreateCommand from "./dto/FieldTableElementCreateCommand";
-import FieldTableElementUpdateCommand from "./dto/FieldTableElementUpdateCommand";
 import FieldTableElement, {
   IFieldTableElement,
 } from "./fieldTableElement.model";
 
 const fieldTableElementRepository = {
   create: async (
-    command: FieldTableElementCreateCommand
+    command: IFieldTableElementCreateCommand
   ): Promise<IFieldTableElement> => {
     const fieldTableElement: IFieldTableElement =
       await FieldTableElement.create({
@@ -20,7 +22,7 @@ const fieldTableElementRepository = {
     return fieldTableElement;
   },
   update: async (
-    command: FieldTableElementUpdateCommand
+    command: IFieldTableElementUpdateCommand
   ): Promise<IFieldTableElement> => {
     const oldFieldTableElement: IFieldTableElement | null =
       await FieldTableElement.findById(command._id);
@@ -52,7 +54,7 @@ const fieldTableElementRepository = {
     return updatedTableElement;
   },
   createMany: async (
-    commands: FieldTableElementCreateCommand[]
+    commands: IFieldTableElementCreateCommand[]
   ): Promise<IFieldTableElement[]> => {
     const promises: Promise<IFieldTableElement>[] = [];
 
@@ -74,7 +76,7 @@ const fieldTableElementRepository = {
   },
 
   updateMany: async (
-    commands: FieldTableElementUpdateCommand[]
+    commands: IFieldTableElementUpdateCommand[]
   ): Promise<IFieldTableElement[]> => {
     const promises: Promise<IFieldTableElement>[] = [];
 

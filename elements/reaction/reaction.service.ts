@@ -1,17 +1,20 @@
 import { IUser } from "../user/user.model";
 import { socketEmit } from "../../socket";
-import ChatMessagesEnum from "../../globalTypes/ChatMessagesEnum";
-import { toReadDto } from "./dtos/ReactionReadDto";
-import ReactionCreateCommand from "./dtos/ReactionCreateCommand";
 import { IReaction } from "./reaction.model";
 import reactionRepository from "./reaction.repository";
 import { IMessage } from "../message/message.model";
-import { toReadDto as messageToReadDto } from "../message/dtos/MessageReadDto";
 import messageService from "../message/message.service";
+import {
+  ChatMessagesEnum,
+  IReactionCreateCommand,
+  IReactionReadDto,
+} from "roottypes";
+import { reactionToReadDto } from "./reaction.toReadDto";
+import { messageToReadDto } from "../message/messageToReadDto";
 
 const reactionService = {
   create: async (
-    command: ReactionCreateCommand,
+    command: IReactionCreateCommand,
     currentUser: IUser
   ): Promise<IReaction> => {
     const reaction: IReaction = await reactionRepository.create(
@@ -25,7 +28,7 @@ const reactionService = {
       messageType: ChatMessagesEnum.ReaceiveReaction,
       object: {
         message: messageToReadDto(message),
-        reaction: toReadDto(reaction),
+        reaction: reactionToReadDto(reaction) as IReactionReadDto,
       },
       userIds: message.to.map((user) => user.toString()),
     });

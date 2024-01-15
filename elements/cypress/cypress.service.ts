@@ -1,48 +1,54 @@
 import Entity from "../entity/entity.model";
-import Field, { FieldType, IField } from "../field/field.model";
+import Field, { IField } from "../field/field.model";
 import Message from "../message/message.model";
 import Page from "../page/page.model";
 import Post from "../post/post.model";
 import User, { IUser } from "../user/user.model";
 import File, { IFile } from "../file/file.model";
-import EntityEventNotification, {
-  EntityEventNotificationTrigger,
-} from "../entityEventNotification/entityEventNotification.model";
-import EntityPermission, {
-  StaticPermission,
-} from "../entityPermission/entityPermission.model";
+import EntityEventNotification from "../entityEventNotification/entityEventNotification.model";
+import EntityPermission from "../entityPermission/entityPermission.model";
 import FieldTableElement from "../fieldTableElement/fieldTableElement.model";
 import Model, {
   IModel,
   ModelFieldConditionTypeEnum,
 } from "../model/model.model";
-import Role, { IRole, Permission } from "../role/role.model";
-import ModelState, { ModelStateType } from "../modelState/modelState.model";
+import Role, { IRole } from "../role/role.model";
+import ModelState from "../modelState/modelState.model";
 import Notification from "../notification/notification.model";
 import Reaction from "../reaction/reaction.model";
 import Socket from "../socket/socket.model";
 import fileRepository from "../file/file.repository";
-import FieldCreateCommand from "../field/dto/FieldCreateCommand";
-import { EventTriggerEnum, EventTypeEnum } from "../event/event.model";
 import fieldRepository from "../field/field.repository";
-import MicroFrontendCreateCommand from "../microFontend/dto/MicroFrontendCreateCommand";
 import MicroFrontend, {
   IMicroFrontend,
 } from "../microFontend/microFrontend.model";
 import microFrontendRepository from "../microFontend/microFrontend.respository";
-import ModelCreateCommand from "../model/dto/ModelCreateCommand";
 import modelRepository from "../model/model.repository";
-import ModelUpdateCommand from "../model/dto/ModelUpdateCommand";
 import { adminUser } from "../../tests/fixtures";
-import RoleCreateCommand from "../role/dto/RoleCreateCommand";
 import roleRepository from "../role/role.repository";
+import {
+  EntityEventNotificationTriggerEnum,
+  EventTriggerEnum,
+  EventTypeEnum,
+  FieldTypeEnum,
+  IFieldCreateCommand,
+  IFileCommand,
+  IMicroFrontendCreateCommand,
+  IModelCreateCommand,
+  IModelUpdateCommand,
+  IRoleCreateCommand,
+  ModelStateTypeEnum,
+  PermissionEnum,
+  StaticPermissionEnum,
+} from "roottypes";
+import { IMicroFrontendComponent } from "../microFontendComponent/microFrontendComponent.model";
 
 const cypressService = {
   clean: async (currentUser: IUser) => {
     await Socket.deleteMany({});
 
     await File.deleteMany({
-      $id: { $ne: currentUser.profilePicture?._id?.toString() },
+      $id: { $ne: (currentUser.profilePicture as IFile)?._id?.toString() },
     });
 
     await Reaction.deleteMany({});
@@ -68,12 +74,12 @@ const cypressService = {
     await MicroFrontend.deleteMany({});
   },
   createFile: async (url: string, currentUser: IUser): Promise<IFile> => {
-    const file: IFile = {
+    const file: IFileCommand = {
       isImage: true,
       url,
       uuid: "randomeuuid",
       name: "Test file",
-      ownerId: currentUser._id,
+      ownerId: currentUser._id.toString(),
     };
     const createdFile = await fileRepository.create(file);
 
@@ -85,7 +91,7 @@ const cypressService = {
       kpisMicroFrontend: IMicroFrontend;
       pestelMicroFrontend: IMicroFrontend;
     }> => {
-      const forecastCommand: MicroFrontendCreateCommand = {
+      const forecastCommand: IMicroFrontendCreateCommand = {
         name: "forecast",
         remoteEntry: "http://localhost:3003/remoteEntry.js",
         components: [
@@ -95,7 +101,7 @@ const cypressService = {
         ],
       };
 
-      const kpisCommand: MicroFrontendCreateCommand = {
+      const kpisCommand: IMicroFrontendCreateCommand = {
         name: "kpis",
         remoteEntry: "http://localhost:3002/remoteEntry.js",
         components: [
@@ -105,7 +111,7 @@ const cypressService = {
         ],
       };
 
-      const pestelCommand: MicroFrontendCreateCommand = {
+      const pestelCommand: IMicroFrontendCreateCommand = {
         name: "pestel",
         remoteEntry: "http://localhost:3001/remoteEntry.js",
         components: [
@@ -135,7 +141,7 @@ const cypressService = {
     const prepareFields = async () => {
       const { pestelMicroFrontend, forecastMicroFrontend, kpisMicroFrontend } =
         await prepareMicroFrontends();
-      const caseNameCommand: FieldCreateCommand = {
+      const caseNameCommand: IFieldCreateCommand = {
         name: "Case Name",
         canChooseFromExistingFiles: false,
         fieldEvents: [],
@@ -146,10 +152,10 @@ const cypressService = {
           rows: [],
           yearTable: false,
         },
-        type: FieldType.Text,
+        type: FieldTypeEnum.Text,
       };
 
-      const productNameCommand: FieldCreateCommand = {
+      const productNameCommand: IFieldCreateCommand = {
         name: "Product Name",
         canChooseFromExistingFiles: false,
         fieldEvents: [],
@@ -160,10 +166,10 @@ const cypressService = {
           rows: [],
           yearTable: false,
         },
-        type: FieldType.Text,
+        type: FieldTypeEnum.Text,
       };
 
-      const countryCommand: FieldCreateCommand = {
+      const countryCommand: IFieldCreateCommand = {
         name: "Country",
         canChooseFromExistingFiles: false,
         fieldEvents: [],
@@ -188,10 +194,10 @@ const cypressService = {
           rows: [],
           yearTable: false,
         },
-        type: FieldType.Selector,
+        type: FieldTypeEnum.Selector,
       };
 
-      const numberOfYearsOfForecastCommand: FieldCreateCommand = {
+      const numberOfYearsOfForecastCommand: IFieldCreateCommand = {
         name: "Number of years of Forecast",
         canChooseFromExistingFiles: false,
         fieldEvents: [],
@@ -202,10 +208,10 @@ const cypressService = {
           rows: [],
           yearTable: false,
         },
-        type: FieldType.Number,
+        type: FieldTypeEnum.Number,
       };
 
-      const medicalInsightsPPTemplateCommand: FieldCreateCommand = {
+      const medicalInsightsPPTemplateCommand: IFieldCreateCommand = {
         name: "Medical insight PPT template",
         canChooseFromExistingFiles: false,
         fieldEvents: [],
@@ -216,10 +222,10 @@ const cypressService = {
           rows: [],
           yearTable: false,
         },
-        type: FieldType.File,
+        type: FieldTypeEnum.File,
       };
 
-      const inMarketSalesDataCommand: FieldCreateCommand = {
+      const inMarketSalesDataCommand: IFieldCreateCommand = {
         name: "In Market Sales Data",
         canChooseFromExistingFiles: false,
         fieldEvents: [],
@@ -230,10 +236,10 @@ const cypressService = {
           rows: [],
           yearTable: false,
         },
-        type: FieldType.File,
+        type: FieldTypeEnum.File,
       };
 
-      const priceCommand: FieldCreateCommand = {
+      const priceCommand: IFieldCreateCommand = {
         name: "Price",
         canChooseFromExistingFiles: false,
         fieldEvents: [],
@@ -249,10 +255,10 @@ const cypressService = {
           ],
           yearTable: true,
         },
-        type: FieldType.Table,
+        type: FieldTypeEnum.Table,
       };
 
-      const costCommand: FieldCreateCommand = {
+      const costCommand: IFieldCreateCommand = {
         name: "Cost",
         canChooseFromExistingFiles: false,
         fieldEvents: [],
@@ -268,10 +274,10 @@ const cypressService = {
           ],
           yearTable: true,
         },
-        type: FieldType.Table,
+        type: FieldTypeEnum.Table,
       };
 
-      const kpiDashboardButtonCommand: FieldCreateCommand = {
+      const kpiDashboardButtonCommand: IFieldCreateCommand = {
         name: "KPI Dashboard",
         canChooseFromExistingFiles: false,
         fieldEvents: [
@@ -285,8 +291,9 @@ const cypressService = {
             requestHeaders: [],
             requestMethod: "",
             requestUrl: "",
-            microFrontendComponentId:
-              kpisMicroFrontend.components[0]._id.toString(),
+            microFrontendComponentId: (
+              kpisMicroFrontend.components[0] as IMicroFrontendComponent
+            )._id.toString(),
             microFrontendId: kpisMicroFrontend._id.toString(),
           },
         ],
@@ -297,10 +304,10 @@ const cypressService = {
           rows: [],
           yearTable: true,
         },
-        type: FieldType.Button,
+        type: FieldTypeEnum.Button,
       };
 
-      const pestelButtonCommand: FieldCreateCommand = {
+      const pestelButtonCommand: IFieldCreateCommand = {
         name: "PESTEL Analysis",
         canChooseFromExistingFiles: false,
         fieldEvents: [
@@ -314,8 +321,9 @@ const cypressService = {
             requestHeaders: [],
             requestMethod: "",
             requestUrl: "",
-            microFrontendComponentId:
-              pestelMicroFrontend.components[0]._id.toString(),
+            microFrontendComponentId: (
+              pestelMicroFrontend.components[0] as IMicroFrontendComponent
+            )._id.toString(),
             microFrontendId: pestelMicroFrontend._id.toString(),
           },
         ],
@@ -326,10 +334,10 @@ const cypressService = {
           rows: [],
           yearTable: true,
         },
-        type: FieldType.Button,
+        type: FieldTypeEnum.Button,
       };
 
-      const forecastButtonCommand: FieldCreateCommand = {
+      const forecastButtonCommand: IFieldCreateCommand = {
         name: "Forecast",
         canChooseFromExistingFiles: false,
         fieldEvents: [
@@ -343,8 +351,9 @@ const cypressService = {
             requestHeaders: [],
             requestMethod: "",
             requestUrl: "",
-            microFrontendComponentId:
-              forecastMicroFrontend.components[0]._id.toString(),
+            microFrontendComponentId: (
+              forecastMicroFrontend.components[0] as IMicroFrontendComponent
+            )._id.toString(),
             microFrontendId: forecastMicroFrontend._id.toString(),
           },
         ],
@@ -355,7 +364,7 @@ const cypressService = {
           rows: [],
           yearTable: true,
         },
-        type: FieldType.Button,
+        type: FieldTypeEnum.Button,
       };
 
       const fieldCreationPromises: Promise<IField>[] = [
@@ -403,7 +412,7 @@ const cypressService = {
     };
 
     const prepareModels = async (): Promise<IModel> => {
-      const createCommand: ModelCreateCommand = {
+      const createCommand: IModelCreateCommand = {
         language: "en",
         modelEvents: [],
         name: "Case",
@@ -413,31 +422,31 @@ const cypressService = {
             exclusive: false,
             language: "en",
             name: "Market Data",
-            stateType: ModelStateType.ParentState,
+            stateType: ModelStateTypeEnum.ParentState,
           },
           {
             exclusive: true,
             language: "en",
             name: "Ready for inputs (Cost, Price, Medical Insights)",
-            stateType: ModelStateType.ParentState,
+            stateType: ModelStateTypeEnum.ParentState,
           },
           {
             exclusive: true,
             language: "en",
             name: "Ready for forecast",
-            stateType: ModelStateType.ParentState,
+            stateType: ModelStateTypeEnum.ParentState,
           },
           {
             exclusive: true,
             language: "en",
             name: "Ready for business case",
-            stateType: ModelStateType.ParentState,
+            stateType: ModelStateTypeEnum.ParentState,
           },
           {
             exclusive: true,
             language: "en",
             name: "Complete",
-            stateType: ModelStateType.ParentState,
+            stateType: ModelStateTypeEnum.ParentState,
           },
         ],
         subStates: [
@@ -445,43 +454,43 @@ const cypressService = {
             exclusive: false,
             language: "en",
             name: "Price",
-            stateType: ModelStateType.SubState,
+            stateType: ModelStateTypeEnum.SubState,
           },
           {
             exclusive: false,
             language: "en",
             name: "Cost",
-            stateType: ModelStateType.SubState,
+            stateType: ModelStateTypeEnum.SubState,
           },
           {
             exclusive: false,
             language: "en",
             name: "Medical Insights",
-            stateType: ModelStateType.SubState,
+            stateType: ModelStateTypeEnum.SubState,
           },
           {
             exclusive: false,
             language: "en",
             name: "KPIs Completed",
-            stateType: ModelStateType.SubState,
+            stateType: ModelStateTypeEnum.SubState,
           },
           {
             exclusive: false,
             language: "en",
             name: "Pestel Completed",
-            stateType: ModelStateType.SubState,
+            stateType: ModelStateTypeEnum.SubState,
           },
           {
             exclusive: false,
             language: "en",
             name: "Product Forecast",
-            stateType: ModelStateType.SubState,
+            stateType: ModelStateTypeEnum.SubState,
           },
         ],
       };
       let model: IModel = await modelRepository.create(createCommand);
 
-      const updateCommand: ModelUpdateCommand = {
+      const updateCommand: IModelUpdateCommand = {
         _id: model._id.toString(),
         language: "en",
         modelEvents: [],
@@ -744,15 +753,18 @@ const cypressService = {
     };
 
     const prepareRoles = async () => {
-      const priceRoleCreateCommand: RoleCreateCommand = {
+      const priceRoleCreateCommand: IRoleCreateCommand = {
         language: "en",
         name: "Pricing Team",
-        permissions: [Permission.ReadUser, Permission.ReadRole],
+        permissions: [PermissionEnum.ReadUser, PermissionEnum.ReadRole],
         entityPermissions: [
           {
             modelId: model._id.toString(),
             language: "en",
-            permissions: [StaticPermission.Read, StaticPermission.Update],
+            permissions: [
+              StaticPermissionEnum.Read,
+              StaticPermissionEnum.Update,
+            ],
             entityUserAssignmentPermissionsByRole: {
               canAssignToUserFromSameRole: true,
               otherRolesIds: [],
@@ -760,21 +772,21 @@ const cypressService = {
             entityFieldPermissions: [
               {
                 fieldId: caseNameField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
               {
                 fieldId: productNameField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
 
               {
                 fieldId: countryField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
 
               {
                 fieldId: numberOfYearsOfForecastField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
 
               {
@@ -784,12 +796,15 @@ const cypressService = {
 
               {
                 fieldId: priceField._id.toString(),
-                permissions: [StaticPermission.Read, StaticPermission.Update],
+                permissions: [
+                  StaticPermissionEnum.Read,
+                  StaticPermissionEnum.Update,
+                ],
               },
 
               {
                 fieldId: inMarketSalesDataField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
               {
                 fieldId: medicalInsightPPTemplateField._id.toString(),
@@ -815,21 +830,24 @@ const cypressService = {
                 language: "en",
                 text: "Your input on pricing is needed",
                 title: "A case was assigned to you",
-                trigger: EntityEventNotificationTrigger.OnAssigned,
+                trigger: EntityEventNotificationTriggerEnum.OnAssigned,
               },
             ],
           },
         ],
       };
-      const costRoleCreateCommand: RoleCreateCommand = {
+      const costRoleCreateCommand: IRoleCreateCommand = {
         language: "en",
         name: "Controlling Team",
-        permissions: [Permission.ReadUser, Permission.ReadRole],
+        permissions: [PermissionEnum.ReadUser, PermissionEnum.ReadRole],
         entityPermissions: [
           {
             modelId: model._id.toString(),
             language: "en",
-            permissions: [StaticPermission.Read, StaticPermission.Update],
+            permissions: [
+              StaticPermissionEnum.Read,
+              StaticPermissionEnum.Update,
+            ],
             entityUserAssignmentPermissionsByRole: {
               canAssignToUserFromSameRole: true,
               otherRolesIds: [],
@@ -837,26 +855,29 @@ const cypressService = {
             entityFieldPermissions: [
               {
                 fieldId: caseNameField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
               {
                 fieldId: productNameField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
 
               {
                 fieldId: countryField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
 
               {
                 fieldId: numberOfYearsOfForecastField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
 
               {
                 fieldId: costField._id.toString(),
-                permissions: [StaticPermission.Read, StaticPermission.Update],
+                permissions: [
+                  StaticPermissionEnum.Read,
+                  StaticPermissionEnum.Update,
+                ],
               },
 
               {
@@ -866,7 +887,7 @@ const cypressService = {
 
               {
                 fieldId: inMarketSalesDataField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
               {
                 fieldId: medicalInsightPPTemplateField._id.toString(),
@@ -892,21 +913,24 @@ const cypressService = {
                 language: "en",
                 text: "Your input on costing is needed",
                 title: "A case was assigned to you",
-                trigger: EntityEventNotificationTrigger.OnAssigned,
+                trigger: EntityEventNotificationTriggerEnum.OnAssigned,
               },
             ],
           },
         ],
       };
-      const medicalInsightRoleCreateCommand: RoleCreateCommand = {
+      const medicalInsightRoleCreateCommand: IRoleCreateCommand = {
         language: "en",
         name: "Medical Insight Team",
-        permissions: [Permission.ReadUser, Permission.ReadRole],
+        permissions: [PermissionEnum.ReadUser, PermissionEnum.ReadRole],
         entityPermissions: [
           {
             modelId: model._id.toString(),
             language: "en",
-            permissions: [StaticPermission.Read, StaticPermission.Update],
+            permissions: [
+              StaticPermissionEnum.Read,
+              StaticPermissionEnum.Update,
+            ],
             entityUserAssignmentPermissionsByRole: {
               canAssignToUserFromSameRole: true,
               otherRolesIds: [],
@@ -914,21 +938,21 @@ const cypressService = {
             entityFieldPermissions: [
               {
                 fieldId: caseNameField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
               {
                 fieldId: productNameField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
 
               {
                 fieldId: countryField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
 
               {
                 fieldId: numberOfYearsOfForecastField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
 
               {
@@ -943,11 +967,14 @@ const cypressService = {
 
               {
                 fieldId: inMarketSalesDataField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
               {
                 fieldId: medicalInsightPPTemplateField._id.toString(),
-                permissions: [StaticPermission.Read, StaticPermission.Update],
+                permissions: [
+                  StaticPermissionEnum.Read,
+                  StaticPermissionEnum.Update,
+                ],
               },
               {
                 fieldId: kpiDashboardButtonField._id.toString(),
@@ -969,25 +996,25 @@ const cypressService = {
                 language: "en",
                 text: "Your medical insight input is needed",
                 title: "A case was assigned to you",
-                trigger: EntityEventNotificationTrigger.OnAssigned,
+                trigger: EntityEventNotificationTriggerEnum.OnAssigned,
               },
             ],
           },
         ],
       };
-      const marketingTeamCreateCommand: RoleCreateCommand = {
+      const marketingTeamCreateCommand: IRoleCreateCommand = {
         language: "en",
         name: "Marketing Team",
-        permissions: [Permission.ReadUser, Permission.ReadRole],
+        permissions: [PermissionEnum.ReadUser, PermissionEnum.ReadRole],
         entityPermissions: [
           {
             modelId: model._id.toString(),
             language: "en",
             permissions: [
-              StaticPermission.Read,
-              StaticPermission.Update,
-              StaticPermission.Create,
-              StaticPermission.Delete,
+              StaticPermissionEnum.Read,
+              StaticPermissionEnum.Update,
+              StaticPermissionEnum.Create,
+              StaticPermissionEnum.Delete,
             ],
             entityUserAssignmentPermissionsByRole: {
               canAssignToUserFromSameRole: true,
@@ -996,54 +1023,78 @@ const cypressService = {
             entityFieldPermissions: [
               {
                 fieldId: caseNameField._id.toString(),
-                permissions: [StaticPermission.Read, StaticPermission.Update],
+                permissions: [
+                  StaticPermissionEnum.Read,
+                  StaticPermissionEnum.Update,
+                ],
               },
               {
                 fieldId: productNameField._id.toString(),
-                permissions: [StaticPermission.Read, StaticPermission.Update],
+                permissions: [
+                  StaticPermissionEnum.Read,
+                  StaticPermissionEnum.Update,
+                ],
               },
 
               {
                 fieldId: countryField._id.toString(),
-                permissions: [StaticPermission.Read, StaticPermission.Update],
+                permissions: [
+                  StaticPermissionEnum.Read,
+                  StaticPermissionEnum.Update,
+                ],
               },
 
               {
                 fieldId: numberOfYearsOfForecastField._id.toString(),
-                permissions: [StaticPermission.Read, StaticPermission.Update],
+                permissions: [
+                  StaticPermissionEnum.Read,
+                  StaticPermissionEnum.Update,
+                ],
               },
 
               {
                 fieldId: costField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
 
               {
                 fieldId: priceField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
 
               {
                 fieldId: inMarketSalesDataField._id.toString(),
-                permissions: [StaticPermission.Read, StaticPermission.Update],
+                permissions: [
+                  StaticPermissionEnum.Read,
+                  StaticPermissionEnum.Update,
+                ],
               },
               {
                 fieldId: medicalInsightPPTemplateField._id.toString(),
-                permissions: [StaticPermission.Read],
+                permissions: [StaticPermissionEnum.Read],
               },
               {
                 fieldId: kpiDashboardButtonField._id.toString(),
-                permissions: [StaticPermission.Read, StaticPermission.Update],
+                permissions: [
+                  StaticPermissionEnum.Read,
+                  StaticPermissionEnum.Update,
+                ],
               },
 
               {
                 fieldId: pestelButtonField._id.toString(),
-                permissions: [StaticPermission.Read, StaticPermission.Update],
+                permissions: [
+                  StaticPermissionEnum.Read,
+                  StaticPermissionEnum.Update,
+                ],
               },
 
               {
                 fieldId: forecastButtonField._id.toString(),
-                permissions: [StaticPermission.Read, StaticPermission.Update],
+                permissions: [
+                  StaticPermissionEnum.Read,
+                  StaticPermissionEnum.Update,
+                ],
               },
             ],
             entityEventNotifications: [],
@@ -1063,7 +1114,7 @@ const cypressService = {
         marketingTeamCreateCommand
       );
 
-      const headOfMarketingTeamCreateCommand: RoleCreateCommand = {
+      const headOfMarketingTeamCreateCommand: IRoleCreateCommand = {
         ...marketingTeamCreateCommand,
         name: "Head of Marketing team",
         entityPermissions: [

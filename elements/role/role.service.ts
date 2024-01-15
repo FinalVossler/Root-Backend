@@ -1,42 +1,45 @@
 import mongoose from "mongoose";
-import {
-  IEntityPermission,
-  StaticPermission,
-} from "../entityPermission/entityPermission.model";
+import { IEntityPermission } from "../entityPermission/entityPermission.model";
 import entityPermissionSerivce from "../entityPermission/entityPermission.service";
-import { IUser, SuperRole } from "../user/user.model";
+import { IUser } from "../user/user.model";
 
-import RoleCreateCommand from "./dto/RoleCreateCommand";
-import RolesGetCommand from "./dto/RolesGetCommand";
-import RolesSearchCommand from "./dto/RolesSearchCommand";
-import RoleUpdateCommand from "./dto/RoleUpdateCommand";
-import { IRole, Permission } from "./role.model";
+import { IRole } from "./role.model";
 import roleRepository from "./role.repository";
+import {
+  IRoleCreateCommand,
+  IRoleUpdateCommand,
+  IRolesGetCommand,
+  IRolesSearchCommand,
+  PermissionEnum,
+  StaticPermissionEnum,
+  SuperRoleEnum,
+} from "roottypes";
+import { IModel } from "../model/model.model";
 
 const roleService = {
-  createRole: async (command: RoleCreateCommand): Promise<IRole> => {
+  createRole: async (command: IRoleCreateCommand): Promise<IRole> => {
     const role: IRole = await roleRepository.create(command);
 
     return role;
   },
-  updateRole: async (command: RoleUpdateCommand): Promise<IRole> => {
+  updateRole: async (command: IRoleUpdateCommand): Promise<IRole> => {
     const role: IRole = await roleRepository.update(command);
 
     return role;
   },
   getRoles: async (
-    command: RolesGetCommand
+    command: IRolesGetCommand
   ): Promise<{ roles: IRole[]; total: number }> => {
     const { roles, total } = await roleRepository.getRoles(command);
 
     return { roles, total };
   },
-  deleteRoles: async (rolesIds: mongoose.Types.ObjectId[]): Promise<void> => {
+  deleteRoles: async (rolesIds: string[]): Promise<void> => {
     await roleRepository.deleteRoles(rolesIds);
   },
 
   search: async (
-    command: RolesSearchCommand
+    command: IRolesSearchCommand
   ): Promise<{ roles: IRole[]; total: number }> => {
     const { roles, total } = await roleRepository.search(command);
 
@@ -49,17 +52,17 @@ const roleService = {
   }: {
     user: IUser;
     modelId: string;
-    staticPermission: StaticPermission;
+    staticPermission: StaticPermissionEnum;
   }): boolean => {
-    if (user.superRole === SuperRole.SuperAdmin) {
+    if (user.superRole === SuperRoleEnum.SuperAdmin) {
       return true;
     }
 
     const hasAccess: boolean = Boolean(
-      user.role?.entityPermissions
+      ((user.role as IRole)?.entityPermissions as IEntityPermission[])
         .find(
           (entityPermission: IEntityPermission) =>
-            entityPermission.model._id.toString() === modelId
+            (entityPermission.model as IModel)._id.toString() === modelId
         )
         ?.permissions.find((p) => p === staticPermission)
     );
@@ -75,21 +78,21 @@ const roleService = {
     permission,
   }: {
     user?: IUser;
-    permission: Permission;
+    permission: PermissionEnum;
   }): boolean => {
     if (!user) {
       throw new Error("Permission denied");
     }
 
-    if (user.superRole === SuperRole.SuperAdmin) {
+    if (user.superRole === SuperRoleEnum.SuperAdmin) {
       return true;
     }
 
     if (
       !Boolean(
         user.role &&
-          user.role.permissions &&
-          user.role?.permissions.indexOf(permission) > -1
+          (user.role as IRole).permissions &&
+          (user.role as IRole)?.permissions.indexOf(permission) > -1
       )
     ) {
       throw new Error("Permission denied");

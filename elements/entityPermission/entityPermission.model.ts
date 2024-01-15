@@ -6,29 +6,25 @@ import { IField } from "../field/field.model";
 import translatedTextSchema from "../ITranslatedText";
 import { IModel } from "../model/model.model";
 import Role, { IRole } from "../role/role.model";
-
-export enum StaticPermission {
-  Create = "Create",
-  Read = "Read",
-  Update = "Update",
-  Delete = "Delete",
-}
+import { StaticPermissionEnum } from "roottypes";
 
 export interface IEntityPermission {
-  _id: mongoose.Types.ObjectId;
-  model: IModel;
-  permissions: StaticPermission[];
+  _id: string;
+  model: IModel | string;
+  permissions: StaticPermissionEnum[];
   entityFieldPermissions: IFieldPermission[];
   entityEventNotifications: IEntityEventNotification[];
-  entityUserAssignmentPermissionsByRole?: {
-    canAssignToUserFromSameRole: boolean;
-    otherRoles: IRole[];
-  };
+  entityUserAssignmentPermissionsByRole?: IEntityUserAssignmentPermissionsByRole;
 }
 
 export interface IFieldPermission {
-  field: IField;
-  permissions: StaticPermission[];
+  field: IField | string;
+  permissions: StaticPermissionEnum[];
+}
+
+export interface IEntityUserAssignmentPermissionsByRole {
+  canAssignToUserFromSameRole: boolean;
+  otherRoles: (IRole | string)[];
 }
 
 interface IEntityPermissionModel extends mongoose.Model<IEntityPermission> {}
@@ -101,7 +97,7 @@ EntityPermissionSchema.pre("deleteOne", async function (next) {
   // Delete the entity permission reference from the roles that use them
   const allRoles: IRole[] = await Role.find({}).populate("entityPermissions");
   const roles = allRoles.filter((r) =>
-    r.entityPermissions.find(
+    (r.entityPermissions as IEntityPermission[]).find(
       (e) => e._id.toString() === entityPermission._id.toString()
     )
   );
@@ -113,9 +109,9 @@ EntityPermissionSchema.pre("deleteOne", async function (next) {
       { _id: role._id },
       {
         $set: {
-          entityPermissions: role.entityPermissions.filter(
-            (e) => e._id.toString() !== entityPermission._id.toString()
-          ),
+          entityPermissions: (
+            role.entityPermissions as IEntityPermission[]
+          ).filter((e) => e._id.toString() !== entityPermission._id.toString()),
         },
       }
     );

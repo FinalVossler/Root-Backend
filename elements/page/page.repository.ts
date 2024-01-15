@@ -1,12 +1,11 @@
 import mongoose from "mongoose";
 import slugify from "slugify";
 
-import PageCreateCommand from "./dto/PageCreateCommand";
-import PageUpdateCommand from "./dto/PageUpdateCommand";
 import Page, { IPage } from "./page.model";
 import Post from "../post/post.model";
 import File from "../file/file.model";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
+import { IPageCreateCommand, IPageUpdateCommand } from "roottypes";
 
 const pageRepository = {
   get: async (): Promise<IPage[]> => {
@@ -14,7 +13,7 @@ const pageRepository = {
 
     return pages;
   },
-  create: async (command: PageCreateCommand): Promise<IPage> => {
+  create: async (command: IPageCreateCommand): Promise<IPage> => {
     const query = await Page.create({
       posts: command.posts,
       title: [{ text: command.title, language: command.language }],
@@ -34,7 +33,7 @@ const pageRepository = {
 
     return page;
   },
-  update: async (command: PageUpdateCommand): Promise<IPage> => {
+  update: async (command: IPageUpdateCommand): Promise<IPage> => {
     const page = await pageRepository.getById(command._id);
 
     await Page.updateOne(

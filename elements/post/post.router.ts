@@ -3,15 +3,18 @@ import { Router, Response } from "express";
 import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
 import protectMiddleware from "../../middleware/protectMiddleware";
-import PostCreateCommand from "./dto/PostCreateCommand";
-import PostsGetCommand from "./dto/PostsGetCommand";
-import PostReadDto, { toReadDto } from "./dto/PostReadDto";
 import { IPost } from "./post.model";
 import postService from "./post.service";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
-import PostsSearchCommand from "./dto/PostsSearchCommand";
 import { IUser } from "../user/user.model";
-import PostUpdateCommand from "./dto/PostUpdateCommand";
+import {
+  IPostCreateCommand,
+  IPostReadDto,
+  IPostUpdateCommand,
+  IPostsGetCommand,
+  IPostsSearchCommand,
+} from "roottypes";
+import { postToReadDto } from "./post.toReadDto";
 
 const router = Router();
 
@@ -19,15 +22,15 @@ router.post(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, PostCreateCommand, any>,
-    res: Response<ResponseDto<PostReadDto>>
+    req: ConnectedRequest<any, any, IPostCreateCommand, any>,
+    res: Response<ResponseDto<IPostReadDto>>
   ) => {
-    const command: PostCreateCommand = req.body;
+    const command: IPostCreateCommand = req.body;
     const post: IPost = await postService.create(command, req.user);
 
     return res.status(200).send({
       success: true,
-      data: toReadDto(post),
+      data: postToReadDto(post) as IPostReadDto,
     });
   }
 );
@@ -36,16 +39,16 @@ router.post(
   "/getUserPosts",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, PostsGetCommand, any>,
-    res: Response<ResponseDto<PaginationResponse<PostReadDto>>>
+    req: ConnectedRequest<any, any, IPostsGetCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<IPostReadDto>>>
   ) => {
-    const command: PostsGetCommand = req.body;
+    const command: IPostsGetCommand = req.body;
     const { posts, total } = await postService.getUserPosts(command, req.user);
 
     return res.status(200).send({
       success: true,
       data: {
-        data: posts.map((p) => toReadDto(p)),
+        data: posts.map((p) => postToReadDto(p) as IPostReadDto),
         total,
       },
     });
@@ -55,17 +58,17 @@ router.post(
 router.post(
   "/search",
   async (
-    req: ConnectedRequest<any, any, PostsSearchCommand, any>,
-    res: Response<ResponseDto<PaginationResponse<PostReadDto>>>
+    req: ConnectedRequest<any, any, IPostsSearchCommand, any>,
+    res: Response<ResponseDto<PaginationResponse<IPostReadDto>>>
   ) => {
-    const command: PostsSearchCommand = req.body;
+    const command: IPostsSearchCommand = req.body;
 
     const { posts, total } = await postService.search(command);
 
     return res.status(200).send({
       success: true,
       data: {
-        data: posts.map((p) => toReadDto(p)),
+        data: posts.map((p) => postToReadDto(p) as IPostReadDto),
         total,
       },
     });
@@ -76,15 +79,15 @@ router.put(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, PostUpdateCommand, any>,
-    res: Response<ResponseDto<PostReadDto>>
+    req: ConnectedRequest<any, any, IPostUpdateCommand, any>,
+    res: Response<ResponseDto<IPostReadDto>>
   ) => {
-    const command: PostUpdateCommand = req.body;
+    const command: IPostUpdateCommand = req.body;
 
     const post: IPost = await postService.update(command, req.user);
 
     return res.status(200).json({
-      data: toReadDto(post),
+      data: postToReadDto(post) as IPostReadDto,
       success: true,
     });
   }
