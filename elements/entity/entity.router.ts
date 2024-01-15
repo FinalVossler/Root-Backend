@@ -31,18 +31,13 @@ router.get(
   ) => {
     const currentUser: IUser = req.user;
 
-    console.log("entityId", req.query.entityId);
-
     const entity: IEntity = await entityService.getById(req.query.entityId);
-    console.log("entity", JSON.stringify(entity));
 
     roleService.checkEntityPermission({
       user: currentUser,
       staticPermission: StaticPermissionEnum.Read,
       modelId: entity.model._id.toString(),
     });
-
-    console.log("got the entity and checked permission");
 
     return res.status(200).send({
       success: true,
