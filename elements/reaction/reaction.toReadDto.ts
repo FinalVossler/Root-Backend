@@ -13,6 +13,8 @@ export const reactionToReadDto = (
     return reaction.toString();
   }
 
+  console.log("reaction", JSON.stringify(reaction));
+
   return {
     _id: reaction._id.toString(),
     user: userToReadDto(reaction.user),

@@ -14,7 +14,7 @@ import {
   IMessageSendCommand,
   IPopulatedMessageReadDto,
 } from "roottypes";
-import { populatedMessageToReadDto } from "./messageToReadDto";
+import { populatedMessageToReadDto } from "./message.toReadDto";
 
 const router = express.Router();
 

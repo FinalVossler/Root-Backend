@@ -10,7 +10,7 @@ import {
   IReactionReadDto,
 } from "roottypes";
 import { reactionToReadDto } from "./reaction.toReadDto";
-import { messageToReadDto } from "../message/messageToReadDto";
+import { messageToReadDto } from "../message/message.toReadDto";
 
 const reactionService = {
   create: async (

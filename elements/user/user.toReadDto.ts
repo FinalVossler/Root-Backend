@@ -5,7 +5,7 @@ import {
 import { IUser, IUserWithLastReadMessageInConversation } from "./user.model";
 import { fileToReadDto } from "../file/file.toReadDto";
 import { roleToReadDto } from "../role/role.toReadDto";
-import { messageToReadDto } from "../message/messageToReadDto";
+import { messageToReadDto } from "../message/message.toReadDto";
 import mongoose from "mongoose";
 
 export const userToReadDto = (user: IUser | string): IUserReadDto | string => {

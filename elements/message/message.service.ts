@@ -2,7 +2,7 @@ import { IUser } from "../user/user.model";
 import { IMessage, IPopulatedMessage } from "./message.model";
 import messageRepository from "./message.repository";
 import { socketEmit } from "../../socket";
-import { populatedMessageToReadDto } from "./messageToReadDto";
+import { populatedMessageToReadDto } from "./message.toReadDto";
 import {
   ChatMessagesEnum,
   IMessageGetBetweenUsersCommand,
