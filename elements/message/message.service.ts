@@ -98,7 +98,7 @@ const messageService = {
       throw new Error("Message already deleted");
     }
 
-    if (message.from.toString() !== currentUser._id.toString()) {
+    if (message.from._id.toString() !== currentUser._id.toString()) {
       throw new Error("unauthenticated");
     }
 

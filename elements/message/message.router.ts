@@ -4,21 +4,17 @@ import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
-import { IMessage, IPopulatedMessage } from "./message.model";
+import { IPopulatedMessage } from "./message.model";
 import messageService from "./message.service";
 import { IUser } from "../user/user.model";
 import {
   IMessageGetBetweenUsersCommand,
   IMessageGetLastConversations,
   IMessageMarkAllMessagesAsReadByUserCommand,
-  IMessageReadDto,
   IMessageSendCommand,
   IPopulatedMessageReadDto,
 } from "roottypes";
-import {
-  messageToReadDto,
-  populatedMessageToReadDto,
-} from "./messageToReadDto";
+import { populatedMessageToReadDto } from "./messageToReadDto";
 
 const router = express.Router();
 

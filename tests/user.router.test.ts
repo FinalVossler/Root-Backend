@@ -222,9 +222,9 @@ describe("user router", () => {
 
   it("should get contacts by ids GET /users/getContactsByIds", () => {
     return request(app)
-      .get("/users/getContactsByIds")
+      .post("/users/getContactsByIds")
       .set("Authorization", "Bearer " + adminToken)
-      .query({ usersIds: adminUser._id.toString() })
+      .send({ usersIds: [adminUser._id.toString()] })
       .then((res) => {
         const result: ResponseDto<IUserReadDto[]> = res.body;
 
