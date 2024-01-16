@@ -1,13 +1,16 @@
 import { faker } from "@faker-js/faker";
 
-import RoleCreateCommand from "./elements/role/dto/RoleCreateCommand";
 import roleRepository from "./elements/role/role.repository";
-import User, { SuperRole } from "./elements/user/user.model";
+import User from "./elements/user/user.model";
 
-import UserCreateCommand from "./elements/user/dtos/UserCreateCommand";
 import userRepository from "./elements/user/user.repository";
 import mongoose from "./mongoose";
 import { IRole } from "./elements/role/role.model";
+import {
+  IRoleCreateCommand,
+  IUserCreateCommand,
+  SuperRoleEnum,
+} from "roottypes";
 
 (async function () {
   await mongoose(
@@ -16,7 +19,7 @@ import { IRole } from "./elements/role/role.model";
 
   const seedUsers = async () => {
     for (let i = 0; i < 1000; i++) {
-      const command: UserCreateCommand = {
+      const command: IUserCreateCommand = {
         email: faker.internet.email(),
         firstName: faker.name.firstName(),
         lastName: faker.name.lastName(),
@@ -33,7 +36,7 @@ import { IRole } from "./elements/role/role.model";
 
     for (let i = 0; i < 1000; i++) {
       const newPromise = new Promise<IRole>(async (resolve, reject) => {
-        const command: RoleCreateCommand = {
+        const command: IRoleCreateCommand = {
           name: faker.name.jobTitle(),
           language: "en",
           permissions: [],
