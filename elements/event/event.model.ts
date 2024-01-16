@@ -18,7 +18,7 @@ export interface IEvent {
   requestHeaders: IEventRequestHeader[];
 
   // Microfrontend redirection
-  microFrontend?: IMicroFrontend;
+  microFrontend?: IMicroFrontend | string;
   microFrontendComponentId?: string;
 }
 

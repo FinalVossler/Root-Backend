@@ -38,7 +38,7 @@ router.post(
 
     return res.status(200).send({
       success: true,
-      data: microFrontendToReadDto(microFrontend),
+      data: microFrontendToReadDto(microFrontend) as IMicroFrontendReadDto,
     });
   }
 );
@@ -62,7 +62,7 @@ router.put(
 
     return res.status(200).send({
       success: true,
-      data: microFrontendToReadDto(microFrontend),
+      data: microFrontendToReadDto(microFrontend) as IMicroFrontendReadDto,
     });
   }
 );
@@ -80,7 +80,9 @@ router.post(
     return res.status(200).send({
       success: true,
       data: {
-        data: microFrontends.map((p) => microFrontendToReadDto(p)),
+        data: microFrontends.map(
+          (p) => microFrontendToReadDto(p) as IMicroFrontendReadDto
+        ),
         total,
       },
     });
@@ -100,7 +102,7 @@ router.get(
 
     return res.status(200).send({
       success: true,
-      data: microFrontendToReadDto(microFrontend),
+      data: microFrontendToReadDto(microFrontend) as IMicroFrontendReadDto,
     });
   }
 );
@@ -143,7 +145,9 @@ router.post(
     return res.status(200).send({
       success: true,
       data: {
-        data: microFrontends.map((p) => microFrontendToReadDto(p)),
+        data: microFrontends.map(
+          (p) => microFrontendToReadDto(p) as IMicroFrontendReadDto
+        ),
         total,
       },
     });

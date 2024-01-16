@@ -7,8 +7,15 @@ import { IMicroFrontendComponent } from "../microFontendComponent/microFrontendC
 import mongoose from "mongoose";
 
 export const microFrontendToReadDto = (
-  microFrontend: IMicroFrontend
-): IMicroFrontendReadDto => {
+  microFrontend: IMicroFrontend | string
+): IMicroFrontendReadDto | string => {
+  if (
+    typeof microFrontend === "string" ||
+    mongoose.Types.ObjectId.isValid(microFrontend.toString())
+  ) {
+    return microFrontend.toString();
+  }
+
   return {
     _id: microFrontend._id.toString(),
     name: microFrontend.name,
