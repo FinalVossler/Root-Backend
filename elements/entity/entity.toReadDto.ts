@@ -36,5 +36,11 @@ export const entityFieldValueToReadDto = (
       row: fieldTableElementToReadDto(tableValue.row),
       value: tableValue.value,
     })),
+    yearTableValues: entityFieldValue.yearTableValues?.map(
+      (yearTableValue) => ({
+        row: fieldTableElementToReadDto(yearTableValue.row),
+        values: yearTableValue.values,
+      })
+    ),
   };
 };
