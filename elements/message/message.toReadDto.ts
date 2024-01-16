@@ -13,7 +13,6 @@ import { userToReadDto } from "../user/user.toReadDto";
 export const populatedMessageToReadDto = (
   populatedMessage: IPopulatedMessage
 ): IPopulatedMessageReadDto => {
-  console.log("populatedMessage", JSON.stringify(populatedMessage));
   return {
     _id: populatedMessage._id.toString(),
     from: userToReadDto(populatedMessage.from) as IUserReadDto,
