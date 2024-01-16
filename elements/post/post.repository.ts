@@ -29,7 +29,7 @@ const postRepository = {
     const post = await Post.create({
       title: [{ text: command.title, language: command.language }],
       subTitle: [{ text: command.subTitle, language: command.language }],
-      content: [{ text: command.content, language: command.language }],
+      content: [{ text: command.content || "", language: command.language }],
       files: allFiles.map((f) => f._id),
       poster: command.posterId,
       visibility: command.visibility,
