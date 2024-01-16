@@ -8,7 +8,6 @@ import { IRole } from "../role/role.model";
 import Message, { IMessage } from "../message/message.model";
 import { SuperRoleEnum } from "roottypes";
 import Reaction from "../reaction/reaction.model";
-import messageRepository from "../message/message.repository";
 
 export interface IUser {
   _id: string;
