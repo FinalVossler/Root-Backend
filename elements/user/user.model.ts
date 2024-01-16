@@ -5,9 +5,10 @@ import { IFile } from "../file/file.model";
 import postRepository from "../post/post.repository";
 import fileRepository from "../file/file.repository";
 import { IRole } from "../role/role.model";
-import { IMessage } from "../message/message.model";
+import Message, { IMessage } from "../message/message.model";
 import { SuperRoleEnum } from "roottypes";
 import Reaction from "../reaction/reaction.model";
+import messageRepository from "../message/message.repository";
 
 export interface IUser {
   _id: string;
@@ -99,7 +100,8 @@ UserSchema.pre("deleteOne", async function (next) {
   if (user?._id) {
     await postRepository.deleteUserPosts(user._id.toString());
     await fileRepository.deleteUserFiles(user._id.toString());
-    Reaction.deleteMany({ user: new mongoose.Types.ObjectId(user?._id) });
+    await Message.deleteMany({ from: new mongoose.Types.ObjectId(user?._id) });
+    await Reaction.deleteMany({ user: new mongoose.Types.ObjectId(user?._id) });
   }
 
   next();
