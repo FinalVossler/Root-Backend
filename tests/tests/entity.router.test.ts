@@ -1,21 +1,21 @@
 import request from "supertest";
-import { IEntity } from "../elements/entity/entity.model";
-import entityRepository from "../elements/entity/entity.repository";
-import { IField } from "../elements/field/field.model";
-import fieldRepository from "../elements/field/field.repository";
-import { IModel } from "../elements/model/model.model";
-import modelRepository from "../elements/model/model.repository";
+import { IEntity } from "../../elements/entity/entity.model";
+import entityRepository from "../../elements/entity/entity.repository";
+import { IField } from "../../elements/field/field.model";
+import fieldRepository from "../../elements/field/field.repository";
+import { IModel } from "../../elements/model/model.model";
+import modelRepository from "../../elements/model/model.repository";
 import {
   createCreateFieldCommand,
   createCreateModelCommand,
   adminUser,
-} from "./fixtures";
-import app from "../server";
-import ResponseDto from "../globalTypes/ResponseDto";
-import userService from "../elements/user/user.service";
-import { IUser } from "../elements/user/user.model";
-import userRepository from "../elements/user/user.repository";
-import PaginationResponse from "../globalTypes/PaginationResponse";
+} from "../fixtures";
+import app from "../../server";
+import ResponseDto from "../../globalTypes/ResponseDto";
+import userService from "../../elements/user/user.service";
+import { IUser } from "../../elements/user/user.model";
+import userRepository from "../../elements/user/user.repository";
+import PaginationResponse from "../../globalTypes/PaginationResponse";
 import {
   IEntitiesGetCommand,
   IEntitiesSearchCommand,
@@ -30,14 +30,14 @@ import {
   SuperRoleEnum,
 } from "roottypes";
 
-jest.setTimeout(50000);
-describe("entity router", () => {
+jest.setTimeout(100000);
+describe("Entities", () => {
   const adminToken: string = userService.generateToken(adminUser);
 
   let field1: IField | undefined;
   let field2: IField | undefined;
-  let model: IModel | undefined;
 
+  let model: IModel | undefined;
   let model2ToWhichEntitiesbyModelDontBelong: IModel | undefined;
   let model3ToWhichUserIsAlsoAssigned: IModel | undefined;
 

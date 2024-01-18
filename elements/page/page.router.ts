@@ -13,7 +13,7 @@ import {
   IPageUpdateCommand,
   PermissionEnum,
 } from "roottypes";
-import { pageToReadDto } from "./pageToReadDto";
+import { pageToReadDto } from "./page.toReadDto";
 
 const router = express.Router();
 
@@ -82,7 +82,7 @@ router.delete(
   "/",
   protectMiddleware,
   async (
-    req: ConnectedRequest<any, any, mongoose.Types.ObjectId[], any>,
+    req: ConnectedRequest<any, any, string[], any>,
     res: Response<ResponseDto<void>>
   ) => {
     roleService.checkPermission({

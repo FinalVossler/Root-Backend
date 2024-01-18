@@ -1,16 +1,16 @@
 import request from "supertest";
 
-import app from "../server";
-import ResponseDto from "../globalTypes/ResponseDto";
-import userService from "../elements/user/user.service";
-import userModel, { IUser } from "../elements/user/user.model";
-import PaginationResponse from "../globalTypes/PaginationResponse";
-import userRepository from "../elements/user/user.repository";
-import { IFile } from "../elements/file/file.model";
-import { IRole } from "../elements/role/role.model";
-import roleRepository from "../elements/role/role.repository";
-import doNothing from "../utils/doNothing";
-import { adminUser } from "./fixtures";
+import app from "../../server";
+import ResponseDto from "../../globalTypes/ResponseDto";
+import userService from "../../elements/user/user.service";
+import userModel, { IUser } from "../../elements/user/user.model";
+import PaginationResponse from "../../globalTypes/PaginationResponse";
+import userRepository from "../../elements/user/user.repository";
+import { IFile } from "../../elements/file/file.model";
+import { IRole } from "../../elements/role/role.model";
+import roleRepository from "../../elements/role/role.repository";
+import doNothing from "../../utils/doNothing";
+import { adminUser } from "../fixtures";
 import {
   IChatGetContactsCommand,
   IRoleCreateCommand,
@@ -28,7 +28,7 @@ import {
 } from "roottypes";
 
 jest.setTimeout(50000);
-describe("user router", () => {
+describe("Users", () => {
   const adminToken = userService.generateToken(adminUser);
 
   let userToUpdate: IUser | undefined;

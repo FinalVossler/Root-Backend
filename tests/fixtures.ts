@@ -1,5 +1,3 @@
-import mongoose from "mongoose";
-
 import { IUser } from "../elements/user/user.model";
 import { IField } from "../elements/field/field.model";
 import {

@@ -1,12 +1,12 @@
 import request from "supertest";
-import pageRepository from "../elements/page/page.repository";
-import { IPost } from "../elements/post/post.model";
-import { adminUser } from "./fixtures";
-import postRepository from "../elements/post/post.repository";
-import { IPage } from "../elements/page/page.model";
-import app from "../server";
-import ResponseDto from "../globalTypes/ResponseDto";
-import userService from "../elements/user/user.service";
+import pageRepository from "../../elements/page/page.repository";
+import { IPost } from "../../elements/post/post.model";
+import { adminUser } from "../fixtures";
+import postRepository from "../../elements/post/post.repository";
+import { IPage } from "../../elements/page/page.model";
+import app from "../../server";
+import ResponseDto from "../../globalTypes/ResponseDto";
+import userService from "../../elements/user/user.service";
 import {
   IPageCreateCommand,
   IPageReadDto,
@@ -21,6 +21,7 @@ const adminToken = userService.generateToken(adminUser);
 describe("Pages", () => {
   let post1: IPost | undefined;
   let post2: IPost | undefined;
+  let createdPage: IPageReadDto | undefined;
   let page1ToGet: IPage | undefined;
   let page2ToGet: IPage | undefined;
   let page3ToUpdate: IPage | undefined;
@@ -70,6 +71,9 @@ describe("Pages", () => {
     }
     if (post2) {
       promises.push(postRepository.delete(post2._id.toString()));
+    }
+    if (createdPage) {
+      promises.push(pageRepository.delete(createdPage._id.toString()));
     }
     if (page1ToGet) {
       promises.push(pageRepository.delete(page1ToGet._id.toString()));
@@ -124,6 +128,8 @@ describe("Pages", () => {
       .expect(200)
       .then((res) => {
         const result: ResponseDto<IPageReadDto> = res.body;
+
+        createdPage = result.data as IPageReadDto;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.title.at(0)?.text).toEqual(pageCreateCommand.title);

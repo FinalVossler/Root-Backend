@@ -6,7 +6,7 @@ import Field, { IField } from "../field/field.model";
 import { populationOptions } from "../field/field.repository";
 
 export interface IMicroFrontend {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   name: string;
   remoteEntry: string;
   components: (IMicroFrontendComponent | string)[];
@@ -40,9 +40,13 @@ const MicroFrontendSchema = new mongoose.Schema<IMicroFrontend>(
 );
 
 MicroFrontendSchema.pre("deleteOne", async function (next) {
-  const microFrontend: IMicroFrontend = (await this.model.findOne(
+  const microFrontend: IMicroFrontend | undefined = (await this.model.findOne(
     this.getQuery()
   )) as IMicroFrontend;
+
+  if (!microFrontend) {
+    return;
+  }
 
   // Deleting the events created on the basis of this microFrontend for fields
   const fields: IField[] = await Field.find({

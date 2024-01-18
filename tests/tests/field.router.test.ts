@@ -1,12 +1,12 @@
 import request from "supertest";
-import { IField } from "../elements/field/field.model";
+import { IField } from "../../elements/field/field.model";
 
-import app from "../server";
-import ResponseDto from "../globalTypes/ResponseDto";
-import fieldRepository from "../elements/field/field.repository";
-import userService from "../elements/user/user.service";
-import PaginationResponse from "../globalTypes/PaginationResponse";
-import { adminUser } from "./fixtures";
+import app from "../../server";
+import ResponseDto from "../../globalTypes/ResponseDto";
+import fieldRepository from "../../elements/field/field.repository";
+import userService from "../../elements/user/user.service";
+import PaginationResponse from "../../globalTypes/PaginationResponse";
+import { adminUser } from "../fixtures";
 import {
   FieldTypeEnum,
   IFieldCreateCommand,
@@ -16,8 +16,8 @@ import {
   IFieldsGetCommand,
   IFieldsSearchCommand,
 } from "roottypes";
-import { IFieldTableElement } from "../elements/fieldTableElement/fieldTableElement.model";
-import FieldTableElement from "../elements/fieldTableElement/fieldTableElement.model";
+import { IFieldTableElement } from "../../elements/fieldTableElement/fieldTableElement.model";
+import FieldTableElement from "../../elements/fieldTableElement/fieldTableElement.model";
 
 jest.setTimeout(50000);
 describe("field router", () => {

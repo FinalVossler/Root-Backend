@@ -1,21 +1,21 @@
 import request from "supertest";
-import { IRole } from "../elements/role/role.model";
-import app from "../server";
-import userService from "../elements/user/user.service";
+import { IRole } from "../../elements/role/role.model";
+import app from "../../server";
+import userService from "../../elements/user/user.service";
 import {
   adminUser,
   createCreateFieldCommand,
   createCreateModelCommand,
-} from "./fixtures";
-import ResponseDto from "../globalTypes/ResponseDto";
-import roleRepository from "../elements/role/role.repository";
-import { IField } from "../elements/field/field.model";
-import fieldRepository from "../elements/field/field.repository";
-import modelRepository from "../elements/model/model.repository";
-import { IModel } from "../elements/model/model.model";
-import { IEntity } from "../elements/entity/entity.model";
-import entityRepository from "../elements/entity/entity.repository";
-import PaginationResponse from "../globalTypes/PaginationResponse";
+} from "../fixtures";
+import ResponseDto from "../../globalTypes/ResponseDto";
+import roleRepository from "../../elements/role/role.repository";
+import { IField } from "../../elements/field/field.model";
+import fieldRepository from "../../elements/field/field.repository";
+import modelRepository from "../../elements/model/model.repository";
+import { IModel } from "../../elements/model/model.model";
+import { IEntity } from "../../elements/entity/entity.model";
+import entityRepository from "../../elements/entity/entity.repository";
+import PaginationResponse from "../../globalTypes/PaginationResponse";
 import {
   IEntityCreateCommand,
   IEntityFieldValueCommand,

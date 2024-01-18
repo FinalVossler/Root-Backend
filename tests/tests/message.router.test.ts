@@ -1,13 +1,13 @@
 import request from "supertest";
-import { IPopulatedMessage } from "../elements/message/message.model";
-import { IUser } from "../elements/user/user.model";
-import userService from "../elements/user/user.service";
-import { adminUser } from "./fixtures";
-import messageRepository from "../elements/message/message.repository";
-import app from "../server";
-import ResponseDto from "../globalTypes/ResponseDto";
-import userRepository from "../elements/user/user.repository";
-import PaginationResponse from "../globalTypes/PaginationResponse";
+import { IPopulatedMessage } from "../../elements/message/message.model";
+import { IUser } from "../../elements/user/user.model";
+import userService from "../../elements/user/user.service";
+import { adminUser } from "../fixtures";
+import messageRepository from "../../elements/message/message.repository";
+import app from "../../server";
+import ResponseDto from "../../globalTypes/ResponseDto";
+import userRepository from "../../elements/user/user.repository";
+import PaginationResponse from "../../globalTypes/PaginationResponse";
 import {
   IMessageGetBetweenUsersCommand,
   IMessageGetLastConversations,

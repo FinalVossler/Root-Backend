@@ -1,9 +1,9 @@
 import request from "supertest";
-import userService from "../elements/user/user.service";
-import { adminUser } from "./fixtures";
-import app from "../server";
-import ResponseDto from "../globalTypes/ResponseDto";
-import PaginationResponse from "../globalTypes/PaginationResponse";
+import userService from "../../elements/user/user.service";
+import { adminUser } from "../fixtures";
+import app from "../../server";
+import ResponseDto from "../../globalTypes/ResponseDto";
+import PaginationResponse from "../../globalTypes/PaginationResponse";
 import { IUserReadDto, IUsersGetCommand } from "roottypes";
 
 // Attention!!! This test suite should be skipped. It's only used to test the cypress preparation scripts

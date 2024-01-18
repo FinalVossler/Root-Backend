@@ -1,6 +1,7 @@
 import { IPageCreateCommand, IPageUpdateCommand } from "roottypes";
 import { IPage } from "./page.model";
 import pageRepository from "./page.repository";
+import mongoose from "mongoose";
 
 const pageService = {
   get: async (): Promise<IPage[]> => {
@@ -19,7 +20,9 @@ const pageService = {
     return page;
   },
   deleteByIds: async (ids: string[]): Promise<void> => {
-    await pageRepository.deleteByIds(ids);
+    await pageRepository.deleteByIds(
+      ids.map((id) => new mongoose.Types.ObjectId(id))
+    );
   },
 };
 

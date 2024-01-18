@@ -11,6 +11,7 @@ import {
   IPostsSearchCommand,
   PostVisibilityEnum,
 } from "roottypes";
+import mongoose from "mongoose";
 
 const postRepository = {
   create: async (
@@ -98,7 +99,9 @@ const postRepository = {
     return { posts, total };
   },
   getById: async (postId: string): Promise<IPost | null> => {
-    return await Post.findById(postId).populate(populationOptions).exec();
+    return await Post.findById(new mongoose.Types.ObjectId(postId))
+      .populate(populationOptions)
+      .exec();
   },
   update: async (
     command: IPostUpdateCommand,
@@ -146,11 +149,13 @@ const postRepository = {
   },
 
   delete: async (postId: string): Promise<any> => {
-    return await Post.deleteOne({ _id: postId });
+    return await Post.deleteOne({ _id: new mongoose.Types.ObjectId(postId) });
   },
 
   deleteUserPosts: async (userId: string): Promise<any> => {
-    return await Post.deleteOne({ posterId: userId });
+    return await Post.deleteOne({
+      poster: new mongoose.Types.ObjectId(userId),
+    });
   },
 };
 

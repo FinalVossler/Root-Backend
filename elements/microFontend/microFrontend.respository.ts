@@ -162,9 +162,7 @@ const microFrontendRepository = {
 
     return { microFrontends, total };
   },
-  deleteMicroFrontends: async (
-    microFrontendsIds: mongoose.Types.ObjectId[]
-  ): Promise<void> => {
+  deleteMicroFrontends: async (microFrontendsIds: string[]): Promise<void> => {
     for (let i = 0; i < microFrontendsIds.length; i++) {
       await MicroFrontend.deleteOne({ _id: microFrontendsIds[i] });
     }

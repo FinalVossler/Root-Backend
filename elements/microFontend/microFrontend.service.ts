@@ -1,5 +1,3 @@
-import mongoose from "mongoose";
-
 import { IMicroFrontend } from "./microFrontend.model";
 import microFrontendRepository from "./microFrontend.respository";
 import {
@@ -43,9 +41,7 @@ const microFrontendService = {
 
     return microFrontend;
   },
-  deleteMicroFrontends: async (
-    microFrontendsIds: mongoose.Types.ObjectId[]
-  ): Promise<void> => {
+  deleteMicroFrontends: async (microFrontendsIds: string[]): Promise<void> => {
     await microFrontendRepository.deleteMicroFrontends(microFrontendsIds);
   },
   search: async (

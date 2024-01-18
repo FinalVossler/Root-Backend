@@ -1,11 +1,11 @@
 import request from "supertest";
-import { IPost } from "../elements/post/post.model";
-import { adminUser } from "./fixtures";
-import app from "../server";
-import userService from "../elements/user/user.service";
-import ResponseDto from "../globalTypes/ResponseDto";
-import postRepository from "../elements/post/post.repository";
-import PaginationResponse from "../globalTypes/PaginationResponse";
+import { IPost } from "../../elements/post/post.model";
+import { adminUser } from "../fixtures";
+import app from "../../server";
+import userService from "../../elements/user/user.service";
+import ResponseDto from "../../globalTypes/ResponseDto";
+import postRepository from "../../elements/post/post.repository";
+import PaginationResponse from "../../globalTypes/PaginationResponse";
 import {
   IPostCreateCommand,
   IPostReadDto,

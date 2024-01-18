@@ -1,18 +1,20 @@
 import request from "supertest";
 
-import Message, { IPopulatedMessage } from "../elements/message/message.model";
-import { IUser } from "../elements/user/user.model";
-import userRepository from "../elements/user/user.repository";
-import { adminUser } from "./fixtures";
-import messageRepository from "../elements/message/message.repository";
+import Message, {
+  IPopulatedMessage,
+} from "../../elements/message/message.model";
+import { IUser } from "../../elements/user/user.model";
+import userRepository from "../../elements/user/user.repository";
+import { adminUser } from "../fixtures";
+import messageRepository from "../../elements/message/message.repository";
 import Reaction, {
   IReaction,
   ReactionEnum,
-} from "../elements/reaction/reaction.model";
-import app from "../server";
-import userService from "../elements/user/user.service";
-import ResponseDto from "../globalTypes/ResponseDto";
-import reactionRepository from "../elements/reaction/reaction.repository";
+} from "../../elements/reaction/reaction.model";
+import app from "../../server";
+import userService from "../../elements/user/user.service";
+import ResponseDto from "../../globalTypes/ResponseDto";
+import reactionRepository from "../../elements/reaction/reaction.repository";
 import mongoose from "mongoose";
 import {
   IMessageSendCommand,

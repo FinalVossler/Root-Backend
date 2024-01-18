@@ -2,13 +2,6 @@ import mongoose from "mongoose";
 import SocketModel, { ISocket, ITypingState } from "./socket.model";
 
 const socketRepository = {
-  getSocketIds: async (userId: string): Promise<ISocket[]> => {
-    const sockets = await SocketModel.find({
-      user: new mongoose.Types.ObjectId(userId),
-    }).exec();
-
-    return sockets;
-  },
   deleteSocketId: async (userId: string, socketId: string) => {
     const socket: ISocket | null = await SocketModel.findOne({
       user: new mongoose.Types.ObjectId(userId),

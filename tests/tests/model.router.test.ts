@@ -1,18 +1,18 @@
 import request from "supertest";
 
-import app from "../server";
-import fieldRepository from "../elements/field/field.repository";
-import { IField } from "../elements/field/field.model";
-import modelRepository from "../elements/model/model.repository";
-import userService from "../elements/user/user.service";
+import app from "../../server";
+import fieldRepository from "../../elements/field/field.repository";
+import { IField } from "../../elements/field/field.model";
+import modelRepository from "../../elements/model/model.repository";
+import userService from "../../elements/user/user.service";
 import {
   adminUser,
   createCreateFieldCommand,
   createCreateModelCommand,
-} from "./fixtures";
-import ResponseDto from "../globalTypes/ResponseDto";
-import { IModel } from "../elements/model/model.model";
-import PaginationResponse from "../globalTypes/PaginationResponse";
+} from "../fixtures";
+import ResponseDto from "../../globalTypes/ResponseDto";
+import { IModel } from "../../elements/model/model.model";
+import PaginationResponse from "../../globalTypes/PaginationResponse";
 import {
   EventTriggerEnum,
   EventTypeEnum,

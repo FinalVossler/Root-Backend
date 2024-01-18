@@ -15,21 +15,14 @@ const pageRepository = {
   },
   create: async (command: IPageCreateCommand): Promise<IPage> => {
     const query = await Page.create({
-      posts: command.posts,
+      posts: command.posts.map((postId) => new mongoose.Types.ObjectId(postId)),
       title: [{ text: command.title, language: command.language }],
       showInHeader: command.showInHeader,
       slug: slugify(command.title),
       showInSideMenu: command.showInSideMenu,
     });
 
-    await query.populate(populationOptions);
-    const page: IPage = await query.populate({
-      path: "posts",
-      populate: {
-        path: "files",
-        model: File.modelName,
-      },
-    });
+    const page = await query.populate(populationOptions);
 
     return page;
   },
@@ -40,7 +33,9 @@ const pageRepository = {
       { _id: command._id },
       {
         $set: {
-          posts: command.posts,
+          posts: command.posts.map(
+            (postId) => new mongoose.Types.ObjectId(postId)
+          ),
           title: getNewTranslatedTextsForUpdate({
             oldValue: page?.title,
             language: command.language,
