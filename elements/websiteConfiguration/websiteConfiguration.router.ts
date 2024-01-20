@@ -14,8 +14,8 @@ import {
 
 const router = express.Router();
 
-router.post(
-  "/update",
+router.put(
+  "/",
   protectMiddleware,
   superAdminProtectMiddleware,
   async (
