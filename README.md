@@ -5,3 +5,7 @@
 
 2. If you only want to run a specific test suite: <br>
    `jest -t "testSuiteName"`
+
+3. Sometimes, Heroku has problems connecting to mongo atlas because of IP white listing problems <br>
+   After fixing the IP in mongo atlas, run this command: <br>
+   `heroku restart -a marketing-solution`

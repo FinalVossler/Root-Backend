@@ -43,10 +43,9 @@ import {
   ModelStateTypeEnum,
   PermissionEnum,
   StaticPermissionEnum,
-  IFieldReadDto,
 } from "roottypes";
 import { IMicroFrontendComponent } from "../microFontendComponent/microFrontendComponent.model";
-import { NameModule, faker } from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
 import entityRepository from "../entity/entity.repository";
 
 const testsPreparationService = {
