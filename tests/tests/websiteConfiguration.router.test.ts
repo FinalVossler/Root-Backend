@@ -38,7 +38,7 @@ describe("WebsiteConfiguration", () => {
       description: "This is some website description generated during tests",
       title: "Website test title",
       email: "test@gmail.com",
-      tabTitle: "Test tabe title",
+      tabTitle: "Test table title",
       language: "en",
       mainLanguages: ["en", "fr"],
       phoneNumber: "0623589866",
