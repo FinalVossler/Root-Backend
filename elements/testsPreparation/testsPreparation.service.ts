@@ -1,4 +1,4 @@
-import Entity from "../entity/entity.model";
+import Entity, { IEntity } from "../entity/entity.model";
 import Field, { IField } from "../field/field.model";
 import Message from "../message/message.model";
 import Page from "../page/page.model";
@@ -7,7 +7,9 @@ import User, { IUser } from "../user/user.model";
 import File, { IFile } from "../file/file.model";
 import EntityEventNotification from "../entityEventNotification/entityEventNotification.model";
 import EntityPermission from "../entityPermission/entityPermission.model";
-import FieldTableElement from "../fieldTableElement/fieldTableElement.model";
+import FieldTableElement, {
+  IFieldTableElement,
+} from "../fieldTableElement/fieldTableElement.model";
 import Model, {
   IModel,
   ModelFieldConditionTypeEnum,
@@ -31,6 +33,7 @@ import {
   EventTriggerEnum,
   EventTypeEnum,
   FieldTypeEnum,
+  IEntityCreateCommand,
   IFieldCreateCommand,
   IFileCommand,
   IMicroFrontendCreateCommand,
@@ -40,10 +43,13 @@ import {
   ModelStateTypeEnum,
   PermissionEnum,
   StaticPermissionEnum,
+  IFieldReadDto,
 } from "roottypes";
 import { IMicroFrontendComponent } from "../microFontendComponent/microFrontendComponent.model";
+import { NameModule, faker } from "@faker-js/faker";
+import entityRepository from "../entity/entity.repository";
 
-const cypressService = {
+const testsPreparationService = {
   clean: async (currentUser: IUser) => {
     await Socket.deleteMany({});
 
@@ -1144,7 +1150,158 @@ const cypressService = {
       };
     };
 
-    await cypressService.clean(currentUser || adminUser);
+    const prepareFiles = async (): Promise<{
+      caseFile: IFile;
+      medicalInsightFile: IFile;
+    }> => {
+      const command: IFileCommand = {
+        isImage: false,
+        url: "https://www.africau.edu/images/default/sample.pdf",
+        uuid: "random",
+        name: "Case molecules",
+        ownerId: adminUser._id,
+      };
+      const caseFile: IFile = await fileRepository.create(command);
+      const medicalInsightFile: IFile = await fileRepository.create({
+        ...command,
+        name: "Medical insight",
+      });
+
+      return { caseFile, medicalInsightFile };
+    };
+
+    const prepareEntities = async () => {
+      const promises: Promise<IEntity>[] = [];
+      Array.from({ length: 3 }).forEach((_) => {
+        const numberOfYearsOfForecast: number = Math.floor(Math.random() * 10);
+        const command: IEntityCreateCommand = {
+          assignedUsersIds: [],
+          entityFieldValues: [
+            {
+              fieldId: caseNameField._id.toString(),
+              files: [],
+              tableValues: [],
+              value: faker.company.name(),
+              yearTableValues: [],
+            },
+            {
+              fieldId: productNameField._id.toString(),
+              files: [],
+              tableValues: [],
+              value: faker.commerce.product(),
+              yearTableValues: [],
+            },
+            {
+              fieldId: countryField._id.toString(),
+              files: [],
+              tableValues: [],
+              value: "en",
+              yearTableValues: [],
+            },
+            {
+              fieldId: numberOfYearsOfForecastField._id.toString(),
+              files: [],
+              tableValues: [],
+              value: numberOfYearsOfForecast + "",
+              yearTableValues: [],
+            },
+            {
+              fieldId: medicalInsightPPTemplateField._id.toString(),
+              files: [
+                {
+                  _id:
+                    medicalInsightFile && medicalInsightFile._id
+                      ? medicalInsightFile?._id.toString()
+                      : "",
+                  ...medicalInsightFile,
+                },
+              ],
+              tableValues: [],
+              value: "",
+              yearTableValues: [],
+            },
+            {
+              fieldId: inMarketSalesDataField._id.toString(),
+              files: [
+                {
+                  _id:
+                    inMarketSalesDataFile && inMarketSalesDataFile._id
+                      ? inMarketSalesDataFile?._id.toString()
+                      : "",
+                  ...inMarketSalesDataFile,
+                },
+              ],
+              tableValues: [],
+              value: "",
+              yearTableValues: [],
+            },
+            {
+              fieldId: priceField._id.toString(),
+              files: [],
+              tableValues: [],
+              value: "",
+              yearTableValues:
+                priceField.tableOptions?.rows.map((row) => ({
+                  rowId: (row as IFieldTableElement)._id.toString(),
+                  values:
+                    Array.from({ length: numberOfYearsOfForecast }).map(
+                      (_, columnIndex) => ({
+                        year: 2025 + columnIndex,
+                        value: Math.floor(Math.random() * 100) + "",
+                      })
+                    ) || [],
+                })) || [],
+            },
+            {
+              fieldId: costField._id.toString(),
+              files: [],
+              tableValues: [],
+              value: "",
+              yearTableValues:
+                costField.tableOptions?.rows.map((row) => ({
+                  rowId: (row as IFieldTableElement)._id.toString(),
+                  values:
+                    Array.from({ length: numberOfYearsOfForecast }).map(
+                      (_, columnIndex) => ({
+                        year: 2025 + columnIndex,
+                        value: Math.floor(Math.random() * 100) + "",
+                      })
+                    ) || [],
+                })) || [],
+            },
+            {
+              fieldId: kpiDashboardButtonField._id.toString(),
+              files: [],
+              tableValues: [],
+              value: "",
+              yearTableValues: [],
+            },
+            {
+              fieldId: pestelButtonField._id.toString(),
+              files: [],
+              tableValues: [],
+              value: "",
+              yearTableValues: [],
+            },
+            {
+              fieldId: forecastButtonField._id.toString(),
+              files: [],
+              tableValues: [],
+              value: "",
+              yearTableValues: [],
+            },
+          ],
+          language: "en",
+          modelId: model._id.toString(),
+        };
+
+        promises.push(entityRepository.create(command));
+      });
+
+      await Promise.all(promises);
+    };
+
+    await testsPreparationService.clean(currentUser || adminUser);
 
     const {
       caseNameField,
@@ -1162,7 +1319,10 @@ const cypressService = {
 
     const model = await prepareModels();
     await prepareRoles();
+    const { caseFile: inMarketSalesDataFile, medicalInsightFile } =
+      await prepareFiles();
+    await prepareEntities();
   },
 };
 
-export default cypressService;
+export default testsPreparationService;

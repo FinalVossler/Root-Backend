@@ -6,15 +6,14 @@ import ResponseDto from "../../globalTypes/ResponseDto";
 import PaginationResponse from "../../globalTypes/PaginationResponse";
 import { IUserReadDto, IUsersGetCommand } from "roottypes";
 
-// Attention!!! This test suite should be skipped. It's only used to test the cypress preparation scripts
-// when we are about to run cypress tests
+// Attention!!! This test suite should be skipped. It's only used as preparation for E2E tests
 jest.setTimeout(50000);
-describe.skip("cypress router", function () {
+describe("TestsPreparation", function () {
   const adminToken = userService.generateToken(adminUser);
 
   it.skip("should be able to clean by deleting everything", async () => {
     await request(app)
-      .post("/cypress/clean")
+      .post("/testsPreparation/clean")
       .set("Authorization", "Bearer " + adminToken)
       .expect(200);
 
@@ -40,7 +39,7 @@ describe.skip("cypress router", function () {
 
   it("should be able to prepare Marketmaven", async () => {
     return request(app)
-      .post("/cypress/prepareMarketMaven")
+      .post("/testsPreparation/prepareMarketMaven")
       .set("Authorization", "Bearer " + adminToken)
       .expect(200);
   });

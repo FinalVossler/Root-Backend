@@ -64,7 +64,7 @@ describe("roles", () => {
         },
       ],
       language: "en",
-      name: roleName || "Role Created by Cypress",
+      name: roleName || "Role Created by Integration tests",
       permissions: [PermissionEnum.CreateField, PermissionEnum.CreateModel],
     };
 

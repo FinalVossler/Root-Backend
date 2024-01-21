@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
 export interface IFile {
-  _id?: mongoose.Types.ObjectId;
+  _id?: string;
   url: string;
   uuid: string;
   isImage: boolean;
   name?: string | null;
-  ownerId?: mongoose.Types.ObjectId;
+  ownerId?: string;
 }
 
 interface IFileModel extends mongoose.Model<IFile> {}

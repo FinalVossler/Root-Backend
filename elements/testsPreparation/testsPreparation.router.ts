@@ -4,7 +4,7 @@ import ConnectedRequest from "../../globalTypes/ConnectedRequest";
 import ResponseDto from "../../globalTypes/ResponseDto";
 import protectMiddleware from "../../middleware/protectMiddleware";
 import { IUser } from "../user/user.model";
-import cypressService from "./cypress.service";
+import testsPreparationService from "./testsPreparation.service";
 import { IFile } from "../file/file.model";
 import { IFileReadDto } from "roottypes";
 import { fileToReadDto } from "../file/file.toReadDto";
@@ -20,7 +20,7 @@ router.post(
   ) => {
     const currentUser: IUser = req.user;
 
-    await cypressService.clean(currentUser);
+    await testsPreparationService.clean(currentUser);
 
     res.status(200).json({
       data: null,
@@ -38,7 +38,7 @@ router.post(
   ) => {
     const currentUser = req.user;
 
-    const file: IFile = await cypressService.createFile(
+    const file: IFile = await testsPreparationService.createFile(
       req.body.url,
       currentUser
     );
@@ -57,9 +57,7 @@ router.post(
     req: ConnectedRequest<any, any, any, any>,
     res: Response<ResponseDto<void>>
   ) => {
-    const currentUser = req.user;
-
-    await cypressService.prepareMarketMaven();
+    await testsPreparationService.prepareMarketMaven();
 
     res.status(200).json({
       data: null,
