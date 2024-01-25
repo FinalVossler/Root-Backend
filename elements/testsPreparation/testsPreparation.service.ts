@@ -520,6 +520,7 @@ const testsPreparationService = {
           {
             fieldId: caseNameField._id.toString(),
             mainField: true,
+            stickInTable: true,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -531,6 +532,7 @@ const testsPreparationService = {
           {
             fieldId: productNameField._id.toString(),
             mainField: true,
+            stickInTable: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -548,6 +550,7 @@ const testsPreparationService = {
           {
             fieldId: countryField._id.toString(),
             mainField: true,
+            stickInTable: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -565,6 +568,7 @@ const testsPreparationService = {
           {
             fieldId: numberOfYearsOfForecastField._id.toString(),
             mainField: true,
+            stickInTable: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -582,6 +586,7 @@ const testsPreparationService = {
           {
             fieldId: costField._id.toString(),
             mainField: false,
+            stickInTable: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -609,6 +614,7 @@ const testsPreparationService = {
           {
             fieldId: priceField._id.toString(),
             mainField: false,
+            stickInTable: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -636,6 +642,7 @@ const testsPreparationService = {
           {
             fieldId: inMarketSalesDataField._id.toString(),
             mainField: false,
+            stickInTable: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -660,6 +667,7 @@ const testsPreparationService = {
           {
             fieldId: medicalInsightPPTemplateField._id.toString(),
             mainField: false,
+            stickInTable: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -677,6 +685,7 @@ const testsPreparationService = {
           {
             fieldId: kpiDashboardButtonField._id.toString(),
             mainField: false,
+            stickInTable: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -704,6 +713,7 @@ const testsPreparationService = {
           {
             fieldId: pestelButtonField._id.toString(),
             mainField: false,
+            stickInTable: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -727,6 +737,7 @@ const testsPreparationService = {
           {
             fieldId: forecastButtonField._id.toString(),
             mainField: false,
+            stickInTable: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")

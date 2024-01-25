@@ -10,9 +10,9 @@ import {
 } from "./entityPermission.model";
 import { entityEventNotificationToReadDto } from "../entityEventNotification/entityEventNotification.toReadDto";
 import { fieldToReadDto } from "../field/field.toReadDto";
-import { modelToReadDto } from "../model/modelToReadDto";
 import { roleToReadDto } from "../role/role.toReadDto";
 import mongoose from "mongoose";
+import { modelToReadDto } from "../model/model.toReadDto";
 
 export const entityPermissionToReadDto = (
   entityPermission: IEntityPermission | string

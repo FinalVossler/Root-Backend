@@ -17,7 +17,7 @@ import {
   PermissionEnum,
   StaticPermissionEnum,
 } from "roottypes";
-import { modelToReadDto } from "./modelToReadDto";
+import { modelToReadDto } from "./model.toReadDto";
 import { IEntityPermission } from "../entityPermission/entityPermission.model";
 import { IRole } from "../role/role.model";
 

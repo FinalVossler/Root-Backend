@@ -1,6 +1,6 @@
 import { IEntityReadDto, IEntityFieldValueReadDto } from "roottypes";
 import { IEntity, IEntityFieldValue } from "./entity.model";
-import { modelToReadDto } from "../model/modelToReadDto";
+import { modelToReadDto } from "../model/model.toReadDto";
 import { userToReadDto } from "../user/user.toReadDto";
 import {
   fieldTableElementToReadDto,

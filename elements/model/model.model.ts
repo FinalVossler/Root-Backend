@@ -30,6 +30,7 @@ export interface IModelField {
   conditions?: IModelFieldCondition[];
   states?: IModelState[];
   mainField?: boolean;
+  stickInTable?: boolean;
 }
 
 export interface IModelFieldCondition {
@@ -96,6 +97,10 @@ const ModelSchema = new mongoose.Schema<IModel>(
           },
         ],
         mainField: {
+          type: mongoose.SchemaTypes.Boolean,
+          required: false,
+        },
+        stickInTable: {
           type: mongoose.SchemaTypes.Boolean,
           required: false,
         },

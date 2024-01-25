@@ -45,6 +45,7 @@ export const createCreateModelCommand = (
   modelFields: fields.map((field) => ({
     fieldId: field?._id.toString() || "",
     mainField: true,
+    stickInTable: false,
     required: false,
     modelStatesIds: [],
   })),

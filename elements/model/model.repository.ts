@@ -37,6 +37,7 @@ const modelRepository = {
           })) || [],
         states: modelField.modelStatesIds,
         mainField: modelField.mainField,
+        stickInTable: modelField.stickInTable,
       })),
       modelEvents: command.modelEvents.map<IEventCommand>(
         (modelEvent: IEventCommand) => ({
@@ -115,6 +116,7 @@ const modelRepository = {
               }) || [],
             states: modelField.modelStatesIds,
             mainField: modelField.mainField,
+            stickInTable: modelField.stickInTable,
           })),
           modelEvents: command.modelEvents.map<IEventCommand>(
             (modelEvent: IEventCommand) => ({

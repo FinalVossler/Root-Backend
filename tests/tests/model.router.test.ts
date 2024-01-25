@@ -27,7 +27,7 @@ import {
 } from "roottypes";
 
 jest.setTimeout(50000);
-describe("model router", () => {
+describe("Models", () => {
   let createdModelId: string | undefined;
   let field1: IField | undefined;
   let field2: IField | undefined;
@@ -81,6 +81,7 @@ describe("model router", () => {
         {
           fieldId: field1?._id.toString() || "",
           mainField: true,
+          stickInTable: false,
           required: false,
           modelStatesIds: [],
         },
@@ -153,12 +154,14 @@ describe("model router", () => {
         {
           fieldId: field1?._id.toString() || "",
           mainField: true,
+          stickInTable: false,
           required: false,
           modelStatesIds: [],
         },
         {
           fieldId: field2?._id.toString() || "",
           mainField: true,
+          stickInTable: false,
           required: false,
           modelStatesIds: [],
         },

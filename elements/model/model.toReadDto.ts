@@ -24,18 +24,7 @@ export const modelToReadDto = (
     name: model.name,
     //@ts-ignore
     modelFields: model.modelFields.map((modelField) => {
-      return {
-        field: fieldToReadDto(modelField.field),
-        required: modelField.required,
-        conditions: modelField.conditions?.map((condition) => ({
-          field: condition.field ? fieldToReadDto(condition.field) : null,
-          conditionType: condition.conditionType,
-          value: condition.value,
-          modelState: condition.modelState,
-        })),
-        states: modelField.states,
-        mainField: modelField.mainField,
-      };
+      return modelFieldToReadDto(modelField);
     }),
     modelEvents: model.modelEvents?.map((e) => eventToReadDto(e)),
     states: model.states?.map((state) => modelStateToReadDto(state)),
@@ -58,6 +47,7 @@ export const modelFieldToReadDto = (
     ),
     states: modelField.states?.map((s) => modelStateToReadDto(s)),
     mainField: modelField.mainField,
+    stickInTable: modelField.stickInTable,
   };
 };
 
