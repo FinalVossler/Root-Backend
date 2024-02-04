@@ -1,27 +1,10 @@
-import express, { Response } from "express";
-import { IEmailSendCommand } from "roottypes";
-
-import ConnectedRequest from "../../globalTypes/ConnectedRequest";
-import ResponseDto from "../../globalTypes/ResponseDto";
-import emailService from "./email.service";
+import express from "express";
+import emailController from "./email.controller";
 
 const router = express.Router();
 
-router.post(
-  "/",
-  async (
-    req: ConnectedRequest<any, any, IEmailSendCommand, any>,
-    res: Response<ResponseDto<void>>
-  ) => {
-    const command: IEmailSendCommand = req.body;
+const { createEmail } = emailController;
 
-    await emailService.sendContactEmail(command);
-
-    res.status(200).json({
-      success: true,
-      data: null,
-    });
-  }
-);
+router.post("/", createEmail);
 
 export default router;

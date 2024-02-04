@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon server.ts",
-    "dev:marketMaven": "jest -t \"TestsPreparationMarketMaven\" && nodemon server.ts",
+    "dev:marketMaven": "jest -t \"MarketMaven\" && nodemon server.ts",
     "start": "NODE_ENV=production&&node dist/server.js",
     "test": "jest -t \"Clean\" && jest",
     "test:watch": "jest --watchAll",
