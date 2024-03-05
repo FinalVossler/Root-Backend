@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import EventSchema from "../../event/event.model";
+import EventSchema from "../../event/adapters/event.mongoose.model";
 import { FieldTypeEnum } from "roottypes";
 import translatedTextSchema from "../../translatedText/adapters/translatedText.mongooseSchema";
 import { IField } from "../ports/interfaces/IField";

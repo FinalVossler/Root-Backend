@@ -8,7 +8,7 @@ import userModel, {
 } from "../../elements/user/adapters/user.mongoose.model";
 import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import userMongooseRepository from "../../elements/user/adapters/user.mongoose.repository";
-import { IFile } from "../../elements/file/file.model";
+import { IFile } from "../../elements/file/adapters/file.mongoose.model";
 import { IRole } from "../../elements/role/role.model";
 import roleRepository from "../../elements/role/adapters/role.mongoose.repository";
 import doNothing from "../../utils/doNothing";

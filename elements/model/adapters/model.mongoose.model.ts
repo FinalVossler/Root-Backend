@@ -1,17 +1,10 @@
 import mongoose from "mongoose";
 
-import Entity from "../../entity/adapters/entity.mongoose.model";
-import { IEntityPermission } from "../../entityPermission/entityPermission.model";
-import entityPermissionSerivce from "../../entityPermission/entityPermission.service";
-import entityPermissionRepository from "../../entityPermission/entityPermission.repository";
-import EventSchema, { IEvent } from "../../event/event.model";
 import { IModelState } from "../../modelState/modelState.model";
-import modelStateRepository from "../../modelState/modelState.repository";
-import { populationOptions } from "./model.mongoose.repository";
-import { ITranslatedText } from "roottypes";
-import translatedTextSchema from "../../translatedText/adapters/translatedText.mongooseSchema";
 import { IField } from "../../field/ports/interfaces/IField";
 import IModel from "../ports/interfaces/IModel";
+import translatedTextSchema from "../../translatedText/adapters/translatedText.mongooseSchema";
+import EventSchema from "../../event/adapters/event.mongoose.model";
 
 //#region model fields
 export interface IModelField {
@@ -114,40 +107,6 @@ const ModelSchema = new mongoose.Schema<IModel>(
     timestamps: true,
   }
 );
-
-ModelSchema.pre("deleteOne", async function (next) {
-  const model: IModel | undefined = (await this.model
-    .findOne(this.getQuery())
-    .populate(populationOptions)) as IModel;
-
-  if (model) {
-    // Deleting the entities created based on the deleted model
-    await Entity.deleteMany({ model: model._id });
-
-    // Deleting the entities permissions using the deleted model
-    const modelEntityPermissions: IEntityPermission[] =
-      await entityPermissionSerivce.getModelEntityPermissions(
-        model._id.toString()
-      );
-
-    await entityPermissionRepository.deleteByIds(
-      modelEntityPermissions.map((ep) => ep._id.toString())
-    );
-
-    // Delete model modelField states
-    let statesIds: string[] = [];
-    model.modelFields?.forEach((modelField) => {
-      statesIds = statesIds.concat(
-        modelField.states?.map((state) => state._id) || []
-      );
-    });
-    if (statesIds.length > 0) {
-      await modelStateRepository.deleteMany(statesIds);
-    }
-  }
-
-  next();
-});
 
 const Model = mongoose.model<IModel, IModelModel>("model", ModelSchema);
 

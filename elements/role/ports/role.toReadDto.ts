@@ -1,5 +1,5 @@
 import { IRoleReadDto } from "roottypes";
-import { entityPermissionToReadDto } from "../../entityPermission/entityPermission.toReadDto";
+import { entityPermissionToReadDto } from "../../entityPermission/ports/entityPermission.toReadDto";
 import IRole from "./interfaces/IRole";
 
 export const roleToReadDto = (role: IRole | string): IRoleReadDto | string => {

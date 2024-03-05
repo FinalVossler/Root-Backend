@@ -1,5 +1,5 @@
 import { INotificationReadDto } from "roottypes";
-import { fileToReadDto } from "../../file/file.toReadDto";
+import { fileToReadDto } from "../../file/ports/file.toReadDto";
 import INotification from "./interfaces/INotification";
 
 export const notificationToReadDto = (

@@ -1,5 +1,5 @@
 import { IPostReadDto } from "roottypes";
-import { fileToReadDto } from "../../file/file.toReadDto";
+import { fileToReadDto } from "../../file/ports/file.toReadDto";
 import { userToReadDto } from "../../user/ports/user.toReadDto";
 import IPost from "./interfaces/IPost";
 

@@ -4,7 +4,7 @@ import {
   IFieldReadDto,
   IFieldTableElementReadDto,
 } from "roottypes";
-import { eventToReadDto } from "../../event/event.toReadDto";
+import { eventToReadDto } from "../../event/ports/event.toReadDto";
 import { IFieldTableElement } from "../../fieldTableElement/fieldTableElement.model";
 import { IField, IFieldOption } from "./interfaces/IField";
 

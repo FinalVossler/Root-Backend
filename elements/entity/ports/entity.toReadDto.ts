@@ -5,7 +5,7 @@ import {
   fieldTableElementToReadDto,
   fieldToReadDto,
 } from "../../field/ports/field.toReadDto";
-import { fileToReadDto } from "../../file/file.toReadDto";
+import { fileToReadDto } from "../../file/ports/file.toReadDto";
 import IEntity, { IEntityFieldValue } from "./interfaces/IEntity";
 
 export const entityToReadDto = (entity: IEntity): IEntityReadDto => {

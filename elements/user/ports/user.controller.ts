@@ -1,5 +1,4 @@
 import { IUserWithLastReadMessageInConversation } from "../adapters/user.mongoose.model";
-import { IFile } from "../../file/file.model";
 import {
   IChatGetContactsCommand,
   IFileCommand,
@@ -23,6 +22,7 @@ import IUserService from "./interfaces/IUserService";
 import IUser from "./interfaces/IUser";
 import IUserController from "./interfaces/IUserController";
 import IRequest from "../../../globalTypes/IRequest";
+import IFile from "../../file/ports/interfaces/IFile";
 
 const createUserController = (userService: IUserService): IUserController => ({
   getChatContacts: async (

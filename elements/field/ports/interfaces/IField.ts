@@ -1,6 +1,6 @@
 import { FieldTypeEnum, ITranslatedText } from "roottypes";
 import { IFieldTableElement } from "../../../fieldTableElement/fieldTableElement.model";
-import { IEvent } from "../../../event/event.model";
+import { IEvent } from "../../../event/adapters/event.mongoose.model";
 
 export type IFieldOption = {
   value: string;

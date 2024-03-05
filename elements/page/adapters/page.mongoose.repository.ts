@@ -3,7 +3,7 @@ import slugify from "slugify";
 
 import Page from "./page.mongoose.model";
 import Post from "../../post/adapters/post.mongoose.model";
-import File from "../../file/file.model";
+import File from "../../file/adapters/file.mongoose.model";
 import getNewTranslatedTextsForUpdate from "../../../utils/getNewTranslatedTextsForUpdate";
 import { IPageCreateCommand, IPageUpdateCommand } from "roottypes";
 import IPage from "../ports/interfaces/IPage";

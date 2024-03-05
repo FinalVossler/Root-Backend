@@ -6,8 +6,8 @@ import {
   PermissionEnum,
   StaticPermissionEnum,
 } from "roottypes";
-import { IUser } from "../../../user/adapters/user.mongoose.model";
 import IRole from "./IRole";
+import IUser from "../../../user/ports/interfaces/IUser";
 
 export default interface IRoleService {
   createRole: (

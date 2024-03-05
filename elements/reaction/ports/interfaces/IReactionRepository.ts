@@ -1,6 +1,6 @@
 import { IReactionCreateCommand } from "roottypes";
-import { IReaction } from "../../reaction.mongoose.model";
 import IUser from "../../../user/ports/interfaces/IUser";
+import IReaction from "./IReaction";
 
 interface IReactionRepository {
   create: (

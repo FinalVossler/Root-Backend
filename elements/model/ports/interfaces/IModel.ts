@@ -1,7 +1,7 @@
 import { ITranslatedText } from "roottypes";
 import { IModelField } from "../../adapters/model.mongoose.model";
-import { IEvent } from "../../../event/event.model";
 import { IModelState } from "../../../modelState/modelState.model";
+import { IEvent } from "../../../event/ports/interfaces/IEvent";
 
 export interface IModel {
   _id: string;

@@ -11,12 +11,19 @@ import IModel from "./interfaces/IModel";
 import IUser from "../../user/ports/interfaces/IUser";
 import IRoleService from "../../role/ports/interfaces/IRoleService";
 import IRole from "../../role/ports/interfaces/IRole";
-import { IEntityPermission } from "../../entityPermission/entityPermission.model";
 import IModelRepository from "./interfaces/IModelRepository";
+import Entity from "../../entity/adapters/entity.mongoose.model";
+import { Model } from "mongoose";
+import IEntityPermissionService from "../../entityPermission/ports/interfaces/IEntityPermissionService";
+import IEntityPermission from "../../entityPermission/ports/interfaces/IEntityPermission";
+import entityPermissionMongooseRepository from "../../entityPermission/adapters/entityPermission.mongoose.repository";
+import modelStateRepository from "../../modelState/modelState.repository";
+import { populationOptions } from "../adapters/model.mongoose.repository";
 
 const createModelService = (
   roleService: IRoleService,
-  modelRepository: IModelRepository
+  modelRepository: IModelRepository,
+  entityPermissionService: IEntityPermissionService
 ): IModelService => ({
   createModel: async (
     command: IModelCreateCommand,
@@ -99,7 +106,39 @@ const createModelService = (
       permission: PermissionEnum.DeleteModel,
     });
 
-    await modelRepository.deleteModels(modelsIds);
+    for (let i = 0; i < modelsIds.length; i++) {
+      const model: IModel | undefined = (await Model.findById(
+        modelsIds[i]
+      ).populate(populationOptions)) as IModel;
+
+      if (model) {
+        // Deleting the entities created based on the deleted model
+        await Entity.deleteMany({ model: model._id });
+
+        // Deleting the entities permissions using the deleted model
+        const modelEntityPermissions: IEntityPermission[] =
+          await entityPermissionService.getModelEntityPermissions(
+            model._id.toString()
+          );
+
+        await entityPermissionMongooseRepository.deleteByIds(
+          modelEntityPermissions.map((ep) => ep._id.toString())
+        );
+
+        // Delete model modelField states
+        let statesIds: string[] = [];
+        model.modelFields?.forEach((modelField) => {
+          statesIds = statesIds.concat(
+            modelField.states?.map((state) => state._id) || []
+          );
+        });
+        if (statesIds.length > 0) {
+          await modelStateRepository.deleteMany(statesIds);
+        }
+      }
+
+      await modelRepository.deleteModel(modelsIds[i]);
+    }
   },
   searchModels: async (
     command: IModelsSearchCommand,

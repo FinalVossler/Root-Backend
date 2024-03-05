@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import File from "../../file/file.model";
+import File from "../../file/adapters/file.mongoose.model";
 import translatedTextSchema from "../../translatedText/adapters/translatedText.mongooseSchema";
 import IEntity from "../ports/interfaces/IEntity";
 

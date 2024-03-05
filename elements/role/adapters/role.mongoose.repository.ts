@@ -1,8 +1,7 @@
 import mongoose from "mongoose";
 
 import getNewTranslatedTextsForUpdate from "../../../utils/getNewTranslatedTextsForUpdate";
-import { IEntityPermission } from "../../entityPermission/entityPermission.model";
-import entityPermissionRepository from "../../entityPermission/entityPermission.repository";
+import entityPermissionMongooseRepository from "../../entityPermission/adapters/entityPermission.mongoose.repository";
 import {
   IEntityPermissionCreateCommand,
   IEntityPermissionUpdateCommand,
@@ -13,6 +12,7 @@ import {
 } from "roottypes";
 import IRole from "../ports/interfaces/IRole";
 import Role from "./role.mongoose.model";
+import IEntityPermission from "../../entityPermission/ports/interfaces/IEntityPermission";
 
 const roleMongooseRepository = {
   createEntityPermissions: async (
@@ -26,7 +26,7 @@ const roleMongooseRepository = {
         new Promise(async (resolve, reject) => {
           try {
             const createdEntityPermission: IEntityPermission =
-              await entityPermissionRepository.create(
+              await entityPermissionMongooseRepository.create(
                 entityPermissionCreateCommand
               );
             createdEntityPermissions.push(createdEntityPermission);
@@ -60,7 +60,7 @@ const roleMongooseRepository = {
             if (oldEntityPermission) {
               if (entityPermissionCommand) {
                 const updatedEntityPermission: IEntityPermission =
-                  await entityPermissionRepository.updateEntityPermission(
+                  await entityPermissionMongooseRepository.updateEntityPermission(
                     entityPermissionCommand,
                     oldEntityPermission
                   );
@@ -121,7 +121,7 @@ const roleMongooseRepository = {
         )
     );
 
-    await entityPermissionRepository.deleteByIds(
+    await entityPermissionMongooseRepository.deleteByIds(
       entityPermissionsToDelete.map((e) => e._id.toString())
     );
     // End entity permissions to delete
@@ -211,7 +211,7 @@ const roleMongooseRepository = {
 
       if (!role) continue;
 
-      await entityPermissionRepository.deleteByIds(
+      await entityPermissionMongooseRepository.deleteByIds(
         (role.entityPermissions as IEntityPermission[]).map((p) =>
           p._id.toString()
         )

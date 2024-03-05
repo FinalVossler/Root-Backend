@@ -7,8 +7,8 @@ import {
 } from "roottypes";
 import IRequest from "../../../../globalTypes/IRequest";
 import IResponseDto from "../../../../globalTypes/IResponseDto";
-import { IUser } from "../../../user/adapters/user.mongoose.model";
 import IPaginationResponse from "../../../../globalTypes/IPaginationResponse";
+import IUser from "../../../user/ports/interfaces/IUser";
 
 export default interface IRoleController {
   createRole: (

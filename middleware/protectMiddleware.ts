@@ -1,8 +1,8 @@
 import { Response, Request, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
-import userService from "../elements/user/ports/user.service";
 import IConnectedRequest from "../globalTypes/IConnectedRequest";
 import IUser from "../elements/user/ports/interfaces/IUser";
+import { userService } from "../ioc";
 
 const protectMiddleware = async (
   req: Request,

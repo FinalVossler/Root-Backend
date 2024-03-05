@@ -10,11 +10,11 @@ import {
 
 import Field from "./field.mongoose.model";
 import getNewTranslatedTextsForUpdate from "../../../utils/getNewTranslatedTextsForUpdate";
-import { IEventRequestHeader } from "../../event/event.model";
 import { IFieldTableElement } from "../../fieldTableElement/fieldTableElement.model";
 import fieldTableElementRepository from "../../fieldTableElement/fieldTableElement.repository";
 import IFieldRepository from "../ports/interfaces/IFieldRepository";
 import { IField } from "../ports/interfaces/IField";
+import { IEventRequestHeader } from "../../event/ports/interfaces/IEvent";
 
 const mongooseFieldRepository: IFieldRepository = {
   create: async (command: IFieldCreateCommand): Promise<IField> => {

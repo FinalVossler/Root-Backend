@@ -7,11 +7,12 @@ import INotificationService from "./interfaces/INotificationService";
 import IUser from "../../user/ports/interfaces/IUser";
 import INotificationRepository from "./interfaces/INotificationRepository";
 import { notificationToReadDto } from "./notification.toReadDto";
-import { socketEmit } from "../../../socket";
 import INotification from "./interfaces/INotification";
+import ISocketService from "../../socket/ports/interfaces/ISocketService";
 
 const createNotificationService = (
-  notificationRepository: INotificationRepository
+  notificationRepository: INotificationRepository,
+  socketService: ISocketService
 ): INotificationService => ({
   create: async (
     command: INotificationCreateCommand
@@ -20,7 +21,7 @@ const createNotificationService = (
       command
     );
 
-    socketEmit({
+    socketService.socketEmit({
       messageType: NotificationMessageEnum.Receive,
       object: notificationToReadDto(notification),
       userIds: notification.to.map((userId) => userId.toString()),

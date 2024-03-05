@@ -16,7 +16,7 @@ import IResponseDto from "../../../../globalTypes/IResponseDto";
 import IRequest from "../../../../globalTypes/IRequest";
 import IPaginationResponse from "../../../../globalTypes/IPaginationResponse";
 import IUser from "./IUser";
-import { IFile } from "../../../file/file.model";
+import { IFile } from "../../../file/adapters/file.mongoose.model";
 
 type IUserController = {
   getChatContacts: (

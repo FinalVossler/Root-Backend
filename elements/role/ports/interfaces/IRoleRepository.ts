@@ -6,8 +6,8 @@ import {
   IRolesGetCommand,
   IRolesSearchCommand,
 } from "roottypes";
-import { IEntityPermission } from "../../../entityPermission/entityPermission.model";
 import IRole from "./IRole";
+import IEntityPermission from "../../../entityPermission/ports/interfaces/IEntityPermission";
 
 interface IRoleRepository {
   createEntityPermissions: (

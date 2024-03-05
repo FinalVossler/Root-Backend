@@ -1,6 +1,7 @@
-import { IFile } from "../../file/file.model";
-import fileRepository from "../../file/file.repository";
-import File from "../../file/file.model";
+import mongoose from "mongoose";
+
+import fileRepository from "../../file/adapters/file.mongoose.repository";
+import File from "../../file/adapters/file.mongoose.model";
 import getNewTranslatedTextsForUpdate from "../../../utils/getNewTranslatedTextsForUpdate";
 import {
   IPostCreateCommand,
@@ -9,11 +10,11 @@ import {
   IPostsSearchCommand,
   PostVisibilityEnum,
 } from "roottypes";
-import mongoose from "mongoose";
 import IPostRepository from "../ports/interfaces/IPostRepository";
 import IUser from "../../user/ports/interfaces/IUser";
 import IPost from "../ports/interfaces/IPost";
 import Post from "./post.mongoose.model";
+import IFile from "../../file/ports/interfaces/IFile";
 
 const postMongooseRepository: IPostRepository = {
   create: async (

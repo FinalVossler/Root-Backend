@@ -2,9 +2,9 @@ import Field from "../field/adapters/field.mongoose.model";
 import Message from "../message/adapters/message.mongoose.model";
 import Page from "../page/adapters/page.mongoose.model";
 import Post from "../post/adapters/post.mongoose.model";
-import File, { IFile } from "../file/file.model";
-import EntityEventNotification from "../entityEventNotification/entityEventNotification.model";
-import EntityPermission from "../entityPermission/entityPermission.model";
+import File, { IFile } from "../file/adapters/file.mongoose.model";
+import EntityEventNotification from "../entityEventNotification/adapters/entityEventNotification.mongoose.model";
+import EntityPermission from "../entityPermission/adapters/entityPermission.mongoose.model";
 import FieldTableElement, {
   IFieldTableElement,
 } from "../fieldTableElement/fieldTableElement.model";
@@ -14,12 +14,12 @@ import Model, {
 import ModelState from "../modelState/modelState.model";
 import Notification from "../notification/adapters/notification.mongoose.model";
 import Reaction from "../reaction/adapters/reaction.mongoose.model";
-import Socket from "../socket/socket.model";
-import fileRepository from "../file/file.repository";
+import Socket from "../socket/adapters/socket.mongoose.model";
+import fileRepository from "../file/adapters/file.mongoose.repository";
 import MicroFrontend, {
   IMicroFrontend,
-} from "../microFontend/microFrontend.model";
-import microFrontendRepository from "../microFontend/microFrontend.respository";
+} from "../microFontend/adapters/microFrontend.mongoose.model";
+import microFrontendRepository from "../microFontend/adapters/microFrontend.mongoose.respository";
 import modelRepository from "../model/adapters/model.mongoose.repository";
 import { adminUser } from "../../tests/fixtures";
 import roleRepository from "../role/adapters/role.mongoose.repository";

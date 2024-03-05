@@ -1,7 +1,3 @@
-import { IEntityPermission } from "../../entityPermission/entityPermission.model";
-import entityPermissionSerivce from "../../entityPermission/entityPermission.service";
-import { IUser } from "../../user/adapters/user.mongoose.model";
-
 import {
   IRoleCreateCommand,
   IRoleUpdateCommand,
@@ -11,12 +7,18 @@ import {
   StaticPermissionEnum,
   SuperRoleEnum,
 } from "roottypes";
-import { IModel } from "../../model/adapters/model.mongoose.model";
 import IRole from "./interfaces/IRole";
 import IRoleService from "./interfaces/IRoleService";
 import IRoleRepository from "./interfaces/IRoleRepository";
+import IUser from "../../user/ports/interfaces/IUser";
+import IEntityPermission from "../../entityPermission/ports/interfaces/IEntityPermission";
+import IModel from "../../model/ports/interfaces/IModel";
+import IEntityPermissionService from "../../entityPermission/ports/interfaces/IEntityPermissionService";
 
-const createRoleService = (roleRepository: IRoleRepository): IRoleService => ({
+const createRoleService = (
+  roleRepository: IRoleRepository,
+  entityPermissionService: IEntityPermissionService
+): IRoleService => ({
   createRole: async function (
     command: IRoleCreateCommand,
     currentUser: IUser
@@ -139,7 +141,7 @@ const createRoleService = (roleRepository: IRoleRepository): IRoleService => ({
     modelId: string
   ): Promise<IRole[]> {
     const entityPermissions: IEntityPermission[] =
-      await entityPermissionSerivce.getModelEntityPermissions(modelId);
+      await entityPermissionService.getModelEntityPermissions(modelId);
 
     const roles: IRole[] = await roleRepository.getRolesWithEntityPermissions(
       entityPermissions.map((el) => el._id.toString())

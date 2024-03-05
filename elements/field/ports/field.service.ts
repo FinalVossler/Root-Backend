@@ -11,8 +11,8 @@ import fieldTableElementRepository from "../../fieldTableElement/fieldTableEleme
 import { IFieldTableElement } from "../../fieldTableElement/fieldTableElement.model";
 import IFieldService from "./interfaces/IFieldService";
 import { IField } from "./interfaces/IField";
-import { IUser } from "../../user/adapters/user.mongoose.model";
 import IRoleService from "../../role/ports/interfaces/IRoleService";
+import IUser from "../../user/ports/interfaces/IUser";
 
 const createFieldService = (
   fieldRepository: IFieldRepository,

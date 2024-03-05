@@ -1,4 +1,4 @@
-import { socketEmit } from "../../../socket";
+import { socketEmit } from "../../socket/ports/socket.service";
 import {
   ChatMessagesEnum,
   IReactionCreateCommand,

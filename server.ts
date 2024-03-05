@@ -6,7 +6,7 @@ import http from "http";
 import mongoose from "./mongoose";
 import router from "./router";
 import errorMiddleware from "./middleware/errorMiddleware";
-import socket from "./socket";
+import { socketService } from "./ioc";
 
 const app = express();
 dotenvConfig();
@@ -30,7 +30,7 @@ if (process.env.NODE_ENV !== "test") {
     console.info("app is running on port " + PORT);
   });
 
-  socket(server);
+  socketService.socketInit(server);
 }
 
 export default app;

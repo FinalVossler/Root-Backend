@@ -3,7 +3,7 @@ import {
   IUserReadDtoWithLastReadMessageInConversationReadDto,
 } from "roottypes";
 import { IUserWithLastReadMessageInConversation } from "../adapters/user.mongoose.model";
-import { fileToReadDto } from "../../file/file.toReadDto";
+import { fileToReadDto } from "../../file/ports/file.toReadDto";
 import { roleToReadDto } from "../../role/ports/role.toReadDto";
 import { messageToReadDto } from "../../message/ports/message.toReadDto";
 import IUser from "./interfaces/IUser";

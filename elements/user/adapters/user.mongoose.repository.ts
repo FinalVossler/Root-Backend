@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
 
-import fileRepository from "../../file/file.repository";
+import fileRepository from "../../file/adapters/file.mongoose.repository";
 
 import User from "./user.mongoose.model";
-import { IFile } from "../../file/file.model";
 import {
   IChatGetContactsCommand,
   IUserCreateCommand,
@@ -16,6 +15,7 @@ import {
 } from "roottypes";
 import IUser from "../ports/interfaces/IUser";
 import IUserRepository from "../ports/interfaces/IUserRepository";
+import IFile from "../../file/ports/interfaces/IFile";
 
 const userMongooseRepository: IUserRepository = {
   chatGetContacts: async (

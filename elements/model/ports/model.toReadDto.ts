@@ -8,7 +8,7 @@ import {
   IModelFieldCondition,
 } from "../adapters/model.mongoose.model";
 import { fieldToReadDto } from "../../field/ports/field.toReadDto";
-import { eventToReadDto } from "../../event/event.toReadDto";
+import { eventToReadDto } from "../../event/ports/event.toReadDto";
 import { modelStateToReadDto } from "../../modelState/modelState.toReadDto";
 import IModel from "./interfaces/IModel";
 

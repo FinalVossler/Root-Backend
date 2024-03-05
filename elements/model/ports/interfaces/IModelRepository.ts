@@ -15,7 +15,7 @@ interface IModelRepository {
   ) => Promise<{ total: number; models: IModel[] }>;
   getById: (id: string) => Promise<IModel>;
   getModelsContainingField: (fieldId: string) => Promise<IModel[]>;
-  deleteModels: (modelsIds: string[]) => Promise<void>;
+  deleteModel: (modelId: string) => Promise<void>;
   search: (
     command: IModelsSearchCommand
   ) => Promise<{ models: IModel[]; total: number }>;

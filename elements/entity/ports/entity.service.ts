@@ -1,6 +1,4 @@
-import entityEventNotificationService from "../../entityEventNotification/entityEventNotification.service";
 import { IModelField } from "../../model/adapters/model.mongoose.model";
-import { IEntityPermission } from "../../entityPermission/entityPermission.model";
 import {
   EntityEventNotificationTriggerEnum,
   FieldTypeEnum,
@@ -23,12 +21,15 @@ import IModel from "../../model/ports/interfaces/IModel";
 import IRole from "../../role/ports/interfaces/IRole";
 import IEntity from "./interfaces/IEntity";
 import IEntityService from "./interfaces/IEntityService";
+import IEntityEventNotificationService from "../../entityEventNotification/ports/interfaces/IEntityEventNotificationService";
+import IEntityPermission from "../../entityPermission/ports/interfaces/IEntityPermission";
 
 const createEntityService = (
   roleService: IRoleService,
   entityRepository: IEntityRepository,
   modelService: IModelService,
-  userService: IUserService
+  userService: IUserService,
+  entityEventNotificationService: IEntityEventNotificationService
 ): IEntityService => ({
   verifyRequiredFields: async function (
     {

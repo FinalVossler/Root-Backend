@@ -2,8 +2,8 @@ import { ITranslatedText } from "roottypes";
 import { IField } from "../../../field/ports/interfaces/IField";
 import IModel from "../../../model/ports/interfaces/IModel";
 import IUser from "../../../user/ports/interfaces/IUser";
-import { IFile } from "../../../file/file.model";
 import { IFieldTableElement } from "../../../fieldTableElement/fieldTableElement.model";
+import IFile from "../../../file/ports/interfaces/IFile";
 
 export interface IEntityFieldValue {
   field: IField | string;

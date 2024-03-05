@@ -4,8 +4,7 @@ import Entity from "./entity.mongoose.model";
 import Model from "../../model/adapters/model.mongoose.model";
 import getNewTranslatedTextsForUpdate from "../../../utils/getNewTranslatedTextsForUpdate";
 import Field from "../../field/adapters/field.mongoose.model";
-import File, { IFile } from "../../file/file.model";
-import fileRepository from "../../file/file.repository";
+import fileRepository from "../../file/adapters/file.mongoose.repository";
 import {
   IEntitiesGetCommand,
   IEntitiesSearchCommand,
@@ -17,6 +16,7 @@ import {
 import { IFieldTableElement } from "../../fieldTableElement/fieldTableElement.model";
 import { IField } from "../../field/ports/interfaces/IField";
 import IEntity from "../ports/interfaces/IEntity";
+import IFile from "../../file/ports/interfaces/IFile";
 
 const entityMongooseRepository = {
   combineEntityFieldValuesNewFilesAndSelectedOwnFiles: async (
@@ -303,7 +303,7 @@ const populationOptions = [
       },
       {
         path: "files",
-        model: File.modelName,
+        model: "file",
       },
       {
         path: "tableValues",

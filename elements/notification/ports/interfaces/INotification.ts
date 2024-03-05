@@ -1,5 +1,5 @@
 import { ITranslatedText, IUserReadDto } from "roottypes";
-import { IFile } from "../../../file/file.model";
+import { IFile } from "../../../file/adapters/file.mongoose.model";
 
 export default interface INotification {
   _id: string;

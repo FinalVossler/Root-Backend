@@ -2,9 +2,7 @@ import { decode, sign, verify } from "jsonwebtoken";
 import { compare, genSalt, hash } from "bcrypt";
 
 import { IUserWithLastReadMessageInConversation } from "../adapters/user.mongoose.model";
-import emailService from "../../email/email.service";
-import { IMessage } from "../../message/adapters/message.mongoose.model";
-import messageService from "../../message/ports/message.service";
+import emailService from "../../email/ports/email.service";
 import {
   IChatGetContactsCommand,
   IUserChangePasswordCommand,
@@ -24,10 +22,15 @@ import IUser from "./interfaces/IUser";
 import IUserService from "./interfaces/IUserService";
 import IRoleService from "../../role/ports/interfaces/IRoleService";
 import IUserRepository from "./interfaces/IUserRepository";
+import IMessage from "../../message/ports/interfaces/IMessage";
+import IMessageService from "../../message/ports/interfaces/IMessageService";
+import IEmailService from "../../email/ports/interfaces/IEmailService";
 
 const createUserService = (
   roleService: IRoleService,
-  userRepository: IUserRepository
+  userRepository: IUserRepository,
+  messageService: IMessageService,
+  emailService: IEmailService
 ): IUserService => ({
   generatePasswordHash: async function (password: string): Promise<string> {
     const salt: string = await genSalt(10);

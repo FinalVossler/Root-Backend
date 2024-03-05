@@ -1,6 +1,6 @@
 import { SuperRoleEnum } from "roottypes";
 import IRole from "../../../role/ports/interfaces/IRole";
-import { IFile } from "../../../file/file.model";
+import { IFile } from "../../../file/adapters/file.mongoose.model";
 
 export default interface IUser {
   _id: string;

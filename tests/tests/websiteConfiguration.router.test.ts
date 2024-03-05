@@ -8,8 +8,8 @@ import {
 import IResponseDto from "../../globalTypes/IResponseDto";
 import userService from "../../elements/user/ports/user.service";
 import { adminUser } from "../fixtures";
-import websiteConfigurationRepository from "../../elements/websiteConfiguration/websiteConfiguration.repository";
-import { IWebsiteConfiguration } from "../../elements/websiteConfiguration/websiteConfiguration.model";
+import websiteConfigurationMongooseRepository from "../../elements/websiteConfiguration/adapters/websiteConfiguration.mongoose.repository";
+import { IWebsiteConfiguration } from "../../elements/websiteConfiguration/adapters/websiteConfiguration.mongoose.model";
 
 const adminToken: string = userService.generateToken(adminUser);
 
@@ -31,7 +31,7 @@ describe("WebsiteConfiguration", () => {
   });
 
   it("should be able to update website configuration", async () => {
-    const conf = await websiteConfigurationRepository.get();
+    const conf = await websiteConfigurationMongooseRepository.get();
 
     const command: IWebsiteConfigurationUpdateCommand = {
       ...(conf as Required<IWebsiteConfiguration>),

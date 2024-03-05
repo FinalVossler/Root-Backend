@@ -10,9 +10,9 @@ import {
 import IResponseDto from "../../globalTypes/IResponseDto";
 import userService from "../../elements/user/ports/user.service";
 import { adminUser } from "../fixtures";
-import microFrontendRepository from "../../elements/microFontend/microFrontend.respository";
+import microFrontendRepository from "../../elements/microFontend/adapters/microFrontend.mongoose.respository";
 import IPaginationResponse from "../../globalTypes/IPaginationResponse";
-import { IMicroFrontend } from "../../elements/microFontend/microFrontend.model";
+import { IMicroFrontend } from "../../elements/microFontend/adapters/microFrontend.mongoose.model";
 
 jest.setTimeout(50000);
 describe("MicroFrontends", () => {

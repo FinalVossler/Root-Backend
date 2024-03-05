@@ -1,4 +1,4 @@
-import { IFile } from "../../../file/file.model";
+import { IFile } from "../../../file/adapters/file.mongoose.model";
 import { IReaction } from "../../../reaction/adapters/reaction.mongoose.model";
 
 export default interface IMessage {

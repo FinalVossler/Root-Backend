@@ -3,9 +3,9 @@ import { Response } from "express";
 import IConnectedRequest from "../../globalTypes/IConnectedRequest";
 import IResponseDto from "../../globalTypes/IResponseDto";
 import testsPreparationService from "./testsPreparation.service";
-import { IFile } from "../file/file.model";
+import { IFile } from "../file/adapters/file.mongoose.model";
 import { IFileReadDto } from "roottypes";
-import { fileToReadDto } from "../file/file.toReadDto";
+import { fileToReadDto } from "../file/ports/file.toReadDto";
 import IUser from "../user/ports/interfaces/IUser";
 
 const testsPreparationController = {

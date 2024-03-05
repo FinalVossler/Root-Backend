@@ -1,4 +1,3 @@
-import { socketEmit } from "../../../socket";
 import { populatedMessageToReadDto } from "./message.toReadDto";
 import {
   ChatMessagesEnum,
@@ -11,9 +10,11 @@ import IUser from "../../user/ports/interfaces/IUser";
 import IMessage from "./interfaces/IMessage";
 import IMessageService from "./interfaces/IMessageService";
 import IMessageRepository from "./interfaces/IMessageRepository";
+import ISocketService from "../../socket/ports/interfaces/ISocketService";
 
 const createMessageService = (
-  messageRepository: IMessageRepository
+  messageRepository: IMessageRepository,
+  socketService: ISocketService
 ): IMessageService => ({
   sendMessage: async (
     command: IMessageSendCommand,
@@ -22,13 +23,13 @@ const createMessageService = (
     const populatedMessage: IPopulatedMessage =
       await messageRepository.sendMessage(command, currentUser);
 
-    socketEmit({
+    socketService.socketEmit({
       messageType: ChatMessagesEnum.Receive,
       object: populatedMessageToReadDto(populatedMessage),
       userIds: populatedMessage.to.map((user) => user._id.toString()),
     });
 
-    socketEmit({
+    socketService.socketEmit({
       messageType: ChatMessagesEnum.ReceiveLastMarkedMessageAsReadByUser,
       object: {
         lastMarkedMessageAsRead: populatedMessageToReadDto(populatedMessage),
@@ -61,7 +62,7 @@ const createMessageService = (
       );
 
     if (lastMarkedMessageAsRead) {
-      socketEmit({
+      socketService.socketEmit({
         messageType: ChatMessagesEnum.ReceiveLastMarkedMessageAsReadByUser,
         object: {
           lastMarkedMessageAsRead: lastMarkedMessageAsRead
@@ -108,7 +109,7 @@ const createMessageService = (
 
     await messageRepository.deleteMessage(messageId);
 
-    socketEmit({
+    socketService.socketEmit({
       messageType: ChatMessagesEnum.Delete,
       object: populatedMessageToReadDto(message),
       userIds: message.to.map((userId) => userId.toString()),

@@ -1,6 +1,6 @@
 import { ITranslatedText, PostDesignEnum, PostVisibilityEnum } from "roottypes";
 import IUser from "../../../user/ports/interfaces/IUser";
-import { IFile } from "../../../file/file.model";
+import IFile from "../../../file/ports/interfaces/IFile";
 
 export default interface IPost {
   _id: string;
