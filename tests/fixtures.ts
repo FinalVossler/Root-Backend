@@ -1,5 +1,5 @@
-import { IUser } from "../elements/user/user.model";
-import { IField } from "../elements/field/field.model";
+import { IField } from "../elements/field/ports/interfaces/IField";
+import { IUser } from "../elements/user/adapters/user.mongoose.model";
 import {
   FieldTypeEnum,
   IModelCreateCommand,

@@ -1,18 +1,17 @@
 import request from "supertest";
 
 import app from "../../server";
-import fieldRepository from "../../elements/field/field.repository";
-import { IField } from "../../elements/field/field.model";
-import modelRepository from "../../elements/model/model.repository";
-import userService from "../../elements/user/user.service";
+import { createMongooseFieldRepository } from "../../elements/field/adapters/field.mongoose.repository";
+import modelRepository from "../../elements/model/adapters/model.mongoose.repository";
+import userService from "../../elements/user/ports/user.service";
 import {
   adminUser,
   createCreateFieldCommand,
   createCreateModelCommand,
 } from "../fixtures";
-import ResponseDto from "../../globalTypes/ResponseDto";
-import { IModel } from "../../elements/model/model.model";
-import PaginationResponse from "../../globalTypes/PaginationResponse";
+import IResponseDto from "../../globalTypes/IResponseDto";
+import { IModel } from "../../elements/model/adapters/model.mongoose.model";
+import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import {
   EventTriggerEnum,
   EventTypeEnum,
@@ -25,8 +24,10 @@ import {
   IModelsSearchCommand,
   ModelStateTypeEnum,
 } from "roottypes";
+import { IField } from "../../elements/field/ports/interfaces/IField";
 
 jest.setTimeout(50000);
+const fieldRepository = createMongooseFieldRepository();
 describe("Models", () => {
   let createdModelId: string | undefined;
   let field1: IField | undefined;
@@ -110,7 +111,7 @@ describe("Models", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IModelReadDto> = res.body;
+        const result: IResponseDto<IModelReadDto> = res.body;
 
         createdModelId = result.data?._id.toString();
 
@@ -196,7 +197,7 @@ describe("Models", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IModelReadDto> = res.body;
+        const result: IResponseDto<IModelReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.name[0].text).toEqual(command.name);
@@ -241,7 +242,8 @@ describe("Models", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IModelReadDto>> = res.body;
+        const result: IResponseDto<IPaginationResponse<IModelReadDto>> =
+          res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.total).toEqual(expect.any(Number));
@@ -267,7 +269,7 @@ describe("Models", () => {
       .send([modelToDelete?._id])
       .set("Authorization", "Bearer " + adminToken)
       .then((res) => {
-        const result: ResponseDto<void> = res.body;
+        const result: IResponseDto<void> = res.body;
 
         expect(result.success).toBeTruthy();
       });
@@ -286,7 +288,8 @@ describe("Models", () => {
       .send(command)
       .set("Authorization", "Bearer " + adminToken)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IModelReadDto>> = res.body;
+        const result: IResponseDto<IPaginationResponse<IModelReadDto>> =
+          res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.total).toEqual(expect.any(Number));

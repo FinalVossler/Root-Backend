@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
-import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
-import { ModelStateTypeEnum } from "roottypes";
+import { ITranslatedText, ModelStateTypeEnum } from "roottypes";
+import translatedTextSchema from "../translatedText/adapters/translatedText.mongooseSchema";
 
 export interface IModelState {
   _id: string;

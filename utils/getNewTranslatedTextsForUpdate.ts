@@ -1,4 +1,4 @@
-import { ITranslatedText } from "../elements/ITranslatedText";
+import { ITranslatedText } from "roottypes";
 
 const getNewTranslatedTextsForUpdate = (options: {
   oldValue: ITranslatedText[] | undefined;

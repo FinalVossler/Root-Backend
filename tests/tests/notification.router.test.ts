@@ -1,12 +1,10 @@
 import request from "supertest";
-import notificationRepository from "../../elements/notification/notification.repository";
-import { INotification } from "../../elements/notification/notification.model";
-import { IUser } from "../../elements/user/user.model";
-import userRepository from "../../elements/user/user.repository";
+import notificationRepository from "../../elements/notification/adapters/notification.mongoose.repository";
+import userMongooseRepository from "../../elements/user/adapters/user.mongoose.repository";
 import app from "../../server";
-import PaginationResponse from "../../globalTypes/PaginationResponse";
-import ResponseDto from "../../globalTypes/ResponseDto";
-import userService from "../../elements/user/user.service";
+import IPaginationResponse from "../../globalTypes/IPaginationResponse";
+import IResponseDto from "../../globalTypes/IResponseDto";
+import userService from "../../elements/user/ports/user.service";
 import {
   INotificationCreateCommand,
   INotificationReadDto,
@@ -14,6 +12,8 @@ import {
   IUserCreateCommand,
   SuperRoleEnum,
 } from "roottypes";
+import INotification from "../../elements/notification/ports/interfaces/INotification";
+import IUser from "../../elements/user/ports/interfaces/IUser";
 
 jest.setTimeout(50000);
 describe("Notifications", () => {
@@ -31,9 +31,9 @@ describe("Notifications", () => {
       password: "rootroot",
       superRole: SuperRoleEnum.Normal,
     };
-    user = await userRepository.getByEmail(userCreateCommand.email);
+    user = await userMongooseRepository.getByEmail(userCreateCommand.email);
     if (!user) {
-      user = await userRepository.create(userCreateCommand);
+      user = await userMongooseRepository.create(userCreateCommand);
     }
 
     const userForMakingNotificationsAsReadCreateCommand: IUserCreateCommand = {
@@ -44,13 +44,15 @@ describe("Notifications", () => {
       password: "rootroot",
       superRole: SuperRoleEnum.Normal,
     };
-    userForMarkingAllNotificationsAsClicked = await userRepository.getByEmail(
-      userForMakingNotificationsAsReadCreateCommand.email
-    );
-    if (!userForMarkingAllNotificationsAsClicked) {
-      userForMarkingAllNotificationsAsClicked = await userRepository.create(
-        userForMakingNotificationsAsReadCreateCommand
+    userForMarkingAllNotificationsAsClicked =
+      await userMongooseRepository.getByEmail(
+        userForMakingNotificationsAsReadCreateCommand.email
       );
+    if (!userForMarkingAllNotificationsAsClicked) {
+      userForMarkingAllNotificationsAsClicked =
+        await userMongooseRepository.create(
+          userForMakingNotificationsAsReadCreateCommand
+        );
     }
 
     const command: INotificationCreateCommand = {
@@ -84,11 +86,11 @@ describe("Notifications", () => {
     const promises: Promise<void>[] = [];
 
     if (user) {
-      promises.push(userRepository.deleteUsers([user._id.toString()]));
+      promises.push(userMongooseRepository.deleteUsers([user._id.toString()]));
     }
     if (userForMarkingAllNotificationsAsClicked) {
       promises.push(
-        userRepository.deleteUsers([
+        userMongooseRepository.deleteUsers([
           userForMarkingAllNotificationsAsClicked._id.toString(),
         ])
       );
@@ -121,8 +123,8 @@ describe("Notifications", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<{
-          paginationResponse: PaginationResponse<INotificationReadDto>;
+        const result: IResponseDto<{
+          paginationResponse: IPaginationResponse<INotificationReadDto>;
           totalUnclicked: number;
         }> = res.body;
 
@@ -141,7 +143,7 @@ describe("Notifications", () => {
       .send({ notificationId: notificationToSetClickedby?._id })
       .expect(200);
 
-    const result: ResponseDto<void> = res.body;
+    const result: IResponseDto<void> = res.body;
     expect(result.success).toBeTruthy();
 
     // Now get the notifications, find the one we just marked as clicked by, and make sure that it is indeed clicked by user
@@ -158,8 +160,8 @@ describe("Notifications", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<{
-          paginationResponse: PaginationResponse<INotificationReadDto>;
+        const result: IResponseDto<{
+          paginationResponse: IPaginationResponse<INotificationReadDto>;
           totalUnclicked: number;
         }> = res.body;
 
@@ -186,7 +188,7 @@ describe("Notifications", () => {
           )
       );
 
-    const result: ResponseDto<void> = res.body;
+    const result: IResponseDto<void> = res.body;
 
     expect(result.success).toBeTruthy();
 
@@ -206,8 +208,8 @@ describe("Notifications", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<{
-          paginationResponse: PaginationResponse<INotificationReadDto>;
+        const result: IResponseDto<{
+          paginationResponse: IPaginationResponse<INotificationReadDto>;
           totalUnclicked: number;
         }> = res.body;
 

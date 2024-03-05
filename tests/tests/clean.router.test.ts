@@ -1,9 +1,9 @@
 import request from "supertest";
-import userService from "../../elements/user/user.service";
+import userService from "../../elements/user/ports/user.service";
 import { adminUser } from "../fixtures";
 import app from "../../server";
-import ResponseDto from "../../globalTypes/ResponseDto";
-import PaginationResponse from "../../globalTypes/PaginationResponse";
+import IResponseDto from "../../globalTypes/IResponseDto";
+import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import { IUserReadDto, IUsersGetCommand } from "roottypes";
 
 // Attention!!! This test suite should be skipped. It's only used as preparation for E2E tests
@@ -29,7 +29,8 @@ describe.skip("Clean", function () {
       .send(getUsersCommand)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IUserReadDto>> = res.body;
+        const result: IResponseDto<IPaginationResponse<IUserReadDto>> =
+          res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.total).toEqual(1);

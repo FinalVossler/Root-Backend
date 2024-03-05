@@ -1,5 +1,5 @@
 import request from "supertest";
-import userService from "../../elements/user/user.service";
+import userService from "../../elements/user/ports/user.service";
 import { adminUser } from "../fixtures";
 import app from "../../server";
 

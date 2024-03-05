@@ -7,11 +7,11 @@ import {
   IMicroFrontendsGetCommand,
   IMicroFrontendsSearchCommand,
 } from "roottypes";
-import ResponseDto from "../../globalTypes/ResponseDto";
-import userService from "../../elements/user/user.service";
+import IResponseDto from "../../globalTypes/IResponseDto";
+import userService from "../../elements/user/ports/user.service";
 import { adminUser } from "../fixtures";
 import microFrontendRepository from "../../elements/microFontend/microFrontend.respository";
-import PaginationResponse from "../../globalTypes/PaginationResponse";
+import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import { IMicroFrontend } from "../../elements/microFontend/microFrontend.model";
 
 jest.setTimeout(50000);
@@ -134,7 +134,7 @@ describe("MicroFrontends", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IMicroFrontendReadDto> = res.body;
+        const result: IResponseDto<IMicroFrontendReadDto> = res.body;
 
         createdMicroFrontend = result.data as IMicroFrontendReadDto;
 
@@ -169,7 +169,7 @@ describe("MicroFrontends", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IMicroFrontendReadDto> = res.body;
+        const result: IResponseDto<IMicroFrontendReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.components.length).toEqual(
@@ -194,7 +194,7 @@ describe("MicroFrontends", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IMicroFrontendReadDto>> =
+        const result: IResponseDto<IPaginationResponse<IMicroFrontendReadDto>> =
           res.body;
 
         expect(result.success).toBeTruthy();
@@ -210,7 +210,7 @@ describe("MicroFrontends", () => {
       .query({ microFrontendId: microFrontendToGet?._id.toString() })
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IMicroFrontendReadDto> = res.body;
+        const result: IResponseDto<IMicroFrontendReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.components.length).toEqual(
@@ -246,7 +246,7 @@ describe("MicroFrontends", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IMicroFrontendReadDto>> =
+        const result: IResponseDto<IPaginationResponse<IMicroFrontendReadDto>> =
           res.body;
 
         expect(result.success).toBeTruthy();

@@ -1,21 +1,19 @@
 import request from "supertest";
-import { IEntity } from "../../elements/entity/entity.model";
-import entityRepository from "../../elements/entity/entity.repository";
-import { IField } from "../../elements/field/field.model";
-import fieldRepository from "../../elements/field/field.repository";
-import { IModel } from "../../elements/model/model.model";
-import modelRepository from "../../elements/model/model.repository";
+import { IEntity } from "../../elements/entity/adapters/entity.mongoose.model";
+import entityRepository from "../../elements/entity/adapters/entity.mongoose.repository";
+import { IModel } from "../../elements/model/adapters/model.mongoose.model";
+import modelRepository from "../../elements/model/adapters/model.mongoose.repository";
 import {
   createCreateFieldCommand,
   createCreateModelCommand,
   adminUser,
 } from "../fixtures";
 import app from "../../server";
-import ResponseDto from "../../globalTypes/ResponseDto";
-import userService from "../../elements/user/user.service";
-import { IUser } from "../../elements/user/user.model";
-import userRepository from "../../elements/user/user.repository";
-import PaginationResponse from "../../globalTypes/PaginationResponse";
+import IResponseDto from "../../globalTypes/IResponseDto";
+import userService from "../../elements/user/ports/user.service";
+import { IUser } from "../../elements/user/adapters/user.mongoose.model";
+import userMongooseRepository from "../../elements/user/adapters/user.mongoose.repository";
+import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import {
   IEntitiesGetCommand,
   IEntitiesSearchCommand,
@@ -29,6 +27,10 @@ import {
   IUserReadDto,
   SuperRoleEnum,
 } from "roottypes";
+import { IField } from "../../elements/field/ports/interfaces/IField";
+import { createMongooseFieldRepository } from "../../elements/field/adapters/field.mongoose.repository";
+
+const fieldRepository = createMongooseFieldRepository();
 
 jest.setTimeout(100000);
 describe("Entities", () => {
@@ -114,7 +116,9 @@ describe("Entities", () => {
       password: "assignedUser1Password",
       superRole: SuperRoleEnum.Normal,
     };
-    assignedUser1 = await userRepository.create(assignedUser1CreateCommand);
+    assignedUser1 = await userMongooseRepository.create(
+      assignedUser1CreateCommand
+    );
 
     const assignedUser2CreateCommand: IUserCreateCommand = {
       email: "assignedUser2@updating.com",
@@ -123,7 +127,9 @@ describe("Entities", () => {
       password: "assignedUser2Password",
       superRole: SuperRoleEnum.Normal,
     };
-    assignedUser2 = await userRepository.create(assignedUser2CreateCommand);
+    assignedUser2 = await userMongooseRepository.create(
+      assignedUser2CreateCommand
+    );
 
     model1AssignedEntity = await entityRepository.create({
       ...createEntityCommand,
@@ -195,10 +201,10 @@ describe("Entities", () => {
       );
     }
     if (assignedUser1) {
-      promises.push(userRepository.deleteByEmail(assignedUser1.email));
+      promises.push(userMongooseRepository.deleteByEmail(assignedUser1.email));
     }
     if (assignedUser2) {
-      promises.push(userRepository.deleteByEmail(assignedUser2.email));
+      promises.push(userMongooseRepository.deleteByEmail(assignedUser2.email));
     }
     if (entityThatBelongsToModel2) {
       promises.push(
@@ -249,7 +255,7 @@ describe("Entities", () => {
       .query({ entityId: entityToGetByIdAndToUseForModel1?._id.toString() })
       .set("Authorization", "Bearer " + adminToken)
       .then((res) => {
-        const result: ResponseDto<IEntityReadDto> = res.body;
+        const result: IResponseDto<IEntityReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?._id.toString()).toEqual(
@@ -299,7 +305,7 @@ describe("Entities", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IEntityReadDto> = res.body;
+        const result: IResponseDto<IEntityReadDto> = res.body;
 
         createdEntity = result.data;
 
@@ -347,7 +353,7 @@ describe("Entities", () => {
       .put("/entities/")
       .set("Authorization", "Bearer " + adminToken)
       .send(command);
-    const result: ResponseDto<IEntityReadDto> = res.body;
+    const result: IResponseDto<IEntityReadDto> = res.body;
 
     expect(result.success).toBeTruthy();
     expect(result.data?.entityFieldValues.at(0)?.value.at(0)?.text).toEqual(
@@ -383,7 +389,7 @@ describe("Entities", () => {
       .put("/entities/")
       .set("Authorization", "Bearer " + adminToken)
       .send(commandInFrench);
-    const result2: ResponseDto<IEntityReadDto> = res2.body;
+    const result2: IResponseDto<IEntityReadDto> = res2.body;
 
     expect(result2.success).toBeTruthy();
     expect(result2.data?.entityFieldValues.at(0)?.value.at(0)?.text).toEqual(
@@ -420,7 +426,7 @@ describe("Entities", () => {
       .post("/entities/getEntitiesByModel")
       .send(model1EntitiesCommand)
       .set("Authorization", "Bearer " + adminToken);
-    const result: ResponseDto<PaginationResponse<IEntityReadDto>> = res.body;
+    const result: IResponseDto<IPaginationResponse<IEntityReadDto>> = res.body;
 
     expect(result.success).toBeTruthy();
 
@@ -451,7 +457,8 @@ describe("Entities", () => {
       .post("/entities/getEntitiesByModel")
       .send(model2EntitiesCommand)
       .set("Authorization", "Bearer " + adminToken);
-    const result2: ResponseDto<PaginationResponse<IEntityReadDto>> = res2.body;
+    const result2: IResponseDto<IPaginationResponse<IEntityReadDto>> =
+      res2.body;
 
     expect(result2.success).toBeTruthy();
 
@@ -483,7 +490,7 @@ describe("Entities", () => {
       .set("Authorization", "Bearer " + adminToken)
       .send(command)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IEntityReadDto>> =
+        const result: IResponseDto<IPaginationResponse<IEntityReadDto>> =
           res.body;
 
         expect(result.success).toBeTruthy();
@@ -517,7 +524,7 @@ describe("Entities", () => {
       .set("Authorization", "Bearer " + adminToken)
       .send(command)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IEntityReadDto>> =
+        const result: IResponseDto<IPaginationResponse<IEntityReadDto>> =
           res.body;
 
         expect(result.success).toBeTruthy();
@@ -543,7 +550,8 @@ describe("Entities", () => {
       .send(getModel1EntitiesCommand)
       .expect(200)
       .set("Authorization", "Bearer " + adminToken);
-    const result1: ResponseDto<PaginationResponse<IEntityReadDto>> = res1.body;
+    const result1: IResponseDto<IPaginationResponse<IEntityReadDto>> =
+      res1.body;
 
     let foundDeletedEntity: boolean = Boolean(
       result1.data?.data.some(
@@ -557,7 +565,7 @@ describe("Entities", () => {
       .delete("/entities")
       .send([entityToDelete?._id])
       .set("Authorization", "Bearer " + adminToken);
-    const result2: ResponseDto<void> = res2.body;
+    const result2: IResponseDto<void> = res2.body;
 
     expect(result2.success).toBeTruthy();
 
@@ -565,7 +573,8 @@ describe("Entities", () => {
       .post("/entities/getEntitiesByModel")
       .send(getModel1EntitiesCommand)
       .set("Authorization", "Bearer " + adminToken);
-    const result3: ResponseDto<PaginationResponse<IEntityReadDto>> = res3.body;
+    const result3: IResponseDto<IPaginationResponse<IEntityReadDto>> =
+      res3.body;
 
     expect(result3.success).toBeTruthy();
 
@@ -592,7 +601,7 @@ describe("Entities", () => {
       .send(command)
       .set("Authorization", "Bearer " + adminToken)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IEntityReadDto>> =
+        const result: IResponseDto<IPaginationResponse<IEntityReadDto>> =
           res.body;
 
         expect(result.success).toBeTruthy();
@@ -636,7 +645,7 @@ describe("Entities", () => {
       })
       .set("Authorization", "Bearer " + adminToken)
       .then((res) => {
-        const result: ResponseDto<IEntityReadDto> = res.body;
+        const result: IResponseDto<IEntityReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.customData).toBeDefined();

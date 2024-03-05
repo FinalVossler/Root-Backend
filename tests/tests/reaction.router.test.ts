@@ -2,19 +2,19 @@ import request from "supertest";
 
 import Message, {
   IPopulatedMessage,
-} from "../../elements/message/message.model";
-import { IUser } from "../../elements/user/user.model";
-import userRepository from "../../elements/user/user.repository";
+} from "../../elements/message/adapters/message.mongoose.model";
+import { IUser } from "../../elements/user/adapters/user.mongoose.model";
+import userMongooseRepository from "../../elements/user/adapters/user.mongoose.repository";
 import { adminUser } from "../fixtures";
-import messageRepository from "../../elements/message/message.repository";
+import messageRepository from "../../elements/message/adapters/message.mongoose.repository";
 import Reaction, {
   IReaction,
   ReactionEnum,
-} from "../../elements/reaction/reaction.model";
+} from "../../elements/reaction/adapters/reaction.mongoose.model";
 import app from "../../server";
-import userService from "../../elements/user/user.service";
-import ResponseDto from "../../globalTypes/ResponseDto";
-import reactionRepository from "../../elements/reaction/reaction.repository";
+import userService from "../../elements/user/ports/user.service";
+import IResponseDto from "../../globalTypes/IResponseDto";
+import reactionMongooseRepository from "../../elements/reaction/adapters/reaction.mongoose.repository";
 import mongoose from "mongoose";
 import {
   IMessageSendCommand,
@@ -43,8 +43,8 @@ describe("reactions", () => {
       password: "rootroot",
       superRole: SuperRoleEnum.Normal,
     };
-    user = await userRepository.create(userCreateCommand);
-    fetchedAdminUser = await userRepository.getByEmail(adminUser.email);
+    user = await userMongooseRepository.create(userCreateCommand);
+    fetchedAdminUser = await userMongooseRepository.getByEmail(adminUser.email);
 
     const messageCreateCommand: IMessageSendCommand = {
       files: [],
@@ -66,7 +66,7 @@ describe("reactions", () => {
       reaction: ReactionEnum.Love,
     };
 
-    reactionToUpdate = await reactionRepository.create(
+    reactionToUpdate = await reactionMongooseRepository.create(
       createReactCommand,
       fetchedAdminUser as IUser
     );
@@ -75,7 +75,7 @@ describe("reactions", () => {
   afterAll(async () => {
     const promises: Promise<any>[] = [];
     if (user) {
-      promises.push(userRepository.deleteUsers([user._id.toString()]));
+      promises.push(userMongooseRepository.deleteUsers([user._id.toString()]));
     }
     if (message) {
       promises.push(messageRepository.deleteMessage(message._id.toString()));
@@ -103,7 +103,7 @@ describe("reactions", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IReactionReadDto> = res.body;
+        const result: IResponseDto<IReactionReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.reaction).toEqual(createReactCommand.reaction);

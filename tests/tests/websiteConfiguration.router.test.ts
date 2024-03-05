@@ -5,8 +5,8 @@ import {
   IWebsiteConfigurationReadDto,
   IWebsiteConfigurationUpdateCommand,
 } from "roottypes";
-import ResponseDto from "../../globalTypes/ResponseDto";
-import userService from "../../elements/user/user.service";
+import IResponseDto from "../../globalTypes/IResponseDto";
+import userService from "../../elements/user/ports/user.service";
 import { adminUser } from "../fixtures";
 import websiteConfigurationRepository from "../../elements/websiteConfiguration/websiteConfiguration.repository";
 import { IWebsiteConfiguration } from "../../elements/websiteConfiguration/websiteConfiguration.model";
@@ -19,7 +19,7 @@ describe("WebsiteConfiguration", () => {
       .get("/websiteConfigurations/")
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IWebsiteConfigurationReadDto> = res.body;
+        const result: IResponseDto<IWebsiteConfigurationReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
 
@@ -56,7 +56,7 @@ describe("WebsiteConfiguration", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IWebsiteConfigurationReadDto> = res.body;
+        const result: IResponseDto<IWebsiteConfigurationReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(

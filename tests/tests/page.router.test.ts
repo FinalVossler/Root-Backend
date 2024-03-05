@@ -1,12 +1,12 @@
 import request from "supertest";
-import pageRepository from "../../elements/page/page.repository";
-import { IPost } from "../../elements/post/post.model";
+import pageMongooseRepository from "../../elements/page/adapters/page.mongoose.repository";
+import { IPost } from "../../elements/post/adapters/post.mongoose.model";
 import { adminUser } from "../fixtures";
-import postRepository from "../../elements/post/post.repository";
-import { IPage } from "../../elements/page/page.model";
+import postMongooseRepository from "../../elements/post/adapters/post.mongoose.repository";
+import { IPage } from "../../elements/page/adapters/page.mongoose.model";
 import app from "../../server";
-import ResponseDto from "../../globalTypes/ResponseDto";
-import userService from "../../elements/user/user.service";
+import IResponseDto from "../../globalTypes/IResponseDto";
+import userService from "../../elements/user/ports/user.service";
 import {
   IPageCreateCommand,
   IPageReadDto,
@@ -39,8 +39,8 @@ describe("Pages", () => {
       title: "Post 1 Title for pages test",
     };
 
-    post1 = await postRepository.create(postCreateCommand, adminUser);
-    post2 = await postRepository.create(
+    post1 = await postMongooseRepository.create(postCreateCommand, adminUser);
+    post2 = await postMongooseRepository.create(
       {
         ...postCreateCommand,
         title: "Post 1 Title for pages test",
@@ -57,35 +57,39 @@ describe("Pages", () => {
       title: "Page title",
     };
 
-    page1ToGet = await pageRepository.create(pageCreateCommand);
-    page2ToGet = await pageRepository.create(pageCreateCommand);
-    page3ToUpdate = await pageRepository.create(pageCreateCommand);
-    page4ToDelete = await pageRepository.create(pageCreateCommand);
+    page1ToGet = await pageMongooseRepository.create(pageCreateCommand);
+    page2ToGet = await pageMongooseRepository.create(pageCreateCommand);
+    page3ToUpdate = await pageMongooseRepository.create(pageCreateCommand);
+    page4ToDelete = await pageMongooseRepository.create(pageCreateCommand);
   });
 
   afterAll(async () => {
     const promises: Promise<void>[] = [];
 
     if (post1) {
-      promises.push(postRepository.delete(post1._id.toString()));
+      promises.push(postMongooseRepository.delete(post1._id.toString()));
     }
     if (post2) {
-      promises.push(postRepository.delete(post2._id.toString()));
+      promises.push(postMongooseRepository.delete(post2._id.toString()));
     }
     if (createdPage) {
-      promises.push(pageRepository.delete(createdPage._id.toString()));
+      promises.push(pageMongooseRepository.delete(createdPage._id.toString()));
     }
     if (page1ToGet) {
-      promises.push(pageRepository.delete(page1ToGet._id.toString()));
+      promises.push(pageMongooseRepository.delete(page1ToGet._id.toString()));
     }
     if (page2ToGet) {
-      promises.push(pageRepository.delete(page2ToGet._id.toString()));
+      promises.push(pageMongooseRepository.delete(page2ToGet._id.toString()));
     }
     if (page3ToUpdate) {
-      promises.push(pageRepository.delete(page3ToUpdate._id.toString()));
+      promises.push(
+        pageMongooseRepository.delete(page3ToUpdate._id.toString())
+      );
     }
     if (page4ToDelete) {
-      promises.push(pageRepository.delete(page4ToDelete._id.toString()));
+      promises.push(
+        pageMongooseRepository.delete(page4ToDelete._id.toString())
+      );
     }
 
     await Promise.all(promises);
@@ -96,7 +100,7 @@ describe("Pages", () => {
       .get("/pages/")
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IPageReadDto[]> = res.body;
+        const result: IResponseDto<IPageReadDto[]> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(
@@ -127,7 +131,7 @@ describe("Pages", () => {
       .send(pageCreateCommand)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IPageReadDto> = res.body;
+        const result: IResponseDto<IPageReadDto> = res.body;
 
         createdPage = result.data as IPageReadDto;
 
@@ -153,7 +157,7 @@ describe("Pages", () => {
       .send(pageUpdateCommand)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IPageReadDto> = res.body;
+        const result: IResponseDto<IPageReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.title.at(0)?.text).toEqual(pageUpdateCommand.title);
@@ -165,7 +169,7 @@ describe("Pages", () => {
     // Make sure that the page we are about to delete exists in the list of pages
     const getPagesRes = await request(app).get("/pages/").expect(200);
 
-    const getPagesResult: ResponseDto<IPageReadDto[]> = getPagesRes.body;
+    const getPagesResult: IResponseDto<IPageReadDto[]> = getPagesRes.body;
 
     expect(getPagesResult.success).toBeTruthy();
     expect(
@@ -181,7 +185,7 @@ describe("Pages", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200);
 
-    const result: ResponseDto<void> = res.body;
+    const result: IResponseDto<void> = res.body;
     expect(result.success).toBeTruthy();
 
     // Now make sure that the deleted page no longer exists in the list of pages
@@ -189,7 +193,7 @@ describe("Pages", () => {
       .get("/pages/")
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IPageReadDto[]> = res.body;
+        const result: IResponseDto<IPageReadDto[]> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(

@@ -1,8 +1,8 @@
 import { Response, Request, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
-import { IUser } from "../elements/user/user.model";
-import userService from "../elements/user/user.service";
-import ConnectedRequest from "../globalTypes/ConnectedRequest";
+import userService from "../elements/user/ports/user.service";
+import IConnectedRequest from "../globalTypes/IConnectedRequest";
+import IUser from "../elements/user/ports/interfaces/IUser";
 
 const protectMiddleware = async (
   req: Request,
@@ -30,7 +30,7 @@ const protectMiddleware = async (
         throw new Error("Unauthorized");
       }
 
-      (req as ConnectedRequest<any, any, any, any>).user = user;
+      (req as IConnectedRequest<any, any, any, any>).user = user;
 
       next();
     } catch (_) {

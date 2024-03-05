@@ -1,11 +1,11 @@
 import { Response } from "express";
 
-import ConnectedRequest from "../../globalTypes/ConnectedRequest";
-import ResponseDto from "../../globalTypes/ResponseDto";
+import IConnectedRequest from "../../globalTypes/IConnectedRequest";
+import IResponseDto from "../../globalTypes/IResponseDto";
 import { IMicroFrontend } from "./microFrontend.model";
-import PaginationResponse from "../../globalTypes/PaginationResponse";
+import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import microFrontendService from "./microFrontend.service";
-import roleService from "../role/role.service";
+import roleService from "../role/ports/role.service";
 import {
   IMicroFrontendCreateCommand,
   IMicroFrontendReadDto,
@@ -18,8 +18,8 @@ import { microFrontendToReadDto } from "./microFrontend.toReadDto";
 
 const microFrontendController = {
   createMicroFrontend: async (
-    req: ConnectedRequest<any, any, IMicroFrontendCreateCommand, any>,
-    res: Response<ResponseDto<IMicroFrontendReadDto>>
+    req: IConnectedRequest<any, any, IMicroFrontendCreateCommand, any>,
+    res: Response<IResponseDto<IMicroFrontendReadDto>>
   ) => {
     roleService.checkPermission({
       user: req.user,
@@ -36,8 +36,8 @@ const microFrontendController = {
     });
   },
   updateMicroFrontend: async (
-    req: ConnectedRequest<any, any, IMicroFrontendUpdateCommand, any>,
-    res: Response<ResponseDto<IMicroFrontendReadDto>>
+    req: IConnectedRequest<any, any, IMicroFrontendUpdateCommand, any>,
+    res: Response<IResponseDto<IMicroFrontendReadDto>>
   ) => {
     roleService.checkPermission({
       user: req.user,
@@ -55,8 +55,8 @@ const microFrontendController = {
     });
   },
   getMicroFrontends: async (
-    req: ConnectedRequest<any, any, IMicroFrontendsGetCommand, any>,
-    res: Response<ResponseDto<PaginationResponse<IMicroFrontendReadDto>>>
+    req: IConnectedRequest<any, any, IMicroFrontendsGetCommand, any>,
+    res: Response<IResponseDto<IPaginationResponse<IMicroFrontendReadDto>>>
   ) => {
     const command: IMicroFrontendsGetCommand = req.body;
     const { microFrontends, total } =
@@ -73,8 +73,8 @@ const microFrontendController = {
     });
   },
   getById: async (
-    req: ConnectedRequest<any, any, any, { microFrontendId: string }>,
-    res: Response<ResponseDto<IMicroFrontendReadDto>>
+    req: IConnectedRequest<any, any, any, { microFrontendId: string }>,
+    res: Response<IResponseDto<IMicroFrontendReadDto>>
   ) => {
     const id: string = req.query.microFrontendId;
     const microFrontend: IMicroFrontend = await microFrontendService.getById(
@@ -87,8 +87,8 @@ const microFrontendController = {
     });
   },
   deleteMicroFrontends: async (
-    req: ConnectedRequest<any, any, string[], any>,
-    res: Response<ResponseDto<void>>
+    req: IConnectedRequest<any, any, string[], any>,
+    res: Response<IResponseDto<void>>
   ) => {
     roleService.checkPermission({
       user: req.user,
@@ -104,8 +104,8 @@ const microFrontendController = {
     });
   },
   searchMicroFrontends: async (
-    req: ConnectedRequest<any, any, IMicroFrontendsSearchCommand, any>,
-    res: Response<ResponseDto<PaginationResponse<IMicroFrontendReadDto>>>
+    req: IConnectedRequest<any, any, IMicroFrontendsSearchCommand, any>,
+    res: Response<IResponseDto<IPaginationResponse<IMicroFrontendReadDto>>>
   ) => {
     const command: IMicroFrontendsSearchCommand = req.body;
 

@@ -1,9 +1,9 @@
 import { Response, NextFunction } from "express";
-import ConnectedRequest from "../globalTypes/ConnectedRequest";
+import IConnectedRequest from "../globalTypes/IConnectedRequest";
 import { SuperRoleEnum } from "roottypes";
 
 const superAdminProtectMiddleware = async (
-  req: ConnectedRequest<any, any, any, any>,
+  req: IConnectedRequest<any, any, any, any>,
   res: Response,
   next: NextFunction
 ) => {

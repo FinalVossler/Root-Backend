@@ -1,11 +1,9 @@
 import request from "supertest";
-import { IField } from "../../elements/field/field.model";
 
 import app from "../../server";
-import ResponseDto from "../../globalTypes/ResponseDto";
-import fieldRepository from "../../elements/field/field.repository";
-import userService from "../../elements/user/user.service";
-import PaginationResponse from "../../globalTypes/PaginationResponse";
+import IResponseDto from "../../globalTypes/IResponseDto";
+import userService from "../../elements/user/ports/user.service";
+import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import { adminUser } from "../fixtures";
 import {
   FieldTypeEnum,
@@ -17,10 +15,13 @@ import {
   IFieldsSearchCommand,
 } from "roottypes";
 import { IFieldTableElement } from "../../elements/fieldTableElement/fieldTableElement.model";
-import FieldTableElement from "../../elements/fieldTableElement/fieldTableElement.model";
+import { createMongooseFieldRepository } from "../../elements/field/adapters/field.mongoose.repository";
+import { IField } from "../../elements/field/ports/interfaces/IField";
 
 jest.setTimeout(50000);
-describe("field router", () => {
+const fieldRepository = createMongooseFieldRepository();
+
+describe("fieldRouter", () => {
   const adminToken = userService.generateToken(adminUser);
   let createdField: IFieldReadDto | null;
   let fieldToUpdate: IField | null;
@@ -131,7 +132,7 @@ describe("field router", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IFieldReadDto> = res.body;
+        const result: IResponseDto<IFieldReadDto> = res.body;
 
         createdField = result.data;
         expect(result.data?.name[0].text).toEqual(command.name);
@@ -168,7 +169,7 @@ describe("field router", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IFieldReadDto> = res.body;
+        const result: IResponseDto<IFieldReadDto> = res.body;
 
         expect(result.data?.name[0].text).toEqual(command.name);
         expect(result.data?.type).toEqual(command.type);
@@ -196,7 +197,8 @@ describe("field router", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IFieldReadDto>> = res.body;
+        const result: IResponseDto<IPaginationResponse<IFieldReadDto>> =
+          res.body;
 
         expect(result.data?.total).toEqual(expect.any(Number));
         expect(Object.values(FieldTypeEnum)).toContain(
@@ -218,7 +220,7 @@ describe("field router", () => {
       .send([fieldToDelete?._id.toString()])
       .set("Authorization", "Bearer " + adminToken)
       .then((res) => {
-        const result: ResponseDto<void> = res.body;
+        const result: IResponseDto<void> = res.body;
 
         expect(result).toEqual(
           expect.objectContaining({
@@ -244,7 +246,8 @@ describe("field router", () => {
       .set("Authorization", "Bearer " + adminToken)
       .send(command)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IFieldReadDto>> = res.body;
+        const result: IResponseDto<IPaginationResponse<IFieldReadDto>> =
+          res.body;
 
         expect(result.data?.data[0].name[0].text).toEqual(
           fieldToSearch?.name[0].text
@@ -266,7 +269,7 @@ describe("field router", () => {
       .set("Authorization", "Bearer " + adminToken)
       .send(command)
       .then((res) => {
-        const result: ResponseDto<IFieldReadDto[]> = res.body;
+        const result: IResponseDto<IFieldReadDto[]> = res.body;
 
         expect(result.data?.[0].name[0].text).toEqual(
           fieldToCopy?.name[0].text

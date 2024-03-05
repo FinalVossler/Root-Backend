@@ -1,9 +1,9 @@
 import { faker } from "@faker-js/faker";
 
-import roleRepository from "./elements/role/role.repository";
-import User from "./elements/user/user.model";
+import roleRepository from "./elements/role/adapters/role.mongoose.repository";
+import User from "./elements/user/adapters/user.mongoose.model";
 
-import userRepository from "./elements/user/user.repository";
+import userMongooseRepository from "./elements/user/adapters/user.mongoose.repository";
 import mongoose from "./mongoose";
 import { IRole } from "./elements/role/role.model";
 import {
@@ -27,7 +27,7 @@ import {
         superRole: SuperRoleEnum.Normal,
       };
 
-      await userRepository.create(command);
+      await userMongooseRepository.create(command);
     }
   };
 
@@ -43,7 +43,7 @@ import {
           entityPermissions: [],
         };
 
-        const { users } = await userRepository.getUsers({
+        const { users } = await userMongooseRepository.getUsers({
           paginationCommand: {
             limit: i + 1,
             page: i + 1,

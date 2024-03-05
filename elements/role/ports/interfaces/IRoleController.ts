@@ -1,0 +1,36 @@
+import {
+  IRoleCreateCommand,
+  IRoleReadDto,
+  IRoleUpdateCommand,
+  IRolesGetCommand,
+  IRolesSearchCommand,
+} from "roottypes";
+import IRequest from "../../../../globalTypes/IRequest";
+import IResponseDto from "../../../../globalTypes/IResponseDto";
+import { IUser } from "../../../user/adapters/user.mongoose.model";
+import IPaginationResponse from "../../../../globalTypes/IPaginationResponse";
+
+export default interface IRoleController {
+  createRole: (
+    req: IRequest<IRoleCreateCommand>,
+    currentUser: IUser
+  ) => Promise<IResponseDto<IRoleReadDto>>;
+  updateRole: (
+    req: IRequest<IRoleUpdateCommand>,
+    currentUser: IUser
+  ) => Promise<IResponseDto<IRoleReadDto>>;
+
+  getRoles: (
+    req: IRequest<IRolesGetCommand>,
+    currentUser: IUser
+  ) => Promise<IResponseDto<IPaginationResponse<IRoleReadDto>>>;
+
+  deleteRoles: (
+    req: IRequest<string[]>,
+    currentUser: IUser
+  ) => Promise<IResponseDto<void>>;
+  searchRoles: (
+    req: IRequest<IRolesSearchCommand>,
+    currentUser: IUser
+  ) => Promise<IResponseDto<IPaginationResponse<IRoleReadDto>>>;
+}

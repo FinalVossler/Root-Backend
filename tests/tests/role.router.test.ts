@@ -1,21 +1,19 @@
 import request from "supertest";
 import { IRole } from "../../elements/role/role.model";
 import app from "../../server";
-import userService from "../../elements/user/user.service";
+import userService from "../../elements/user/ports/user.service";
 import {
   adminUser,
   createCreateFieldCommand,
   createCreateModelCommand,
 } from "../fixtures";
-import ResponseDto from "../../globalTypes/ResponseDto";
-import roleRepository from "../../elements/role/role.repository";
-import { IField } from "../../elements/field/field.model";
-import fieldRepository from "../../elements/field/field.repository";
-import modelRepository from "../../elements/model/model.repository";
-import { IModel } from "../../elements/model/model.model";
-import { IEntity } from "../../elements/entity/entity.model";
-import entityRepository from "../../elements/entity/entity.repository";
-import PaginationResponse from "../../globalTypes/PaginationResponse";
+import IResponseDto from "../../globalTypes/IResponseDto";
+import roleRepository from "../../elements/role/adapters/role.mongoose.repository";
+import modelRepository from "../../elements/model/adapters/model.mongoose.repository";
+import { IModel } from "../../elements/model/adapters/model.mongoose.model";
+import { IEntity } from "../../elements/entity/adapters/entity.mongoose.model";
+import entityRepository from "../../elements/entity/adapters/entity.mongoose.repository";
+import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import {
   IEntityCreateCommand,
   IEntityFieldValueCommand,
@@ -29,8 +27,11 @@ import {
   PermissionEnum,
   StaticPermissionEnum,
 } from "roottypes";
+import { createMongooseFieldRepository } from "../../elements/field/adapters/field.mongoose.repository";
+import { IField } from "../../elements/field/ports/interfaces/IField";
 
 jest.setTimeout(50000);
+const fieldRepository = createMongooseFieldRepository();
 describe("roles", () => {
   const adminToken = userService.generateToken(adminUser);
   const roleToSearchName = "To find by search";
@@ -154,7 +155,7 @@ describe("roles", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IRoleReadDto> = res.body;
+        const result: IResponseDto<IRoleReadDto> = res.body;
 
         createdRole = result.data as IRoleReadDto;
 
@@ -237,7 +238,7 @@ describe("roles", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IRoleReadDto> = res.body;
+        const result: IResponseDto<IRoleReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.name.at(0)?.text).toEqual(command.name);
@@ -269,7 +270,8 @@ describe("roles", () => {
       .set("Authorization", "Bearer " + adminToken)
       .send(command)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IRoleReadDto>> = res.body;
+        const result: IResponseDto<IPaginationResponse<IRoleReadDto>> =
+          res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.total).toEqual(expect.any(Number));
@@ -285,7 +287,7 @@ describe("roles", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200);
 
-    const result: ResponseDto<void> = res.body;
+    const result: IResponseDto<void> = res.body;
 
     const command: IRolesGetCommand = {
       paginationCommand: {
@@ -301,7 +303,8 @@ describe("roles", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IRoleReadDto>> = res.body;
+        const result: IResponseDto<IPaginationResponse<IRoleReadDto>> =
+          res.body;
 
         const foundDeletedRole: boolean = Boolean(
           result.data?.data.some(
@@ -327,7 +330,8 @@ describe("roles", () => {
       .set("Authorization", "Bearer " + adminToken)
       .send(command)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IRoleReadDto>> = res.body;
+        const result: IResponseDto<IPaginationResponse<IRoleReadDto>> =
+          res.body;
 
         const foundRole: boolean = Boolean(
           result.data?.data.some(

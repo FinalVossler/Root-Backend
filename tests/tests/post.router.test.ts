@@ -1,11 +1,11 @@
 import request from "supertest";
-import { IPost } from "../../elements/post/post.model";
+import { IPost } from "../../elements/post/adapters/post.mongoose.model";
 import { adminUser } from "../fixtures";
 import app from "../../server";
-import userService from "../../elements/user/user.service";
-import ResponseDto from "../../globalTypes/ResponseDto";
-import postRepository from "../../elements/post/post.repository";
-import PaginationResponse from "../../globalTypes/PaginationResponse";
+import userService from "../../elements/user/ports/user.service";
+import IResponseDto from "../../globalTypes/IResponseDto";
+import postMongooseRepository from "../../elements/post/adapters/post.mongoose.repository";
+import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import {
   IPostCreateCommand,
   IPostReadDto,
@@ -39,13 +39,13 @@ describe("Posts", () => {
       subTitle: "This is the post to update subtitle",
     };
 
-    postToUpdate = await postRepository.create(command, adminUser);
-    postToDelete = await postRepository.create(command, adminUser);
-    postToFindInSearch = await postRepository.create(
+    postToUpdate = await postMongooseRepository.create(command, adminUser);
+    postToDelete = await postMongooseRepository.create(command, adminUser);
+    postToFindInSearch = await postMongooseRepository.create(
       { ...command, title: "To find in search" },
       adminUser
     );
-    postToNotFindInSearch = await postRepository.create(
+    postToNotFindInSearch = await postMongooseRepository.create(
       { ...command, title: "Not there" },
       adminUser
     );
@@ -54,20 +54,22 @@ describe("Posts", () => {
   afterAll(async () => {
     const promises: Promise<void>[] = [];
     if (createdPost) {
-      promises.push(postRepository.delete(createdPost._id.toString()));
+      promises.push(postMongooseRepository.delete(createdPost._id.toString()));
     }
     if (postToUpdate) {
-      promises.push(postRepository.delete(postToUpdate._id.toString()));
+      promises.push(postMongooseRepository.delete(postToUpdate._id.toString()));
     }
     if (postToDelete) {
-      promises.push(postRepository.delete(postToDelete._id.toString()));
+      promises.push(postMongooseRepository.delete(postToDelete._id.toString()));
     }
     if (postToFindInSearch) {
-      promises.push(postRepository.delete(postToFindInSearch._id.toString()));
+      promises.push(
+        postMongooseRepository.delete(postToFindInSearch._id.toString())
+      );
     }
     if (postToNotFindInSearch) {
       promises.push(
-        postRepository.delete(postToNotFindInSearch._id.toString())
+        postMongooseRepository.delete(postToNotFindInSearch._id.toString())
       );
     }
 
@@ -95,7 +97,7 @@ describe("Posts", () => {
       .expect(200)
 
       .then((res) => {
-        const result: ResponseDto<IPostReadDto> = res.body;
+        const result: IResponseDto<IPostReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.title?.at(0)?.text).toEqual(command.title);
@@ -122,7 +124,8 @@ describe("Posts", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IPostReadDto>> = res.body;
+        const result: IResponseDto<IPaginationResponse<IPostReadDto>> =
+          res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.total).toBeGreaterThan(0);
@@ -146,7 +149,8 @@ describe("Posts", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IPostReadDto>> = res.body;
+        const result: IResponseDto<IPaginationResponse<IPostReadDto>> =
+          res.body;
 
         expect(result.success).toBeTruthy();
         expect(
@@ -183,7 +187,7 @@ describe("Posts", () => {
       .expect(200)
 
       .then((res) => {
-        const result: ResponseDto<IPostReadDto> = res.body;
+        const result: IResponseDto<IPostReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
         expect(result.data?.title?.at(0)?.text).toEqual(command.title);
@@ -219,7 +223,8 @@ describe("Posts", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IPostReadDto>> = res.body;
+        const result: IResponseDto<IPaginationResponse<IPostReadDto>> =
+          res.body;
 
         expect(result.success).toBeTruthy();
         expect(

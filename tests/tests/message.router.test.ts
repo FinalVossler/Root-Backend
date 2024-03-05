@@ -1,13 +1,13 @@
 import request from "supertest";
-import { IPopulatedMessage } from "../../elements/message/message.model";
-import { IUser } from "../../elements/user/user.model";
-import userService from "../../elements/user/user.service";
+import { IPopulatedMessage } from "../../elements/message/adapters/message.mongoose.model";
+import { IUser } from "../../elements/user/adapters/user.mongoose.model";
+import userService from "../../elements/user/ports/user.service";
 import { adminUser } from "../fixtures";
-import messageRepository from "../../elements/message/message.repository";
+import messageRepository from "../../elements/message/adapters/message.mongoose.repository";
 import app from "../../server";
-import ResponseDto from "../../globalTypes/ResponseDto";
-import userRepository from "../../elements/user/user.repository";
-import PaginationResponse from "../../globalTypes/PaginationResponse";
+import IResponseDto from "../../globalTypes/IResponseDto";
+import userMongooseRepository from "../../elements/user/adapters/user.mongoose.repository";
+import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import {
   IMessageGetBetweenUsersCommand,
   IMessageGetLastConversations,
@@ -43,7 +43,7 @@ describe("messages", () => {
       password: "rootroot",
       superRole: SuperRoleEnum.Normal,
     };
-    user1 = await userRepository.getByEmail(user1CreateCommand.email);
+    user1 = await userMongooseRepository.getByEmail(user1CreateCommand.email);
     if (!user1) {
       user1 = await userService.createUser(user1CreateCommand);
     }
@@ -54,7 +54,7 @@ describe("messages", () => {
       password: "rootroot",
       superRole: SuperRoleEnum.Normal,
     };
-    user2 = await userRepository.getByEmail(user2CreateCommand.email);
+    user2 = await userMongooseRepository.getByEmail(user2CreateCommand.email);
     if (!user2) {
       user2 = await userService.createUser(user2CreateCommand);
     }
@@ -65,7 +65,7 @@ describe("messages", () => {
       password: "rootroot",
       superRole: SuperRoleEnum.Normal,
     };
-    user3ForTotalUnreadMessages = await userRepository.getByEmail(
+    user3ForTotalUnreadMessages = await userMongooseRepository.getByEmail(
       user3CreateCommand.email
     );
     if (!user3ForTotalUnreadMessages) {
@@ -81,7 +81,7 @@ describe("messages", () => {
       password: "rootroot",
       superRole: SuperRoleEnum.Normal,
     };
-    user4ForLastMessageInConversation = await userRepository.getByEmail(
+    user4ForLastMessageInConversation = await userMongooseRepository.getByEmail(
       user4CreateCommand.email
     );
     if (!user4ForLastMessageInConversation) {
@@ -187,20 +187,22 @@ describe("messages", () => {
       );
     }
     if (user1) {
-      promises.push(userRepository.deleteUsers([user1._id.toString()]));
+      promises.push(userMongooseRepository.deleteUsers([user1._id.toString()]));
     }
 
     if (user2) {
-      promises.push(userRepository.deleteUsers([user2._id.toString()]));
+      promises.push(userMongooseRepository.deleteUsers([user2._id.toString()]));
     }
     if (user3ForTotalUnreadMessages) {
       promises.push(
-        userRepository.deleteUsers([user3ForTotalUnreadMessages._id.toString()])
+        userMongooseRepository.deleteUsers([
+          user3ForTotalUnreadMessages._id.toString(),
+        ])
       );
     }
     if (user4ForLastMessageInConversation) {
       promises.push(
-        userRepository.deleteUsers([
+        userMongooseRepository.deleteUsers([
           user4ForLastMessageInConversation._id.toString(),
         ])
       );
@@ -231,7 +233,7 @@ describe("messages", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<IPopulatedMessageReadDto> = res.body;
+        const result: IResponseDto<IPopulatedMessageReadDto> = res.body;
 
         expect(result.data?.files.length).toEqual(0);
         expect(result.data?.from._id.toString()).toEqual(
@@ -260,7 +262,7 @@ describe("messages", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IMessageReadDto>> =
+        const result: IResponseDto<IPaginationResponse<IMessageReadDto>> =
           res.body;
 
         expect(result.success).toBeTruthy();
@@ -305,7 +307,7 @@ describe("messages", () => {
       )
       .expect(200)
       .send([(user1 as IUser)._id.toString(), (user2 as IUser)._id.toString()]);
-    const numberOfUnreadMessagesForUser1Result: ResponseDto<number> = res.body;
+    const numberOfUnreadMessagesForUser1Result: IResponseDto<number> = res.body;
     expect(numberOfUnreadMessagesForUser1Result.data).toEqual(0);
 
     const res2 = await request(app)
@@ -316,7 +318,8 @@ describe("messages", () => {
       )
       .expect(200)
       .send([(user1 as IUser)._id.toString(), (user2 as IUser)._id.toString()]);
-    const numberOfUnreadMessagesForUser2Result: ResponseDto<number> = res2.body;
+    const numberOfUnreadMessagesForUser2Result: IResponseDto<number> =
+      res2.body;
     expect(numberOfUnreadMessagesForUser2Result.data).toEqual(
       messagesBetweenUser1AndUser2.length
     );
@@ -343,7 +346,8 @@ describe("messages", () => {
       )
       .expect(200)
       .send([(user1 as IUser)._id.toString(), (user2 as IUser)._id.toString()]);
-    const numberOfUnreadMessagesForUser2Result: ResponseDto<number> = res2.body;
+    const numberOfUnreadMessagesForUser2Result: IResponseDto<number> =
+      res2.body;
     expect(numberOfUnreadMessagesForUser2Result.data).toEqual(0);
   });
 
@@ -374,7 +378,7 @@ describe("messages", () => {
       )
       .expect(200);
 
-    const result: ResponseDto<number> = res.body;
+    const result: IResponseDto<number> = res.body;
 
     expect(result.success).toBeTruthy();
     expect(result.data).toEqual(
@@ -409,7 +413,7 @@ describe("messages", () => {
       )
       .expect(200);
 
-    const result2: ResponseDto<number> = res2.body;
+    const result2: IResponseDto<number> = res2.body;
 
     expect(result2.success).toBeTruthy();
     expect(result2.data).toEqual(messagesBetweenAdminUserAndUser3.length);
@@ -432,7 +436,7 @@ describe("messages", () => {
       .send(command)
       .expect(200)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IMessageReadDto>> =
+        const result: IResponseDto<IPaginationResponse<IMessageReadDto>> =
           res.body;
 
         expect(result.success).toBeTruthy();

@@ -1,7 +1,7 @@
 import { Response } from "express";
 
-import ConnectedRequest from "../../globalTypes/ConnectedRequest";
-import ResponseDto from "../../globalTypes/ResponseDto";
+import IConnectedRequest from "../../globalTypes/IConnectedRequest";
+import IResponseDto from "../../globalTypes/IResponseDto";
 import fileService from "./file.service";
 import {
   IFileGetUnownedAndSelectedFilesCommand,
@@ -12,8 +12,8 @@ import { fileToReadDto } from "./file.toReadDto";
 
 const fileController = {
   getUserAndSelectedFiles: async (
-    req: ConnectedRequest<any, any, IFileGetUserAndSelectedFilesCommand, any>,
-    res: Response<ResponseDto<{ files: IFileReadDto[]; total: number }>>
+    req: IConnectedRequest<any, any, IFileGetUserAndSelectedFilesCommand, any>,
+    res: Response<IResponseDto<{ files: IFileReadDto[]; total: number }>>
   ) => {
     const { files, total } = await fileService.getUserFiles(req.user, req.body);
 
@@ -26,13 +26,13 @@ const fileController = {
     });
   },
   getUnOwnedAndSelectedFiles: async (
-    req: ConnectedRequest<
+    req: IConnectedRequest<
       any,
       any,
       IFileGetUnownedAndSelectedFilesCommand,
       any
     >,
-    res: Response<ResponseDto<{ files: IFileReadDto[]; total: number }>>
+    res: Response<IResponseDto<{ files: IFileReadDto[]; total: number }>>
   ) => {
     const { files, total } = await fileService.getUnownedFiles(req.body);
 

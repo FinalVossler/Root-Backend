@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import { IUser } from "../user/user.model";
+import { IUser } from "../user/adapters/user.mongoose.model";
 import File, { IFile } from "./file.model";
 import {
   IFileCommand,

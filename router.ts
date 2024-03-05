@@ -1,19 +1,19 @@
 import { Request, Response, Router } from "express";
 
-import userRouter from "./elements/user/user.router";
-import messageRouter from "./elements/message/message.router";
-import postRouter from "./elements/post/post.router";
-import pageRouter from "./elements/page/page.router";
+import userRouter from "./elements/user/adapters/user.express.router";
+import messageRouter from "./elements/message/adapters/message.express.router";
+import postRouter from "./elements/post/adapters/post.express.router";
+import pageRouter from "./elements/page/adapters/page.express.router";
 import fileRouter from "./elements/file/file.router";
 import websiteConfigurationRouter from "./elements/websiteConfiguration/websiteConfiguration.router";
 import emailRouter from "./elements/email/email.router";
-import fieldRouter from "./elements/field/field.router";
-import modelRouter from "./elements/model/model.router";
-import entityRouter from "./elements/entity/entity.router";
-import roleRouter from "./elements/role/role.router";
-import notificationRouter from "./elements/notification/notification.router";
+import fieldRouter from "./elements/field/adapters/field.express.router";
+import modelRouter from "./elements/model/adapters/model.express.router";
+import entityRouter from "./elements/entity/adapters/entity.express.router";
+import roleRouter from "./elements/role/adapters/role.express.router";
+import notificationRouter from "./elements/notification/adapters/notification.express.router";
 import microFrontendRouter from "./elements/microFontend/microFrontend.router";
-import reactionRouter from "./elements/reaction/reaction.router";
+import reactionRouter from "./elements/reaction/adapters/reaction.express.router";
 import testsPreparationRouter from "./elements/testsPreparation/testsPreparation.router";
 
 const router = Router();

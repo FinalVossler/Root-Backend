@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 
 import { IMicroFrontendComponent } from "../microFontendComponent/microFrontendComponent.model";
-import Model, { IModel } from "../model/model.model";
-import Field, { IField } from "../field/field.model";
-import { populationOptions } from "../field/field.repository";
+import Model, { IModel } from "../model/adapters/model.mongoose.model";
+import Field from "../field/adapters/field.mongoose.model";
+import { populationOptions } from "../field/adapters/field.mongoose.repository";
+import { IField } from "../field/ports/interfaces/IField";
 
 export interface IMicroFrontend {
   _id: string;

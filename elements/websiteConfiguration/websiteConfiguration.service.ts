@@ -1,5 +1,5 @@
 import { IWebsiteConfigurationUpdateCommand } from "roottypes";
-import { IUser } from "../user/user.model";
+import { IUser } from "../user/adapters/user.mongoose.model";
 import { IWebsiteConfiguration } from "./websiteConfiguration.model";
 import websiteConfigurationRepository from "./websiteConfiguration.repository";
 

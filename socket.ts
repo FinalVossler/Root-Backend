@@ -2,8 +2,8 @@ import socket from "socket.io";
 import http from "http";
 
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
-import { IUser } from "./elements/user/user.model";
-import userService from "./elements/user/user.service";
+import { IUser } from "./elements/user/adapters/user.mongoose.model";
+import userService from "./elements/user/ports/user.service";
 import emailService from "./elements/email/email.service";
 import websiteConfigurationService from "./elements/websiteConfiguration/websiteConfiguration.service";
 import socketRepository from "./elements/socket/socket.repository";
@@ -18,7 +18,7 @@ import {
   IUserReadDto,
   NotificationMessageEnum,
 } from "roottypes";
-import { userToReadDto } from "./elements/user/user.toReadDto";
+import { userToReadDto } from "./elements/user/ports/user.toReadDto";
 
 const socketHandler: {
   io: socket.Server<

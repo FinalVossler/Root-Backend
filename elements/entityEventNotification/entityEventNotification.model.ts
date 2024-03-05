@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
-import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
-import { EntityEventNotificationTriggerEnum } from "roottypes";
+import { EntityEventNotificationTriggerEnum, ITranslatedText } from "roottypes";
+import translatedTextSchema from "../translatedText/adapters/translatedText.mongooseSchema";
 
 export interface IEntityEventNotification {
   _id: string;

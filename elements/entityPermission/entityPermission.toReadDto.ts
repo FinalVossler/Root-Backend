@@ -9,10 +9,10 @@ import {
   IEntityUserAssignmentPermissionsByRole,
 } from "./entityPermission.model";
 import { entityEventNotificationToReadDto } from "../entityEventNotification/entityEventNotification.toReadDto";
-import { fieldToReadDto } from "../field/field.toReadDto";
-import { roleToReadDto } from "../role/role.toReadDto";
+import { fieldToReadDto } from "../field/ports/field.toReadDto";
+import { roleToReadDto } from "../role/ports/role.toReadDto";
 import mongoose from "mongoose";
-import { modelToReadDto } from "../model/model.toReadDto";
+import { modelToReadDto } from "../model/ports/model.toReadDto";
 
 export const entityPermissionToReadDto = (
   entityPermission: IEntityPermission | string

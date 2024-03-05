@@ -1,17 +1,17 @@
 import { Response } from "express";
 
-import ConnectedRequest from "../../globalTypes/ConnectedRequest";
-import ResponseDto from "../../globalTypes/ResponseDto";
-import { IUser } from "../user/user.model";
+import IConnectedRequest from "../../globalTypes/IConnectedRequest";
+import IResponseDto from "../../globalTypes/IResponseDto";
 import testsPreparationService from "./testsPreparation.service";
 import { IFile } from "../file/file.model";
 import { IFileReadDto } from "roottypes";
 import { fileToReadDto } from "../file/file.toReadDto";
+import IUser from "../user/ports/interfaces/IUser";
 
 const testsPreparationController = {
   clean: async (
-    req: ConnectedRequest<any, any, any, any>,
-    res: Response<ResponseDto<void>>
+    req: IConnectedRequest<any, any, any, any>,
+    res: Response<IResponseDto<void>>
   ) => {
     const currentUser: IUser = req.user;
 
@@ -23,8 +23,8 @@ const testsPreparationController = {
     });
   },
   createFile: async (
-    req: ConnectedRequest<any, any, { url: string }, any>,
-    res: Response<ResponseDto<IFileReadDto>>
+    req: IConnectedRequest<any, any, { url: string }, any>,
+    res: Response<IResponseDto<IFileReadDto>>
   ) => {
     const currentUser = req.user;
 
@@ -39,8 +39,8 @@ const testsPreparationController = {
     });
   },
   prepareMarketMaven: async (
-    req: ConnectedRequest<any, any, any, any>,
-    res: Response<ResponseDto<void>>
+    req: IConnectedRequest<any, any, any, any>,
+    res: Response<IResponseDto<void>>
   ) => {
     await testsPreparationService.prepareMarketMaven();
 

@@ -1,7 +1,7 @@
 import { Response } from "express";
 
-import ConnectedRequest from "../../globalTypes/ConnectedRequest";
-import ResponseDto from "../../globalTypes/ResponseDto";
+import IConnectedRequest from "../../globalTypes/IConnectedRequest";
+import IResponseDto from "../../globalTypes/IResponseDto";
 import { IWebsiteConfiguration } from "./websiteConfiguration.model";
 import websiteConfigurationService from "./websiteConfiguration.service";
 import { websiteConfigurationToReadDto } from "./websiteConfiguration.toReadDto";
@@ -12,8 +12,8 @@ import {
 
 const websiteConfigurationController = {
   updateWebsiteConfiguration: async (
-    req: ConnectedRequest<any, any, IWebsiteConfigurationUpdateCommand, any>,
-    res: Response<ResponseDto<IWebsiteConfigurationReadDto>>
+    req: IConnectedRequest<any, any, IWebsiteConfigurationUpdateCommand, any>,
+    res: Response<IResponseDto<IWebsiteConfigurationReadDto>>
   ) => {
     const websiteConfiguration: IWebsiteConfiguration =
       await websiteConfigurationService.update(req.body);
@@ -24,8 +24,8 @@ const websiteConfigurationController = {
     });
   },
   getWebsiteConfiguration: async (
-    req: ConnectedRequest<any, any, any, any>,
-    res: Response<ResponseDto<IWebsiteConfigurationReadDto>>
+    req: IConnectedRequest<any, any, any, any>,
+    res: Response<IResponseDto<IWebsiteConfigurationReadDto>>
   ) => {
     const websiteConfiguration: IWebsiteConfiguration =
       await websiteConfigurationService.get();

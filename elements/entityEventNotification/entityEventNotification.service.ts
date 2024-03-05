@@ -1,19 +1,19 @@
 import {
   EntityEventNotificationTriggerEnum,
   INotificationCreateCommand,
+  ITranslatedText,
 } from "roottypes";
 import emailService from "../email/email.service";
-import { IEntity } from "../entity/entity.model";
+import { IEntity } from "../entity/adapters/entity.mongoose.model";
 import { IEntityPermission } from "../entityPermission/entityPermission.model";
-import { ITranslatedText } from "../ITranslatedText";
-import notificationService from "../notification/notification.service";
+import notificationService from "../notification/ports/notification.service";
 import { IRole } from "../role/role.model";
-import roleService from "../role/role.service";
-import { IUser } from "../user/user.model";
-import userService from "../user/user.service";
+import roleService from "../role/ports/role.service";
+import { IUser } from "../user/adapters/user.mongoose.model";
+import userService from "../user/ports/user.service";
 import { IEntityEventNotification } from "./entityEventNotification.model";
 import { IFile } from "../file/file.model";
-import { IModel } from "../model/model.model";
+import { IModel } from "../model/adapters/model.mongoose.model";
 
 const entityEventNotificationService = {
   notifyUsers: async (

@@ -1,14 +1,14 @@
 import { Response } from "express";
 import { IEmailSendCommand } from "roottypes";
 
-import ConnectedRequest from "../../globalTypes/ConnectedRequest";
-import ResponseDto from "../../globalTypes/ResponseDto";
+import IConnectedRequest from "../../globalTypes/IConnectedRequest";
+import IResponseDto from "../../globalTypes/IResponseDto";
 import emailService from "./email.service";
 
 const emailController = {
   createEmail: async (
-    req: ConnectedRequest<any, any, IEmailSendCommand, any>,
-    res: Response<ResponseDto<void>>
+    req: IConnectedRequest<any, any, IEmailSendCommand, any>,
+    res: Response<IResponseDto<void>>
   ) => {
     const command: IEmailSendCommand = req.body;
 

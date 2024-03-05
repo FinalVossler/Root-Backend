@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 import { IFile } from "../file/file.model";
-import translatedTextSchema, { ITranslatedText } from "../ITranslatedText";
-import { ITheme } from "roottypes";
+import { ITheme, ITranslatedText } from "roottypes";
+import translatedTextSchema from "../translatedText/adapters/translatedText.mongooseSchema";
 
 export interface IWebsiteConfiguration {
   _id?: mongoose.Types.ObjectId;

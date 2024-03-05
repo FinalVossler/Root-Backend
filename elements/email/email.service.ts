@@ -1,10 +1,10 @@
 import nodemailer from "nodemailer";
 import { IEmailSendCommand } from "roottypes";
 
-import { IUser } from "../user/user.model";
 import { IWebsiteConfiguration } from "../websiteConfiguration/websiteConfiguration.model";
 import websiteConfigurationRepository from "../websiteConfiguration/websiteConfiguration.repository";
 import { google } from "googleapis";
+import IUser from "../user/ports/interfaces/IUser";
 
 const emailService = {
   sendContactEmail: async (command: IEmailSendCommand): Promise<void> => {

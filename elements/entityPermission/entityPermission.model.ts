@@ -2,11 +2,11 @@ import mongoose from "mongoose";
 
 import { IEntityEventNotification } from "../entityEventNotification/entityEventNotification.model";
 import entityEventNotificationRepository from "../entityEventNotification/entityEventNotification.repository";
-import { IField } from "../field/field.model";
-import translatedTextSchema from "../ITranslatedText";
-import { IModel } from "../model/model.model";
+import { IModel } from "../model/adapters/model.mongoose.model";
 import Role, { IRole } from "../role/role.model";
 import { StaticPermissionEnum } from "roottypes";
+import translatedTextSchema from "../translatedText/adapters/translatedText.mongooseSchema";
+import { IField } from "../field/ports/interfaces/IField";
 
 export interface IEntityPermission {
   _id: string;

@@ -2,7 +2,7 @@ import { IWebsiteConfigurationUpdateCommand } from "roottypes";
 import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
 import { IFile } from "../file/file.model";
 import fileRepository from "../file/file.repository";
-import { IUser } from "../user/user.model";
+import { IUser } from "../user/adapters/user.mongoose.model";
 import WebsiteConfiguration, {
   IWebsiteConfiguration,
 } from "./websiteConfiguration.model";
@@ -65,6 +65,7 @@ const websiteConfigurationRepository = {
           tabIcon: tabIcon?._id,
           logo1: logo1?._id,
           logo2: logo2?._id,
+          staticText: command.staticText,
         },
       }
     );

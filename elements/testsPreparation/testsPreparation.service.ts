@@ -1,9 +1,7 @@
-import Entity, { IEntity } from "../entity/entity.model";
-import Field, { IField } from "../field/field.model";
-import Message from "../message/message.model";
-import Page from "../page/page.model";
-import Post from "../post/post.model";
-import User, { IUser } from "../user/user.model";
+import Field from "../field/adapters/field.mongoose.model";
+import Message from "../message/adapters/message.mongoose.model";
+import Page from "../page/adapters/page.mongoose.model";
+import Post from "../post/adapters/post.mongoose.model";
 import File, { IFile } from "../file/file.model";
 import EntityEventNotification from "../entityEventNotification/entityEventNotification.model";
 import EntityPermission from "../entityPermission/entityPermission.model";
@@ -11,23 +9,20 @@ import FieldTableElement, {
   IFieldTableElement,
 } from "../fieldTableElement/fieldTableElement.model";
 import Model, {
-  IModel,
   ModelFieldConditionTypeEnum,
-} from "../model/model.model";
-import Role, { IRole } from "../role/role.model";
+} from "../model/adapters/model.mongoose.model";
 import ModelState from "../modelState/modelState.model";
-import Notification from "../notification/notification.model";
-import Reaction from "../reaction/reaction.model";
+import Notification from "../notification/adapters/notification.mongoose.model";
+import Reaction from "../reaction/adapters/reaction.mongoose.model";
 import Socket from "../socket/socket.model";
 import fileRepository from "../file/file.repository";
-import fieldRepository from "../field/field.repository";
 import MicroFrontend, {
   IMicroFrontend,
 } from "../microFontend/microFrontend.model";
 import microFrontendRepository from "../microFontend/microFrontend.respository";
-import modelRepository from "../model/model.repository";
+import modelRepository from "../model/adapters/model.mongoose.repository";
 import { adminUser } from "../../tests/fixtures";
-import roleRepository from "../role/role.repository";
+import roleRepository from "../role/adapters/role.mongoose.repository";
 import {
   EntityEventNotificationTriggerEnum,
   EventTriggerEnum,
@@ -46,8 +41,18 @@ import {
 } from "roottypes";
 import { IMicroFrontendComponent } from "../microFontendComponent/microFrontendComponent.model";
 import { faker } from "@faker-js/faker";
-import entityRepository from "../entity/entity.repository";
+import entityRepository from "../entity/adapters/entity.mongoose.repository";
+import { IField } from "../field/ports/interfaces/IField";
+import IUser from "../user/ports/interfaces/IUser";
+import mongooseFieldRepository from "../field/adapters/field.mongoose.repository";
+import User from "../user/adapters/user.mongoose.model";
+import Role from "../role/adapters/role.mongoose.model";
+import Entity from "../entity/adapters/entity.mongoose.model";
+import IModel from "../model/ports/interfaces/IModel";
+import IRole from "../role/ports/interfaces/IRole";
+import IEntity from "../entity/ports/interfaces/IEntity";
 
+const fieldRepository = mongooseFieldRepository;
 const testsPreparationService = {
   clean: async (currentUser: IUser) => {
     await Socket.deleteMany({});

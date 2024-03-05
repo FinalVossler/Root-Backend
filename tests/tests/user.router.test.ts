@@ -1,14 +1,16 @@
 import request from "supertest";
 
 import app from "../../server";
-import ResponseDto from "../../globalTypes/ResponseDto";
-import userService from "../../elements/user/user.service";
-import userModel, { IUser } from "../../elements/user/user.model";
-import PaginationResponse from "../../globalTypes/PaginationResponse";
-import userRepository from "../../elements/user/user.repository";
+import IResponseDto from "../../globalTypes/IResponseDto";
+import userService from "../../elements/user/ports/user.service";
+import userModel, {
+  IUser,
+} from "../../elements/user/adapters/user.mongoose.model";
+import IPaginationResponse from "../../globalTypes/IPaginationResponse";
+import userMongooseRepository from "../../elements/user/adapters/user.mongoose.repository";
 import { IFile } from "../../elements/file/file.model";
 import { IRole } from "../../elements/role/role.model";
-import roleRepository from "../../elements/role/role.repository";
+import roleRepository from "../../elements/role/adapters/role.mongoose.repository";
 import doNothing from "../../utils/doNothing";
 import { adminUser } from "../fixtures";
 import {
@@ -56,8 +58,10 @@ describe("Users", () => {
         superRole: SuperRoleEnum.Normal,
         roleId: role._id.toString(),
       };
-      await userRepository.deleteByEmail(userToSearchByRoleCreateCommand.email);
-      userToSearchByRole = await userRepository.create(
+      await userMongooseRepository.deleteByEmail(
+        userToSearchByRoleCreateCommand.email
+      );
+      userToSearchByRole = await userMongooseRepository.create(
         userToSearchByRoleCreateCommand
       );
 
@@ -70,8 +74,12 @@ describe("Users", () => {
         superRole: SuperRoleEnum.Normal,
         roleId: role._id.toString(),
       };
-      await userRepository.deleteByEmail(userToUpdateCreateCommand.email);
-      userToUpdate = await userRepository.create(userToUpdateCreateCommand);
+      await userMongooseRepository.deleteByEmail(
+        userToUpdateCreateCommand.email
+      );
+      userToUpdate = await userMongooseRepository.create(
+        userToUpdateCreateCommand
+      );
     } catch (e) {
       doNothing();
     }
@@ -86,13 +94,15 @@ describe("Users", () => {
 
   afterAll(async () => {
     if (userToSearchByRole) {
-      await userRepository.deleteUsers([userToSearchByRole?._id.toString()]);
+      await userMongooseRepository.deleteUsers([
+        userToSearchByRole?._id.toString(),
+      ]);
     }
     if (userToUpdate) {
-      await userRepository.deleteUsers([userToUpdate?._id.toString()]);
+      await userMongooseRepository.deleteUsers([userToUpdate?._id.toString()]);
     }
     if (userToCreate) {
-      await userRepository.deleteUsers([userToCreate._id.toString()]);
+      await userMongooseRepository.deleteUsers([userToCreate._id.toString()]);
     }
     if (role) {
       await roleRepository.deleteRoles([role._id.toString()]);
@@ -107,7 +117,7 @@ describe("Users", () => {
       password: "registerPassword",
     };
 
-    type RegisterReponse = ResponseDto<{
+    type RegisterReponse = IResponseDto<{
       token: string;
       expiresIn: string;
       user: IUserReadDto;
@@ -170,7 +180,7 @@ describe("Users", () => {
       .set("Authorization", "Bearer " + adminToken)
       .expect(200);
 
-    type ResponseType = ResponseDto<IUserReadDto>;
+    type ResponseType = IResponseDto<IUserReadDto>;
     expect(res.body).toEqual(
       expect.objectContaining({
         success: true,
@@ -193,7 +203,7 @@ describe("Users", () => {
       },
     };
 
-    type ResponseType = ResponseDto<PaginationResponse<IUserReadDto>>;
+    type ResponseType = IResponseDto<IPaginationResponse<IUserReadDto>>;
 
     return request(app)
       .post("/users/getChatContacts")
@@ -226,7 +236,7 @@ describe("Users", () => {
       .set("Authorization", "Bearer " + adminToken)
       .send({ usersIds: [adminUser._id.toString()] })
       .then((res) => {
-        const result: ResponseDto<IUserReadDto[]> = res.body;
+        const result: IResponseDto<IUserReadDto[]> = res.body;
 
         expect(result).toEqual(
           expect.objectContaining({
@@ -248,7 +258,7 @@ describe("Users", () => {
       .get("/users/getUser")
       .query({ userId: adminUser._id.toString() })
       .then((res) => {
-        const result: ResponseDto<IUserReadDto> = res.body;
+        const result: IResponseDto<IUserReadDto> = res.body;
 
         expect(result).toEqual(
           expect.objectContaining({
@@ -269,7 +279,7 @@ describe("Users", () => {
       .set("Authorization", "Bearer " + adminToken)
       .send({ usersIds: [adminUser._id.toString()] })
       .then((res) => {
-        const result: ResponseDto<
+        const result: IResponseDto<
           IUserReadDtoWithLastReadMessageInConversationReadDto[]
         > = res.body;
 
@@ -302,7 +312,7 @@ describe("Users", () => {
       .set("Authorization", "Bearer " + adminToken)
       .send(userUpdateCommand)
       .then((res) => {
-        const result: ResponseDto<IUserReadDto> = res.body;
+        const result: IResponseDto<IUserReadDto> = res.body;
         expect(result).toEqual(
           expect.objectContaining({
             success: true,
@@ -327,7 +337,7 @@ describe("Users", () => {
       .send(adminProfilePicture)
       .set("Authorization", "Bearer " + userToken)
       .then((res) => {
-        const result: ResponseDto<IUserReadDto> = res.body;
+        const result: IResponseDto<IUserReadDto> = res.body;
 
         expect(result).toEqual(
           expect.objectContaining({
@@ -355,7 +365,7 @@ describe("Users", () => {
       .set("Authorization", "Bearer " + adminToken)
       .send(command)
       .then((res) => {
-        const result: ResponseDto<IUserReadDto> = res.body;
+        const result: IResponseDto<IUserReadDto> = res.body;
 
         userToCreate = result.data as IUserReadDto;
 
@@ -385,7 +395,8 @@ describe("Users", () => {
       .set("Authorization", "Bearer " + adminToken)
       .send(command)
       .then((res) => {
-        const result: ResponseDto<PaginationResponse<IUserReadDto>> = res.body;
+        const result: IResponseDto<IPaginationResponse<IUserReadDto>> =
+          res.body;
 
         expect(result).toEqual(
           expect.objectContaining({
@@ -415,7 +426,7 @@ describe("Users", () => {
     };
     const res = await request(app).post("/users/search").send(command1);
 
-    const result: ResponseDto<PaginationResponse<IUserReadDto>> = res.body;
+    const result: IResponseDto<IPaginationResponse<IUserReadDto>> = res.body;
 
     expect(result).toEqual(
       expect.objectContaining({
@@ -447,7 +458,7 @@ describe("Users", () => {
     };
     const res = await request(app).post("/users/searchByRole").send(command1);
 
-    const result: ResponseDto<PaginationResponse<IUserReadDto>> = res.body;
+    const result: IResponseDto<IPaginationResponse<IUserReadDto>> = res.body;
 
     expect(result).toEqual(
       expect.objectContaining({
