@@ -4,6 +4,7 @@ import {
   IPostsGetCommand,
   IPostsSearchCommand,
 } from "roottypes";
+
 import IPost from "./interfaces/IPost";
 import IUser from "../../user/ports/interfaces/IUser";
 import IPostService from "./interfaces/IPostService";

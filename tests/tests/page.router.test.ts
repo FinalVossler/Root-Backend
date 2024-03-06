@@ -1,12 +1,9 @@
 import request from "supertest";
 import pageMongooseRepository from "../../elements/page/adapters/page.mongoose.repository";
-import { IPost } from "../../elements/post/adapters/post.mongoose.model";
 import { adminUser } from "../fixtures";
 import postMongooseRepository from "../../elements/post/adapters/post.mongoose.repository";
-import { IPage } from "../../elements/page/adapters/page.mongoose.model";
 import app from "../../server";
 import IResponseDto from "../../globalTypes/IResponseDto";
-import userService from "../../elements/user/ports/user.service";
 import {
   IPageCreateCommand,
   IPageReadDto,
@@ -15,6 +12,9 @@ import {
   PostDesignEnum,
   PostVisibilityEnum,
 } from "roottypes";
+import { userService } from "../../ioc";
+import IPost from "../../elements/post/ports/interfaces/IPost";
+import IPage from "../../elements/page/ports/interfaces/IPage";
 
 jest.setTimeout(50000);
 const adminToken = userService.generateToken(adminUser);

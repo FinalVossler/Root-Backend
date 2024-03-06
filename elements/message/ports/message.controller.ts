@@ -1,10 +1,10 @@
-import messageService from "./message.service";
 import {
   IMessageGetBetweenUsersCommand,
   IMessageGetLastConversations,
   IMessageMarkAllMessagesAsReadByUserCommand,
   IMessageSendCommand,
 } from "roottypes";
+
 import { populatedMessageToReadDto } from "./message.toReadDto";
 import IPopulatedMessage from "./interfaces/IPopulatedMessage";
 import IUser from "../../user/ports/interfaces/IUser";

@@ -2,14 +2,9 @@ import request from "supertest";
 
 import app from "../../server";
 import IResponseDto from "../../globalTypes/IResponseDto";
-import userService from "../../elements/user/ports/user.service";
-import userModel, {
-  IUser,
-} from "../../elements/user/adapters/user.mongoose.model";
+import userModel from "../../elements/user/adapters/user.mongoose.model";
 import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import userMongooseRepository from "../../elements/user/adapters/user.mongoose.repository";
-import { IFile } from "../../elements/file/adapters/file.mongoose.model";
-import { IRole } from "../../elements/role/role.model";
 import roleRepository from "../../elements/role/adapters/role.mongoose.repository";
 import doNothing from "../../utils/doNothing";
 import { adminUser } from "../fixtures";
@@ -28,6 +23,10 @@ import {
   PermissionEnum,
   SuperRoleEnum,
 } from "roottypes";
+import { userService } from "../../ioc";
+import IUser from "../../elements/user/ports/interfaces/IUser";
+import IFile from "../../elements/file/ports/interfaces/IFile";
+import IRole from "../../elements/role/ports/interfaces/IRole";
 
 jest.setTimeout(50000);
 describe("Users", () => {

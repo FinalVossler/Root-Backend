@@ -8,11 +8,11 @@ import {
   IMicroFrontendsSearchCommand,
 } from "roottypes";
 import IResponseDto from "../../globalTypes/IResponseDto";
-import userService from "../../elements/user/ports/user.service";
 import { adminUser } from "../fixtures";
-import microFrontendRepository from "../../elements/microFontend/adapters/microFrontend.mongoose.respository";
+import microFrontendMongooseRepository from "../../elements/microFontend/adapters/microFrontend.mongoose.respository";
 import IPaginationResponse from "../../globalTypes/IPaginationResponse";
-import { IMicroFrontend } from "../../elements/microFontend/adapters/microFrontend.mongoose.model";
+import { userService } from "../../ioc";
+import IMicroFrontend from "../../elements/microFontend/ports/interfaces/IMicroFrontend";
 
 jest.setTimeout(50000);
 describe("MicroFrontends", () => {
@@ -38,35 +38,38 @@ describe("MicroFrontends", () => {
       remoteEntry: "http://localhost:3000/remoteEntry.js",
     };
 
-    microFrontendToUpdate = await microFrontendRepository.create(command);
-    microFrontendToGet = await microFrontendRepository.create({
+    microFrontendToUpdate = await microFrontendMongooseRepository.create(
+      command
+    );
+    microFrontendToGet = await microFrontendMongooseRepository.create({
       ...command,
       name: command.name.replace("to update", "to get"),
       components: command.components.map((c) => ({
         name: c.name.replace("ToUpdate", "ToGet"),
       })),
     });
-    microFrontendToDelete = await microFrontendRepository.create({
+    microFrontendToDelete = await microFrontendMongooseRepository.create({
       ...command,
       name: command.name.replace("to update", "to delete"),
       components: command.components.map((c) => ({
         name: c.name.replace("ToUpdate", "ToDelete"),
       })),
     });
-    microFrontendToFindInSearch = await microFrontendRepository.create({
+    microFrontendToFindInSearch = await microFrontendMongooseRepository.create({
       ...command,
       name: "Search result",
       components: command.components.map((c) => ({
         name: c.name.replace("ToUpdate", "ToSearch"),
       })),
     });
-    microFrontendToNotFindInSearch = await microFrontendRepository.create({
-      ...command,
-      name: "dont find me",
-      components: command.components.map((c) => ({
-        name: c.name.replace("ToUpdate", "ToNotFindInSearch"),
-      })),
-    });
+    microFrontendToNotFindInSearch =
+      await microFrontendMongooseRepository.create({
+        ...command,
+        name: "dont find me",
+        components: command.components.map((c) => ({
+          name: c.name.replace("ToUpdate", "ToNotFindInSearch"),
+        })),
+      });
   });
 
   afterAll(async () => {
@@ -74,38 +77,42 @@ describe("MicroFrontends", () => {
 
     if (microFrontendToUpdate) {
       promises.push(
-        microFrontendRepository.deleteMicroFrontends([
+        microFrontendMongooseRepository.deleteMicroFrontends([
           microFrontendToUpdate._id,
         ])
       );
     }
     if (createdMicroFrontend) {
       promises.push(
-        microFrontendRepository.deleteMicroFrontends([createdMicroFrontend._id])
+        microFrontendMongooseRepository.deleteMicroFrontends([
+          createdMicroFrontend._id,
+        ])
       );
     }
     if (microFrontendToGet) {
       promises.push(
-        microFrontendRepository.deleteMicroFrontends([microFrontendToGet._id])
+        microFrontendMongooseRepository.deleteMicroFrontends([
+          microFrontendToGet._id,
+        ])
       );
     }
     if (microFrontendToDelete) {
       promises.push(
-        microFrontendRepository.deleteMicroFrontends([
+        microFrontendMongooseRepository.deleteMicroFrontends([
           microFrontendToDelete._id,
         ])
       );
     }
     if (microFrontendToFindInSearch) {
       promises.push(
-        microFrontendRepository.deleteMicroFrontends([
+        microFrontendMongooseRepository.deleteMicroFrontends([
           microFrontendToFindInSearch._id,
         ])
       );
     }
     if (microFrontendToNotFindInSearch) {
       promises.push(
-        microFrontendRepository.deleteMicroFrontends([
+        microFrontendMongooseRepository.deleteMicroFrontends([
           microFrontendToNotFindInSearch._id,
         ])
       );

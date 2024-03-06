@@ -1,4 +1,5 @@
 import { INotificationReadDto } from "roottypes";
+
 import { fileToReadDto } from "../../file/ports/file.toReadDto";
 import INotification from "./interfaces/INotification";
 

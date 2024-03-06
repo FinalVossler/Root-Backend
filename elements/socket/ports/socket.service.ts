@@ -2,7 +2,6 @@ import socket from "socket.io";
 import http from "http";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
-import socketMongooseRepository from "../adapters/socket.mongoose.repository";
 import {
   ChatMessagesEnum,
   IMessageReadDto,
@@ -13,6 +12,7 @@ import {
   IUserReadDto,
   NotificationMessageEnum,
 } from "roottypes";
+
 import { userToReadDto } from "../../user/ports/user.toReadDto";
 import IUser from "../../user/ports/interfaces/IUser";
 import ISocketService from "./interfaces/ISocketService";
@@ -21,6 +21,7 @@ import IWebsiteConfigurationService from "../../websiteConfiguration/ports/inter
 import IEmailService from "../../email/ports/interfaces/IEmailService";
 // TODO: Get rid of external dependency
 import { userService } from "../../../ioc";
+import ISocketRepository from "./interfaces/ISocketRepository";
 
 const socketHandler: {
   io: socket.Server<
@@ -35,7 +36,8 @@ const socketHandler: {
 
 export const createSocketService = (
   websiteConfigurationService: IWebsiteConfigurationService,
-  emailService: IEmailService
+  emailService: IEmailService,
+  socketRepository: ISocketRepository
 ): ISocketService => ({
   socketInit: function (server: http.Server) {
     const io = new socket.Server(server, {
@@ -51,14 +53,15 @@ export const createSocketService = (
       const userId: any = socket.handshake.query.userId;
       console.log("connecting", userId, "socket id", socket.id);
 
-      await socketMongooseRepository.addSocketId(userId, socket.id);
+      await socketRepository.addSocketId(userId, socket.id);
 
       socket.on("disconnect", async () => {
         console.log("disconnecting", userId, "socket id", socket.id);
 
         // Send messages signaling to other users that this user is no longer typing because he just disconnected
-        const userSocket: ISocket | null =
-          await socketMongooseRepository.getUserSocket(userId);
+        const userSocket: ISocket | null = await socketRepository.getUserSocket(
+          userId
+        );
         if (userSocket) {
           userSocket.typingStates.forEach((typingState) => {
             const typingStateCommand: ISocketTypingStateCommand = {
@@ -76,7 +79,7 @@ export const createSocketService = (
           });
         }
 
-        await socketMongooseRepository.deleteSocketId(userId, socket.id);
+        await socketRepository.deleteSocketId(userId, socket.id);
       });
 
       // Listening to typing states
@@ -84,12 +87,12 @@ export const createSocketService = (
         ChatMessagesEnum.SendTypingState,
         async (socketTypingStateCommand: ISocketTypingStateCommand) => {
           if (socketTypingStateCommand.isTyping) {
-            await socketMongooseRepository.addTypingState(
+            await socketRepository.addTypingState(
               socketTypingStateCommand.userId,
               { toUsersIds: socketTypingStateCommand.toUsersIds }
             );
           } else {
-            await socketMongooseRepository.deleteTypingState(
+            await socketRepository.deleteTypingState(
               socketTypingStateCommand.userId,
               { toUsersIds: socketTypingStateCommand.toUsersIds }
             );
@@ -120,7 +123,7 @@ export const createSocketService = (
       | { lastMarkedMessageAsRead: IPopulatedMessageReadDto | null; by: IUser };
   }) {
     const { onlineUsersIds, onlineUsersSockets } =
-      await socketMongooseRepository.getOnlineUsers();
+      await socketRepository.getOnlineUsers();
 
     const onlineConcernedUsersIds: string[] = userIds
       .map((userId) => userId.toString())

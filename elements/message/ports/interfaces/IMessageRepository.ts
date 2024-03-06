@@ -3,6 +3,7 @@ import {
   IMessageGetLastConversations,
   IMessageSendCommand,
 } from "roottypes";
+
 import IUser from "../../../user/ports/interfaces/IUser";
 import IPopulatedMessage from "./IPopulatedMessage";
 import IMessage from "./IMessage";

@@ -5,6 +5,7 @@ import {
   IEntityCreateCommand,
   IEntityUpdateCommand,
 } from "roottypes";
+
 import { entityToReadDto } from "./entity.toReadDto";
 import IUser from "../../user/ports/interfaces/IUser";
 import IEntity from "./interfaces/IEntity";

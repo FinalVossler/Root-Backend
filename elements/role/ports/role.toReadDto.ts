@@ -1,4 +1,5 @@
 import { IRoleReadDto } from "roottypes";
+
 import { entityPermissionToReadDto } from "../../entityPermission/ports/entityPermission.toReadDto";
 import IRole from "./interfaces/IRole";
 

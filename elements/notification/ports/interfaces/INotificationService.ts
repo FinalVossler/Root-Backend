@@ -2,6 +2,7 @@ import {
   INotificationCreateCommand,
   INotificationsGetCommand,
 } from "roottypes";
+
 import IUser from "../../../user/ports/interfaces/IUser";
 import INotification from "./INotification";
 

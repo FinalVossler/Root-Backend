@@ -1,10 +1,10 @@
 import request from "supertest";
-import userService from "../../elements/user/ports/user.service";
 import { adminUser } from "../fixtures";
 import app from "../../server";
 import IResponseDto from "../../globalTypes/IResponseDto";
 import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import { IUserReadDto, IUsersGetCommand } from "roottypes";
+import { userService } from "../../ioc";
 
 // Attention!!! This test suite should be skipped. It's only used as preparation for E2E tests
 jest.setTimeout(50000);

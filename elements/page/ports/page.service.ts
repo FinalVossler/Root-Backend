@@ -3,7 +3,7 @@ import {
   IPageUpdateCommand,
   PermissionEnum,
 } from "roottypes";
-import mongoose from "mongoose";
+
 import IPage from "./interfaces/IPage";
 import IPageService from "./interfaces/IPageService";
 import IRoleService from "../../role/ports/interfaces/IRoleService";
@@ -50,9 +50,7 @@ const createPageService = (
       user: currentUser,
       permission: PermissionEnum.DeletePage,
     });
-    await pageRepository.deleteByIds(
-      ids.map((id) => new mongoose.Types.ObjectId(id))
-    );
+    await pageRepository.deleteByIds(ids);
   },
 });
 

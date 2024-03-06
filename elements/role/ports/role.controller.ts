@@ -1,8 +1,3 @@
-import { Response } from "express";
-
-import IConnectedRequest from "../../../globalTypes/IConnectedRequest";
-import IPaginationResponse from "../../../globalTypes/IPaginationResponse";
-import IResponseDto from "../../../globalTypes/IResponseDto";
 import {
   IRoleCreateCommand,
   IRoleReadDto,
@@ -10,74 +5,69 @@ import {
   IRolesGetCommand,
   IRolesSearchCommand,
 } from "roottypes";
+
+import IRequest from "../../../globalTypes/IRequest";
 import { roleToReadDto } from "./role.toReadDto";
 import IRole from "./interfaces/IRole";
 import IRoleService from "./interfaces/IRoleService";
+import IRoleController from "./interfaces/IRoleController";
+import IUser from "../../user/ports/interfaces/IUser";
 
-const createRoleController = (roleService: IRoleService) => ({
-  createRole: async (
-    req: IConnectedRequest<any, any, IRoleCreateCommand, any>,
-    res: Response<IResponseDto<IRoleReadDto>>
-  ) => {
-    const field: IRole = await roleService.createRole(req.body, req.user);
+const createRoleController = (roleService: IRoleService): IRoleController => ({
+  createRole: async (req: IRequest<IRoleCreateCommand>, currentUser: IUser) => {
+    const field: IRole = await roleService.createRole(req.body, currentUser);
 
-    return res.status(200).send({
+    return {
       success: true,
       data: roleToReadDto(field) as IRoleReadDto,
-    });
+    };
   },
-  updateRole: async (
-    req: IConnectedRequest<any, any, IRoleUpdateCommand, any>,
-    res: Response<IResponseDto<IRoleReadDto>>
-  ) => {
-    const role: IRole = await roleService.updateRole(req.body, req.user);
+  updateRole: async (req: IRequest<IRoleUpdateCommand>, currentUser: IUser) => {
+    const role: IRole = await roleService.updateRole(req.body, currentUser);
 
-    return res.status(200).send({
+    return {
       success: true,
       data: roleToReadDto(role) as IRoleReadDto,
-    });
+    };
   },
-  getRoles: async (
-    req: IConnectedRequest<any, any, IRolesGetCommand, any>,
-    res: Response<IResponseDto<IPaginationResponse<IRoleReadDto>>>
-  ) => {
+  getRoles: async (req: IRequest<IRolesGetCommand>, currentUser: IUser) => {
     const command: IRolesGetCommand = req.body;
-    const { roles, total } = await roleService.getRoles(command, req.user);
+    const { roles, total } = await roleService.getRoles(command, currentUser);
 
-    return res.status(200).send({
+    return {
       success: true,
       data: {
         data: roles.map((p) => roleToReadDto(p) as IRoleReadDto),
         total,
       },
-    });
+    };
   },
-  deleteRoles: async (
-    req: IConnectedRequest<any, any, string[], any>,
-    res: Response<IResponseDto<void>>
-  ) => {
-    await roleService.deleteRoles(req.body, req.user);
+  deleteRoles: async (req: IRequest<string[]>, currentUser: IUser) => {
+    await roleService.deleteRoles(req.body, currentUser);
 
-    return res.status(200).send({
+    return {
       success: true,
       data: null,
-    });
+    };
   },
   searchRoles: async (
-    req: IConnectedRequest<any, any, IRolesSearchCommand, any>,
-    res: Response<IResponseDto<IPaginationResponse<IRoleReadDto>>>
+    req: IRequest<IRolesSearchCommand>,
+    currentUser: IUser
   ) => {
     const command: IRolesSearchCommand = req.body;
 
-    const { roles, total } = await roleService.searchRoles(command, req.user);
+    const { roles, total } = await roleService.searchRoles(
+      command,
+      currentUser
+    );
 
-    return res.status(200).send({
+    return {
       success: true,
       data: {
         data: roles.map((p) => roleToReadDto(p) as IRoleReadDto),
         total,
       },
-    });
+    };
   },
 });
 

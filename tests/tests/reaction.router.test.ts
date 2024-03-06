@@ -1,18 +1,11 @@
 import request from "supertest";
 
-import Message, {
-  IPopulatedMessage,
-} from "../../elements/message/adapters/message.mongoose.model";
-import { IUser } from "../../elements/user/adapters/user.mongoose.model";
+import Message from "../../elements/message/adapters/message.mongoose.model";
 import userMongooseRepository from "../../elements/user/adapters/user.mongoose.repository";
 import { adminUser } from "../fixtures";
 import messageRepository from "../../elements/message/adapters/message.mongoose.repository";
-import Reaction, {
-  IReaction,
-  ReactionEnum,
-} from "../../elements/reaction/adapters/reaction.mongoose.model";
+import Reaction from "../../elements/reaction/adapters/reaction.mongoose.model";
 import app from "../../server";
-import userService from "../../elements/user/ports/user.service";
 import IResponseDto from "../../globalTypes/IResponseDto";
 import reactionMongooseRepository from "../../elements/reaction/adapters/reaction.mongoose.repository";
 import mongoose from "mongoose";
@@ -22,8 +15,13 @@ import {
   IReactionReadDto,
   IUserCreateCommand,
   IUserReadDto,
+  ReactionEnum,
   SuperRoleEnum,
 } from "roottypes";
+import IUser from "../../elements/user/ports/interfaces/IUser";
+import IPopulatedMessage from "../../elements/message/ports/interfaces/IPopulatedMessage";
+import IReaction from "../../elements/reaction/ports/interfaces/IReaction";
+import { userService } from "../../ioc";
 
 jest.setTimeout(50000);
 describe("reactions", () => {

@@ -1,14 +1,11 @@
 import { IModelStateReadDto } from "roottypes";
-import { IModelState } from "./modelState.model";
-import mongoose from "mongoose";
+
+import IModelState from "./interfaces/IModelState";
 
 export const modelStateToReadDto = (
   modelState: IModelState | string
 ): IModelStateReadDto | string => {
-  if (
-    typeof modelState === "string" ||
-    mongoose.Types.ObjectId.isValid(modelState.toString())
-  ) {
+  if (typeof modelState === "string" || !modelState["_id"]) {
     return modelState.toString();
   }
   return {

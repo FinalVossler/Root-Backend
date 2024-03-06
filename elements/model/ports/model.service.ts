@@ -6,24 +6,26 @@ import {
   PermissionEnum,
   StaticPermissionEnum,
 } from "roottypes";
+
 import IModelService from "./interfaces/IModelService";
 import IModel from "./interfaces/IModel";
 import IUser from "../../user/ports/interfaces/IUser";
 import IRoleService from "../../role/ports/interfaces/IRoleService";
 import IRole from "../../role/ports/interfaces/IRole";
 import IModelRepository from "./interfaces/IModelRepository";
-import Entity from "../../entity/adapters/entity.mongoose.model";
-import { Model } from "mongoose";
 import IEntityPermissionService from "../../entityPermission/ports/interfaces/IEntityPermissionService";
 import IEntityPermission from "../../entityPermission/ports/interfaces/IEntityPermission";
-import entityPermissionMongooseRepository from "../../entityPermission/adapters/entityPermission.mongoose.repository";
-import modelStateRepository from "../../modelState/modelState.repository";
-import { populationOptions } from "../adapters/model.mongoose.repository";
+import IEntityPermissionRepository from "../../entityPermission/ports/interfaces/IEntityPermissionRepository";
+import IModelStateRepository from "../../modelState/ports/interfaces/IModelStateRepository";
+import IEntityRepository from "../../entity/ports/interfaces/IEntityRepository";
 
 const createModelService = (
   roleService: IRoleService,
   modelRepository: IModelRepository,
-  entityPermissionService: IEntityPermissionService
+  entityPermissionService: IEntityPermissionService,
+  entityPermissionRepository: IEntityPermissionRepository,
+  modelStateRepository: IModelStateRepository,
+  entityRepository: IEntityRepository
 ): IModelService => ({
   createModel: async (
     command: IModelCreateCommand,
@@ -107,13 +109,13 @@ const createModelService = (
     });
 
     for (let i = 0; i < modelsIds.length; i++) {
-      const model: IModel | undefined = (await Model.findById(
+      const model: IModel | undefined = await modelRepository.getById(
         modelsIds[i]
-      ).populate(populationOptions)) as IModel;
+      );
 
       if (model) {
         // Deleting the entities created based on the deleted model
-        await Entity.deleteMany({ model: model._id });
+        await entityRepository.deleteByModel(model._id);
 
         // Deleting the entities permissions using the deleted model
         const modelEntityPermissions: IEntityPermission[] =
@@ -121,7 +123,7 @@ const createModelService = (
             model._id.toString()
           );
 
-        await entityPermissionMongooseRepository.deleteByIds(
+        await entityPermissionRepository.deleteByIds(
           modelEntityPermissions.map((ep) => ep._id.toString())
         );
 

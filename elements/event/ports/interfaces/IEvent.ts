@@ -1,5 +1,6 @@
 import { EventTriggerEnum, EventTypeEnum } from "roottypes";
-import { IMicroFrontend } from "../../../microFontend/adapters/microFrontend.mongoose.model";
+
+import IMicroFrontend from "../../../microFontend/ports/interfaces/IMicroFrontend";
 
 export interface IEvent {
   eventTrigger: EventTriggerEnum;

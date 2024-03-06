@@ -11,8 +11,8 @@ import {
   IUsersGetCommand,
   IUsersSearchCommand,
 } from "roottypes";
-import IUser from "./IUser";
-import { IUserWithLastReadMessageInConversation } from "../../adapters/user.mongoose.model";
+
+import IUser, { IUserWithLastReadMessageInConversation } from "./IUser";
 
 export default interface IUserService {
   generatePasswordHash: (password: string) => Promise<string>;

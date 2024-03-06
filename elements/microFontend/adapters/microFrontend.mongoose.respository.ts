@@ -1,8 +1,7 @@
 import mongoose from "mongoose";
 
 import MicroFrontend from "./microFrontend.mongoose.model";
-import { IMicroFrontendComponent } from "../../microFontendComponent/microFrontendComponent.model";
-import microFrontendComponentRepository from "../../microFontendComponent/microFrontendComponent.respository";
+import microFrontendComponentMongooseRepository from "../../microFontendComponent/adapters/microFrontendComponent.respository";
 import {
   IMicroFrontendComponentCreateCommand,
   IMicroFrontendComponentUpdateCommand,
@@ -12,8 +11,9 @@ import {
   IMicroFrontendsSearchCommand,
 } from "roottypes";
 import IMicroFrontend from "../ports/interfaces/IMicroFrontend";
+import IMicroFrontendComponent from "../../microFontendComponent/ports/interfaces/IMicroFrontendComponent";
 
-const microFrontendRepository = {
+const microFrontendMongooseRepository = {
   createMicroFrontendComponents: async (
     commands: IMicroFrontendComponentCreateCommand[]
   ): Promise<IMicroFrontendComponent[]> => {
@@ -22,7 +22,7 @@ const microFrontendRepository = {
       createComponentsPromises.push(
         new Promise<IMicroFrontendComponent>(async (resolve) => {
           const microFrontendComponent: IMicroFrontendComponent =
-            await microFrontendComponentRepository.create(command);
+            await microFrontendComponentMongooseRepository.create(command);
 
           resolve(microFrontendComponent);
         })
@@ -42,7 +42,7 @@ const microFrontendRepository = {
       createComponentsPromises.push(
         new Promise<IMicroFrontendComponent>(async (resolve) => {
           const microFrontendComponent: IMicroFrontendComponent =
-            await microFrontendComponentRepository.update(command);
+            await microFrontendComponentMongooseRepository.update(command);
 
           resolve(microFrontendComponent);
         })
@@ -58,7 +58,7 @@ const microFrontendRepository = {
     command: IMicroFrontendCreateCommand
   ): Promise<IMicroFrontend> => {
     const createdMicroFrontendsComponents: IMicroFrontendComponent[] =
-      await microFrontendRepository.createMicroFrontendComponents(
+      await microFrontendMongooseRepository.createMicroFrontendComponents(
         command.components
       );
 
@@ -74,18 +74,18 @@ const microFrontendRepository = {
     command: IMicroFrontendUpdateCommand
   ): Promise<IMicroFrontend> => {
     const oldMicroFrontend: IMicroFrontend =
-      await microFrontendRepository.getById(command._id);
+      await microFrontendMongooseRepository.getById(command._id);
 
     if (!oldMicroFrontend) {
       throw new Error("Micro-Frontend not found");
     }
 
     const createdMicroFrontendsComponents: IMicroFrontendComponent[] =
-      await microFrontendRepository.createMicroFrontendComponents(
+      await microFrontendMongooseRepository.createMicroFrontendComponents(
         command.components.filter((el) => !Boolean(el._id))
       );
 
-    await microFrontendRepository.updatMicroFrontendComponents(
+    await microFrontendMongooseRepository.updatMicroFrontendComponents(
       command.components
         .filter((el) => Boolean(el._id))
         .map((el) => {
@@ -109,8 +109,8 @@ const microFrontendRepository = {
       )
       .map((el) => el._id.toString());
 
-    await microFrontendComponentRepository.delete(
-      componentsToDeleteIds.map((el) => new mongoose.Types.ObjectId(el))
+    await microFrontendComponentMongooseRepository.delete(
+      componentsToDeleteIds
     );
 
     await MicroFrontend.updateOne(
@@ -132,7 +132,7 @@ const microFrontendRepository = {
     );
 
     const newMicroFrontend: IMicroFrontend =
-      await microFrontendRepository.getById(command._id);
+      await microFrontendMongooseRepository.getById(command._id);
 
     return newMicroFrontend;
   },
@@ -204,4 +204,4 @@ const populationOptions = {
   model: "microFrontendComponent",
 };
 
-export default microFrontendRepository;
+export default microFrontendMongooseRepository;

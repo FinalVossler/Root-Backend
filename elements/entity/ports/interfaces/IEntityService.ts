@@ -6,9 +6,10 @@ import {
   IEntityFieldValueCommand,
   IEntityUpdateCommand,
 } from "roottypes";
-import { IModelField } from "../../../model/adapters/model.mongoose.model";
+
 import IUser from "../../../user/ports/interfaces/IUser";
 import IEntity from "./IEntity";
+import { IModelField } from "../../../model/ports/interfaces/IModel";
 
 interface IEntityService {
   verifyRequiredFields: (

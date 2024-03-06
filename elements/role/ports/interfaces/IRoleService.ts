@@ -6,6 +6,7 @@ import {
   PermissionEnum,
   StaticPermissionEnum,
 } from "roottypes";
+
 import IRole from "./IRole";
 import IUser from "../../../user/ports/interfaces/IUser";
 

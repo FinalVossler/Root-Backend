@@ -1,9 +1,9 @@
-import { socketEmit } from "../../socket/ports/socket.service";
 import {
   ChatMessagesEnum,
   IReactionCreateCommand,
   IReactionReadDto,
 } from "roottypes";
+
 import { reactionToReadDto } from "./reaction.toReadDto";
 import { messageToReadDto } from "../../message/ports/message.toReadDto";
 import IReactionService from "./interfaces/IReactionService";
@@ -12,10 +12,12 @@ import IReactionRepository from "./interfaces/IReactionRepository";
 import IUser from "../../user/ports/interfaces/IUser";
 import IMessage from "../../message/ports/interfaces/IMessage";
 import IReaction from "./interfaces/IReaction";
+import ISocketService from "../../socket/ports/interfaces/ISocketService";
 
 const createReactionService = (
   reactionRepository: IReactionRepository,
-  messageService: IMessageService
+  messageService: IMessageService,
+  socketService: ISocketService
 ): IReactionService => ({
   create: async (
     command: IReactionCreateCommand,
@@ -28,7 +30,7 @@ const createReactionService = (
 
     const message: IMessage = await messageService.getById(command.messageId);
 
-    socketEmit({
+    socketService.socketEmit({
       messageType: ChatMessagesEnum.ReaceiveReaction,
       object: {
         message: messageToReadDto(message),

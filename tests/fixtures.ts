@@ -1,11 +1,11 @@
-import { IField } from "../elements/field/ports/interfaces/IField";
-import { IUser } from "../elements/user/adapters/user.mongoose.model";
 import {
   FieldTypeEnum,
   IModelCreateCommand,
   ModelStateTypeEnum,
   SuperRoleEnum,
 } from "roottypes";
+import { IField } from "../elements/field/ports/interfaces/IField";
+import IUser from "../elements/user/ports/interfaces/IUser";
 
 export const adminUser: IUser = {
   firstName: "Hamza",

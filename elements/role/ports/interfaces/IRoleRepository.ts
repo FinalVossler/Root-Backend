@@ -6,6 +6,7 @@ import {
   IRolesGetCommand,
   IRolesSearchCommand,
 } from "roottypes";
+
 import IRole from "./IRole";
 import IEntityPermission from "../../../entityPermission/ports/interfaces/IEntityPermission";
 

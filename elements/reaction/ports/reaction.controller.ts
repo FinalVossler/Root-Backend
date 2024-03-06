@@ -1,6 +1,5 @@
-import { Response } from "express";
-
 import { IReactionCreateCommand, IReactionReadDto } from "roottypes";
+
 import { reactionToReadDto } from "./reaction.toReadDto";
 import IReactionController from "./interfaces/IReactionController";
 import IReactionService from "./interfaces/IReactionService";

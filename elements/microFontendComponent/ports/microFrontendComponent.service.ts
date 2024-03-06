@@ -1,13 +1,14 @@
-import mongoose from "mongoose";
-
-import { IMicroFrontendComponent } from "./microFrontendComponent.model";
-import microFrontendComponentRepository from "./microFrontendComponent.respository";
 import {
   IMicroFrontendComponentCreateCommand,
   IMicroFrontendUpdateCommand,
 } from "roottypes";
 
-const microFrontendComponentService = {
+import IMicroFrontendComponent from "./interfaces/IMicroFrontendComponent";
+import IMicroFrontendComponentRepository from "./interfaces/IMicroFrontendComponentRepository";
+
+const createMicroFrontendComponentService = (
+  microFrontendComponentRepository: IMicroFrontendComponentRepository
+) => ({
   create: async (
     command: IMicroFrontendComponentCreateCommand
   ): Promise<IMicroFrontendComponent> => {
@@ -24,11 +25,9 @@ const microFrontendComponentService = {
 
     return microFrontendComponent;
   },
-  delete: async (
-    microFrontendsIds: mongoose.Types.ObjectId[]
-  ): Promise<void> => {
+  delete: async (microFrontendsIds: string[]): Promise<void> => {
     await microFrontendComponentRepository.delete(microFrontendsIds);
   },
-};
+});
 
-export default microFrontendComponentService;
+export default createMicroFrontendComponentService;

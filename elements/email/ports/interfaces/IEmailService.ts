@@ -1,4 +1,5 @@
 import { IEmailSendCommand } from "roottypes";
+
 import IUser from "../../../user/ports/interfaces/IUser";
 
 interface IEmailService {

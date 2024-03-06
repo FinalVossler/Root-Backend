@@ -1,4 +1,4 @@
-import { IMicroFrontendComponent } from "../../../microFontendComponent/microFrontendComponent.model";
+import IMicroFrontendComponent from "../../../microFontendComponent/ports/interfaces/IMicroFrontendComponent";
 
 export default interface IMicroFrontend {
   _id: string;

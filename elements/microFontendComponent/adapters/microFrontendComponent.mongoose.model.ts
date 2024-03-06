@@ -1,12 +1,6 @@
 import mongoose from "mongoose";
 
-export interface IMicroFrontendComponent {
-  _id: mongoose.Types.ObjectId;
-  name: string;
-
-  createdAt: string;
-  updatedAt: string;
-}
+import IMicroFrontendComponent from "../ports/interfaces/IMicroFrontendComponent";
 
 interface IMicroFrontendComponentModel
   extends mongoose.Model<IMicroFrontendComponent> {}

@@ -1,21 +1,5 @@
-import Field from "../../field/adapters/field.mongoose.model";
-import Message from "../../message/adapters/message.mongoose.model";
-import Page from "../../page/adapters/page.mongoose.model";
-import Post from "../../post/adapters/post.mongoose.model";
-import EntityEventNotification from "../../entityEventNotification/adapters/entityEventNotification.mongoose.model";
-import EntityPermission from "../../entityPermission/adapters/entityPermission.mongoose.model";
-import FieldTableElement from "../../fieldTableElement/adapters/fieldTableElement.mongoose.model";
-import Model from "../../model/adapters/model.mongoose.model";
-import ModelState from "../../modelState/modelState.model";
-import Notification from "../../notification/adapters/notification.mongoose.model";
-import Reaction from "../../reaction/adapters/reaction.mongoose.model";
-import Socket from "../../socket/adapters/socket.mongoose.model";
-import fileRepository from "../../file/adapters/file.mongoose.repository";
-import MicroFrontend from "../../microFontend/adapters/microFrontend.mongoose.model";
-import microFrontendRepository from "../../microFontend/adapters/microFrontend.mongoose.respository";
-import modelRepository from "../../model/adapters/model.mongoose.repository";
-import { adminUser } from "../../../tests/fixtures";
-import roleRepository from "../../role/adapters/role.mongoose.repository";
+import { faker } from "@faker-js/faker";
+
 import {
   EntityEventNotificationTriggerEnum,
   EventTriggerEnum,
@@ -33,24 +17,43 @@ import {
   PermissionEnum,
   StaticPermissionEnum,
 } from "roottypes";
-import { IMicroFrontendComponent } from "../../microFontendComponent/microFrontendComponent.model";
-import { faker } from "@faker-js/faker";
-import entityRepository from "../../entity/adapters/entity.mongoose.repository";
-import { IField } from "../../field/ports/interfaces/IField";
-import IUser from "../../user/ports/interfaces/IUser";
-import fieldMongooseRepository from "../../field/adapters/field.mongoose.repository";
+
+import Field from "../../field/adapters/field.mongoose.model";
+import Message from "../../message/adapters/message.mongoose.model";
+import Page from "../../page/adapters/page.mongoose.model";
+import Post from "../../post/adapters/post.mongoose.model";
+import EntityEventNotification from "../../entityEventNotification/adapters/entityEventNotification.mongoose.model";
+import EntityPermission from "../../entityPermission/adapters/entityPermission.mongoose.model";
+import FieldTableElement from "../../fieldTableElement/adapters/fieldTableElement.mongoose.model";
+import Model from "../../model/adapters/model.mongoose.model";
+import ModelState from "../../modelState/adapters/modelState.mongoose.model";
+import Notification from "../../notification/adapters/notification.mongoose.model";
+import Reaction from "../../reaction/adapters/reaction.mongoose.model";
+import Socket from "../../socket/adapters/socket.mongoose.model";
+import MicroFrontend from "../../microFontend/adapters/microFrontend.mongoose.model";
 import User from "../../user/adapters/user.mongoose.model";
 import Role from "../../role/adapters/role.mongoose.model";
 import Entity from "../../entity/adapters/entity.mongoose.model";
+import File from "../../file/adapters/file.mongoose.model";
+
+import microFrontendMongooseRepository from "../../microFontend/adapters/microFrontend.mongoose.respository";
+import modelRepository from "../../model/adapters/model.mongoose.repository";
+import { adminUser } from "../../../tests/fixtures";
+import roleRepository from "../../role/adapters/role.mongoose.repository";
+import fileRepository from "../../file/adapters/file.mongoose.repository";
+import entityRepository from "../../entity/adapters/entity.mongoose.repository";
+
+import { IField } from "../../field/ports/interfaces/IField";
+import IUser from "../../user/ports/interfaces/IUser";
 import IModel from "../../model/ports/interfaces/IModel";
 import IRole from "../../role/ports/interfaces/IRole";
 import IEntity from "../../entity/ports/interfaces/IEntity";
 import ITestsPreparationService from "./interfaces/ITestsPreparationService";
-import File from "../../file/adapters/file.mongoose.model";
 import IMicroFrontend from "../../microFontend/ports/interfaces/IMicroFrontend";
 import IFile from "../../file/ports/interfaces/IFile";
 import IFieldTableElement from "../../fieldTableElement/ports/IFieldTableElement";
 import IFieldRepository from "../../field/ports/interfaces/IFieldRepository";
+import IMicroFrontendComponent from "../../microFontendComponent/ports/interfaces/IMicroFrontendComponent";
 
 const createTestsPreparationService = (
   fieldRepository: IFieldRepository
@@ -137,7 +140,7 @@ const createTestsPreparationService = (
         kpisCommand,
         pestelCommand,
       ].map((command) => {
-        return microFrontendRepository.create(command);
+        return microFrontendMongooseRepository.create(command);
       });
 
       const result = await Promise.all(promises);

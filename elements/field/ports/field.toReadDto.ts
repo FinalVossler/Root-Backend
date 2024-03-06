@@ -4,9 +4,10 @@ import {
   IFieldReadDto,
   IFieldTableElementReadDto,
 } from "roottypes";
+
 import { eventToReadDto } from "../../event/ports/event.toReadDto";
-import { IFieldTableElement } from "../../fieldTableElement/adapters/fieldTableElement.mongoose.model";
 import { IField, IFieldOption } from "./interfaces/IField";
+import IFieldTableElement from "../../fieldTableElement/ports/IFieldTableElement";
 
 export const fieldToReadDto = (
   field: IField | string

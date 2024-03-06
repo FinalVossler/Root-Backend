@@ -1,9 +1,12 @@
-import mongoose, { models } from "mongoose";
-import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
-import ModelState, { IModelState } from "./modelState.model";
-import { IModelStateCreateCommand, IModelStateUpdateCommand } from "roottypes";
+import mongoose from "mongoose";
 
-const modelStateRepository = {
+import getNewTranslatedTextsForUpdate from "../../../utils/getNewTranslatedTextsForUpdate";
+import ModelState from "./modelState.mongoose.model";
+import { IModelStateCreateCommand, IModelStateUpdateCommand } from "roottypes";
+import IModelState from "../ports/interfaces/IModelState";
+import IModelStateRepository from "../ports/interfaces/IModelStateRepository";
+
+const modelStateMongooseRepository: IModelStateRepository = {
   createOne: async (
     command: IModelStateCreateCommand
   ): Promise<IModelState> => {
@@ -54,9 +57,8 @@ const modelStateRepository = {
   ): Promise<IModelState[]> => {
     const promises: Promise<IModelState>[] = commands.map((command) => {
       return new Promise<IModelState>(async (resolve, reject) => {
-        const modelState: IModelState = await modelStateRepository.createOne(
-          command
-        );
+        const modelState: IModelState =
+          await modelStateMongooseRepository.createOne(command);
         resolve(modelState);
       });
     });
@@ -68,17 +70,17 @@ const modelStateRepository = {
     const promises: Promise<IModelState>[] = commands.map((command) => {
       return new Promise<IModelState>(async (resolve, reject) => {
         if (command._id) {
-          const modelState: IModelState = await modelStateRepository.updateOne(
-            command
-          );
+          const modelState: IModelState =
+            await modelStateMongooseRepository.updateOne(command);
           resolve(modelState);
         } else {
-          const modelState: IModelState = await modelStateRepository.createOne({
-            language: command.language,
-            name: command.name,
-            stateType: command.stateType,
-            exclusive: command.exclusive,
-          });
+          const modelState: IModelState =
+            await modelStateMongooseRepository.createOne({
+              language: command.language,
+              name: command.name,
+              stateType: command.stateType,
+              exclusive: command.exclusive,
+            });
           resolve(modelState);
         }
       });
@@ -94,4 +96,4 @@ const modelStateRepository = {
   },
 };
 
-export default modelStateRepository;
+export default modelStateMongooseRepository;

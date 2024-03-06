@@ -8,6 +8,7 @@ import {
   IUsersGetCommand,
   IUsersSearchCommand,
 } from "roottypes";
+
 import IUser from "./IUser";
 
 export default interface IUserRepository {

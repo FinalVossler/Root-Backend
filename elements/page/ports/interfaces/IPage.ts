@@ -1,5 +1,6 @@
 import { ITranslatedText } from "roottypes";
-import { IPost } from "../../../post/adapters/post.mongoose.model";
+
+import IPost from "../../../post/ports/interfaces/IPost";
 
 export default interface IPage {
   _id: string;

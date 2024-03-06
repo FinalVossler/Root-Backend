@@ -1,4 +1,5 @@
 import { EntityEventNotificationTriggerEnum } from "roottypes";
+
 import IEntity from "../../../entity/ports/interfaces/IEntity";
 import IUser from "../../../user/ports/interfaces/IUser";
 

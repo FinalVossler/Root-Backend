@@ -1,4 +1,3 @@
-import { IUserWithLastReadMessageInConversation } from "../adapters/user.mongoose.model";
 import {
   IChatGetContactsCommand,
   IFileCommand,
@@ -14,12 +13,15 @@ import {
   IUsersSearchCommand,
   SuperRoleEnum,
 } from "roottypes";
+
 import {
   userToReadDto,
   userToReadDtoWithLastReadMessageInConversation,
 } from "./user.toReadDto";
 import IUserService from "./interfaces/IUserService";
-import IUser from "./interfaces/IUser";
+import IUser, {
+  IUserWithLastReadMessageInConversation,
+} from "./interfaces/IUser";
 import IUserController from "./interfaces/IUserController";
 import IRequest from "../../../globalTypes/IRequest";
 import IFile from "../../file/ports/interfaces/IFile";

@@ -12,11 +12,12 @@ import {
   IUsersGetCommand,
   IUsersSearchCommand,
 } from "roottypes";
+
 import IResponseDto from "../../../../globalTypes/IResponseDto";
 import IRequest from "../../../../globalTypes/IRequest";
 import IPaginationResponse from "../../../../globalTypes/IPaginationResponse";
 import IUser from "./IUser";
-import { IFile } from "../../../file/adapters/file.mongoose.model";
+import IFile from "../../../file/ports/interfaces/IFile";
 
 type IUserController = {
   getChatContacts: (

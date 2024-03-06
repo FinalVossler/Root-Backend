@@ -1,7 +1,5 @@
 import request from "supertest";
-import { IEntity } from "../../elements/entity/adapters/entity.mongoose.model";
 import entityRepository from "../../elements/entity/adapters/entity.mongoose.repository";
-import { IModel } from "../../elements/model/adapters/model.mongoose.model";
 import modelRepository from "../../elements/model/adapters/model.mongoose.repository";
 import {
   createCreateFieldCommand,
@@ -10,8 +8,6 @@ import {
 } from "../fixtures";
 import app from "../../server";
 import IResponseDto from "../../globalTypes/IResponseDto";
-import userService from "../../elements/user/ports/user.service";
-import { IUser } from "../../elements/user/adapters/user.mongoose.model";
 import userMongooseRepository from "../../elements/user/adapters/user.mongoose.repository";
 import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import {
@@ -28,6 +24,11 @@ import {
   SuperRoleEnum,
 } from "roottypes";
 import { IField } from "../../elements/field/ports/interfaces/IField";
+import { userService } from "../../ioc";
+import IModel from "../../elements/model/ports/interfaces/IModel";
+import IEntity from "../../elements/entity/ports/interfaces/IEntity";
+import IUser from "../../elements/user/ports/interfaces/IUser";
+import fieldMongooseRepository from "../../elements/field/adapters/field.mongoose.repository";
 
 jest.setTimeout(100000);
 describe("Entities", () => {
@@ -59,8 +60,12 @@ describe("Entities", () => {
   beforeAll(async () => {
     const promises: Promise<IField>[] = [];
     promises.push(
-      fieldRepository.create(createCreateFieldCommand("Entity test Field1")),
-      fieldRepository.create(createCreateFieldCommand("Entity test Field2"))
+      fieldMongooseRepository.create(
+        createCreateFieldCommand("Entity test Field1")
+      ),
+      fieldMongooseRepository.create(
+        createCreateFieldCommand("Entity test Field2")
+      )
     );
 
     const res = await Promise.all(promises);
@@ -182,10 +187,14 @@ describe("Entities", () => {
       );
     }
     if (field1) {
-      promises.push(fieldRepository.deleteFields([field1._id.toString()]));
+      promises.push(
+        fieldMongooseRepository.deleteFields([field1._id.toString()])
+      );
     }
     if (field2) {
-      promises.push(fieldRepository.deleteFields([field2._id.toString()]));
+      promises.push(
+        fieldMongooseRepository.deleteFields([field2._id.toString()])
+      );
     }
     if (createdEntity) {
       promises.push(

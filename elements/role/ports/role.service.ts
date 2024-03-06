@@ -7,6 +7,7 @@ import {
   StaticPermissionEnum,
   SuperRoleEnum,
 } from "roottypes";
+
 import IRole from "./interfaces/IRole";
 import IRoleService from "./interfaces/IRoleService";
 import IRoleRepository from "./interfaces/IRoleRepository";

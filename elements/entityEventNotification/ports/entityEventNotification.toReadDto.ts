@@ -1,4 +1,5 @@
 import { IEntityEventNotificationReadDto } from "roottypes";
+
 import IEntityEventNotification from "./interfaces/IEntityEventNotification";
 
 export const entityEventNotificationToReadDto = (

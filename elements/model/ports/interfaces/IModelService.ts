@@ -1,11 +1,12 @@
-import IUser from "../../../user/ports/interfaces/IUser";
-import IModel from "./IModel";
 import {
   IModelCreateCommand,
   IModelUpdateCommand,
   IModelsGetCommand,
   IModelsSearchCommand,
 } from "roottypes";
+
+import IUser from "../../../user/ports/interfaces/IUser";
+import IModel from "./IModel";
 
 interface IModelService {
   createModel: (

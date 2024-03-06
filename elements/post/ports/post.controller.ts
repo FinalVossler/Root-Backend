@@ -5,6 +5,7 @@ import {
   IPostsGetCommand,
   IPostsSearchCommand,
 } from "roottypes";
+
 import { postToReadDto } from "./post.toReadDto";
 import IPost from "./interfaces/IPost";
 import IUser from "../../user/ports/interfaces/IUser";

@@ -1,4 +1,5 @@
 import { INotificationsGetCommand } from "roottypes";
+
 import { notificationToReadDto } from "./notification.toReadDto";
 import INotificationService from "./interfaces/INotificationService";
 import INotificationController from "./interfaces/INotificationController";

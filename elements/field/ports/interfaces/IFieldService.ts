@@ -4,8 +4,9 @@ import {
   IFieldsGetCommand,
   IFieldsSearchCommand,
 } from "roottypes";
+
 import { IField } from "./IField";
-import { IUser } from "../../../user/adapters/user.mongoose.model";
+import IUser from "../../../user/ports/interfaces/IUser";
 
 export default interface IFieldService {
   createField: (

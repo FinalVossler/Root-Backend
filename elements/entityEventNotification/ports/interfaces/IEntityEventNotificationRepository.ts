@@ -2,6 +2,7 @@ import {
   IEntityEventNotificationCreateCommand,
   IEntityEventNotificationUpdateCommand,
 } from "roottypes";
+
 import IEntityEventNotification from "./IEntityEventNotification";
 
 interface IEntityEventNotificatonRepository {

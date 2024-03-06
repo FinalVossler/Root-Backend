@@ -1,20 +1,22 @@
 import { IWebsiteConfigurationUpdateCommand } from "roottypes";
 
-import websiteConfigurationMongooseRepository from "../adapters/websiteConfiguration.mongoose.repository";
 import IWebsiteConfiguration from "./interfaces/IWebsiteConfiguration";
 import IWebsiteConfigurationService from "./interfaces/IWebsiteConfigurationService";
+import IWebsiteConfigurationRepository from "./interfaces/IWebsiteConfigurationRepository";
 
-const createWebsiteConfigurationService = (): IWebsiteConfigurationService => ({
+const createWebsiteConfigurationService = (
+  websiteConfigurationRepository: IWebsiteConfigurationRepository
+): IWebsiteConfigurationService => ({
   update: async (
     command: IWebsiteConfigurationUpdateCommand
   ): Promise<IWebsiteConfiguration> => {
     const configuration: IWebsiteConfiguration =
-      await websiteConfigurationMongooseRepository.update(command);
+      await websiteConfigurationRepository.update(command);
 
     return configuration;
   },
   get: async (): Promise<IWebsiteConfiguration> => {
-    return await websiteConfigurationMongooseRepository.get();
+    return await websiteConfigurationRepository.get();
   },
 });
 

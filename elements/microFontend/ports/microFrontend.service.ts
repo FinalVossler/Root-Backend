@@ -1,4 +1,3 @@
-import microFrontendRepository from "../adapters/microFrontend.mongoose.respository";
 import {
   IMicroFrontendCreateCommand,
   IMicroFrontendUpdateCommand,
@@ -6,13 +5,16 @@ import {
   IMicroFrontendsSearchCommand,
   PermissionEnum,
 } from "roottypes";
+
 import IMicroFrontend from "./interfaces/IMicroFrontend";
 import IMicroFrontendService from "./interfaces/IMicroFrontendService";
 import IUser from "../../user/ports/interfaces/IUser";
 import IRoleService from "../../role/ports/interfaces/IRoleService";
+import IMicroFrontendRepository from "./interfaces/IMicroFrontendRepository";
 
 const createMicroFrontendService = (
-  roleService: IRoleService
+  roleService: IRoleService,
+  microFrontendRepository: IMicroFrontendRepository
 ): IMicroFrontendService => ({
   createMicroFrontend: async (
     command: IMicroFrontendCreateCommand,

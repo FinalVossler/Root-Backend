@@ -1,4 +1,3 @@
-import { IModelField } from "../../model/adapters/model.mongoose.model";
 import {
   EntityEventNotificationTriggerEnum,
   FieldTypeEnum,
@@ -11,13 +10,14 @@ import {
   StaticPermissionEnum,
   SuperRoleEnum,
 } from "roottypes";
+
 import { IField } from "../../field/ports/interfaces/IField";
 import IRoleService from "../../role/ports/interfaces/IRoleService";
 import IEntityRepository from "./interfaces/IEntityRepository";
 import IModelService from "../../model/ports/interfaces/IModelService";
 import IUserService from "../../user/ports/interfaces/IUserService";
 import IUser from "../../user/ports/interfaces/IUser";
-import IModel from "../../model/ports/interfaces/IModel";
+import IModel, { IModelField } from "../../model/ports/interfaces/IModel";
 import IRole from "../../role/ports/interfaces/IRole";
 import IEntity from "./interfaces/IEntity";
 import IEntityService from "./interfaces/IEntityService";

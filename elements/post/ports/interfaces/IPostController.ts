@@ -1,7 +1,3 @@
-import { Response } from "express";
-
-import IResponseDto from "../../../../globalTypes/IResponseDto";
-import IPaginationResponse from "../../../../globalTypes/IPaginationResponse";
 import {
   IPostCreateCommand,
   IPostReadDto,
@@ -9,6 +5,9 @@ import {
   IPostsGetCommand,
   IPostsSearchCommand,
 } from "roottypes";
+
+import IResponseDto from "../../../../globalTypes/IResponseDto";
+import IPaginationResponse from "../../../../globalTypes/IPaginationResponse";
 import IRequest from "../../../../globalTypes/IRequest";
 import IUser from "../../../user/ports/interfaces/IUser";
 

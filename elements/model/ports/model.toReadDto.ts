@@ -3,14 +3,11 @@ import {
   IModelFieldReadDto,
   IModelReadDto,
 } from "roottypes";
-import {
-  IModelField,
-  IModelFieldCondition,
-} from "../adapters/model.mongoose.model";
+
 import { fieldToReadDto } from "../../field/ports/field.toReadDto";
 import { eventToReadDto } from "../../event/ports/event.toReadDto";
-import { modelStateToReadDto } from "../../modelState/modelState.toReadDto";
-import IModel from "./interfaces/IModel";
+import { modelStateToReadDto } from "../../modelState/ports/modelState.toReadDto";
+import IModel, { IModelField, IModelFieldCondition } from "./interfaces/IModel";
 
 export const modelToReadDto = (
   model: IModel | string

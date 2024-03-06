@@ -1,6 +1,5 @@
 import { IEmailSendCommand } from "roottypes";
 
-import websiteConfigurationMongooseRepository from "../../websiteConfiguration/adapters/websiteConfiguration.mongoose.repository";
 import IUser from "../../user/ports/interfaces/IUser";
 import IEmailService from "./interfaces/IEmailService";
 import {
@@ -9,13 +8,15 @@ import {
   ISendEmailService,
 } from "./interfaces/ISendEmailService";
 import IWebsiteConfiguration from "../../websiteConfiguration/ports/interfaces/IWebsiteConfiguration";
+import IWebsiteConfigurationRepository from "../../websiteConfiguration/ports/interfaces/IWebsiteConfigurationRepository";
 
 const createEmailService = (
-  createSendEmailService: ICreateSendEmailService
+  createSendEmailService: ICreateSendEmailService,
+  websiteConfigurationRepository: IWebsiteConfigurationRepository
 ): IEmailService => ({
   sendContactEmail: async function (command: IEmailSendCommand): Promise<void> {
     const conf: IWebsiteConfiguration =
-      await websiteConfigurationMongooseRepository.get();
+      await websiteConfigurationRepository.get();
 
     const content: string =
       command.firstName +
@@ -35,7 +36,7 @@ const createEmailService = (
   },
   sendChangePasswordEmail: async function (user: IUser, token: string) {
     const conf: IWebsiteConfiguration =
-      await websiteConfigurationMongooseRepository.get();
+      await websiteConfigurationRepository.get();
 
     const content: string =
       "Click the following link to change your password " +
@@ -59,7 +60,7 @@ const createEmailService = (
     text: string;
   }) {
     const conf: IWebsiteConfiguration =
-      await websiteConfigurationMongooseRepository.get();
+      await websiteConfigurationRepository.get();
 
     await this.sendWithNodeMailerAndGoogleOAuth({
       from: process.env.NODEMAILER_EMAIL || "",

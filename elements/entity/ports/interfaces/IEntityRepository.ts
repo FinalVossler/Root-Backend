@@ -6,6 +6,7 @@ import {
   IEntityFieldValueCommand,
   IEntityUpdateCommand,
 } from "roottypes";
+
 import IEntity from "./IEntity";
 
 interface IEntityRepository {
@@ -28,6 +29,7 @@ interface IEntityRepository {
   setCustomDataKeyValue: (
     command: IEntitiesSetCustomDataKeyValueCommand
   ) => Promise<void>;
+  deleteByModel: (modelId: string) => Promise<void>;
 }
 
 export default IEntityRepository;

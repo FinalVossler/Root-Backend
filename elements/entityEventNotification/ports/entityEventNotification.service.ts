@@ -3,6 +3,7 @@ import {
   INotificationCreateCommand,
   ITranslatedText,
 } from "roottypes";
+
 import IEntityEventNotificationService from "./interfaces/IEntityEventNotificationService";
 import IEntity from "../../entity/ports/interfaces/IEntity";
 import IRole from "../../role/ports/interfaces/IRole";

@@ -1,8 +1,6 @@
 import { decode, sign, verify } from "jsonwebtoken";
 import { compare, genSalt, hash } from "bcrypt";
 
-import { IUserWithLastReadMessageInConversation } from "../adapters/user.mongoose.model";
-import emailService from "../../email/ports/email.service";
 import {
   IChatGetContactsCommand,
   IUserChangePasswordCommand,
@@ -18,7 +16,10 @@ import {
   PermissionEnum,
   SuperRoleEnum,
 } from "roottypes";
-import IUser from "./interfaces/IUser";
+
+import IUser, {
+  IUserWithLastReadMessageInConversation,
+} from "./interfaces/IUser";
 import IUserService from "./interfaces/IUserService";
 import IRoleService from "../../role/ports/interfaces/IRoleService";
 import IUserRepository from "./interfaces/IUserRepository";

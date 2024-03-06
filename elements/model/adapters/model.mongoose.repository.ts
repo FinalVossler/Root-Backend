@@ -2,8 +2,7 @@ import mongoose from "mongoose";
 
 import Model from "./model.mongoose.model";
 import getNewTranslatedTextsForUpdate from "../../../utils/getNewTranslatedTextsForUpdate";
-import modelStateRepository from "../../modelState/modelState.repository";
-import { IModelState } from "../../modelState/modelState.model";
+import modelStateMongooseRepository from "../../modelState/adapters/modelState.mongoose.repository";
 import {
   IEventCommand,
   IModelCreateCommand,
@@ -14,16 +13,15 @@ import {
 import IModel, { IModelField } from "../ports/interfaces/IModel";
 import IModelRepository from "../ports/interfaces/IModelRepository";
 import { IEventRequestHeader } from "../../event/ports/interfaces/IEvent";
+import IModelState from "../../modelState/ports/interfaces/IModelState";
 
 const modelMongooseRepository: IModelRepository = {
   create: async (command: IModelCreateCommand): Promise<IModel> => {
     // create model states first:
-    const modelStates: IModelState[] = await modelStateRepository.createMany(
-      command.states
-    );
-    const modelSubstates: IModelState[] = await modelStateRepository.createMany(
-      command.subStates
-    );
+    const modelStates: IModelState[] =
+      await modelStateMongooseRepository.createMany(command.states);
+    const modelSubstates: IModelState[] =
+      await modelStateMongooseRepository.createMany(command.subStates);
 
     const model = await Model.create({
       name: [{ language: command.language, text: command.name }],
@@ -85,15 +83,15 @@ const modelMongooseRepository: IModelRepository = {
         })
         .map((el) => el._id) || [];
 
-    await modelStateRepository.deleteMany(noLongerExistingModelStatesIds);
+    await modelStateMongooseRepository.deleteMany(
+      noLongerExistingModelStatesIds
+    );
 
     // update model states first:
-    const modelStates: IModelState[] = await modelStateRepository.updateMany(
-      command.states
-    );
-    const modelSubstates: IModelState[] = await modelStateRepository.updateMany(
-      command.subStates
-    );
+    const modelStates: IModelState[] =
+      await modelStateMongooseRepository.updateMany(command.states);
+    const modelSubstates: IModelState[] =
+      await modelStateMongooseRepository.updateMany(command.subStates);
 
     await Model.updateOne(
       { _id: command._id },

@@ -1,10 +1,11 @@
-import { populatedMessageToReadDto } from "./message.toReadDto";
 import {
   ChatMessagesEnum,
   IMessageGetBetweenUsersCommand,
   IMessageGetLastConversations,
   IMessageSendCommand,
 } from "roottypes";
+
+import { populatedMessageToReadDto } from "./message.toReadDto";
 import IPopulatedMessage from "./interfaces/IPopulatedMessage";
 import IUser from "../../user/ports/interfaces/IUser";
 import IMessage from "./interfaces/IMessage";

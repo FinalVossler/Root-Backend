@@ -4,6 +4,7 @@ import {
   IModelsGetCommand,
   IModelsSearchCommand,
 } from "roottypes";
+
 import IModel, { IModelField } from "./IModel";
 
 interface IModelRepository {

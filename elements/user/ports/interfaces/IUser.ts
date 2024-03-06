@@ -1,6 +1,8 @@
 import { SuperRoleEnum } from "roottypes";
+
 import IRole from "../../../role/ports/interfaces/IRole";
-import { IFile } from "../../../file/adapters/file.mongoose.model";
+import IFile from "../../../file/ports/interfaces/IFile";
+import IMessage from "../../../message/ports/interfaces/IMessage";
 
 export default interface IUser {
   _id: string;
@@ -13,4 +15,9 @@ export default interface IUser {
   passwordChangeToken: string;
   role?: IRole | string;
   hasMessagingEmailsActivated?: boolean;
+}
+
+export interface IUserWithLastReadMessageInConversation extends IUser {
+  lastReadMessageInConversation: IMessage | null;
+  to: string[];
 }

@@ -4,6 +4,7 @@ import {
   IEntityPermissionCreateCommand,
   IEntityPermissionUpdateCommand,
 } from "roottypes";
+
 import IEntityEventNotification from "../../../entityEventNotification/ports/interfaces/IEntityEventNotification";
 import IEntityPermission from "./IEntityPermission";
 

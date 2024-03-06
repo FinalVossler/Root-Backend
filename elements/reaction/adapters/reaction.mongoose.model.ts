@@ -1,15 +1,6 @@
 import mongoose from "mongoose";
 import IReaction from "../ports/interfaces/IReaction";
 
-export enum ReactionEnum {
-  Love = "Love",
-  Laugh = "Laugh",
-  Shock = "Shock",
-  Cry = "Cry",
-  Angry = "Angry",
-  OK = "OK",
-}
-
 interface ReactionModel extends mongoose.Model<IReaction> {}
 
 const ReactionSchema = new mongoose.Schema<IReaction>(

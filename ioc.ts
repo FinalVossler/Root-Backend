@@ -1,4 +1,4 @@
-import { createNodeMailerSendEmailService } from "./elements/email/adapters/email.nodemailer.service";
+import createNodeMailerSendEmailService from "./elements/email/adapters/email.nodemailer.service";
 import createEmailService from "./elements/email/ports/email.service";
 import IEmailService from "./elements/email/ports/interfaces/IEmailService";
 import entityMongooseRepository from "./elements/entity/adapters/entity.mongoose.repository";
@@ -12,17 +12,20 @@ import IEntityPermissionService from "./elements/entityPermission/ports/interfac
 import fieldMongooseRepository from "./elements/field/adapters/field.mongoose.repository";
 import createFieldService from "./elements/field/ports/field.service";
 import IFieldService from "./elements/field/ports/interfaces/IFieldService";
+import fieldTableElementRepository from "./elements/fieldTableElement/adapters/fieldTableElement.mongoose.repository";
 import fileMongooseRepository from "./elements/file/adapters/file.mongoose.repository";
 import createFileService from "./elements/file/ports/file.service";
 import IFileService from "./elements/file/ports/interfaces/IFileService";
 import messageMongooseRepository from "./elements/message/adapters/message.mongoose.repository";
 import IMessageService from "./elements/message/ports/interfaces/IMessageService";
 import createMessageService from "./elements/message/ports/message.service";
+import microFrontendMongooseRepository from "./elements/microFontend/adapters/microFrontend.mongoose.respository";
 import IMicroFrontendService from "./elements/microFontend/ports/interfaces/IMicroFrontendService";
 import createMicroFrontendService from "./elements/microFontend/ports/microFrontend.service";
 import modelMongooseRepository from "./elements/model/adapters/model.mongoose.repository";
 import IModelService from "./elements/model/ports/interfaces/IModelService";
 import createModelService from "./elements/model/ports/model.service";
+import modelStateMongooseRepository from "./elements/modelState/adapters/modelState.mongoose.repository";
 import notificationMongooseRepository from "./elements/notification/adapters/notification.mongoose.repository";
 import INotificationService from "./elements/notification/ports/interfaces/INotificationService";
 import createNotificationService from "./elements/notification/ports/notification.service";
@@ -32,18 +35,25 @@ import createPageService from "./elements/page/ports/page.service";
 import postMongooseRepository from "./elements/post/adapters/post.mongoose.repository";
 import IPostService from "./elements/post/ports/interfaces/IPostService";
 import createPostService from "./elements/post/ports/post.service";
+import reactionMongooseRepository from "./elements/reaction/adapters/reaction.mongoose.repository";
+import IReactionService from "./elements/reaction/ports/interfaces/IReactionService";
+import createReactionService from "./elements/reaction/ports/reaction.service";
 import roleMongooseRepository from "./elements/role/adapters/role.mongoose.repository";
 import IRoleService from "./elements/role/ports/interfaces/IRoleService";
 import createRoleService from "./elements/role/ports/role.service";
+import socketMongooseRepository from "./elements/socket/adapters/socket.mongoose.repository";
 import createSocketService from "./elements/socket/ports/socket.service";
 import ITestsPreparationService from "./elements/testsPreparation/ports/interfaces/ITestsPreparationService";
 import createTestsPreparationService from "./elements/testsPreparation/ports/testsPreparation.service";
 import userMongooseRepository from "./elements/user/adapters/user.mongoose.repository";
 import IUserService from "./elements/user/ports/interfaces/IUserService";
 import createUserService from "./elements/user/ports/user.service";
+import websiteConfigurationMongooseRepository from "./elements/websiteConfiguration/adapters/websiteConfiguration.mongoose.repository";
 import createWebsiteConfigurationService from "./elements/websiteConfiguration/ports/websiteConfiguration.service";
 
-export const websiteConfigurationService = createWebsiteConfigurationService();
+export const websiteConfigurationService = createWebsiteConfigurationService(
+  websiteConfigurationMongooseRepository
+);
 export const fileService: IFileService = createFileService(
   fileMongooseRepository
 );
@@ -62,12 +72,14 @@ export const pageService: IPageService = createPageService(
 );
 
 export const emailService: IEmailService = createEmailService(
-  createNodeMailerSendEmailService
+  createNodeMailerSendEmailService,
+  websiteConfigurationMongooseRepository
 );
 
 export const socketService = createSocketService(
   websiteConfigurationService,
-  emailService
+  emailService,
+  socketMongooseRepository
 );
 
 export const messageService: IMessageService = createMessageService(
@@ -83,12 +95,17 @@ export const userService: IUserService = createUserService(
 
 export const fieldService: IFieldService = createFieldService(
   fieldMongooseRepository,
-  roleService
+  roleService,
+  modelMongooseRepository,
+  fieldTableElementRepository
 );
 export const modelService: IModelService = createModelService(
   roleService,
   modelMongooseRepository,
-  entityPermissionService
+  entityPermissionService,
+  entityPermissionMongooseRepository,
+  modelStateMongooseRepository,
+  entityMongooseRepository
 );
 export const notificationService: INotificationService =
   createNotificationService(notificationMongooseRepository, socketService);
@@ -110,7 +127,12 @@ export const entityService: IEntityService = createEntityService(
 );
 
 export const microFrontendService: IMicroFrontendService =
-  createMicroFrontendService(roleService);
+  createMicroFrontendService(roleService, microFrontendMongooseRepository);
 
 export const testsPreparationService: ITestsPreparationService =
-  createTestsPreparationService(f);
+  createTestsPreparationService(fieldMongooseRepository);
+export const reactionService: IReactionService = createReactionService(
+  reactionMongooseRepository,
+  messageService,
+  socketService
+);

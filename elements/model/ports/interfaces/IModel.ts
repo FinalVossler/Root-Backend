@@ -1,7 +1,8 @@
 import { ITranslatedText } from "roottypes";
-import { IModelState } from "../../../modelState/modelState.model";
+
 import { IEvent } from "../../../event/ports/interfaces/IEvent";
 import { IField } from "../../../field/ports/interfaces/IField";
+import IModelState from "../../../modelState/ports/interfaces/IModelState";
 
 export interface IModel {
   _id: string;

@@ -2,8 +2,9 @@ import {
   IMicroFrontendComponentReadDto,
   IMicroFrontendReadDto,
 } from "roottypes";
-import { IMicroFrontendComponent } from "../../microFontendComponent/microFrontendComponent.model";
+
 import IMicroFrontend from "./interfaces/IMicroFrontend";
+import IMicroFrontendComponent from "../../microFontendComponent/ports/interfaces/IMicroFrontendComponent";
 
 export const microFrontendToReadDto = (
   microFrontend: IMicroFrontend | string

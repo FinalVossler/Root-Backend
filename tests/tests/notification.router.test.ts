@@ -4,7 +4,6 @@ import userMongooseRepository from "../../elements/user/adapters/user.mongoose.r
 import app from "../../server";
 import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import IResponseDto from "../../globalTypes/IResponseDto";
-import userService from "../../elements/user/ports/user.service";
 import {
   INotificationCreateCommand,
   INotificationReadDto,
@@ -14,6 +13,7 @@ import {
 } from "roottypes";
 import INotification from "../../elements/notification/ports/interfaces/INotification";
 import IUser from "../../elements/user/ports/interfaces/IUser";
+import { userService } from "../../ioc";
 
 jest.setTimeout(50000);
 describe("Notifications", () => {

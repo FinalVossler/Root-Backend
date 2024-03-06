@@ -1,9 +1,10 @@
 import { ITranslatedText } from "roottypes";
+
 import { IField } from "../../../field/ports/interfaces/IField";
 import IModel from "../../../model/ports/interfaces/IModel";
 import IUser from "../../../user/ports/interfaces/IUser";
-import { IFieldTableElement } from "../../../fieldTableElement/adapters/fieldTableElement.mongoose.model";
 import IFile from "../../../file/ports/interfaces/IFile";
+import IFieldTableElement from "../../../fieldTableElement/ports/IFieldTableElement";
 
 export interface IEntityFieldValue {
   field: IField | string;

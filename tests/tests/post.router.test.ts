@@ -1,8 +1,6 @@
 import request from "supertest";
-import { IPost } from "../../elements/post/adapters/post.mongoose.model";
 import { adminUser } from "../fixtures";
 import app from "../../server";
-import userService from "../../elements/user/ports/user.service";
 import IResponseDto from "../../globalTypes/IResponseDto";
 import postMongooseRepository from "../../elements/post/adapters/post.mongoose.repository";
 import IPaginationResponse from "../../globalTypes/IPaginationResponse";
@@ -15,6 +13,8 @@ import {
   PostDesignEnum,
   PostVisibilityEnum,
 } from "roottypes";
+import { userService } from "../../ioc";
+import IPost from "../../elements/post/ports/interfaces/IPost";
 
 jest.setTimeout(50000);
 const adminToken: string = userService.generateToken(adminUser);

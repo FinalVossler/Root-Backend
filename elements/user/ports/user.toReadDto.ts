@@ -2,11 +2,13 @@ import {
   IUserReadDto,
   IUserReadDtoWithLastReadMessageInConversationReadDto,
 } from "roottypes";
-import { IUserWithLastReadMessageInConversation } from "../adapters/user.mongoose.model";
+
 import { fileToReadDto } from "../../file/ports/file.toReadDto";
 import { roleToReadDto } from "../../role/ports/role.toReadDto";
 import { messageToReadDto } from "../../message/ports/message.toReadDto";
-import IUser from "./interfaces/IUser";
+import IUser, {
+  IUserWithLastReadMessageInConversation,
+} from "./interfaces/IUser";
 
 export const userToReadDto = (user: IUser | string): IUserReadDto | string => {
   if (typeof user === "string" || !user["_id"]) {

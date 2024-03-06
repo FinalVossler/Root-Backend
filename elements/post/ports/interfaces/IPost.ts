@@ -1,4 +1,5 @@
 import { ITranslatedText, PostDesignEnum, PostVisibilityEnum } from "roottypes";
+
 import IUser from "../../../user/ports/interfaces/IUser";
 import IFile from "../../../file/ports/interfaces/IFile";
 

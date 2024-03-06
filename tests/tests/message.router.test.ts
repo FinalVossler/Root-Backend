@@ -1,7 +1,4 @@
 import request from "supertest";
-import { IPopulatedMessage } from "../../elements/message/adapters/message.mongoose.model";
-import { IUser } from "../../elements/user/adapters/user.mongoose.model";
-import userService from "../../elements/user/ports/user.service";
 import { adminUser } from "../fixtures";
 import messageRepository from "../../elements/message/adapters/message.mongoose.repository";
 import app from "../../server";
@@ -18,6 +15,9 @@ import {
   IUserCreateCommand,
   SuperRoleEnum,
 } from "roottypes";
+import { userService } from "../../ioc";
+import IUser from "../../elements/user/ports/interfaces/IUser";
+import IPopulatedMessage from "../../elements/message/ports/interfaces/IPopulatedMessage";
 
 const adminToken = userService.generateToken(adminUser);
 
@@ -45,7 +45,7 @@ describe("messages", () => {
     };
     user1 = await userMongooseRepository.getByEmail(user1CreateCommand.email);
     if (!user1) {
-      user1 = await userService.createUser(user1CreateCommand);
+      user1 = await userService.createUser(user1CreateCommand, adminUser);
     }
     const user2CreateCommand: IUserCreateCommand = {
       email: "user2ForMessages@gmail.com",
@@ -56,7 +56,7 @@ describe("messages", () => {
     };
     user2 = await userMongooseRepository.getByEmail(user2CreateCommand.email);
     if (!user2) {
-      user2 = await userService.createUser(user2CreateCommand);
+      user2 = await userService.createUser(user2CreateCommand, adminUser);
     }
     const user3CreateCommand: IUserCreateCommand = {
       email: "user3ForMessages@gmail.com",
@@ -70,7 +70,8 @@ describe("messages", () => {
     );
     if (!user3ForTotalUnreadMessages) {
       user3ForTotalUnreadMessages = await userService.createUser(
-        user3CreateCommand
+        user3CreateCommand,
+        adminUser
       );
     }
 
@@ -86,7 +87,8 @@ describe("messages", () => {
     );
     if (!user4ForLastMessageInConversation) {
       user4ForLastMessageInConversation = await userService.createUser(
-        user4CreateCommand
+        user4CreateCommand,
+        adminUser
       );
     }
 

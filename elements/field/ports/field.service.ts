@@ -5,18 +5,21 @@ import {
   IFieldsSearchCommand,
   PermissionEnum,
 } from "roottypes";
+
 import IFieldRepository from "./interfaces/IFieldRepository";
-import modelRepository from "../../model/adapters/model.mongoose.repository";
-import fieldTableElementRepository from "../../fieldTableElement/adapters/fieldTableElement.mongoose.repository";
-import { IFieldTableElement } from "../../fieldTableElement/adapters/fieldTableElement.mongoose.model";
 import IFieldService from "./interfaces/IFieldService";
 import { IField } from "./interfaces/IField";
 import IRoleService from "../../role/ports/interfaces/IRoleService";
 import IUser from "../../user/ports/interfaces/IUser";
+import IFieldTableElement from "../../fieldTableElement/ports/IFieldTableElement";
+import IModelRepository from "../../model/ports/interfaces/IModelRepository";
+import IFieldTableElementRepository from "../../fieldTableElement/ports/IFieldTableElementRepository";
 
 const createFieldService = (
   fieldRepository: IFieldRepository,
-  roleService: IRoleService
+  roleService: IRoleService,
+  modelRepository: IModelRepository,
+  fieldTableElementRepository: IFieldTableElementRepository
 ): IFieldService => {
   return {
     createField: async (

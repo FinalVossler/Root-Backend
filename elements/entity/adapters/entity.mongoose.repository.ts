@@ -13,12 +13,13 @@ import {
   IEntityFieldValueCommand,
   IEntityUpdateCommand,
 } from "roottypes";
-import { IFieldTableElement } from "../../fieldTableElement/adapters/fieldTableElement.mongoose.model";
 import { IField } from "../../field/ports/interfaces/IField";
 import IEntity from "../ports/interfaces/IEntity";
 import IFile from "../../file/ports/interfaces/IFile";
+import IFieldTableElement from "../../fieldTableElement/ports/IFieldTableElement";
+import IEntityRepository from "../ports/interfaces/IEntityRepository";
 
-const entityMongooseRepository = {
+const entityMongooseRepository: IEntityRepository = {
   combineEntityFieldValuesNewFilesAndSelectedOwnFiles: async (
     entityFieldValues: IEntityFieldValueCommand[]
   ) => {
@@ -290,6 +291,9 @@ const entityMongooseRepository = {
         },
       }
     );
+  },
+  deleteByModel: async (modelId: string) => {
+    await Entity.deleteMany({ model: new mongoose.Types.ObjectId(modelId) });
   },
 };
 

@@ -1,5 +1,6 @@
 import { ITranslatedText, PermissionEnum } from "roottypes";
-import { IEntityPermission } from "../../../entityPermission/adapters/entityPermission.mongoose.model";
+
+import IEntityPermission from "../../../entityPermission/ports/interfaces/IEntityPermission";
 
 export default interface IRole {
   _id: string;

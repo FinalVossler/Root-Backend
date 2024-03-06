@@ -1,4 +1,5 @@
 import { IEntityReadDto, IEntityFieldValueReadDto } from "roottypes";
+
 import { modelToReadDto } from "../../model/ports/model.toReadDto";
 import { userToReadDto } from "../../user/ports/user.toReadDto";
 import {

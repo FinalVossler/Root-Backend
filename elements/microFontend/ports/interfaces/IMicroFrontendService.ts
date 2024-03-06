@@ -1,11 +1,12 @@
-import IUser from "../../../user/ports/interfaces/IUser";
 import {
   IMicroFrontendCreateCommand,
   IMicroFrontendUpdateCommand,
   IMicroFrontendsGetCommand,
   IMicroFrontendsSearchCommand,
 } from "roottypes";
+
 import IMicroFrontend from "./IMicroFrontend";
+import IUser from "../../../user/ports/interfaces/IUser";
 
 interface IMicroFrontendService {
   createMicroFrontend: (

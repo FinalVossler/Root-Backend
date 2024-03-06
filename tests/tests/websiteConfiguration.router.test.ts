@@ -6,10 +6,10 @@ import {
   IWebsiteConfigurationUpdateCommand,
 } from "roottypes";
 import IResponseDto from "../../globalTypes/IResponseDto";
-import userService from "../../elements/user/ports/user.service";
 import { adminUser } from "../fixtures";
 import websiteConfigurationMongooseRepository from "../../elements/websiteConfiguration/adapters/websiteConfiguration.mongoose.repository";
-import { IWebsiteConfiguration } from "../../elements/websiteConfiguration/adapters/websiteConfiguration.mongoose.model";
+import { userService } from "../../ioc";
+import IWebsiteConfiguration from "../../elements/websiteConfiguration/ports/interfaces/IWebsiteConfiguration";
 
 const adminToken: string = userService.generateToken(adminUser);
 

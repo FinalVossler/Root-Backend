@@ -6,8 +6,9 @@ import {
   IMicroFrontendsGetCommand,
   IMicroFrontendsSearchCommand,
 } from "roottypes";
-import { IMicroFrontendComponent } from "../../../microFontendComponent/microFrontendComponent.model";
+
 import IMicroFrontend from "./IMicroFrontend";
+import IMicroFrontendComponent from "../../../microFontendComponent/ports/interfaces/IMicroFrontendComponent";
 
 interface IMicroFrontendRepository {
   createMicroFrontendComponents: (

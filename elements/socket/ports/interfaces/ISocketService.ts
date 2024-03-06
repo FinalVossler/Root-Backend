@@ -9,6 +9,7 @@ import {
   ISocketTypingStateCommand,
   NotificationMessageEnum,
 } from "roottypes";
+
 import IUser from "../../../user/ports/interfaces/IUser";
 
 interface ISocketService {

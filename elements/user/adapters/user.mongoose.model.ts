@@ -7,12 +7,6 @@ import Message from "../../message/adapters/message.mongoose.model";
 import { SuperRoleEnum } from "roottypes";
 import Reaction from "../../reaction/adapters/reaction.mongoose.model";
 import IUser from "../ports/interfaces/IUser";
-import IMessage from "../../message/ports/interfaces/IMessage";
-
-export interface IUserWithLastReadMessageInConversation extends IUser {
-  lastReadMessageInConversation: IMessage | null;
-  to: string[];
-}
 
 interface IUserModel extends mongoose.Model<IUser> {}
 

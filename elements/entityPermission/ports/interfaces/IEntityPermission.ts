@@ -1,4 +1,5 @@
 import { StaticPermissionEnum } from "roottypes";
+
 import IModel from "../../../model/ports/interfaces/IModel";
 import IEntityEventNotification from "../../../entityEventNotification/ports/interfaces/IEntityEventNotification";
 import { IField } from "../../../field/ports/interfaces/IField";

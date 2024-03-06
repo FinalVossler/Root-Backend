@@ -1,4 +1,5 @@
 import { IFileReadDto } from "roottypes";
+
 import IFile from "./interfaces/IFile";
 
 export const fileToReadDto = (file: IFile | string): IFileReadDto | string => {

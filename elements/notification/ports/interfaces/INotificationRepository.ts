@@ -2,6 +2,7 @@ import {
   INotificationCreateCommand,
   INotificationsGetCommand,
 } from "roottypes";
+
 import INotification from "./INotification";
 
 interface INotificationRepository {
