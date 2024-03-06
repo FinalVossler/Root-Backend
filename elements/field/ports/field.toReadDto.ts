@@ -12,10 +12,11 @@ import IFieldTableElement from "../../fieldTableElement/ports/IFieldTableElement
 export const fieldToReadDto = (
   field: IField | string
 ): IFieldReadDto | string => {
-  if (typeof field === "string" || !field["_id"]) {
+  if (typeof field === "string" || field.toString() !== "[object Object]") {
     return field.toString();
   }
 
+  console.log("field", field);
   return {
     _id: field._id.toString(),
     name: field.name,

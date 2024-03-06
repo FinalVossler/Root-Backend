@@ -5,7 +5,10 @@ import IModelState from "./interfaces/IModelState";
 export const modelStateToReadDto = (
   modelState: IModelState | string
 ): IModelStateReadDto | string => {
-  if (typeof modelState === "string" || !modelState["_id"]) {
+  if (
+    typeof modelState === "string" ||
+    modelState.toString() !== "[object Object]"
+  ) {
     return modelState.toString();
   }
   return {

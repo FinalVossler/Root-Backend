@@ -4,7 +4,7 @@ import { entityPermissionToReadDto } from "../../entityPermission/ports/entityPe
 import IRole from "./interfaces/IRole";
 
 export const roleToReadDto = (role: IRole | string): IRoleReadDto | string => {
-  if (typeof role === "string" || !role["_id"]) {
+  if (typeof role === "string" || role.toString() !== "[object Object]") {
     return role.toString();
   }
 

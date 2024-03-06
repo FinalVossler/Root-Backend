@@ -9,7 +9,10 @@ import IMicroFrontendComponent from "../../microFontendComponent/ports/interface
 export const microFrontendToReadDto = (
   microFrontend: IMicroFrontend | string
 ): IMicroFrontendReadDto | string => {
-  if (typeof microFrontend === "string" || !microFrontend["_id"]) {
+  if (
+    typeof microFrontend === "string" ||
+    microFrontend.toString() !== "[object Object]"
+  ) {
     return microFrontend.toString();
   }
 
@@ -30,7 +33,7 @@ export const microFrontendComponentToReadDto = (
 ): IMicroFrontendComponentReadDto | string => {
   if (
     typeof microFrontendComponent === "string" ||
-    !microFrontendComponent["_id"]
+    microFrontendComponent.toString() !== "[object Object]"
   ) {
     return microFrontendComponent.toString();
   }

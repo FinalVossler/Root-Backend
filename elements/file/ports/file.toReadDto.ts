@@ -3,7 +3,7 @@ import { IFileReadDto } from "roottypes";
 import IFile from "./interfaces/IFile";
 
 export const fileToReadDto = (file: IFile | string): IFileReadDto | string => {
-  if (typeof file === "string" || !file["_id"]) {
+  if (typeof file === "string" || file.toString() !== "[object Object]") {
     return file.toString();
   }
 

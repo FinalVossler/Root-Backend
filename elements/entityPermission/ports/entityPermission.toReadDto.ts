@@ -16,7 +16,10 @@ import IEntityPermission, {
 export const entityPermissionToReadDto = (
   entityPermission: IEntityPermission | string
 ): IEntityPermissionReadDto | string => {
-  if (typeof entityPermission === "string" || !entityPermission["_id"]) {
+  if (
+    typeof entityPermission === "string" ||
+    entityPermission.toString() !== "[object Object]"
+  ) {
     return entityPermission.toString();
   }
 
