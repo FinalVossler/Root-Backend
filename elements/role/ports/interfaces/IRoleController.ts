@@ -11,7 +11,7 @@ import IResponseDto from "../../../../globalTypes/IResponseDto";
 import IPaginationResponse from "../../../../globalTypes/IPaginationResponse";
 import IUser from "../../../user/ports/interfaces/IUser";
 
-export default interface IRoleController {
+type IRoleController = {
   createRole: (
     req: IRequest<IRoleCreateCommand>,
     currentUser: IUser
@@ -34,4 +34,6 @@ export default interface IRoleController {
     req: IRequest<IRolesSearchCommand>,
     currentUser: IUser
   ) => Promise<IResponseDto<IPaginationResponse<IRoleReadDto>>>;
-}
+};
+
+export default IRoleController;
