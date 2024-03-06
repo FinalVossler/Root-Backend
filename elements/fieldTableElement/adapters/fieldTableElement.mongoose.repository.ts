@@ -2,12 +2,13 @@ import {
   IFieldTableElementCreateCommand,
   IFieldTableElementUpdateCommand,
 } from "roottypes";
-import getNewTranslatedTextsForUpdate from "../../utils/getNewTranslatedTextsForUpdate";
-import FieldTableElement, {
-  IFieldTableElement,
-} from "./fieldTableElement.model";
 
-const fieldTableElementRepository = {
+import getNewTranslatedTextsForUpdate from "../../../utils/getNewTranslatedTextsForUpdate";
+import FieldTableElement from "./fieldTableElement.mongoose.model";
+import IFieldTableElement from "../ports/IFieldTableElement";
+import IFieldTableElementRepository from "../ports/IFieldTableElementRepository";
+
+const fieldTableElementRepository: IFieldTableElementRepository = {
   create: async (
     command: IFieldTableElementCreateCommand
   ): Promise<IFieldTableElement> => {

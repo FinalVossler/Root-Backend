@@ -1,11 +1,7 @@
 import mongoose from "mongoose";
-import { ITranslatedText } from "roottypes";
-import translatedTextSchema from "../translatedText/adapters/translatedText.mongooseSchema";
 
-export interface IFieldTableElement {
-  _id: mongoose.Types.ObjectId;
-  name: ITranslatedText[];
-}
+import translatedTextSchema from "../../translatedText/adapters/translatedText.mongooseSchema";
+import IFieldTableElement from "../ports/IFieldTableElement";
 
 interface IFieldTableElementModel extends mongoose.Model<IFieldTableElement> {}
 

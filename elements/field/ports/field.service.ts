@@ -7,8 +7,8 @@ import {
 } from "roottypes";
 import IFieldRepository from "./interfaces/IFieldRepository";
 import modelRepository from "../../model/adapters/model.mongoose.repository";
-import fieldTableElementRepository from "../../fieldTableElement/fieldTableElement.repository";
-import { IFieldTableElement } from "../../fieldTableElement/fieldTableElement.model";
+import fieldTableElementRepository from "../../fieldTableElement/adapters/fieldTableElement.mongoose.repository";
+import { IFieldTableElement } from "../../fieldTableElement/adapters/fieldTableElement.mongoose.model";
 import IFieldService from "./interfaces/IFieldService";
 import { IField } from "./interfaces/IField";
 import IRoleService from "../../role/ports/interfaces/IRoleService";

@@ -10,13 +10,13 @@ import {
 
 import Field from "./field.mongoose.model";
 import getNewTranslatedTextsForUpdate from "../../../utils/getNewTranslatedTextsForUpdate";
-import { IFieldTableElement } from "../../fieldTableElement/fieldTableElement.model";
-import fieldTableElementRepository from "../../fieldTableElement/fieldTableElement.repository";
+import fieldTableElementRepository from "../../fieldTableElement/adapters/fieldTableElement.mongoose.repository";
 import IFieldRepository from "../ports/interfaces/IFieldRepository";
 import { IField } from "../ports/interfaces/IField";
 import { IEventRequestHeader } from "../../event/ports/interfaces/IEvent";
+import IFieldTableElement from "../../fieldTableElement/ports/IFieldTableElement";
 
-const mongooseFieldRepository: IFieldRepository = {
+const fieldMongooseRepository: IFieldRepository = {
   create: async (command: IFieldCreateCommand): Promise<IField> => {
     const createdColumns: IFieldTableElement[] =
       await fieldTableElementRepository.createMany(
@@ -407,4 +407,4 @@ export const populationOptions = [
   },
 ];
 
-export default mongooseFieldRepository;
+export default fieldMongooseRepository;

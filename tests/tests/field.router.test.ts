@@ -2,7 +2,6 @@ import request from "supertest";
 
 import app from "../../server";
 import IResponseDto from "../../globalTypes/IResponseDto";
-import userService from "../../elements/user/ports/user.service";
 import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import { adminUser } from "../fixtures";
 import {
@@ -14,12 +13,12 @@ import {
   IFieldsGetCommand,
   IFieldsSearchCommand,
 } from "roottypes";
-import { IFieldTableElement } from "../../elements/fieldTableElement/fieldTableElement.model";
-import { createMongooseFieldRepository } from "../../elements/field/adapters/field.mongoose.repository";
 import { IField } from "../../elements/field/ports/interfaces/IField";
+import fieldMongooseRepository from "../../elements/field/adapters/field.mongoose.repository";
+import { userService } from "../../ioc";
+import IFieldTableElement from "../../elements/fieldTableElement/ports/IFieldTableElement";
 
 jest.setTimeout(50000);
-const fieldRepository = createMongooseFieldRepository();
 
 describe("fieldRouter", () => {
   const adminToken = userService.generateToken(adminUser);
@@ -30,7 +29,7 @@ describe("fieldRouter", () => {
   let fieldToCopy: IField | null;
 
   beforeAll(async () => {
-    fieldToUpdate = await fieldRepository.create({
+    fieldToUpdate = await fieldMongooseRepository.create({
       canChooseFromExistingFiles: false,
       fieldEvents: [],
       language: "en",
@@ -44,7 +43,7 @@ describe("fieldRouter", () => {
       },
     });
 
-    fieldToDelete = await fieldRepository.create({
+    fieldToDelete = await fieldMongooseRepository.create({
       canChooseFromExistingFiles: false,
       fieldEvents: [],
       language: "en",
@@ -58,7 +57,7 @@ describe("fieldRouter", () => {
       },
     });
 
-    fieldToSearch = await fieldRepository.create({
+    fieldToSearch = await fieldMongooseRepository.create({
       canChooseFromExistingFiles: false,
       fieldEvents: [],
       language: "en",
@@ -72,7 +71,7 @@ describe("fieldRouter", () => {
       },
     });
 
-    fieldToCopy = await fieldRepository.create({
+    fieldToCopy = await fieldMongooseRepository.create({
       canChooseFromExistingFiles: true,
       fieldEvents: [],
       language: "en",
@@ -99,16 +98,20 @@ describe("fieldRouter", () => {
 
   afterAll(async () => {
     if (createdField?._id) {
-      await fieldRepository.deleteFields([createdField?._id]);
+      await fieldMongooseRepository.deleteFields([createdField?._id]);
     }
     if (fieldToUpdate?._id) {
-      await fieldRepository.deleteFields([fieldToUpdate?._id.toString()]);
+      await fieldMongooseRepository.deleteFields([
+        fieldToUpdate?._id.toString(),
+      ]);
     }
     if (fieldToSearch?._id) {
-      await fieldRepository.deleteFields([fieldToSearch?._id.toString()]);
+      await fieldMongooseRepository.deleteFields([
+        fieldToSearch?._id.toString(),
+      ]);
     }
     if (fieldToCopy?._id) {
-      await fieldRepository.deleteFields([fieldToCopy?._id.toString()]);
+      await fieldMongooseRepository.deleteFields([fieldToCopy?._id.toString()]);
     }
   });
 

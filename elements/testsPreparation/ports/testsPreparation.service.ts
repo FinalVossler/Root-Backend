@@ -1,28 +1,21 @@
-import Field from "../field/adapters/field.mongoose.model";
-import Message from "../message/adapters/message.mongoose.model";
-import Page from "../page/adapters/page.mongoose.model";
-import Post from "../post/adapters/post.mongoose.model";
-import File, { IFile } from "../file/adapters/file.mongoose.model";
-import EntityEventNotification from "../entityEventNotification/adapters/entityEventNotification.mongoose.model";
-import EntityPermission from "../entityPermission/adapters/entityPermission.mongoose.model";
-import FieldTableElement, {
-  IFieldTableElement,
-} from "../fieldTableElement/fieldTableElement.model";
-import Model, {
-  ModelFieldConditionTypeEnum,
-} from "../model/adapters/model.mongoose.model";
-import ModelState from "../modelState/modelState.model";
-import Notification from "../notification/adapters/notification.mongoose.model";
-import Reaction from "../reaction/adapters/reaction.mongoose.model";
-import Socket from "../socket/adapters/socket.mongoose.model";
-import fileRepository from "../file/adapters/file.mongoose.repository";
-import MicroFrontend, {
-  IMicroFrontend,
-} from "../microFontend/adapters/microFrontend.mongoose.model";
-import microFrontendRepository from "../microFontend/adapters/microFrontend.mongoose.respository";
-import modelRepository from "../model/adapters/model.mongoose.repository";
-import { adminUser } from "../../tests/fixtures";
-import roleRepository from "../role/adapters/role.mongoose.repository";
+import Field from "../../field/adapters/field.mongoose.model";
+import Message from "../../message/adapters/message.mongoose.model";
+import Page from "../../page/adapters/page.mongoose.model";
+import Post from "../../post/adapters/post.mongoose.model";
+import EntityEventNotification from "../../entityEventNotification/adapters/entityEventNotification.mongoose.model";
+import EntityPermission from "../../entityPermission/adapters/entityPermission.mongoose.model";
+import FieldTableElement from "../../fieldTableElement/adapters/fieldTableElement.mongoose.model";
+import Model from "../../model/adapters/model.mongoose.model";
+import ModelState from "../../modelState/modelState.model";
+import Notification from "../../notification/adapters/notification.mongoose.model";
+import Reaction from "../../reaction/adapters/reaction.mongoose.model";
+import Socket from "../../socket/adapters/socket.mongoose.model";
+import fileRepository from "../../file/adapters/file.mongoose.repository";
+import MicroFrontend from "../../microFontend/adapters/microFrontend.mongoose.model";
+import microFrontendRepository from "../../microFontend/adapters/microFrontend.mongoose.respository";
+import modelRepository from "../../model/adapters/model.mongoose.repository";
+import { adminUser } from "../../../tests/fixtures";
+import roleRepository from "../../role/adapters/role.mongoose.repository";
 import {
   EntityEventNotificationTriggerEnum,
   EventTriggerEnum,
@@ -35,26 +28,34 @@ import {
   IModelCreateCommand,
   IModelUpdateCommand,
   IRoleCreateCommand,
+  ModelFieldConditionTypeEnum,
   ModelStateTypeEnum,
   PermissionEnum,
   StaticPermissionEnum,
 } from "roottypes";
-import { IMicroFrontendComponent } from "../microFontendComponent/microFrontendComponent.model";
+import { IMicroFrontendComponent } from "../../microFontendComponent/microFrontendComponent.model";
 import { faker } from "@faker-js/faker";
-import entityRepository from "../entity/adapters/entity.mongoose.repository";
-import { IField } from "../field/ports/interfaces/IField";
-import IUser from "../user/ports/interfaces/IUser";
-import mongooseFieldRepository from "../field/adapters/field.mongoose.repository";
-import User from "../user/adapters/user.mongoose.model";
-import Role from "../role/adapters/role.mongoose.model";
-import Entity from "../entity/adapters/entity.mongoose.model";
-import IModel from "../model/ports/interfaces/IModel";
-import IRole from "../role/ports/interfaces/IRole";
-import IEntity from "../entity/ports/interfaces/IEntity";
+import entityRepository from "../../entity/adapters/entity.mongoose.repository";
+import { IField } from "../../field/ports/interfaces/IField";
+import IUser from "../../user/ports/interfaces/IUser";
+import fieldMongooseRepository from "../../field/adapters/field.mongoose.repository";
+import User from "../../user/adapters/user.mongoose.model";
+import Role from "../../role/adapters/role.mongoose.model";
+import Entity from "../../entity/adapters/entity.mongoose.model";
+import IModel from "../../model/ports/interfaces/IModel";
+import IRole from "../../role/ports/interfaces/IRole";
+import IEntity from "../../entity/ports/interfaces/IEntity";
+import ITestsPreparationService from "./interfaces/ITestsPreparationService";
+import File from "../../file/adapters/file.mongoose.model";
+import IMicroFrontend from "../../microFontend/ports/interfaces/IMicroFrontend";
+import IFile from "../../file/ports/interfaces/IFile";
+import IFieldTableElement from "../../fieldTableElement/ports/IFieldTableElement";
+import IFieldRepository from "../../field/ports/interfaces/IFieldRepository";
 
-const fieldRepository = mongooseFieldRepository;
-const testsPreparationService = {
-  clean: async (currentUser: IUser) => {
+const createTestsPreparationService = (
+  fieldRepository: IFieldRepository
+): ITestsPreparationService => ({
+  clean: async function (currentUser: IUser) {
     await Socket.deleteMany({});
 
     await File.deleteMany({
@@ -95,7 +96,7 @@ const testsPreparationService = {
 
     return createdFile;
   },
-  prepareMarketMaven: async (currentUser?: IUser) => {
+  prepareMarketMaven: async function (currentUser?: IUser) {
     const prepareMicroFrontends = async (): Promise<{
       forecastMicroFrontend: IMicroFrontend;
       kpisMicroFrontend: IMicroFrontend;
@@ -1316,7 +1317,7 @@ const testsPreparationService = {
       await Promise.all(promises);
     };
 
-    await testsPreparationService.clean(currentUser || adminUser);
+    await this.clean(currentUser || adminUser);
 
     const {
       caseNameField,
@@ -1338,6 +1339,6 @@ const testsPreparationService = {
       await prepareFiles();
     await prepareEntities();
   },
-};
+});
 
-export default testsPreparationService;
+export default createTestsPreparationService;

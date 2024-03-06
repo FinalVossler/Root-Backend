@@ -1,16 +1,12 @@
 import request from "supertest";
 
 import app from "../../server";
-import { createMongooseFieldRepository } from "../../elements/field/adapters/field.mongoose.repository";
-import modelRepository from "../../elements/model/adapters/model.mongoose.repository";
-import userService from "../../elements/user/ports/user.service";
 import {
   adminUser,
   createCreateFieldCommand,
   createCreateModelCommand,
 } from "../fixtures";
 import IResponseDto from "../../globalTypes/IResponseDto";
-import { IModel } from "../../elements/model/adapters/model.mongoose.model";
 import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import {
   EventTriggerEnum,
@@ -25,9 +21,12 @@ import {
   ModelStateTypeEnum,
 } from "roottypes";
 import { IField } from "../../elements/field/ports/interfaces/IField";
+import IModel from "../../elements/model/ports/interfaces/IModel";
+import fieldMongooseRepository from "../../elements/field/adapters/field.mongoose.repository";
+import { userService } from "../../ioc";
+import modelMongooseRepository from "../../elements/model/adapters/model.mongoose.repository";
 
 jest.setTimeout(50000);
-const fieldRepository = createMongooseFieldRepository();
 describe("Models", () => {
   let createdModelId: string | undefined;
   let field1: IField | undefined;
@@ -39,38 +38,48 @@ describe("Models", () => {
   const modelToSearchName = "model to search";
 
   beforeAll(async () => {
-    field1 = await fieldRepository.create(createCreateFieldCommand("Field 1"));
-    field2 = await fieldRepository.create(createCreateFieldCommand("Field 2"));
+    field1 = await fieldMongooseRepository.create(
+      createCreateFieldCommand("Field 1")
+    );
+    field2 = await fieldMongooseRepository.create(
+      createCreateFieldCommand("Field 2")
+    );
 
-    modelToUpdate = await modelRepository.create(
+    modelToUpdate = await modelMongooseRepository.create(
       createCreateModelCommand("model to update", [field1])
     );
-    modelToDelete = await modelRepository.create(
+    modelToDelete = await modelMongooseRepository.create(
       createCreateModelCommand("model to delete", [field1])
     );
-    modelToSearch = await modelRepository.create(
+    modelToSearch = await modelMongooseRepository.create(
       createCreateModelCommand(modelToSearchName, [field1])
     );
   });
 
   afterAll(async () => {
     if (field1) {
-      await fieldRepository.deleteFields([field1._id.toString()]);
+      await fieldMongooseRepository.deleteFields([field1._id.toString()]);
     }
     if (field2) {
-      await fieldRepository.deleteFields([field2._id.toString()]);
+      await fieldMongooseRepository.deleteFields([field2._id.toString()]);
     }
     if (createdModelId) {
-      await modelRepository.deleteModels([createdModelId]);
+      await modelMongooseRepository.deleteModels([createdModelId]);
     }
     if (modelToUpdate) {
-      await modelRepository.deleteModels([modelToUpdate._id.toString()]);
+      await modelMongooseRepository.deleteModels([
+        modelToUpdate._id.toString(),
+      ]);
     }
     if (modelToDelete) {
-      await modelRepository.deleteModels([modelToDelete._id.toString()]);
+      await modelMongooseRepository.deleteModels([
+        modelToDelete._id.toString(),
+      ]);
     }
     if (modelToSearch) {
-      await modelRepository.deleteModels([modelToSearch._id.toString()]);
+      await modelMongooseRepository.deleteModels([
+        modelToSearch._id.toString(),
+      ]);
     }
   });
 

@@ -28,9 +28,6 @@ import {
   SuperRoleEnum,
 } from "roottypes";
 import { IField } from "../../elements/field/ports/interfaces/IField";
-import { createMongooseFieldRepository } from "../../elements/field/adapters/field.mongoose.repository";
-
-const fieldRepository = createMongooseFieldRepository();
 
 jest.setTimeout(100000);
 describe("Entities", () => {

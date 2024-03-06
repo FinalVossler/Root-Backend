@@ -1,39 +1,8 @@
 import mongoose from "mongoose";
 
-import { IModelState } from "../../modelState/modelState.model";
-import { IField } from "../../field/ports/interfaces/IField";
 import IModel from "../ports/interfaces/IModel";
 import translatedTextSchema from "../../translatedText/adapters/translatedText.mongooseSchema";
 import EventSchema from "../../event/adapters/event.mongoose.model";
-
-//#region model fields
-export interface IModelField {
-  field: IField | string;
-  required: boolean;
-  conditions?: IModelFieldCondition[];
-  states?: IModelState[];
-  mainField?: boolean;
-  stickInTable?: boolean;
-}
-
-export interface IModelFieldCondition {
-  field?: IField | string;
-  conditionType: ModelFieldConditionTypeEnum;
-  value?: number | string;
-  modelState?: IModelState | string;
-}
-
-export enum ModelFieldConditionTypeEnum {
-  SuperiorTo = "SuperiorTo",
-  SuperiorOrEqualTo = "SuperiorOrEqualTo",
-  InferiorTo = "InferiorTo",
-  InferiorOrEqualTo = "InferiorOrEqualTo",
-  Equal = "Equal",
-  ValueInferiorOrEqualToCurrentYearPlusValueOfFieldAndSuperiorOrEqualToCurrentYear = "ValueInferiorOrEqualToCurrentYearPlusValueOfFieldAndSuperiorOrEqualToCurrentYear",
-  StateConditionsMet = "StateConditionsMet",
-  IfYearTableThenNumberOfYearsInTheFutureIsEqualToValueOfField = "IfYearTableThenNumberOfYearsInTheFutureIsEqualToValueOfField",
-}
-//#endregion model fields
 
 interface IModelModel extends mongoose.Model<IModel> {}
 

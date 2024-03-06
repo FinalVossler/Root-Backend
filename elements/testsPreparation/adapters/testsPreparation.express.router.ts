@@ -1,9 +1,10 @@
 import express from "express";
 
-import protectMiddleware from "../../middleware/protectMiddleware";
-import testsPreparationController from "./testsPreparation.controller";
+import protectMiddleware from "../../../middleware/protectMiddleware";
+import testsPreparationExpressController from "./testsPreparation.express.controller";
 
-const { clean, createFile, prepareMarketMaven } = testsPreparationController;
+const { clean, createFile, prepareMarketMaven } =
+  testsPreparationExpressController;
 
 const router = express.Router();
 

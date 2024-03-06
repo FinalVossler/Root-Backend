@@ -5,7 +5,7 @@ import {
   IFieldTableElementReadDto,
 } from "roottypes";
 import { eventToReadDto } from "../../event/ports/event.toReadDto";
-import { IFieldTableElement } from "../../fieldTableElement/fieldTableElement.model";
+import { IFieldTableElement } from "../../fieldTableElement/adapters/fieldTableElement.mongoose.model";
 import { IField, IFieldOption } from "./interfaces/IField";
 
 export const fieldToReadDto = (

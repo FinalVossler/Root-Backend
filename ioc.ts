@@ -9,7 +9,7 @@ import IEntityEventNotificationService from "./elements/entityEventNotification/
 import entityPermissionMongooseRepository from "./elements/entityPermission/adapters/entityPermission.mongoose.repository";
 import createEntityPermissionService from "./elements/entityPermission/ports/entityPermission.service";
 import IEntityPermissionService from "./elements/entityPermission/ports/interfaces/IEntityPermissionService";
-import mongooseFieldRepository from "./elements/field/adapters/field.mongoose.repository";
+import fieldMongooseRepository from "./elements/field/adapters/field.mongoose.repository";
 import createFieldService from "./elements/field/ports/field.service";
 import IFieldService from "./elements/field/ports/interfaces/IFieldService";
 import fileMongooseRepository from "./elements/file/adapters/file.mongoose.repository";
@@ -36,6 +36,8 @@ import roleMongooseRepository from "./elements/role/adapters/role.mongoose.repos
 import IRoleService from "./elements/role/ports/interfaces/IRoleService";
 import createRoleService from "./elements/role/ports/role.service";
 import createSocketService from "./elements/socket/ports/socket.service";
+import ITestsPreparationService from "./elements/testsPreparation/ports/interfaces/ITestsPreparationService";
+import createTestsPreparationService from "./elements/testsPreparation/ports/testsPreparation.service";
 import userMongooseRepository from "./elements/user/adapters/user.mongoose.repository";
 import IUserService from "./elements/user/ports/interfaces/IUserService";
 import createUserService from "./elements/user/ports/user.service";
@@ -80,7 +82,7 @@ export const userService: IUserService = createUserService(
 );
 
 export const fieldService: IFieldService = createFieldService(
-  mongooseFieldRepository,
+  fieldMongooseRepository,
   roleService
 );
 export const modelService: IModelService = createModelService(
@@ -109,3 +111,6 @@ export const entityService: IEntityService = createEntityService(
 
 export const microFrontendService: IMicroFrontendService =
   createMicroFrontendService(roleService);
+
+export const testsPreparationService: ITestsPreparationService =
+  createTestsPreparationService(f);

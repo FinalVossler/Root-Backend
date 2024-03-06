@@ -4,8 +4,7 @@ import {
   IModelsGetCommand,
   IModelsSearchCommand,
 } from "roottypes";
-import IModel from "./IModel";
-import { IModelField } from "../../adapters/model.mongoose.model";
+import IModel, { IModelField } from "./IModel";
 
 interface IModelRepository {
   create: (command: IModelCreateCommand) => Promise<IModel>;
@@ -16,6 +15,7 @@ interface IModelRepository {
   getById: (id: string) => Promise<IModel>;
   getModelsContainingField: (fieldId: string) => Promise<IModel[]>;
   deleteModel: (modelId: string) => Promise<void>;
+  deleteModels: (modelsIds: string[]) => Promise<void>;
   search: (
     command: IModelsSearchCommand
   ) => Promise<{ models: IModel[]; total: number }>;

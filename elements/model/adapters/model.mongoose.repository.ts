@@ -4,7 +4,6 @@ import Model from "./model.mongoose.model";
 import getNewTranslatedTextsForUpdate from "../../../utils/getNewTranslatedTextsForUpdate";
 import modelStateRepository from "../../modelState/modelState.repository";
 import { IModelState } from "../../modelState/modelState.model";
-import { IModelField } from "./model.mongoose.model";
 import {
   IEventCommand,
   IModelCreateCommand,
@@ -12,7 +11,7 @@ import {
   IModelsGetCommand,
   IModelsSearchCommand,
 } from "roottypes";
-import IModel from "../ports/interfaces/IModel";
+import IModel, { IModelField } from "../ports/interfaces/IModel";
 import IModelRepository from "../ports/interfaces/IModelRepository";
 import { IEventRequestHeader } from "../../event/ports/interfaces/IEvent";
 
@@ -187,6 +186,11 @@ const modelMongooseRepository: IModelRepository = {
     }).populate(populationOptions);
 
     return models;
+  },
+  deleteModels: async (modelsIds: string[]): Promise<void> => {
+    for (let i = 0; i < modelsIds.length; i++) {
+      await Model.deleteOne({ _id: new mongoose.Types.ObjectId(modelsIds[i]) });
+    }
   },
   deleteModel: async (modelId: string): Promise<void> => {
     await Model.deleteOne({ _id: new mongoose.Types.ObjectId(modelId) });

@@ -14,7 +14,7 @@ import roleRouter from "./elements/role/adapters/role.express.router";
 import notificationRouter from "./elements/notification/adapters/notification.express.router";
 import microFrontendRouter from "./elements/microFontend/adapters/microFrontend.express.router";
 import reactionRouter from "./elements/reaction/adapters/reaction.express.router";
-import testsPreparationRouter from "./elements/testsPreparation/testsPreparation.router";
+import testsPreparationRouter from "./elements/testsPreparation/adapters/testsPreparation.express.router";
 
 const router = Router();
 

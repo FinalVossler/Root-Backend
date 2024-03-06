@@ -13,7 +13,7 @@ import {
   IEntityFieldValueCommand,
   IEntityUpdateCommand,
 } from "roottypes";
-import { IFieldTableElement } from "../../fieldTableElement/fieldTableElement.model";
+import { IFieldTableElement } from "../../fieldTableElement/adapters/fieldTableElement.mongoose.model";
 import { IField } from "../../field/ports/interfaces/IField";
 import IEntity from "../ports/interfaces/IEntity";
 import IFile from "../../file/ports/interfaces/IFile";
