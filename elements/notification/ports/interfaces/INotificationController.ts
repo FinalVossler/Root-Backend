@@ -13,7 +13,7 @@ type INotificationController = {
     }>
   >;
   setNotificationToClickedBy: (
-    req: IRequest<string>,
+    req: IRequest<{ notificationId: string }>,
     currentUser: IUser
   ) => Promise<IResponseDto<void>>;
   markAllUserNotificationsAsClicked: (

@@ -26,10 +26,13 @@ const createNotificationController = (
     };
   },
   setNotificationToClickedBy: async (
-    req: IRequest<string>,
+    req: IRequest<{ notificationId: string }>,
     currentUser: IUser
   ) => {
-    await notificationService.setNotificationToClickedBy(req.body, currentUser);
+    await notificationService.setNotificationToClickedBy(
+      req.body.notificationId,
+      currentUser
+    );
 
     return {
       success: true,
