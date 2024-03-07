@@ -140,7 +140,7 @@ describe("Notifications", () => {
         "Authorization",
         "Bearer " + userService.generateToken(user as IUser)
       )
-      .send({ notificationId: notificationToSetClickedby?._id })
+      .send(notificationToSetClickedby?._id)
       .expect(200);
 
     const result: IResponseDto<void> = res.body;
