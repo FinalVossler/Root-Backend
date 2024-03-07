@@ -37,6 +37,19 @@ describe("Users", () => {
   let userToSearchByRole: IUser | undefined;
   let adminProfilePicture: IFile | undefined;
   let role: IRole | undefined;
+  const registerCommand: IUserRegisterCommand = {
+    email: "register@registering.com",
+    firstName: "registerFirstName",
+    lastName: "registerLastName",
+    password: "registerPassword",
+  };
+  const createUserCommand: IUserCreateCommand = {
+    email: "create@creating.com",
+    firstName: "createUserFirstName",
+    lastName: "createUserLastName",
+    password: "rootroot",
+    superRole: SuperRoleEnum.Normal,
+  };
 
   beforeAll(async () => {
     try {
@@ -57,6 +70,8 @@ describe("Users", () => {
         superRole: SuperRoleEnum.Normal,
         roleId: role._id.toString(),
       };
+      await userMongooseRepository.deleteByEmail(registerCommand.email);
+      await userMongooseRepository.deleteByEmail(createUserCommand.email);
       await userMongooseRepository.deleteByEmail(
         userToSearchByRoleCreateCommand.email
       );
@@ -109,13 +124,6 @@ describe("Users", () => {
   });
 
   it("registers POST /users/register", async () => {
-    const registerCommand: IUserRegisterCommand = {
-      email: "register@registering.com",
-      firstName: "registerFirstName",
-      lastName: "registerLastName",
-      password: "registerPassword",
-    };
-
     type RegisterReponse = IResponseDto<{
       token: string;
       expiresIn: string;
@@ -352,17 +360,10 @@ describe("Users", () => {
   });
 
   it("should create user POST /users/", () => {
-    const command: IUserCreateCommand = {
-      email: "create@creating.com",
-      firstName: "createUserFirstName",
-      lastName: "createUserLastName",
-      password: "rootroot",
-      superRole: SuperRoleEnum.Normal,
-    };
     return request(app)
       .post("/users")
       .set("Authorization", "Bearer " + adminToken)
-      .send(command)
+      .send(createUserCommand)
       .then((res) => {
         const result: IResponseDto<IUserReadDto> = res.body;
 
@@ -372,9 +373,9 @@ describe("Users", () => {
           expect.objectContaining({
             success: true,
             data: expect.objectContaining({
-              firstName: command.firstName,
-              lastName: command.lastName,
-              email: command.email,
+              firstName: createUserCommand.firstName,
+              lastName: createUserCommand.lastName,
+              email: createUserCommand.email,
             }),
           })
         );

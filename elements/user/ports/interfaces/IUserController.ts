@@ -43,8 +43,7 @@ type IUserController = {
     currentUser: IUser
   ) => Promise<IResponseDto<IUserReadDto>>;
   register: (
-    req: IRequest<IUserRegisterCommand>,
-    currentUser: IUser
+    req: IRequest<IUserRegisterCommand>
   ) => Promise<
     IResponseDto<{ token: string; expiresIn: string; user: IUserReadDto }>
   >;

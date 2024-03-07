@@ -11,7 +11,7 @@ export const microFrontendToReadDto = (
 ): IMicroFrontendReadDto | string => {
   if (
     typeof microFrontend === "string" ||
-    microFrontend.toString() !== "[object Object]"
+    Object.keys(microFrontend).length === 0
   ) {
     return microFrontend.toString();
   }
@@ -33,7 +33,7 @@ export const microFrontendComponentToReadDto = (
 ): IMicroFrontendComponentReadDto | string => {
   if (
     typeof microFrontendComponent === "string" ||
-    microFrontendComponent.toString() !== "[object Object]"
+    Object.keys(microFrontendComponent).length === 0
   ) {
     return microFrontendComponent.toString();
   }

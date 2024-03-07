@@ -12,7 +12,7 @@ import IModel, { IModelField, IModelFieldCondition } from "./interfaces/IModel";
 export const modelToReadDto = (
   model: IModel | string
 ): IModelReadDto | string => {
-  if (typeof model === "string" || model.toString() !== "[object Object]") {
+  if (typeof model === "string" || Object.keys(model).length === 0) {
     return model.toString();
   }
 
@@ -36,7 +36,6 @@ export const modelToReadDto = (
 export const modelFieldToReadDto = (
   modelField: IModelField
 ): IModelFieldReadDto => {
-  console.log("field", modelField.field);
   return {
     field: fieldToReadDto(modelField.field),
     required: modelField.required,

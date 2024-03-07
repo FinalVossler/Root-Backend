@@ -96,7 +96,7 @@ const createUserController = (userService: IUserService): IUserController => ({
       data: userToReadDto(user) as IUserReadDto,
     };
   },
-  register: async (req: IRequest<IUserRegisterCommand>, currentUser: IUser) => {
+  register: async (req: IRequest<IUserRegisterCommand>) => {
     const { token, user } = await userService.register(req.body);
 
     return {

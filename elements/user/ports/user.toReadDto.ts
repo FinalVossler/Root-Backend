@@ -11,7 +11,7 @@ import IUser, {
 } from "./interfaces/IUser";
 
 export const userToReadDto = (user: IUser | string): IUserReadDto | string => {
-  if (typeof user === "string" || user.toString() !== "[object Object]") {
+  if (typeof user === "string" || Object.keys(user).length === 0) {
     return user.toString();
   }
 

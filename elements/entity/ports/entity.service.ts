@@ -206,7 +206,10 @@ const createEntityService = (
       modelId: command.modelId.toString(),
     });
 
-    const oldEntity: IEntity = await this.getById(command._id.toString());
+    const oldEntity: IEntity = await this.getById(
+      command._id.toString(),
+      currentUser
+    );
     const oldAssignedUsers = [...(oldEntity.assignedUsers || [])];
 
     const newlyAssignedUsersIds = command.assignedUsersIds.filter(

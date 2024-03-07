@@ -6,10 +6,7 @@ import IReaction from "./interfaces/IReaction";
 export const reactionToReadDto = (
   reaction: IReaction | string
 ): IReactionReadDto | string => {
-  if (
-    typeof reaction === "string" ||
-    reaction.toString() !== "[object Object]"
-  ) {
+  if (typeof reaction === "string" || Object.keys(reaction).length === 0) {
     return reaction.toString();
   }
 

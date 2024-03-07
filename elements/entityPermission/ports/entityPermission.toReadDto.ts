@@ -18,7 +18,7 @@ export const entityPermissionToReadDto = (
 ): IEntityPermissionReadDto | string => {
   if (
     typeof entityPermission === "string" ||
-    entityPermission.toString() !== "[object Object]"
+    Object.keys(entityPermission).length === 0
   ) {
     return entityPermission.toString();
   }

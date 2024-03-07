@@ -203,7 +203,7 @@ const entityMongooseRepository: IEntityRepository = {
   },
   getById: async (entityId: string): Promise<IEntity | undefined> => {
     const entity: IEntity | undefined = await (
-      await Entity.findById(new mongoose.Types.ObjectId(entityId)).exec()
+      await Entity.findById(new mongoose.Types.ObjectId(entityId))
     )?.populate(populationOptions);
 
     return entity;

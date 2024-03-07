@@ -5,7 +5,7 @@ import { userToReadDto } from "../../user/ports/user.toReadDto";
 import IPost from "./interfaces/IPost";
 
 export const postToReadDto = (post: IPost | string): IPostReadDto | string => {
-  if (typeof post === "string" || post.toString() !== "[object Object]") {
+  if (typeof post === "string" || Object.keys(post).length === 0) {
     return post.toString();
   }
 
