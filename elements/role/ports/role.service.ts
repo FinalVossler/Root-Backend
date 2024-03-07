@@ -24,7 +24,7 @@ const createRoleService = (
     command: IRoleCreateCommand,
     currentUser: IUser
   ): Promise<IRole> {
-    this.roleService.checkPermission({
+    this.checkPermission({
       user: currentUser,
       permission: PermissionEnum.CreateRole,
     });
@@ -37,7 +37,7 @@ const createRoleService = (
     command: IRoleUpdateCommand,
     currentUser: IUser
   ): Promise<IRole> {
-    this.roleService.checkPermission({
+    this.checkPermission({
       user: currentUser,
       permission: PermissionEnum.UpdateRole,
     });
@@ -63,7 +63,7 @@ const createRoleService = (
     rolesIds: string[],
     currentUser: IUser
   ): Promise<void> {
-    this.roleService.checkPermission({
+    this.checkPermission({
       user: currentUser,
       permission: PermissionEnum.DeleteRole,
     });
@@ -74,7 +74,7 @@ const createRoleService = (
     command: IRolesSearchCommand,
     currentUser: IUser
   ): Promise<{ roles: IRole[]; total: number }> {
-    this.roleService.checkPermission({
+    this.checkPermission({
       user: currentUser,
       permission: PermissionEnum.ReadRole,
     });

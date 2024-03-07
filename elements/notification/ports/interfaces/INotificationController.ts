@@ -17,6 +17,7 @@ type INotificationController = {
     currentUser: IUser
   ) => Promise<IResponseDto<void>>;
   markAllUserNotificationsAsClicked: (
+    req: IRequest,
     currentUser: IUser
   ) => Promise<IResponseDto<void>>;
 };

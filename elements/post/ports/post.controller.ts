@@ -61,7 +61,7 @@ const createPostController = (postService: IPostService): IPostController => ({
     req: IRequest<any, any, { postId: string }>,
     currentUser: IUser
   ) => {
-    await postService.delete(req.params.postId, currentUser);
+    await postService.delete(req.query.postId, currentUser);
 
     return {
       success: true,

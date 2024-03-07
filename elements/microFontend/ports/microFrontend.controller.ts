@@ -73,11 +73,7 @@ const createMicroFrontendController = (
     };
   },
   deleteMicroFrontends: async (req: IRequest<string[]>, currentUser: IUser) => {
-    const microFrontendsIds: string[] = req.body;
-    await microFrontendService.deleteMicroFrontends(
-      microFrontendsIds,
-      currentUser
-    );
+    await microFrontendService.deleteMicroFrontends(req.body, currentUser);
 
     return {
       success: true,

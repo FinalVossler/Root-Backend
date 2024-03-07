@@ -12,6 +12,10 @@ import {
 } from "roottypes";
 import IMicroFrontend from "../ports/interfaces/IMicroFrontend";
 import IMicroFrontendComponent from "../../microFontendComponent/ports/interfaces/IMicroFrontendComponent";
+import { IField } from "../../field/ports/interfaces/IField";
+import Field from "../../field/adapters/field.mongoose.model";
+import IModel from "../../model/ports/interfaces/IModel";
+import Model from "../../model/adapters/model.mongoose.model";
 
 const microFrontendMongooseRepository = {
   createMicroFrontendComponents: async (
@@ -163,9 +167,70 @@ const microFrontendMongooseRepository = {
 
     return { microFrontends, total };
   },
-  deleteMicroFrontends: async (microFrontendsIds: string[]): Promise<void> => {
+  deleteMicroFrontends: async function (
+    microFrontendsIds: string[]
+  ): Promise<void> {
     for (let i = 0; i < microFrontendsIds.length; i++) {
-      await MicroFrontend.deleteOne({ _id: microFrontendsIds[i] });
+      const microFrontend: IMicroFrontend | undefined = await this.getById(
+        microFrontendsIds[i]
+      );
+
+      if (!microFrontend) {
+        return;
+      }
+
+      // Deleting the events created on the basis of this microFrontend for fields
+      const fields: IField[] = await Field.find({
+        fieldEvents: {
+          $elemMatch: {
+            microFrontend: {
+              _id: new mongoose.Types.ObjectId(microFrontend._id),
+            },
+          },
+        },
+      }).populate(populationOptions);
+
+      for (let i = 0; i < fields.length; i++) {
+        const field: IField = fields[i];
+        const newFieldEvents = field.fieldEvents.filter(
+          (event) =>
+            (event.microFrontend as IMicroFrontend)?._id.toString() !==
+            microFrontend._id.toString()
+        );
+
+        await Field.updateOne(
+          { _id: field._id },
+          { $set: { fieldEvents: newFieldEvents } }
+        );
+      }
+
+      // Deleting the events created on the basis of this microFrontend for models
+      const models: IModel[] = await Model.find({
+        modelEvents: {
+          $elemMatch: {
+            microFrontend: {
+              _id: new mongoose.Types.ObjectId(microFrontend._id),
+            },
+          },
+        },
+      }).populate(populationOptions);
+
+      for (let i = 0; i < models.length; i++) {
+        const model: IModel = models[i];
+        const newModelEvents = model.modelEvents?.filter(
+          (event) =>
+            (event.microFrontend as IMicroFrontend)?._id.toString() !==
+            microFrontend._id.toString()
+        );
+        Model.updateOne(
+          { _id: model._id },
+          { $set: { modelEvents: newModelEvents } }
+        );
+
+        await MicroFrontend.deleteOne({
+          _id: new mongoose.Types.ObjectId(microFrontendsIds[i]),
+        });
+      }
     }
 
     return;

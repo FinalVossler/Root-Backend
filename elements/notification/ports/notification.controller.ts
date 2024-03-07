@@ -36,7 +36,10 @@ const createNotificationController = (
       data: null,
     };
   },
-  markAllUserNotificationsAsClicked: async (currentUser: IUser) => {
+  markAllUserNotificationsAsClicked: async (
+    req: IRequest,
+    currentUser: IUser
+  ) => {
     await notificationService.markAlluserNotificationsAsClicked(currentUser);
 
     return {
