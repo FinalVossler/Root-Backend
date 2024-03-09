@@ -1,6 +1,6 @@
 import { Response, Request, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
-import IConnectedRequest from "../globalTypes/IConnectedRequest";
+import IConnectedExpressRequest from "../globalTypes/IConnectedExpressRequest";
 import IUser from "../elements/user/ports/interfaces/IUser";
 import { userService } from "../ioc";
 
@@ -30,7 +30,7 @@ const protectMiddleware = async (
         throw new Error("Unauthorized");
       }
 
-      (req as IConnectedRequest<any, any, any, any>).user = user;
+      (req as IConnectedExpressRequest<any, any, any, any>).user = user;
 
       next();
     } catch (_) {

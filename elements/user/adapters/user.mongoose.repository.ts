@@ -1,8 +1,4 @@
 import mongoose from "mongoose";
-
-import fileRepository from "../../file/adapters/file.mongoose.repository";
-
-import User from "./user.mongoose.model";
 import {
   IChatGetContactsCommand,
   IUserCreateCommand,
@@ -13,6 +9,9 @@ import {
   IUsersGetCommand,
   IUsersSearchCommand,
 } from "roottypes";
+
+import fileRepository from "../../file/adapters/file.mongoose.repository";
+import User from "./user.mongoose.model";
 import IUser from "../ports/interfaces/IUser";
 import IUserRepository from "../ports/interfaces/IUserRepository";
 import IFile from "../../file/ports/interfaces/IFile";

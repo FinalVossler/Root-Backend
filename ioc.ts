@@ -46,10 +46,13 @@ import createSocketService from "./elements/socket/ports/socket.service";
 import ITestsPreparationService from "./elements/testsPreparation/ports/interfaces/ITestsPreparationService";
 import createTestsPreparationService from "./elements/testsPreparation/ports/testsPreparation.service";
 import userMongooseRepository from "./elements/user/adapters/user.mongoose.repository";
+import ISignedUser from "./elements/user/ports/interfaces/ISignedUser";
 import IUserService from "./elements/user/ports/interfaces/IUserService";
 import createUserService from "./elements/user/ports/user.service";
 import websiteConfigurationMongooseRepository from "./elements/websiteConfiguration/adapters/websiteConfiguration.mongoose.repository";
 import createWebsiteConfigurationService from "./elements/websiteConfiguration/ports/websiteConfiguration.service";
+import adaptBcrypt from "./utils/adaptBcrypt";
+import adaptJsonWebTokenHandler from "./utils/adaptJsonWebTokenHandler";
 
 export const websiteConfigurationService = createWebsiteConfigurationService(
   websiteConfigurationMongooseRepository
@@ -86,11 +89,14 @@ export const messageService: IMessageService = createMessageService(
   messageMongooseRepository,
   socketService
 );
+
 export const userService: IUserService = createUserService(
   roleService,
   userMongooseRepository,
   messageService,
-  emailService
+  emailService,
+  adaptJsonWebTokenHandler<ISignedUser>(),
+  adaptBcrypt()
 );
 
 export const fieldService: IFieldService = createFieldService(

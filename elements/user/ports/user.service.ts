@@ -1,6 +1,3 @@
-import { decode, sign, verify } from "jsonwebtoken";
-import { compare, genSalt, hash } from "bcrypt";
-
 import {
   IChatGetContactsCommand,
   IUserChangePasswordCommand,
@@ -26,17 +23,22 @@ import IUserRepository from "./interfaces/IUserRepository";
 import IMessage from "../../message/ports/interfaces/IMessage";
 import IMessageService from "../../message/ports/interfaces/IMessageService";
 import IEmailService from "../../email/ports/interfaces/IEmailService";
+import ITokenHandler from "./interfaces/ITokenHandler";
+import ISignedUser from "./interfaces/ISignedUser";
+import IPasswordHandler from "./interfaces/IPasswordHandler";
 
 const createUserService = (
   roleService: IRoleService,
   userRepository: IUserRepository,
   messageService: IMessageService,
-  emailService: IEmailService
+  emailService: IEmailService,
+  tokenHandler: ITokenHandler<ISignedUser>,
+  passwordHandler: IPasswordHandler
 ): IUserService => ({
   generatePasswordHash: async function (password: string): Promise<string> {
-    const salt: string = await genSalt(10);
+    const salt: string = await passwordHandler.genSalt(10);
 
-    const passwordHash: string = await hash(password, salt);
+    const passwordHash: string = await passwordHandler.hash(password, salt);
 
     return passwordHash;
   },
@@ -79,7 +81,7 @@ const createUserService = (
       throw new Error("User not found");
     }
 
-    const validPassword: boolean = await compare(
+    const validPassword: boolean = await passwordHandler.compare(
       command.password,
       user.password
     );
@@ -128,14 +130,14 @@ const createUserService = (
     return user;
   },
   getByToken: async function (token: string): Promise<IUser> {
-    const signedUser: { _id: string } = decode(token) as IUser;
+    const signedUser: ISignedUser = tokenHandler.decode(token);
 
     const user: IUser = await userRepository.getById(signedUser._id.toString());
 
     return user;
   },
   generateToken: function (user: IUser): string {
-    const toSign = {
+    const toSign: ISignedUser = {
       _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
@@ -144,7 +146,7 @@ const createUserService = (
     // @ts-ignore
     const secret: string = process.env.JWT_SECRET;
 
-    const token: string = sign(
+    const token: string = tokenHandler.sign(
       // @ts-ignore
       toSign,
       secret,
@@ -173,7 +175,7 @@ const createUserService = (
     command: IUserChangePasswordCommand,
     currentUser: IUser
   ): Promise<void> {
-    const validOldPassword: boolean = await compare(
+    const validOldPassword: boolean = await passwordHandler.compare(
       command.oldPassword,
       currentUser.password
     );
@@ -218,7 +220,7 @@ const createUserService = (
     const secret: string = process.env.JWT_SECRET;
 
     try {
-      verify(token, secret);
+      tokenHandler.verify(token, secret);
     } catch (_) {
       throw new Error("Token expired");
     }
