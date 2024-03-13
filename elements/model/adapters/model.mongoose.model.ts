@@ -71,6 +71,20 @@ const ModelSchema = new mongoose.Schema<IModel>(
         ref: "modelState",
       },
     ],
+    isForSale: {
+      type: mongoose.SchemaTypes.Boolean,
+      required: false,
+    },
+    quantityField: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "field",
+      required: false,
+    },
+    priceField: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "field",
+      required: false,
+    },
   },
   {
     timestamps: true,

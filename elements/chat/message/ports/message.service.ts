@@ -7,11 +7,11 @@ import {
 
 import { populatedMessageToReadDto } from "./message.toReadDto";
 import IPopulatedMessage from "./interfaces/IPopulatedMessage";
-import IUser from "../../user/ports/interfaces/IUser";
+import IUser from "../../../user/ports/interfaces/IUser";
 import IMessage from "./interfaces/IMessage";
 import IMessageService from "./interfaces/IMessageService";
 import IMessageRepository from "./interfaces/IMessageRepository";
-import ISocketService from "../../socket/ports/interfaces/ISocketService";
+import ISocketService from "../../../socket/ports/interfaces/ISocketService";
 
 const createMessageService = (
   messageRepository: IMessageRepository,

@@ -3,9 +3,9 @@ import { genSalt, hash } from "bcrypt";
 
 import postMongooseRepository from "../../post/adapters/post.mongoose.repository";
 import fileRepository from "../../file/adapters/file.mongoose.repository";
-import Message from "../../message/adapters/message.mongoose.model";
+import Message from "../../chat/message/adapters/message.mongoose.model";
 import { SuperRoleEnum } from "roottypes";
-import Reaction from "../../reaction/adapters/reaction.mongoose.model";
+import Reaction from "../../chat/reaction/adapters/reaction.mongoose.model";
 import IUser from "../ports/interfaces/IUser";
 
 interface IUserModel extends mongoose.Model<IUser> {}

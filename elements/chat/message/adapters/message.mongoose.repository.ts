@@ -2,16 +2,16 @@ import mongoose from "mongoose";
 import moment from "moment";
 
 import Message from "./message.mongoose.model";
-import fileRepository from "../../file/adapters/file.mongoose.repository";
+import fileRepository from "../../../file/adapters/file.mongoose.repository";
 import {
   IMessageGetBetweenUsersCommand,
   IMessageGetLastConversations,
   IMessageSendCommand,
 } from "roottypes";
-import IUser from "../../user/ports/interfaces/IUser";
+import IUser from "../../../user/ports/interfaces/IUser";
 import IPopulatedMessage from "../ports/interfaces/IPopulatedMessage";
 import IMessage from "../ports/interfaces/IMessage";
-import IFile from "../../file/ports/interfaces/IFile";
+import IFile from "../../../file/ports/interfaces/IFile";
 
 const getReadAtByUser = (userId: string) => userId + "-" + moment().toString();
 

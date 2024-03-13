@@ -19,7 +19,7 @@ import {
 } from "roottypes";
 
 import Field from "../../field/adapters/field.mongoose.model";
-import Message from "../../message/adapters/message.mongoose.model";
+import Message from "../../chat/message/adapters/message.mongoose.model";
 import Page from "../../page/adapters/page.mongoose.model";
 import Post from "../../post/adapters/post.mongoose.model";
 import EntityEventNotification from "../../entityEventNotification/adapters/entityEventNotification.mongoose.model";
@@ -28,7 +28,7 @@ import FieldTableElement from "../../fieldTableElement/adapters/fieldTableElemen
 import Model from "../../model/adapters/model.mongoose.model";
 import ModelState from "../../modelState/adapters/modelState.mongoose.model";
 import Notification from "../../notification/adapters/notification.mongoose.model";
-import Reaction from "../../reaction/adapters/reaction.mongoose.model";
+import Reaction from "../../chat/reaction/adapters/reaction.mongoose.model";
 import Socket from "../../socket/adapters/socket.mongoose.model";
 import MicroFrontend from "../../microFontend/adapters/microFrontend.mongoose.model";
 import User from "../../user/adapters/user.mongoose.model";
@@ -501,11 +501,13 @@ const createTestsPreparationService = (
             stateType: ModelStateTypeEnum.SubState,
           },
         ],
+        isForSale: false,
       };
       let model: IModel = await modelRepository.create(createCommand);
 
       const updateCommand: IModelUpdateCommand = {
         _id: model._id.toString(),
+        isForSale: false,
         language: "en",
         modelEvents: [],
         name: model.name?.at(0)?.text || "",

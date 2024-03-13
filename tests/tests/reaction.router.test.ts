@@ -1,13 +1,13 @@
 import request from "supertest";
 
-import Message from "../../elements/message/adapters/message.mongoose.model";
+import Message from "../../elements/chat/message/adapters/message.mongoose.model";
 import userMongooseRepository from "../../elements/user/adapters/user.mongoose.repository";
 import { adminUser } from "../fixtures";
-import messageRepository from "../../elements/message/adapters/message.mongoose.repository";
-import Reaction from "../../elements/reaction/adapters/reaction.mongoose.model";
+import messageRepository from "../../elements/chat/message/adapters/message.mongoose.repository";
+import Reaction from "../../elements/chat/reaction/adapters/reaction.mongoose.model";
 import app from "../../server";
 import IResponseDto from "../../globalTypes/IResponseDto";
-import reactionMongooseRepository from "../../elements/reaction/adapters/reaction.mongoose.repository";
+import reactionMongooseRepository from "../../elements/chat/reaction/adapters/reaction.mongoose.repository";
 import mongoose from "mongoose";
 import {
   IMessageSendCommand,
@@ -19,8 +19,8 @@ import {
   SuperRoleEnum,
 } from "roottypes";
 import IUser from "../../elements/user/ports/interfaces/IUser";
-import IPopulatedMessage from "../../elements/message/ports/interfaces/IPopulatedMessage";
-import IReaction from "../../elements/reaction/ports/interfaces/IReaction";
+import IPopulatedMessage from "../../elements/chat/message/ports/interfaces/IPopulatedMessage";
+import IReaction from "../../elements/chat/reaction/ports/interfaces/IReaction";
 import { userService } from "../../ioc";
 
 jest.setTimeout(50000);

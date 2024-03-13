@@ -3,8 +3,8 @@ import { IReactionCreateCommand, IReactionReadDto } from "roottypes";
 import { reactionToReadDto } from "./reaction.toReadDto";
 import IReactionController from "./interfaces/IReactionController";
 import IReactionService from "./interfaces/IReactionService";
-import IRequest from "../../../globalTypes/IRequest";
-import IUser from "../../user/ports/interfaces/IUser";
+import IRequest from "../../../../globalTypes/IRequest";
+import IUser from "../../../user/ports/interfaces/IUser";
 import IReaction from "./interfaces/IReaction";
 
 const createReactionController = (

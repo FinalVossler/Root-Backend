@@ -1,4 +1,4 @@
-import IFile from "../../../file/ports/interfaces/IFile";
+import IFile from "../../../../file/ports/interfaces/IFile";
 import IReaction from "../../../reaction/ports/interfaces/IReaction";
 
 export default interface IMessage {

@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 
 import userRouter from "./elements/user/adapters/user.express.router";
-import messageRouter from "./elements/message/adapters/message.express.router";
+import messageRouter from "./elements/chat/message/adapters/message.express.router";
 import postRouter from "./elements/post/adapters/post.express.router";
 import pageRouter from "./elements/page/adapters/page.express.router";
 import fileRouter from "./elements/file/adapters/file.express.router";
@@ -13,7 +13,7 @@ import entityRouter from "./elements/entity/adapters/entity.express.router";
 import roleRouter from "./elements/role/adapters/role.express.router";
 import notificationRouter from "./elements/notification/adapters/notification.express.router";
 import microFrontendRouter from "./elements/microFontend/adapters/microFrontend.express.router";
-import reactionRouter from "./elements/reaction/adapters/reaction.express.router";
+import reactionRouter from "./elements/chat/reaction/adapters/reaction.express.router";
 import testsPreparationRouter from "./elements/testsPreparation/adapters/testsPreparation.express.router";
 
 const router = Router();

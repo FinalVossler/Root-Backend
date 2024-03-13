@@ -40,6 +40,7 @@ export const createCreateModelCommand = (
   modelName: string,
   fields: IField[]
 ): IModelCreateCommand => ({
+  isForSale: false,
   language: "en",
   modelEvents: [],
   modelFields: fields.map((field) => ({

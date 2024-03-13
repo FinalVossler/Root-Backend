@@ -1,6 +1,6 @@
 import request from "supertest";
 import { adminUser } from "../fixtures";
-import messageRepository from "../../elements/message/adapters/message.mongoose.repository";
+import messageRepository from "../../elements/chat/message/adapters/message.mongoose.repository";
 import app from "../../server";
 import IResponseDto from "../../globalTypes/IResponseDto";
 import userMongooseRepository from "../../elements/user/adapters/user.mongoose.repository";
@@ -17,7 +17,7 @@ import {
 } from "roottypes";
 import { userService } from "../../ioc";
 import IUser from "../../elements/user/ports/interfaces/IUser";
-import IPopulatedMessage from "../../elements/message/ports/interfaces/IPopulatedMessage";
+import IPopulatedMessage from "../../elements/chat/message/ports/interfaces/IPopulatedMessage";
 
 const adminToken = userService.generateToken(adminUser);
 

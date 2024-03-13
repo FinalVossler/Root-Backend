@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 import Reaction from "../../reaction/adapters/reaction.mongoose.model";
 import IMessage from "../ports/interfaces/IMessage";
-import IFile from "../../file/ports/interfaces/IFile";
+import IFile from "../../../file/ports/interfaces/IFile";
 
 interface MessageModel extends mongoose.Model<IMessage> {}
 

@@ -12,6 +12,10 @@ export interface IModel {
   states?: IModelState[];
   subStates?: IModelState[];
 
+  isForSale?: boolean;
+  quantityField?: IField | string;
+  priceField?: IField | string;
+
   createdAt: string;
   updatedAt: string;
 }

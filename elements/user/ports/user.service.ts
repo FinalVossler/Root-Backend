@@ -20,8 +20,8 @@ import IUser, {
 import IUserService from "./interfaces/IUserService";
 import IRoleService from "../../role/ports/interfaces/IRoleService";
 import IUserRepository from "./interfaces/IUserRepository";
-import IMessage from "../../message/ports/interfaces/IMessage";
-import IMessageService from "../../message/ports/interfaces/IMessageService";
+import IMessage from "../../chat/message/ports/interfaces/IMessage";
+import IMessageService from "../../chat/message/ports/interfaces/IMessageService";
 import IEmailService from "../../email/ports/interfaces/IEmailService";
 import ITokenHandler from "./interfaces/ITokenHandler";
 import ISignedUser from "./interfaces/ISignedUser";

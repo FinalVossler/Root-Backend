@@ -62,6 +62,10 @@ const modelMongooseRepository: IModelRepository = {
       ),
       states: modelStates.map((el) => el._id),
       subStates: modelSubstates.map((el) => el._id),
+
+      isForSale: Boolean(command.isForSale),
+      quantityField: command.quantityFieldId,
+      priceField: command.priceFieldId,
     });
 
     return model.populate(populationOptions);
@@ -141,6 +145,10 @@ const modelMongooseRepository: IModelRepository = {
           ),
           states: modelStates.map((el) => el._id),
           subStates: modelSubstates.map((el) => el._id),
+
+          isForSale: Boolean(command.isForSale),
+          quantityField: command.quantityFieldId,
+          priceField: command.priceFieldId,
         },
       }
     );
@@ -323,6 +331,14 @@ export const populationOptions = [
   },
   {
     path: "subStates",
+  },
+  {
+    path: "quantityField",
+    model: "field",
+  },
+  {
+    path: "priceField",
+    model: "field",
   },
 ];
 

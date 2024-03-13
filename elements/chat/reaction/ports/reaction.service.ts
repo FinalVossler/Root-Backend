@@ -9,10 +9,10 @@ import { messageToReadDto } from "../../message/ports/message.toReadDto";
 import IReactionService from "./interfaces/IReactionService";
 import IMessageService from "../../message/ports/interfaces/IMessageService";
 import IReactionRepository from "./interfaces/IReactionRepository";
-import IUser from "../../user/ports/interfaces/IUser";
+import IUser from "../../../user/ports/interfaces/IUser";
 import IMessage from "../../message/ports/interfaces/IMessage";
 import IReaction from "./interfaces/IReaction";
-import ISocketService from "../../socket/ports/interfaces/ISocketService";
+import ISocketService from "../../../socket/ports/interfaces/ISocketService";
 
 const createReactionService = (
   reactionRepository: IReactionRepository,

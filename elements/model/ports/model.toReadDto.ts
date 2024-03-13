@@ -28,6 +28,17 @@ export const modelToReadDto = (
     subStates: model.subStates?.map((subState) =>
       modelStateToReadDto(subState)
     ),
+
+    isForSale: Boolean(model.isForSale),
+    quantityField:
+      model.quantityField !== undefined
+        ? fieldToReadDto(model.quantityField)
+        : undefined,
+    priceField:
+      model.priceField !== undefined
+        ? fieldToReadDto(model.priceField)
+        : undefined,
+
     createdAt: model.createdAt,
     updatedAt: model.updatedAt,
   };

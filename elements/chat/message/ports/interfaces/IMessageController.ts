@@ -6,10 +6,10 @@ import {
   IPopulatedMessageReadDto,
 } from "roottypes";
 
-import IRequest from "../../../../globalTypes/IRequest";
-import IResponseDto from "../../../../globalTypes/IResponseDto";
-import IPaginationResponse from "../../../../globalTypes/IPaginationResponse";
-import IUser from "../../../user/ports/interfaces/IUser";
+import IRequest from "../../../../../globalTypes/IRequest";
+import IResponseDto from "../../../../../globalTypes/IResponseDto";
+import IPaginationResponse from "../../../../../globalTypes/IPaginationResponse";
+import IUser from "../../../../user/ports/interfaces/IUser";
 
 type IMessageController = {
   createMessage: (

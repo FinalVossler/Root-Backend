@@ -7,9 +7,9 @@ import {
 
 import { populatedMessageToReadDto } from "./message.toReadDto";
 import IPopulatedMessage from "./interfaces/IPopulatedMessage";
-import IUser from "../../user/ports/interfaces/IUser";
+import IUser from "../../../user/ports/interfaces/IUser";
 import IMessageController from "./interfaces/IMessageController";
-import IRequest from "../../../globalTypes/IRequest";
+import IRequest from "../../../../globalTypes/IRequest";
 import IMessageService from "./interfaces/IMessageService";
 
 const createMessageController = (

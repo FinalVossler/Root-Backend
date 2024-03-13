@@ -1,6 +1,6 @@
-import IFile from "../../../file/ports/interfaces/IFile";
+import IFile from "../../../../file/ports/interfaces/IFile";
 import IReaction from "../../../reaction/ports/interfaces/IReaction";
-import IUser from "../../../user/ports/interfaces/IUser";
+import IUser from "../../../../user/ports/interfaces/IUser";
 
 export default interface IPopulatedMessage {
   _id: string;

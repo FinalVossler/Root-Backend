@@ -5,7 +5,7 @@ import {
 
 import { fileToReadDto } from "../../file/ports/file.toReadDto";
 import { roleToReadDto } from "../../role/ports/role.toReadDto";
-import { messageToReadDto } from "../../message/ports/message.toReadDto";
+import { messageToReadDto } from "../../chat/message/ports/message.toReadDto";
 import IUser, {
   IUserWithLastReadMessageInConversation,
 } from "./interfaces/IUser";

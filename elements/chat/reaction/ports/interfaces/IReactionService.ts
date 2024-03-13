@@ -1,13 +1,13 @@
 import { IReactionCreateCommand } from "roottypes";
 
-import IUser from "../../../user/ports/interfaces/IUser";
+import IUser from "../../../../user/ports/interfaces/IUser";
 import IReaction from "./IReaction";
 
-interface IReactionRepository {
+interface IReactionService {
   create: (
     command: IReactionCreateCommand,
     currentUser: IUser
   ) => Promise<IReaction>;
 }
 
-export default IReactionRepository;
+export default IReactionService;

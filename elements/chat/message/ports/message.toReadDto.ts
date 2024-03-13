@@ -6,9 +6,9 @@ import {
   IUserReadDto,
 } from "roottypes";
 
-import { fileToReadDto } from "../../file/ports/file.toReadDto";
+import { fileToReadDto } from "../../../file/ports/file.toReadDto";
 import { reactionToReadDto } from "../../reaction/ports/reaction.toReadDto";
-import { userToReadDto } from "../../user/ports/user.toReadDto";
+import { userToReadDto } from "../../../user/ports/user.toReadDto";
 import IMessage from "./interfaces/IMessage";
 import IPopulatedMessage from "./interfaces/IPopulatedMessage";
 

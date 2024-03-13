@@ -1,4 +1,4 @@
-import IUser from "../../../user/ports/interfaces/IUser";
+import IUser from "../../../../user/ports/interfaces/IUser";
 
 export default interface IReaction {
   _id: string;

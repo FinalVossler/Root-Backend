@@ -1,6 +1,6 @@
 import express from "express";
 
-import protectMiddleware from "../../../middleware/protectMiddleware";
+import protectMiddleware from "../../../../middleware/protectMiddleware";
 import messageExpressController from "./message.express.controller";
 
 const {

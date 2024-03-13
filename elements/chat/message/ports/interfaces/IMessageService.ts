@@ -4,11 +4,11 @@ import {
   IMessageSendCommand,
 } from "roottypes";
 
-import IUser from "../../../user/ports/interfaces/IUser";
+import IUser from "../../../../user/ports/interfaces/IUser";
 import IPopulatedMessage from "./IPopulatedMessage";
 import IMessage from "./IMessage";
 
-interface IMessageRepository {
+interface IMessageService {
   sendMessage: (
     command: IMessageSendCommand,
     currentUser: IUser
@@ -16,20 +16,21 @@ interface IMessageRepository {
   getMessagesBetweenUsers: (
     command: IMessageGetBetweenUsersCommand
   ) => Promise<IPopulatedMessage[]>;
-  getByIds: (messagesIds: string[]) => Promise<IPopulatedMessage[]>;
-  markAllConversationMessagesAsReadByUser: (
-    to: string[],
-    userId: string
-  ) => Promise<IPopulatedMessage | null>;
-  getTotalMessages: (
+  markAllConversationMessagesAsReadByUser: ({
+    to,
+    currentUser,
+  }: {
+    to: string[];
+    currentUser: IUser;
+  }) => Promise<IPopulatedMessage | null>;
+  getTotalMessagesBetweenUsers: (
     command: IMessageGetBetweenUsersCommand
   ) => Promise<number>;
   getTotalUnreadMessages: (
     usersIds: string[],
     currentUserId: string
   ) => Promise<number>;
-  deleteMessage: (messageId: string) => Promise<void>;
-  getMessage: (messageId: string) => Promise<IPopulatedMessage>;
+  deleteMessage: (messageId: string, currentUser: IUser) => Promise<void>;
   getLastConversationsLastMessages: (
     command: IMessageGetLastConversations,
     currentUser: IUser
@@ -45,4 +46,4 @@ interface IMessageRepository {
   }) => Promise<IMessage | null>;
 }
 
-export default IMessageRepository;
+export default IMessageService;

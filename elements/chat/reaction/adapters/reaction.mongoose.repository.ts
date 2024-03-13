@@ -2,7 +2,7 @@ import Reaction from "./reaction.mongoose.model";
 import Message from "../../message/adapters/message.mongoose.model";
 import mongoose from "mongoose";
 import { IReactionCreateCommand } from "roottypes";
-import IUser from "../../user/ports/interfaces/IUser";
+import IUser from "../../../user/ports/interfaces/IUser";
 import IReaction from "../ports/interfaces/IReaction";
 import IMessage from "../../message/ports/interfaces/IMessage";
 import IReactionRepository from "../ports/interfaces/IReactionRepository";
