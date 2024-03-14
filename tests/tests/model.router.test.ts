@@ -86,6 +86,7 @@ describe("Models", () => {
   it("should create a model", () => {
     const command: IModelCreateCommand = {
       language: "en",
+      isForSale: false,
       modelEvents: [],
       modelFields: [
         {
@@ -147,6 +148,7 @@ describe("Models", () => {
     const command: IModelUpdateCommand = {
       _id: modelToUpdate?._id.toString() || "",
       language: "en",
+      isForSale: false,
       modelEvents: [
         {
           eventTrigger: EventTriggerEnum.OnCreate,

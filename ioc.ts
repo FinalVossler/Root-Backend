@@ -53,6 +53,9 @@ import websiteConfigurationMongooseRepository from "./elements/websiteConfigurat
 import createWebsiteConfigurationService from "./elements/websiteConfiguration/ports/websiteConfiguration.service";
 import adaptBcrypt from "./utils/adaptBcrypt";
 import adaptJsonWebTokenHandler from "./utils/adaptJsonWebTokenHandler";
+import ICartService from "./elements/ecommerce/cart/ports/interfaces/ICartService";
+import createCartService from "./elements/ecommerce/cart/ports/cart.service";
+import cartMongooseRepository from "./elements/ecommerce/cart/adapters/cart.mongoose.repository";
 
 export const websiteConfigurationService = createWebsiteConfigurationService(
   websiteConfigurationMongooseRepository
@@ -141,4 +144,8 @@ export const reactionService: IReactionService = createReactionService(
   reactionMongooseRepository,
   messageService,
   socketService
+);
+
+export const cartService: ICartService = createCartService(
+  cartMongooseRepository
 );

@@ -15,6 +15,7 @@ import notificationRouter from "./elements/notification/adapters/notification.ex
 import microFrontendRouter from "./elements/microFontend/adapters/microFrontend.express.router";
 import reactionRouter from "./elements/chat/reaction/adapters/reaction.express.router";
 import testsPreparationRouter from "./elements/testsPreparation/adapters/testsPreparation.express.router";
+import cartRouter from "./elements/ecommerce/cart/adapters/cart.express.router";
 
 const router = Router();
 
@@ -33,6 +34,7 @@ router.use("/notifications", notificationRouter);
 router.use("/microFrontends", microFrontendRouter);
 router.use("/reactions", reactionRouter);
 router.use("/testsPreparation", testsPreparationRouter);
+router.use("/cart", cartRouter);
 
 router.use("/", (req: Request, res: Response) => {
   res.status(200).send("Hello!");

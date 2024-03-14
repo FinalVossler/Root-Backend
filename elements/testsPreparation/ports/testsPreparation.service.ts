@@ -54,6 +54,7 @@ import IFile from "../../file/ports/interfaces/IFile";
 import IFieldTableElement from "../../fieldTableElement/ports/IFieldTableElement";
 import IFieldRepository from "../../field/ports/interfaces/IFieldRepository";
 import IMicroFrontendComponent from "../../microFontendComponent/ports/interfaces/IMicroFrontendComponent";
+import Cart from "../../ecommerce/cart/adapters/cart.mongoose.model";
 
 const createTestsPreparationService = (
   fieldRepository: IFieldRepository
@@ -86,6 +87,8 @@ const createTestsPreparationService = (
     await Notification.deleteMany({});
 
     await MicroFrontend.deleteMany({});
+
+    await Cart.deleteMany({});
   },
   createFile: async (url: string, currentUser: IUser): Promise<IFile> => {
     const file: IFileCommand = {

@@ -73,11 +73,11 @@ const entityMongooseRepository: IEntityRepository = {
       assignedUsers: command.assignedUsersIds,
     });
 
-    return entity.populate(populationOptions);
+    return entity.populate(entityPopulationOptions);
   },
   update: async function (command: IEntityUpdateCommand): Promise<IEntity> {
     const entity: IEntity | null = await Entity.findById(command._id).populate(
-      populationOptions
+      entityPopulationOptions
     );
 
     if (!entity) {
@@ -185,7 +185,7 @@ const entityMongooseRepository: IEntityRepository = {
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
       .limit(command.paginationCommand.limit)
-      .populate(populationOptions)
+      .populate(entityPopulationOptions)
       .exec();
 
     const total: number = await Entity.find({ model: command.modelId }).count();
@@ -204,7 +204,7 @@ const entityMongooseRepository: IEntityRepository = {
   getById: async (entityId: string): Promise<IEntity | undefined> => {
     const entity: IEntity | undefined = await (
       await Entity.findById(new mongoose.Types.ObjectId(entityId))
-    )?.populate(populationOptions);
+    )?.populate(entityPopulationOptions);
 
     return entity;
   },
@@ -222,7 +222,7 @@ const entityMongooseRepository: IEntityRepository = {
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
       .limit(command.paginationCommand.limit)
-      .populate(populationOptions)
+      .populate(entityPopulationOptions)
       .exec();
 
     const total: number = await Entity.find(findCondition).count();
@@ -246,7 +246,7 @@ const entityMongooseRepository: IEntityRepository = {
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
       .limit(command.paginationCommand.limit)
-      .populate(populationOptions);
+      .populate(entityPopulationOptions);
 
     const total = await Entity.find({
       model: { _id: command.modelId },
@@ -297,13 +297,13 @@ const entityMongooseRepository: IEntityRepository = {
   },
 };
 
-const populationOptions = [
+export const entityPopulationOptions = [
   {
     path: "entityFieldValues",
     populate: [
       {
         path: "field",
-        model: Field.modelName,
+        model: "field",
       },
       {
         path: "files",

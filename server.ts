@@ -19,8 +19,6 @@ app.use(express.json());
 
 app.use(router);
 
-app.use(errorMiddleware);
-
 const PORT = process.env.PORT || 5000;
 
 // Tests will automatically run on Port 0 by supertest:

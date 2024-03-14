@@ -1,6 +1,6 @@
 import request from "supertest";
-import entityRepository from "../../elements/entity/adapters/entity.mongoose.repository";
-import modelRepository from "../../elements/model/adapters/model.mongoose.repository";
+import entityMongooseRepository from "../../elements/entity/adapters/entity.mongoose.repository";
+import modelMongooseRepository from "../../elements/model/adapters/model.mongoose.repository";
 import {
   createCreateFieldCommand,
   createCreateModelCommand,
@@ -72,13 +72,14 @@ describe("Entities", () => {
     field1 = res[0];
     field2 = res[1];
 
-    model = await modelRepository.create(
+    model = await modelMongooseRepository.create(
       createCreateModelCommand("Entity test model", [field1, field2])
     );
-    model2ToWhichEntitiesbyModelDontBelong = await modelRepository.create(
-      createCreateModelCommand("Entity test model 2", [field1, field2])
-    );
-    model3ToWhichUserIsAlsoAssigned = await modelRepository.create(
+    model2ToWhichEntitiesbyModelDontBelong =
+      await modelMongooseRepository.create(
+        createCreateModelCommand("Entity test model 2", [field1, field2])
+      );
+    model3ToWhichUserIsAlsoAssigned = await modelMongooseRepository.create(
       createCreateModelCommand("Entity test model 3", [field1, field2])
     );
 
@@ -102,11 +103,11 @@ describe("Entities", () => {
       language: "en",
       modelId: model._id.toString(),
     };
-    entityToGetByIdAndToUseForModel1 = await entityRepository.create(
+    entityToGetByIdAndToUseForModel1 = await entityMongooseRepository.create(
       createEntityCommand
     );
-    entityToUpdate = await entityRepository.create(createEntityCommand);
-    entityThatBelongsToModel2 = await entityRepository.create({
+    entityToUpdate = await entityMongooseRepository.create(createEntityCommand);
+    entityThatBelongsToModel2 = await entityMongooseRepository.create({
       ...createEntityCommand,
       modelId: model2ToWhichEntitiesbyModelDontBelong._id.toString(),
     });
@@ -133,25 +134,27 @@ describe("Entities", () => {
       assignedUser2CreateCommand
     );
 
-    model1AssignedEntity = await entityRepository.create({
+    model1AssignedEntity = await entityMongooseRepository.create({
       ...createEntityCommand,
       assignedUsersIds: [assignedUser1._id.toString()],
     });
-    model1UnassignedEntity = await entityRepository.create(createEntityCommand);
-    model3AssignedEntity = await entityRepository.create({
+    model1UnassignedEntity = await entityMongooseRepository.create(
+      createEntityCommand
+    );
+    model3AssignedEntity = await entityMongooseRepository.create({
       ...createEntityCommand,
       assignedUsersIds: [assignedUser1._id.toString()],
       modelId: model3ToWhichUserIsAlsoAssigned._id.toString(),
     });
-    entityToDelete = await entityRepository.create(createEntityCommand);
-    entityToFindInSearch = await entityRepository.create({
+    entityToDelete = await entityMongooseRepository.create(createEntityCommand);
+    entityToFindInSearch = await entityMongooseRepository.create({
       ...createEntityCommand,
       entityFieldValues: [
         { ...entityField1ValueCommand1, value: searchByText },
         { ...entityField1ValueCommand2, value: "Whatever" },
       ],
     });
-    entityToNotFindInSearch = await entityRepository.create({
+    entityToNotFindInSearch = await entityMongooseRepository.create({
       ...createEntityCommand,
       entityFieldValues: [
         { ...entityField1ValueCommand1, value: "Nope" },
@@ -164,24 +167,26 @@ describe("Entities", () => {
     const promises: Promise<any>[] = [];
     if (entityToGetByIdAndToUseForModel1) {
       promises.push(
-        entityRepository.deleteEntities([
+        entityMongooseRepository.deleteEntities([
           entityToGetByIdAndToUseForModel1._id.toString(),
         ])
       );
     }
     if (model) {
-      promises.push(modelRepository.deleteModels([model._id.toString()]));
+      promises.push(
+        modelMongooseRepository.deleteModels([model._id.toString()])
+      );
     }
     if (model2ToWhichEntitiesbyModelDontBelong) {
       promises.push(
-        modelRepository.deleteModels([
+        modelMongooseRepository.deleteModels([
           model2ToWhichEntitiesbyModelDontBelong._id.toString(),
         ])
       );
     }
     if (model3ToWhichUserIsAlsoAssigned) {
       promises.push(
-        modelRepository.deleteModels([
+        modelMongooseRepository.deleteModels([
           model3ToWhichUserIsAlsoAssigned._id.toString(),
         ])
       );
@@ -198,12 +203,12 @@ describe("Entities", () => {
     }
     if (createdEntity) {
       promises.push(
-        entityRepository.deleteEntities([createdEntity._id.toString()])
+        entityMongooseRepository.deleteEntities([createdEntity._id.toString()])
       );
     }
     if (entityToUpdate) {
       promises.push(
-        entityRepository.deleteEntities([entityToUpdate._id.toString()])
+        entityMongooseRepository.deleteEntities([entityToUpdate._id.toString()])
       );
     }
     if (assignedUser1) {
@@ -214,39 +219,47 @@ describe("Entities", () => {
     }
     if (entityThatBelongsToModel2) {
       promises.push(
-        entityRepository.deleteEntities([
+        entityMongooseRepository.deleteEntities([
           entityThatBelongsToModel2._id.toString(),
         ])
       );
     }
     if (model1AssignedEntity) {
       promises.push(
-        entityRepository.deleteEntities([model1AssignedEntity._id.toString()])
+        entityMongooseRepository.deleteEntities([
+          model1AssignedEntity._id.toString(),
+        ])
       );
     }
     if (model1UnassignedEntity) {
       promises.push(
-        entityRepository.deleteEntities([model1UnassignedEntity._id.toString()])
+        entityMongooseRepository.deleteEntities([
+          model1UnassignedEntity._id.toString(),
+        ])
       );
     }
     if (model3AssignedEntity) {
       promises.push(
-        entityRepository.deleteEntities([model3AssignedEntity._id.toString()])
+        entityMongooseRepository.deleteEntities([
+          model3AssignedEntity._id.toString(),
+        ])
       );
     }
     if (entityToDelete) {
       promises.push(
-        entityRepository.deleteEntities([entityToDelete._id.toString()])
+        entityMongooseRepository.deleteEntities([entityToDelete._id.toString()])
       );
     }
     if (entityToFindInSearch) {
       promises.push(
-        entityRepository.deleteEntities([entityToFindInSearch._id.toString()])
+        entityMongooseRepository.deleteEntities([
+          entityToFindInSearch._id.toString(),
+        ])
       );
     }
     if (entityToNotFindInSearch) {
       promises.push(
-        entityRepository.deleteEntities([
+        entityMongooseRepository.deleteEntities([
           entityToNotFindInSearch._id.toString(),
         ])
       );
