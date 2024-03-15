@@ -23,6 +23,8 @@ import IEntity from "./interfaces/IEntity";
 import IEntityService from "./interfaces/IEntityService";
 import IEntityEventNotificationService from "../../entityEventNotification/ports/interfaces/IEntityEventNotificationService";
 import IEntityPermission from "../../entityPermission/ports/interfaces/IEntityPermission";
+import IFile from "../../file/ports/interfaces/IFile";
+import IFieldTableElement from "../../fieldTableElement/ports/IFieldTableElement";
 
 const createEntityService = (
   roleService: IRoleService,
@@ -45,7 +47,7 @@ const createEntityService = (
     invalidFields: IModelField[];
     errorText: string;
   }> {
-    const model: IModel = await modelService.getById(modelId, currentUser);
+    const model: IModel = await modelService.getById(modelId);
 
     const invalidFields: IModelField[] = [];
 
@@ -341,6 +343,71 @@ const createEntityService = (
     command: IEntitiesSetCustomDataKeyValueCommand
   ): Promise<void> => {
     await entityRepository.setCustomDataKeyValue(command);
+  },
+  checkStock: async function (entity: IEntity, reduceBy: number) {
+    const model: IModel = await modelService.getById(
+      entity.model._id.toString()
+    );
+
+    const oldStockAsString: string | undefined = entity.entityFieldValues
+      .find(
+        (f) =>
+          (f.field as IField)._id.toString() ===
+          (model.priceField as IField)._id.toString()
+      )
+      ?.value.at(0)?.text;
+    if (!oldStockAsString) {
+      throw new Error("Product doesn't have any stock information");
+    }
+
+    const oldStock = parseInt(oldStockAsString);
+
+    if (reduceBy > oldStock) {
+      throw new Error("Insufficient stock");
+    }
+
+    return { model, stock: oldStock };
+  },
+  reduceStock: async function (entity: IEntity, reduceBy: number) {
+    const { model, stock: oldStock } = await this.checkStock(entity, reduceBy);
+
+    const newStock: number = oldStock - reduceBy;
+
+    const command: IEntityUpdateCommand = {
+      _id: entity._id.toString(),
+      modelId: model._id.toString(),
+      assignedUsersIds:
+        entity.assignedUsers?.map((u: IUser) => u._id.toString()) || [],
+      entityFieldValues: entity.entityFieldValues.map((fieldValue) => ({
+        fieldId: (fieldValue.field as IField)._id,
+        files: (fieldValue.files as IFile[]).map((file) => ({
+          ...file,
+        })),
+        tableValues:
+          fieldValue.tableValues?.map((tableValue) => ({
+            columnId: (tableValue.column as IFieldTableElement)._id.toString(),
+            rowId: (tableValue.row as IFieldTableElement)._id.toString(),
+            value: tableValue.value.at(0)?.text || "",
+          })) || [],
+        // Here change the stock
+        value:
+          (fieldValue.field as IField)._id.toString() ===
+          (model.priceField as IField)._id.toString()
+            ? newStock + ""
+            : fieldValue.value.at(0)?.text || "",
+        yearTableValues:
+          fieldValue.yearTableValues?.map((tableValue) => ({
+            rowId: (tableValue.row as IFieldTableElement)._id.toString(),
+            values: tableValue.values.map((value) => ({
+              year: value.year,
+              value: value.value.at(0)?.text || "",
+            })),
+          })) || [],
+      })),
+      language: entity.entityFieldValues.at(0)?.value.at(0)?.language || "en",
+    };
+
+    await entityRepository.update(command);
   },
 });
 

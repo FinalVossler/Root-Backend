@@ -56,6 +56,18 @@ import adaptJsonWebTokenHandler from "./utils/adaptJsonWebTokenHandler";
 import ICartService from "./elements/ecommerce/cart/ports/interfaces/ICartService";
 import createCartService from "./elements/ecommerce/cart/ports/cart.service";
 import cartMongooseRepository from "./elements/ecommerce/cart/adapters/cart.mongoose.repository";
+import IOrderService from "./elements/ecommerce/order/ports/interfaces/IOrderService";
+import createOrderService from "./elements/ecommerce/order/ports/order.service";
+import orderMongooseRepository from "./elements/ecommerce/order/adapters/order.mongoose.repository";
+import IPaymentMethodService from "./elements/ecommerce/paymentMethod/ports/interfaces/IPaymentMethodService";
+import createPaymentMethodService from "./elements/ecommerce/paymentMethod/ports/paymentMethod.service";
+import paymentMethodMongooseRepository from "./elements/ecommerce/paymentMethod/adapters/paymentMethod.mongoose.repository";
+import IShippingMethodService from "./elements/ecommerce/shippingMethod/ports/interfaces/IShippingMethodService";
+import createShippingMethodService from "./elements/ecommerce/shippingMethod/ports/shippingMethod.service";
+import shippingMethodMongooseRepository from "./elements/ecommerce/shippingMethod/adapters/shippingMethod.mongoose.repository";
+import IPaymentService, {
+  IMakePaymentCommand,
+} from "./elements/ecommerce/order/ports/interfaces/IPaymentService";
 
 export const websiteConfigurationService = createWebsiteConfigurationService(
   websiteConfigurationMongooseRepository
@@ -149,3 +161,20 @@ export const reactionService: IReactionService = createReactionService(
 export const cartService: ICartService = createCartService(
   cartMongooseRepository
 );
+
+const paymentService: IPaymentService = {
+  makePayment: (command: IMakePaymentCommand) =>
+    new Promise((resolve) => resolve("checkoutsessionid")),
+};
+
+export const paymentMethodService: IPaymentMethodService =
+  createPaymentMethodService(paymentMethodMongooseRepository, roleService);
+
+export const orderService: IOrderService = createOrderService(
+  orderMongooseRepository,
+  paymentService,
+  paymentMethodService
+);
+
+export const shippingMethodService: IShippingMethodService =
+  createShippingMethodService(shippingMethodMongooseRepository, roleService);

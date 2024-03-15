@@ -9,7 +9,7 @@ import {
 
 import IUser from "../../../user/ports/interfaces/IUser";
 import IEntity from "./IEntity";
-import { IModelField } from "../../../model/ports/interfaces/IModel";
+import IModel, { IModelField } from "../../../model/ports/interfaces/IModel";
 
 interface IEntityService {
   verifyRequiredFields: (
@@ -60,6 +60,11 @@ interface IEntityService {
   setCustomDataKeyValue: (
     command: IEntitiesSetCustomDataKeyValueCommand
   ) => Promise<void>;
+  checkStock: (
+    entity: IEntity,
+    checkBy: number
+  ) => Promise<{ model: IModel; stock: number }>;
+  reduceStock: (entity: IEntity, reduceBy: number) => Promise<void>;
 }
 
 export default IEntityService;

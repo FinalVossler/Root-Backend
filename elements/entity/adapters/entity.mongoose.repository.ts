@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import Entity from "./entity.mongoose.model";
 import Model from "../../model/adapters/model.mongoose.model";
 import getNewTranslatedTextsForUpdate from "../../../utils/getNewTranslatedTextsForUpdate";
-import Field from "../../field/adapters/field.mongoose.model";
 import fileRepository from "../../file/adapters/file.mongoose.repository";
 import {
   IEntitiesGetCommand,
