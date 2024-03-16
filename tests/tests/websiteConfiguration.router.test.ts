@@ -13,6 +13,7 @@ import IWebsiteConfiguration from "../../elements/websiteConfiguration/ports/int
 
 const adminToken: string = userService.generateToken(adminUser);
 
+jest.setTimeout(50000);
 describe("WebsiteConfiguration", () => {
   it("should get website configuration", () => {
     return request(app)

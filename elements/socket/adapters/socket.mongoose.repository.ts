@@ -58,7 +58,9 @@ const socketMongooseRepository: ISocketRepository = {
     }).populate("user");
 
     return {
-      onlineUsersIds: onlineUsersSockets.map((el) => el.user._id.toString()),
+      onlineUsersIds: onlineUsersSockets
+        .filter((el) => Boolean(el.user))
+        .map((el) => el.user?._id.toString()) as string[],
       onlineUsersSockets: onlineUsersSockets,
     };
   },

@@ -50,6 +50,9 @@ const cartMongooseRepository: ICartRepository = {
 
     return cart;
   },
+  deleteUserCart: async (userId: string) => {
+    await Cart.deleteOne({ user: new mongoose.Types.ObjectId(userId) });
+  },
 };
 
 const populationOptions = [

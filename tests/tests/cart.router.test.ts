@@ -22,6 +22,7 @@ import modelMongooseRepository from "../../elements/model/adapters/model.mongoos
 import entityMongooseRepository from "../../elements/entity/adapters/entity.mongoose.repository";
 import IModel from "../../elements/model/ports/interfaces/IModel";
 import IEntity from "../../elements/entity/ports/interfaces/IEntity";
+import cartMongooseRepository from "../../elements/ecommerce/cart/adapters/cart.mongoose.repository";
 
 jest.setTimeout(50000);
 describe("Carts", () => {
@@ -85,6 +86,8 @@ describe("Carts", () => {
         .filter((el) => Boolean(el))
         .map((el) => el?._id.toString()) as string[]
     );
+
+    await cartMongooseRepository.deleteUserCart(adminUser._id.toString());
 
     if (sellableEntity)
       await entityMongooseRepository.deleteEntities([

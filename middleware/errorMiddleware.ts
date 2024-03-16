@@ -6,7 +6,6 @@ const errorMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  console.log("error", JSON.stringify(error));
   if (error != null) {
     return res
       .status(500)

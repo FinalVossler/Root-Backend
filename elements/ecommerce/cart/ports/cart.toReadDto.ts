@@ -6,6 +6,7 @@ import IEntity from "../../../entity/ports/interfaces/IEntity";
 
 const cartToReadDto = (cart: ICart): ICartReadDto => {
   return {
+    _id: cart._id,
     products: cart.products?.map((productInformation) => {
       return {
         product: entityToReadDto(productInformation.product as IEntity),

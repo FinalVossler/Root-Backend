@@ -12,6 +12,7 @@ const createCartController = (cartService: ICartService): ICartController => {
     getUserCart: async (req: IRequest, currentUser: IUser) => {
       const cart: ICart = await cartService.getUserCart(currentUser);
 
+      console.log("cart", cart);
       return {
         success: true,
         data: cartToReadDto(cart),

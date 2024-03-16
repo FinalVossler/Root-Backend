@@ -67,7 +67,9 @@ export const createSocketService = (
             const typingStateCommand: ISocketTypingStateCommand = {
               isTyping: false,
               toUsersIds: typingState.toUsersIds,
-              user: userToReadDto(userSocket.user) as IUserReadDto,
+              user: (userSocket.user
+                ? userToReadDto(userSocket.user)
+                : null) as IUserReadDto,
               userId: userId,
             };
 
@@ -122,9 +124,11 @@ export const createSocketService = (
       | { reaction: IReactionReadDto; message: IMessageReadDto }
       | { lastMarkedMessageAsRead: IPopulatedMessageReadDto | null; by: IUser };
   }) {
+    // Get online users and their sockets
     const { onlineUsersIds, onlineUsersSockets } =
       await socketRepository.getOnlineUsers();
 
+    // Find online concerned users amongst all online users (Todo: need to do this )
     const onlineConcernedUsersIds: string[] = userIds
       .map((userId) => userId.toString())
       .filter((userId) =>
@@ -170,12 +174,13 @@ export const createSocketService = (
       Promise.all(sendEmailsToOfflineUsersPromises);
     }
 
+    // concat all sockets ids of concerned only users (one user can have many socket ids: mobile, web ,etc...)
     if (onlineConcernedUsersIds.length > 0) {
       const socketIds: string[] = onlineConcernedUsersIds.reduce(
         //@ts-ignore
         (acc: string[], userId) =>
           acc.concat(
-            onlineUsersSockets.find((el) => el.user._id.toString() === userId)
+            onlineUsersSockets.find((el) => el.user?._id.toString() === userId)
               ?.socketIds || []
           ),
         []
