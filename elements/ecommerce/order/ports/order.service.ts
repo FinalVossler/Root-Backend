@@ -124,7 +124,9 @@ const createOrderService = (
 
       await Promise.all(reduceStockPromises);
 
-      return order;
+      return (await orderRepository.getOrderById(
+        order._id.toString()
+      )) as IOrder;
     },
   };
 };

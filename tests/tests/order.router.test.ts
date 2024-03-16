@@ -224,7 +224,8 @@ describe("Orders", () => {
 
   it("should update order status", () => {
     return request(app)
-      .put("/orders")
+      .put("/orders/updateOrderStatus")
+      .set("Authorization", "Bearer " + adminToken)
       .send({
         orderId: orderToUpdateAndCheckout?._id.toString(),
         status: OrderStatusEnum.OnHold,
@@ -246,6 +247,7 @@ describe("Orders", () => {
     expect(orderToUpdateAndCheckout?.checkoutSessionId).toBeUndefined;
     return request(app)
       .post("/orders/checkout")
+      .set("Authorization", "Bearer " + adminToken)
       .send(command)
       .expect(200)
       .then((res) => {

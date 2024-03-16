@@ -41,7 +41,8 @@ const orderMongooseRepository: IOrderRepository = {
   updateOrderStatus: async (orderId: string, status: OrderStatusEnum) => {
     return await Order.findOneAndUpdate(
       { _id: new mongoose.Types.ObjectId(orderId) },
-      { $set: { status } }
+      { $set: { status } },
+      { new: true }
     ).populate(populationOptions);
   },
   deleteOrders: async (ordersIds: string[]) => {

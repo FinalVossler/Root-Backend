@@ -2,8 +2,8 @@ import express from "express";
 import cors from "cors";
 import { config as dotenvConfig } from "dotenv";
 import http from "http";
-
 import mongoose from "./mongoose";
+
 import router from "./router";
 import errorMiddleware from "./middleware/errorMiddleware";
 import { socketService } from "./ioc";
