@@ -1,23 +1,24 @@
 import request from "supertest";
+import {
+  IPaymentMethodCreateCommand,
+  IPaymentMethodReadDto,
+  IPaymentMethodUpdateCommand,
+} from "roottypes";
 
 import paymentMethodMongooseRepository from "../../elements/ecommerce/paymentMethod/adapters/paymentMethod.mongoose.repository";
 import IPaymentMethod from "../../elements/ecommerce/paymentMethod/ports/interfaces/IPaymentMethod";
 import { userService } from "../../ioc";
 import { adminUser } from "../fixtures";
 import IResponseDto from "../../globalTypes/IResponseDto";
-import {
-  IPaymentMethodCreateCommand,
-  IPaymentMethodReadDto,
-  IPaymentMethodUpdateCommand,
-} from "roottypes";
 import app from "../../server";
 
 jest.setTimeout(50000);
-describe("Carts", () => {
+describe("PaymentMethods", () => {
   const adminToken: string = userService.generateToken(adminUser);
   let paymentMethodToGet: IPaymentMethod | undefined;
   let paymentMethodToUpdate: IPaymentMethod | undefined;
   let paymentMethodToDelete: IPaymentMethod | undefined;
+  let createdPaymentMethod: IPaymentMethod | null;
 
   beforeAll(async () => {
     paymentMethodToGet =
@@ -40,6 +41,19 @@ describe("Carts", () => {
         name: "cardToDelete",
         slug: "card-to-delete",
       });
+  });
+
+  afterAll(async () => {
+    const ids: string[] = [
+      paymentMethodToDelete,
+      paymentMethodToGet,
+      paymentMethodToUpdate,
+      createdPaymentMethod,
+    ]
+      .filter((el) => Boolean(el))
+      .map((el) => el?._id.toString()) as string[];
+
+    await paymentMethodMongooseRepository.deletePaymentMethods(ids);
   });
 
   it("should get payment methods", () => {
@@ -73,6 +87,8 @@ describe("Carts", () => {
         const res: IResponseDto<IPaymentMethodReadDto> = result.body;
 
         expect(res.success).toBeTruthy();
+
+        createdPaymentMethod = res.data;
 
         expect(res.data?.slug).toEqual(createCommand.slug);
         expect(res.data?.name.at(0)?.text).toEqual(createCommand.name);

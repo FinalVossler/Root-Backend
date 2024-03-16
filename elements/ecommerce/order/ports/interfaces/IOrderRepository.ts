@@ -13,6 +13,7 @@ interface IOrderRepository {
     orderId: string,
     checkoutSessionId: string
   ) => Promise<IOrder | null>;
+  deleteOrders: (orderIds: string[]) => Promise<void>;
 }
 
 export default IOrderRepository;

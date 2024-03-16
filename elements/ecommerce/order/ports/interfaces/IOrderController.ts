@@ -1,4 +1,9 @@
-import { IOrderCreateCommand, IOrderReadDto, OrderStatusEnum } from "roottypes";
+import {
+  IOrderCheckoutCommand,
+  IOrderCreateCommand,
+  IOrderReadDto,
+  OrderStatusEnum,
+} from "roottypes";
 
 import IRequest from "../../../../../globalTypes/IRequest";
 import IUser from "../../../../user/ports/interfaces/IUser";
@@ -11,6 +16,10 @@ type IOrderController = {
   ) => Promise<IResponseDto<IOrderReadDto>>;
   updateOrderStatus: (
     req: IRequest<{ orderId: string; status: OrderStatusEnum }>
+  ) => Promise<IResponseDto<IOrderReadDto>>;
+  checkout: (
+    req: IRequest<IOrderCheckoutCommand>,
+    currentUser: IUser
   ) => Promise<IResponseDto<IOrderReadDto>>;
 };
 

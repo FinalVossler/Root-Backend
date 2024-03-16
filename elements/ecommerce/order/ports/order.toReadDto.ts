@@ -8,6 +8,7 @@ import { userToReadDto } from "../../../user/ports/user.toReadDto";
 
 const orderToReadDto = (order: IOrder): IOrderReadDto => {
   return {
+    _id: order._id,
     date: order.date,
     products: order.products.map((productInformation) => ({
       price: productInformation.price,

@@ -11,5 +11,10 @@ orderRouter.put(
   protectMiddleware,
   orderExpressController.updateOrderStatus
 );
+orderRouter.post(
+  "/checkout",
+  protectMiddleware,
+  orderExpressController.checkout
+);
 
 export default orderRouter;

@@ -36,8 +36,12 @@ const OrderSchema = new mongoose.Schema<IOrder>({
     },
   ],
   shippingAddress: {
-    type: mongoose.SchemaTypes.ObjectId,
-    required: true,
+    country: { type: mongoose.SchemaTypes.String },
+    postalCode: { type: mongoose.SchemaTypes.String },
+    addressLine1: { type: mongoose.SchemaTypes.String },
+    addressLine2: { type: mongoose.SchemaTypes.String },
+    region: { type: mongoose.SchemaTypes.String },
+    city: { type: mongoose.SchemaTypes.String },
   },
   status: {
     type: mongoose.SchemaTypes.String,

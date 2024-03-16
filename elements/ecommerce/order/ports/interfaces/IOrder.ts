@@ -5,6 +5,7 @@ import IShippingMethod from "../../../shippingMethod/ports/interfaces/IShippingM
 import IEntity from "../../../../entity/ports/interfaces/IEntity";
 
 interface IOrder {
+  _id: string;
   user: IUser | string;
   date: string;
   total: number;

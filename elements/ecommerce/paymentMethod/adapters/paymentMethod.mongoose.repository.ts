@@ -46,7 +46,8 @@ const paymentMethodMongooseRepository: IPaymentMethodRepository = {
             }),
             slug: command.slug,
           },
-        }
+        },
+        { new: true }
       );
 
     return newPaymentMethod as IPaymentMethod;
@@ -54,7 +55,9 @@ const paymentMethodMongooseRepository: IPaymentMethodRepository = {
   deletePaymentMethods: async (paymentMethodsIds: string[]) => {
     await PaymentMethod.deleteMany({
       _id: {
-        _in: paymentMethodsIds.map((id) => new mongoose.Types.ObjectId(id)),
+        $in: paymentMethodsIds
+          .filter((el) => Boolean(el))
+          .map((id) => new mongoose.Types.ObjectId(id)),
       },
     });
   },

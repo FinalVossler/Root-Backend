@@ -48,7 +48,8 @@ const shippingMethodMongooseRepository: IShippingMethodRepository = {
             }),
             price: command.price,
           },
-        }
+        },
+        { new: true }
       );
 
     return newShippingMethod as IShippingMethod;
@@ -56,7 +57,9 @@ const shippingMethodMongooseRepository: IShippingMethodRepository = {
   deleteShippingMethods: async (shippingMethodsIds: string[]) => {
     await ShippingMethod.deleteMany({
       _id: {
-        _in: shippingMethodsIds.map((id) => new mongoose.Types.ObjectId(id)),
+        $in: shippingMethodsIds
+          .filter((el) => Boolean(el))
+          .map((id) => new mongoose.Types.ObjectId(id)),
       },
     });
   },

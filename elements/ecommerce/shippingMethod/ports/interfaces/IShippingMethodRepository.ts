@@ -16,7 +16,7 @@ interface IShippingMethodRepository {
   updateShippingMethod: (
     command: IShippingMethodUpdateCommand
   ) => Promise<IShippingMethod>;
-  deleteShippingMethods: (ShippingMethodsIds: string[]) => Promise<void>;
+  deleteShippingMethods: (shippingMethodsIds: string[]) => Promise<void>;
 }
 
 export default IShippingMethodRepository;

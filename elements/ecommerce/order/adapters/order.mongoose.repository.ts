@@ -7,7 +7,21 @@ import { entityPopulationOptions } from "../../../entity/adapters/entity.mongoos
 
 const orderMongooseRepository: IOrderRepository = {
   createOrder: async (command: IOrderCreateCommand) => {
-    const order = (await Order.create(command)).populate(populationOptions);
+    const order = (
+      await Order.create({
+        date: command.date,
+        shippingAddress: { ...command.shippingAddress },
+        shippingMethod: command.shippingMethodId,
+        products: command.products.map((productInfo) => ({
+          product: productInfo.productId,
+          quantity: productInfo.quantity,
+        })),
+        total: command.total,
+        status: command.status,
+        user: command.userId,
+        checkoutSessionId: undefined,
+      })
+    ).populate(populationOptions);
 
     return order;
   },
@@ -29,6 +43,11 @@ const orderMongooseRepository: IOrderRepository = {
       { _id: new mongoose.Types.ObjectId(orderId) },
       { $set: { status } }
     ).populate(populationOptions);
+  },
+  deleteOrders: async (ordersIds: string[]) => {
+    await Order.deleteMany({
+      _id: { $in: ordersIds.map((id) => new mongoose.Types.ObjectId(id)) },
+    });
   },
 };
 

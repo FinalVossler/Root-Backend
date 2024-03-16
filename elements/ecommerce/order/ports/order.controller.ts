@@ -1,4 +1,8 @@
-import { IOrderCreateCommand, OrderStatusEnum } from "roottypes";
+import {
+  IOrderCheckoutCommand,
+  IOrderCreateCommand,
+  OrderStatusEnum,
+} from "roottypes";
 
 import IRequest from "../../../../globalTypes/IRequest";
 import IOrderController from "./interfaces/IOrderController";
@@ -32,6 +36,17 @@ const createOrderController = (
         req.body.orderId,
         req.body.status
       );
+
+      return {
+        success: true,
+        data: orderToReadDto(order),
+      };
+    },
+    checkout: async (
+      req: IRequest<IOrderCheckoutCommand>,
+      currentUser: IUser
+    ) => {
+      const order: IOrder = await orderService.checkout(req.body, currentUser);
 
       return {
         success: true,

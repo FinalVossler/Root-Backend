@@ -38,7 +38,9 @@ export const createCreateFieldCommand = (fieldName) => ({
 
 export const createCreateModelCommand = (
   modelName: string,
-  fields: IField[]
+  fields: IField[],
+  priceFieldId?: string,
+  quantityFieldId?: string
 ): IModelCreateCommand => ({
   isForSale: true,
   language: "en",
@@ -67,4 +69,6 @@ export const createCreateModelCommand = (
       stateType: ModelStateTypeEnum.SubState,
     },
   ],
+  ...(priceFieldId ? { priceFieldId } : {}),
+  ...(quantityFieldId ? { quantityFieldId } : {}),
 });

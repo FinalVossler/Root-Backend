@@ -79,6 +79,25 @@ describe("Carts", () => {
     sellableEntity = await entityMongooseRepository.create(createEntityCommand);
   });
 
+  afterAll(async () => {
+    await fieldMongooseRepository.deleteFields(
+      [field1, field2]
+        .filter((el) => Boolean(el))
+        .map((el) => el?._id.toString()) as string[]
+    );
+
+    if (sellableEntity)
+      await entityMongooseRepository.deleteEntities([
+        sellableEntity?._id.toString(),
+      ]);
+
+    if (sellableModel) {
+      await modelMongooseRepository.deleteModels([
+        sellableModel._id.toString(),
+      ]);
+    }
+  });
+
   it("should get user cart", () => {
     return request(app)
       .get("/cart")
