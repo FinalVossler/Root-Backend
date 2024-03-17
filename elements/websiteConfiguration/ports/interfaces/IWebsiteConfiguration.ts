@@ -13,6 +13,7 @@ export default interface IWebsiteConfiguration {
   withChat?: boolean;
   withRegistration?: boolean;
   withTaskManagement?: boolean;
+  withEcommerce?: boolean;
   theme: ITheme;
   tabIcon?: IFile | string;
   logo1?: IFile | string;

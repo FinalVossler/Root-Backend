@@ -37,6 +37,10 @@ const WebsiteConfigurationSchema = new mongoose.Schema<IWebsiteConfiguration>(
       type: mongoose.SchemaTypes.Boolean,
       default: true,
     },
+    withEcommerce: {
+      type: mongoose.SchemaTypes.Boolean,
+      default: false,
+    },
     theme: {
       type: {
         darkTextColor: mongoose.SchemaTypes.String,

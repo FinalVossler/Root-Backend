@@ -1,4 +1,5 @@
 import { IWebsiteConfigurationUpdateCommand } from "roottypes";
+
 import getNewTranslatedTextsForUpdate from "../../../utils/getNewTranslatedTextsForUpdate";
 import fileRepository from "../../file/adapters/file.mongoose.repository";
 import WebsiteConfiguration from "./websiteConfiguration.mongoose.model";
@@ -61,6 +62,7 @@ const websiteConfigurationMongooseRepository: IWebsiteConfigurationRepository =
             withChat: command.withChat,
             withRegistration: command.withRegistration,
             withTaskManagement: command.withTaskManagement,
+            withEcommerce: command.withEcommerce,
             theme: command.theme,
             tabIcon: tabIcon?._id,
             logo1: logo1?._id,

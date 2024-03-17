@@ -17,6 +17,7 @@ export const websiteConfigurationToReadDto = (
     withChat: websiteConfiguration.withChat,
     withRegistration: websiteConfiguration.withRegistration,
     withTaskManagement: websiteConfiguration.withTaskManagement,
+    withEcommerce: websiteConfiguration.withEcommerce,
     theme: websiteConfiguration.theme,
     staticText: websiteConfiguration.staticText,
     tabIcon: websiteConfiguration.tabIcon
