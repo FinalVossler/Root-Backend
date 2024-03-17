@@ -1370,7 +1370,7 @@ const createTestsPreparationService = (
         name: "",
         yearTable: false,
       },
-      type: FieldTypeEnum.Number,
+      type: FieldTypeEnum.Text,
       options: [],
     };
     const priceFieldCreateCommand: IFieldCreateCommand = {
@@ -1407,14 +1407,14 @@ const createTestsPreparationService = (
       canChooseFromExistingFiles: true,
       fieldEvents: [],
       language: "en",
-      name: "Price",
+      name: "Description",
       tableOptions: {
         columns: [],
         rows: [],
         name: "",
         yearTable: false,
       },
-      type: FieldTypeEnum.Number,
+      type: FieldTypeEnum.Paragraph,
       options: [],
     };
 
@@ -1490,7 +1490,7 @@ const createTestsPreparationService = (
           fieldId: imageField._id,
           mainField: false,
           modelStatesIds: [],
-          required: true,
+          required: false,
           stickInTable: false,
           conditions: [],
         },
