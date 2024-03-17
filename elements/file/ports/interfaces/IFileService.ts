@@ -14,6 +14,7 @@ interface IFileService {
   getUnownedFiles: (
     command: IFileGetUnownedAndSelectedFilesCommand
   ) => Promise<{ files: IFile[]; total: number }>;
+  deleteUsersFiles: (usersIds: string[]) => Promise<void>;
 }
 
 export default IFileService;

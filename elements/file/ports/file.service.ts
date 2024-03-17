@@ -23,6 +23,9 @@ const createFileService = (fileRepository: IFileRepository) => ({
 
     return { files, total };
   },
+  deleteUsersFiles: async (usersIds: string[]) => {
+    return await fileRepository.deleteUsersFiles(usersIds);
+  },
 });
 
 export default createFileService;

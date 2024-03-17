@@ -8,6 +8,7 @@ interface IReactionService {
     command: IReactionCreateCommand,
     currentUser: IUser
   ) => Promise<IReaction>;
+  deleteUsersReactions: (usersIds: string[]) => Promise<void>;
 }
 
 export default IReactionService;

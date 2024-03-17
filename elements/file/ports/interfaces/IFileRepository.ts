@@ -18,7 +18,7 @@ interface IFileRepository {
   get: (fileId: string) => Promise<IFile | null>;
   create: (file: IFileCommand, currentUser?: IUser) => Promise<IFile>;
   createFiles: (files: IFileCommand[], currentUser?: IUser) => Promise<IFile[]>;
-  deleteUserFiles: (userId: string) => Promise<void>;
+  deleteUsersFiles: (userIds: string[]) => Promise<void>;
 }
 
 export default IFileRepository;

@@ -107,8 +107,10 @@ const fileMongooseRepository: IFileRepository = {
 
     return createdFiles;
   },
-  deleteUserFiles: async (userId: string) => {
-    await File.deleteMany({ ownerId: userId });
+  deleteUsersFiles: async (usersIds: string[]) => {
+    await File.deleteMany({
+      ownerId: { $in: usersIds.map((id) => new mongoose.Types.ObjectId(id)) },
+    });
   },
 };
 

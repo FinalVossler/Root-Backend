@@ -44,6 +44,7 @@ interface IMessageService {
     to: string[];
     userId: string;
   }) => Promise<IMessage | null>;
+  deleteUsersMessages: (usersIds: string[]) => Promise<void>;
 }
 
 export default IMessageService;

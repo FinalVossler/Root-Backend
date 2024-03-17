@@ -74,19 +74,6 @@ UserSchema.pre("save", async function (next) {
   next();
 });
 
-UserSchema.pre("deleteOne", async function (next) {
-  const user: IUser = (await this.model.findOne(this.getQuery())) as IUser;
-
-  if (user?._id) {
-    await postMongooseRepository.deleteUserPosts(user._id.toString());
-    await fileRepository.deleteUserFiles(user._id.toString());
-    await Message.deleteMany({ from: new mongoose.Types.ObjectId(user?._id) });
-    await Reaction.deleteMany({ user: new mongoose.Types.ObjectId(user?._id) });
-  }
-
-  next();
-});
-
 const User = mongoose.model<IUser, IUserModel>("user", UserSchema);
 
 export default User;

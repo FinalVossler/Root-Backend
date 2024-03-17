@@ -25,7 +25,7 @@ interface IPostRepository {
   ) => Promise<IPost | null>;
 
   delete: (postId: string) => Promise<any>;
-  deleteUserPosts: (userId: string) => Promise<any>;
+  deleteUsersPosts: (usersIds: string[]) => Promise<any>;
 }
 
 export default IPostRepository;

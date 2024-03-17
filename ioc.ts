@@ -105,15 +105,6 @@ export const messageService: IMessageService = createMessageService(
   socketService
 );
 
-export const userService: IUserService = createUserService(
-  roleService,
-  userMongooseRepository,
-  messageService,
-  emailService,
-  adaptJsonWebTokenHandler<ISignedUser>(),
-  adaptBcrypt()
-);
-
 export const fieldService: IFieldService = createFieldService(
   fieldMongooseRepository,
   roleService,
@@ -128,8 +119,32 @@ export const modelService: IModelService = createModelService(
   modelStateMongooseRepository,
   entityMongooseRepository
 );
+
 export const notificationService: INotificationService =
   createNotificationService(notificationMongooseRepository, socketService);
+
+export const microFrontendService: IMicroFrontendService =
+  createMicroFrontendService(roleService, microFrontendMongooseRepository);
+
+export const testsPreparationService: ITestsPreparationService =
+  createTestsPreparationService(fieldMongooseRepository);
+export const reactionService: IReactionService = createReactionService(
+  reactionMongooseRepository,
+  messageService,
+  socketService
+);
+
+export const userService: IUserService = createUserService(
+  roleService,
+  userMongooseRepository,
+  emailService,
+  adaptJsonWebTokenHandler<ISignedUser>(),
+  adaptBcrypt(),
+  postService,
+  messageService,
+  reactionService,
+  fileService
+);
 
 export const entityEventNotificationService: IEntityEventNotificationService =
   createEntityEventNotificationService(
@@ -145,17 +160,6 @@ export const entityService: IEntityService = createEntityService(
   modelService,
   userService,
   entityEventNotificationService
-);
-
-export const microFrontendService: IMicroFrontendService =
-  createMicroFrontendService(roleService, microFrontendMongooseRepository);
-
-export const testsPreparationService: ITestsPreparationService =
-  createTestsPreparationService(fieldMongooseRepository);
-export const reactionService: IReactionService = createReactionService(
-  reactionMongooseRepository,
-  messageService,
-  socketService
 );
 
 export const cartService: ICartService = createCartService(

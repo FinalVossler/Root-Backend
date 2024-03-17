@@ -145,6 +145,9 @@ const createMessageService = (
       userId,
     });
   },
+  deleteUsersMessages: async (usersIds: string[]) => {
+    return await messageRepository.deleteUsersMessages(usersIds);
+  },
 });
 
 export default createMessageService;

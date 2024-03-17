@@ -12,10 +12,11 @@ import IUser from "../../../user/ports/interfaces/IUser";
 import IPopulatedMessage from "../ports/interfaces/IPopulatedMessage";
 import IMessage from "../ports/interfaces/IMessage";
 import IFile from "../../../file/ports/interfaces/IFile";
+import IMessageRepository from "../ports/interfaces/IMessageRepository";
 
 const getReadAtByUser = (userId: string) => userId + "-" + moment().toString();
 
-const messageMongooseRepository = {
+const messageMongooseRepository: IMessageRepository = {
   sendMessage: async (
     command: IMessageSendCommand,
     currentUser: IUser
@@ -246,6 +247,11 @@ const messageMongooseRepository = {
     } else {
       return null;
     }
+  },
+  deleteUsersMessages: async (usersIds) => {
+    await Message.deleteMany({
+      from: { $in: usersIds.map((id) => new mongoose.Types.ObjectId(id)) },
+    });
   },
 };
 

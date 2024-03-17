@@ -41,6 +41,9 @@ const createReactionService = (
 
     return reaction;
   },
+  deleteUsersReactions: async (usersIds: string[]) => {
+    return await reactionRepository.deleteUsersReactions(usersIds);
+  },
 });
 
 export default createReactionService;

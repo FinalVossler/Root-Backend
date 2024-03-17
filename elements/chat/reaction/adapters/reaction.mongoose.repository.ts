@@ -60,6 +60,11 @@ const reactionMongooseRepository: IReactionRepository = {
 
     return reaction.populate(populationOptions);
   },
+  deleteUsersReactions: async (usersIds: string[]) => {
+    await Reaction.deleteMany({
+      user: { $in: usersIds.map((id) => new mongoose.Types.ObjectId(id)) },
+    });
+  },
 };
 
 const populationOptions = [

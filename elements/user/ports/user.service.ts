@@ -26,14 +26,20 @@ import IEmailService from "../../email/ports/interfaces/IEmailService";
 import ITokenHandler from "./interfaces/ITokenHandler";
 import ISignedUser from "./interfaces/ISignedUser";
 import IPasswordHandler from "./interfaces/IPasswordHandler";
+import IPostService from "../../post/ports/interfaces/IPostService";
+import IReactionService from "../../chat/reaction/ports/interfaces/IReactionService";
+import IFileService from "../../file/ports/interfaces/IFileService";
 
 const createUserService = (
   roleService: IRoleService,
   userRepository: IUserRepository,
-  messageService: IMessageService,
   emailService: IEmailService,
   tokenHandler: ITokenHandler<ISignedUser>,
-  passwordHandler: IPasswordHandler
+  passwordHandler: IPasswordHandler,
+  postService: IPostService,
+  messageService: IMessageService,
+  reactionService: IReactionService,
+  fileService: IFileService
 ): IUserService => ({
   generatePasswordHash: async function (password: string): Promise<string> {
     const salt: string = await passwordHandler.genSalt(10);
@@ -307,6 +313,12 @@ const createUserService = (
     });
 
     await userRepository.deleteUsers(usersIds);
+
+    await postService.deleteUsersPosts(usersIds);
+    await messageService.deleteUsersMessages(usersIds);
+    await reactionService.deleteUsersReactions(usersIds);
+    await postService.deleteUsersPosts(usersIds);
+    await fileService.deleteUsersFiles(usersIds);
   },
   search: async function (
     command: IUsersSearchCommand

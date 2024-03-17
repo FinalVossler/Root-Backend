@@ -20,6 +20,7 @@ interface IPostService {
   getById: (postId: string) => Promise<IPost | null>;
   update: (command: IPostUpdateCommand, currentUser: IUser) => Promise<IPost>;
   delete: (postId: string, currentUser: IUser) => Promise<void>;
+  deleteUsersPosts: (usersIds: string[]) => Promise<void>;
 }
 
 export default IPostService;

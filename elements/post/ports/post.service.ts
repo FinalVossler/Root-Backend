@@ -76,6 +76,9 @@ const createPostService = (postRepository: IPostRepository): IPostService => ({
 
     await postRepository.delete(postId);
   },
+  deleteUsersPosts: async (usersIds: string[]) => {
+    return await postRepository.deleteUsersPosts(usersIds);
+  },
 });
 
 export default createPostService;

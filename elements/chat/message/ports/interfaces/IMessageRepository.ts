@@ -43,6 +43,7 @@ interface IMessageRepository {
     to: string[];
     userId: string;
   }) => Promise<IMessage | null>;
+  deleteUsersMessages: (usersIds: string[]) => Promise<void>;
 }
 
 export default IMessageRepository;

@@ -155,9 +155,9 @@ const postMongooseRepository: IPostRepository = {
     return await Post.deleteOne({ _id: new mongoose.Types.ObjectId(postId) });
   },
 
-  deleteUserPosts: async (userId: string): Promise<any> => {
-    return await Post.deleteOne({
-      poster: new mongoose.Types.ObjectId(userId),
+  deleteUsersPosts: async (usersIds: string[]): Promise<any> => {
+    return await Post.deleteMany({
+      poster: { $in: usersIds.map((id) => new mongoose.Types.ObjectId(id)) },
     });
   },
 };
