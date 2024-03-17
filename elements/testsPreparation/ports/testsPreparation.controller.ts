@@ -29,8 +29,16 @@ const createTestsPreparationController = (
       success: true,
     };
   },
-  prepareMarketMaven: async (req: IRequest) => {
-    await testsPreparationService.prepareMarketMaven();
+  prepareMarketMaven: async (req: IRequest, currentUser: IUser) => {
+    await testsPreparationService.prepareMarketMaven(currentUser);
+
+    return {
+      data: null,
+      success: true,
+    };
+  },
+  prepareEcommerce: async (req: IRequest, currentUser: IUser) => {
+    await testsPreparationService.perpareEcommerce(currentUser);
 
     return {
       data: null,

@@ -16,6 +16,7 @@ import {
   ModelStateTypeEnum,
   PermissionEnum,
   StaticPermissionEnum,
+  SuperRoleEnum,
 } from "roottypes";
 
 import Field from "../../field/adapters/field.mongoose.model";
@@ -55,11 +56,16 @@ import IFieldTableElement from "../../fieldTableElement/ports/IFieldTableElement
 import IFieldRepository from "../../field/ports/interfaces/IFieldRepository";
 import IMicroFrontendComponent from "../../microFontendComponent/ports/interfaces/IMicroFrontendComponent";
 import Cart from "../../ecommerce/cart/adapters/cart.mongoose.model";
+import fieldMongooseRepository from "../../field/adapters/field.mongoose.repository";
 
 const createTestsPreparationService = (
   fieldRepository: IFieldRepository
 ): ITestsPreparationService => ({
   clean: async function (currentUser: IUser) {
+    if (currentUser.superRole !== SuperRoleEnum.SuperAdmin) {
+      throw new Error("Permission denied");
+    }
+
     await Socket.deleteMany({});
 
     await File.deleteMany({
@@ -102,7 +108,11 @@ const createTestsPreparationService = (
 
     return createdFile;
   },
-  prepareMarketMaven: async function (currentUser?: IUser) {
+  prepareMarketMaven: async function (currentUser: IUser) {
+    if (currentUser.superRole !== SuperRoleEnum.SuperAdmin) {
+      throw new Error("Permission denied");
+    }
+
     const prepareMicroFrontends = async (): Promise<{
       forecastMicroFrontend: IMicroFrontend;
       kpisMicroFrontend: IMicroFrontend;
@@ -1346,6 +1356,153 @@ const createTestsPreparationService = (
     const { caseFile: inMarketSalesDataFile, medicalInsightFile } =
       await prepareFiles();
     await prepareEntities();
+  },
+  perpareEcommerce: async function (currentUser: IUser) {
+    await this.clean(currentUser);
+    const productNameFieldCreateCommand: IFieldCreateCommand = {
+      canChooseFromExistingFiles: true,
+      fieldEvents: [],
+      language: "en",
+      name: "Name",
+      tableOptions: {
+        columns: [],
+        rows: [],
+        name: "",
+        yearTable: false,
+      },
+      type: FieldTypeEnum.Number,
+      options: [],
+    };
+    const priceFieldCreateCommand: IFieldCreateCommand = {
+      canChooseFromExistingFiles: true,
+      fieldEvents: [],
+      language: "en",
+      name: "Price",
+      tableOptions: {
+        columns: [],
+        rows: [],
+        name: "",
+        yearTable: false,
+      },
+      type: FieldTypeEnum.Number,
+      options: [],
+    };
+
+    const quantityFieldCreateCommand: IFieldCreateCommand = {
+      canChooseFromExistingFiles: true,
+      fieldEvents: [],
+      language: "en",
+      name: "Quantity",
+      tableOptions: {
+        columns: [],
+        rows: [],
+        name: "",
+        yearTable: false,
+      },
+      type: FieldTypeEnum.Number,
+      options: [],
+    };
+
+    const descriptionFieldCreateCommand: IFieldCreateCommand = {
+      canChooseFromExistingFiles: true,
+      fieldEvents: [],
+      language: "en",
+      name: "Price",
+      tableOptions: {
+        columns: [],
+        rows: [],
+        name: "",
+        yearTable: false,
+      },
+      type: FieldTypeEnum.Number,
+      options: [],
+    };
+
+    const imageFieldCreateCommand: IFieldCreateCommand = {
+      canChooseFromExistingFiles: true,
+      fieldEvents: [],
+      language: "en",
+      name: "Image",
+      tableOptions: {
+        columns: [],
+        rows: [],
+        name: "",
+        yearTable: false,
+      },
+      type: FieldTypeEnum.File,
+      options: [],
+    };
+
+    const productNameField: IField = await fieldMongooseRepository.create(
+      productNameFieldCreateCommand
+    );
+    const descriptionField: IField = await fieldMongooseRepository.create(
+      descriptionFieldCreateCommand
+    );
+    const priceField: IField = await fieldMongooseRepository.create(
+      priceFieldCreateCommand
+    );
+    const quantityField: IField = await fieldMongooseRepository.create(
+      quantityFieldCreateCommand
+    );
+    const imageField: IField = await fieldMongooseRepository.create(
+      imageFieldCreateCommand
+    );
+
+    const productModelCreateCommand: IModelCreateCommand = {
+      isForSale: true,
+      language: "en",
+      modelEvents: [],
+      modelFields: [
+        {
+          fieldId: productNameField._id,
+          mainField: true,
+          modelStatesIds: [],
+          required: true,
+          stickInTable: true,
+          conditions: [],
+        },
+        {
+          fieldId: priceField._id,
+          mainField: true,
+          modelStatesIds: [],
+          required: true,
+          stickInTable: false,
+          conditions: [],
+        },
+        {
+          fieldId: quantityField._id,
+          mainField: true,
+          modelStatesIds: [],
+          required: true,
+          stickInTable: false,
+          conditions: [],
+        },
+        {
+          fieldId: descriptionField._id,
+          mainField: false,
+          modelStatesIds: [],
+          required: true,
+          stickInTable: false,
+          conditions: [],
+        },
+        {
+          fieldId: imageField._id,
+          mainField: false,
+          modelStatesIds: [],
+          required: true,
+          stickInTable: false,
+          conditions: [],
+        },
+      ],
+      priceFieldId: priceField._id.toString(),
+      quantityFieldId: quantityField._id.toString(),
+      name: "Product",
+      states: [],
+      subStates: [],
+    };
+
+    modelRepository.create(productModelCreateCommand);
   },
 });
 

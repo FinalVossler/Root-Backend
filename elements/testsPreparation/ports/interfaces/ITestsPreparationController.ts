@@ -10,7 +10,14 @@ type ITestsPreparationController = {
     req: IRequest<{ url: string }>,
     currentUser: IUser
   ) => Promise<IResponseDto<IFileReadDto>>;
-  prepareMarketMaven: (req: IRequest) => Promise<IResponseDto<void>>;
+  prepareMarketMaven: (
+    req: IRequest,
+    currentUser: IUser
+  ) => Promise<IResponseDto<void>>;
+  prepareEcommerce: (
+    req: IRequest,
+    currentUser: IUser
+  ) => Promise<IResponseDto<void>>;
 };
 
 export default ITestsPreparationController;
