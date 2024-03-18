@@ -1329,7 +1329,9 @@ const createTestsPreparationService = (
           modelId: model._id.toString(),
         };
 
-        promises.push(entityRepository.create(command));
+        promises.push(
+          entityRepository.create(command, adminUser._id.toString())
+        );
       });
 
       await Promise.all(promises);

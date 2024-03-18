@@ -155,8 +155,6 @@ const createEntityService = (
       modelId: command.modelId.toString(),
     });
 
-    const entity: IEntity = await entityRepository.create(command);
-
     const assignmentPermissionGranted: boolean =
       await this.usersEntityAssignmentPermissionGranted({
         currentUser,
@@ -176,6 +174,11 @@ const createEntityService = (
     if (!valid) {
       throw new Error(errorText);
     }
+
+    const entity: IEntity = await entityRepository.create(
+      command,
+      currentUser._id.toString()
+    );
 
     // Now send the onCreate event notifications (email + in app notifications)
     entityEventNotificationService.notifyUsers(

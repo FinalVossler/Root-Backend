@@ -22,6 +22,7 @@ export const entityToReadDto = (entity: IEntity): IEntityReadDto => {
     createdAt: entity.createdAt,
     updatedAt: entity.updatedAt,
     customData: entity.customData,
+    owner: entity.owner ? userToReadDto(entity.owner) : entity.owner,
   };
 };
 

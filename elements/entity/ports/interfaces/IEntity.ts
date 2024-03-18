@@ -34,6 +34,7 @@ export default interface IEntity {
   entityFieldValues: IEntityFieldValue[];
   assignedUsers?: (IUser | string)[];
   customData?: string;
+  owner?: IUser | string;
 
   createdAt: string;
   updatedAt: string;

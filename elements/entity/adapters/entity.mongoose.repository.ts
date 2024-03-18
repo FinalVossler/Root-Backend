@@ -43,7 +43,10 @@ const entityMongooseRepository: IEntityRepository = {
 
     await Promise.all(createFilesPromises);
   },
-  create: async function (command: IEntityCreateCommand): Promise<IEntity> {
+  create: async function (
+    command: IEntityCreateCommand,
+    ownerId?: string
+  ): Promise<IEntity> {
     await this.combineEntityFieldValuesNewFilesAndSelectedOwnFiles(
       command.entityFieldValues
     );
@@ -70,6 +73,7 @@ const entityMongooseRepository: IEntityRepository = {
         ),
       })),
       assignedUsers: command.assignedUsersIds,
+      owner: ownerId ? new mongoose.Types.ObjectId(ownerId) : undefined,
     });
 
     return entity.populate(entityPopulationOptions);
@@ -353,6 +357,7 @@ export const entityPopulationOptions = [
       },
     ],
   },
+  { path: "owner", model: "user" },
 ];
 
 export default entityMongooseRepository;

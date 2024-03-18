@@ -13,7 +13,7 @@ interface IEntityRepository {
   combineEntityFieldValuesNewFilesAndSelectedOwnFiles: (
     entityFieldValues: IEntityFieldValueCommand[]
   ) => Promise<void>;
-  create: (command: IEntityCreateCommand) => Promise<IEntity>;
+  create: (command: IEntityCreateCommand, ownerId?: string) => Promise<IEntity>;
   update: (command: IEntityUpdateCommand) => Promise<IEntity>;
   getEntitiesByModel: (
     command: IEntitiesGetCommand

@@ -66,6 +66,10 @@ const EntitySchema = new mongoose.Schema<IEntity>(
     customData: {
       type: mongoose.SchemaTypes.String,
     },
+    owner: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "user",
+    },
   },
   {
     timestamps: true,
