@@ -1,3 +1,4 @@
+// Todo: Get rid of external dependency
 import socket from "socket.io";
 import http from "http";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
@@ -19,7 +20,6 @@ import ISocketService from "./interfaces/ISocketService";
 import ISocket from "./interfaces/ISocket";
 import IWebsiteConfigurationService from "../../websiteConfiguration/ports/interfaces/IWebsiteConfigurationService";
 import IEmailService from "../../email/ports/interfaces/IEmailService";
-// TODO: Get rid of external dependency
 import { userService } from "../../../ioc";
 import ISocketRepository from "./interfaces/ISocketRepository";
 

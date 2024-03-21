@@ -24,7 +24,7 @@ import {
   SuperRoleEnum,
 } from "roottypes";
 import { IField } from "../../elements/field/ports/interfaces/IField";
-import { userService } from "../../ioc";
+import { modelService, userService } from "../../ioc";
 import IModel from "../../elements/model/ports/interfaces/IModel";
 import IEntity from "../../elements/entity/ports/interfaces/IEntity";
 import IUser from "../../elements/user/ports/interfaces/IUser";
@@ -174,21 +174,23 @@ describe("Entities", () => {
     }
     if (model) {
       promises.push(
-        modelMongooseRepository.deleteModels([model._id.toString()])
+        modelService.deleteModels([model._id.toString()], adminUser)
       );
     }
     if (model2ToWhichEntitiesbyModelDontBelong) {
       promises.push(
-        modelMongooseRepository.deleteModels([
-          model2ToWhichEntitiesbyModelDontBelong._id.toString(),
-        ])
+        modelService.deleteModels(
+          [model2ToWhichEntitiesbyModelDontBelong._id.toString()],
+          adminUser
+        )
       );
     }
     if (model3ToWhichUserIsAlsoAssigned) {
       promises.push(
-        modelMongooseRepository.deleteModels([
-          model3ToWhichUserIsAlsoAssigned._id.toString(),
-        ])
+        modelService.deleteModels(
+          [model3ToWhichUserIsAlsoAssigned._id.toString()],
+          adminUser
+        )
       );
     }
     if (field1) {

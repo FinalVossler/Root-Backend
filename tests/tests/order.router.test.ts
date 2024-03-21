@@ -15,7 +15,7 @@ import fieldMongooseRepository from "../../elements/field/adapters/field.mongoos
 import { IField } from "../../elements/field/ports/interfaces/IField";
 import modelMongooseRepository from "../../elements/model/adapters/model.mongoose.repository";
 import IModel from "../../elements/model/ports/interfaces/IModel";
-import { userService } from "../../ioc";
+import { modelService, userService } from "../../ioc";
 import {
   adminUser,
   createCreateFieldCommand,
@@ -154,7 +154,10 @@ describe("Orders", () => {
     );
 
     if (sellableModel) {
-      modelMongooseRepository.deleteModels([sellableModel?._id.toString()]);
+      await modelService.deleteModels(
+        [sellableModel._id.toString()],
+        adminUser
+      );
     }
     if (sellableEntity) {
       entityMongooseRepository.deleteEntities([sellableEntity._id.toString()]);

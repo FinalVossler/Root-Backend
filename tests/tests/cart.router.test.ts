@@ -8,7 +8,7 @@ import {
   IEntityReadDto,
 } from "roottypes";
 
-import { userService } from "../../ioc";
+import { modelService, userService } from "../../ioc";
 import {
   adminUser,
   createCreateFieldCommand,
@@ -95,9 +95,10 @@ describe("Carts", () => {
       ]);
 
     if (sellableModel) {
-      await modelMongooseRepository.deleteModels([
-        sellableModel._id.toString(),
-      ]);
+      await modelService.deleteModels(
+        [sellableModel._id.toString()],
+        adminUser
+      );
     }
   });
 

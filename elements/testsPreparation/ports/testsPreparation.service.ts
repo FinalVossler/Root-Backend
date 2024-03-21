@@ -57,6 +57,7 @@ import IFieldRepository from "../../field/ports/interfaces/IFieldRepository";
 import IMicroFrontendComponent from "../../microFontendComponent/ports/interfaces/IMicroFrontendComponent";
 import Cart from "../../ecommerce/cart/adapters/cart.mongoose.model";
 import fieldMongooseRepository from "../../field/adapters/field.mongoose.repository";
+import Order from "../../ecommerce/order/adapters/order.mongoose.model";
 
 const createTestsPreparationService = (
   fieldRepository: IFieldRepository
@@ -94,6 +95,7 @@ const createTestsPreparationService = (
 
     await MicroFrontend.deleteMany({});
 
+    await Order.deleteMany({});
     await Cart.deleteMany({});
   },
   createFile: async (url: string, currentUser: IUser): Promise<IFile> => {
@@ -1499,6 +1501,7 @@ const createTestsPreparationService = (
       ],
       priceFieldId: priceField._id.toString(),
       quantityFieldId: quantityField._id.toString(),
+      imageFieldId: imageField._id.toString(),
       name: "Product",
       states: [],
       subStates: [],

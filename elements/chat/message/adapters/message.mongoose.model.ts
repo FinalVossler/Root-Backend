@@ -77,7 +77,7 @@ MessageSchema.pre("deleteOne", async function (next) {
 
   if (message) {
     const filesUuids: string[] = (message.files as IFile[]).map((f) => f.uuid);
-    // TODO: we have file ids. Now we need to delete all in upload care
+    // Todo: we have file ids. Now we need to delete all in upload care
 
     // Delete all reactions to this message
     Reaction.deleteMany({

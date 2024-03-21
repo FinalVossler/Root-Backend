@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
+import { ICartUpdateCommand } from "roottypes";
 
 import ICartRepository from "../ports/interfaces/ICartRepository";
 import Cart from "./cart.mongoose.model";
 import ICart from "../ports/interfaces/ICart";
-import { ICartUpdateCommand } from "roottypes";
 import { entityPopulationOptions } from "../../../entity/adapters/entity.mongoose.repository";
 
 const cartMongooseRepository: ICartRepository = {

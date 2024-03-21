@@ -66,6 +66,7 @@ const modelMongooseRepository: IModelRepository = {
       isForSale: Boolean(command.isForSale),
       quantityField: command.quantityFieldId,
       priceField: command.priceFieldId,
+      imageField: command.imageFieldId,
     });
 
     return model.populate(populationOptions);
@@ -149,6 +150,7 @@ const modelMongooseRepository: IModelRepository = {
           isForSale: Boolean(command.isForSale),
           quantityField: command.quantityFieldId,
           priceField: command.priceFieldId,
+          imageField: command.imageFieldId,
         },
       }
     );
@@ -338,6 +340,10 @@ export const populationOptions = [
   },
   {
     path: "priceField",
+    model: "field",
+  },
+  {
+    path: "imageField",
     model: "field",
   },
 ];

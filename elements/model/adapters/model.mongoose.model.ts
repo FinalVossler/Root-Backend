@@ -85,6 +85,11 @@ const ModelSchema = new mongoose.Schema<IModel>(
       ref: "field",
       required: false,
     },
+    imageField: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "field",
+      required: false,
+    },
   },
   {
     timestamps: true,

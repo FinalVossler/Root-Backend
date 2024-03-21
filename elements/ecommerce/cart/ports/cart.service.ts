@@ -29,6 +29,8 @@ const createCartService = (cartRepository: ICartRepository): ICartService => {
 
       let cart: ICart = await this.getUserCart(currentUser);
 
+      // Todo: Add quantity validators here:
+
       if (!cart) {
         cart = await cartRepository.createCart(currentUser._id);
       }

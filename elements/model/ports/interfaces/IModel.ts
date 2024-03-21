@@ -15,6 +15,7 @@ export interface IModel {
   isForSale?: boolean;
   quantityField?: IField | string;
   priceField?: IField | string;
+  imageField?: IField | string;
 
   createdAt: string;
   updatedAt: string;

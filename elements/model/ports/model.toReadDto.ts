@@ -38,6 +38,10 @@ export const modelToReadDto = (
       model.priceField !== undefined
         ? fieldToReadDto(model.priceField)
         : undefined,
+    imageField:
+      model.imageField !== undefined
+        ? fieldToReadDto(model.imageField)
+        : undefined,
 
     createdAt: model.createdAt,
     updatedAt: model.updatedAt,

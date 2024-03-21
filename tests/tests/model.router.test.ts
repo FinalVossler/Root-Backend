@@ -23,7 +23,7 @@ import {
 import { IField } from "../../elements/field/ports/interfaces/IField";
 import IModel from "../../elements/model/ports/interfaces/IModel";
 import fieldMongooseRepository from "../../elements/field/adapters/field.mongoose.repository";
-import { userService } from "../../ioc";
+import { modelService, userService } from "../../ioc";
 import modelMongooseRepository from "../../elements/model/adapters/model.mongoose.repository";
 
 jest.setTimeout(50000);
@@ -64,22 +64,25 @@ describe("Models", () => {
       await fieldMongooseRepository.deleteFields([field2._id.toString()]);
     }
     if (createdModelId) {
-      await modelMongooseRepository.deleteModels([createdModelId]);
+      await modelService.deleteModels([createdModelId], adminUser);
     }
     if (modelToUpdate) {
-      await modelMongooseRepository.deleteModels([
-        modelToUpdate._id.toString(),
-      ]);
+      await modelService.deleteModels(
+        [modelToUpdate._id.toString()],
+        adminUser
+      );
     }
     if (modelToDelete) {
-      await modelMongooseRepository.deleteModels([
-        modelToDelete._id.toString(),
-      ]);
+      await modelService.deleteModels(
+        [modelToDelete._id.toString()],
+        adminUser
+      );
     }
     if (modelToSearch) {
-      await modelMongooseRepository.deleteModels([
-        modelToSearch._id.toString(),
-      ]);
+      await modelService.deleteModels(
+        [modelToSearch._id.toString()],
+        adminUser
+      );
     }
   });
 
