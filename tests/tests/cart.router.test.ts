@@ -124,6 +124,7 @@ describe("Carts", () => {
         {
           productId: sellableEntity?._id.toString() || "",
           quantity,
+          sided: false,
         },
       ],
       userId: adminUser._id,

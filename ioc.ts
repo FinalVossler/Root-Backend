@@ -68,6 +68,9 @@ import shippingMethodMongooseRepository from "./elements/ecommerce/shippingMetho
 import IPaymentService, {
   IMakePaymentCommand,
 } from "./elements/ecommerce/order/ports/interfaces/IPaymentService";
+import IAddressService from "./elements/ecommerce/address/ports/interfaces/IAddressService";
+import createAddressService from "./elements/ecommerce/address/ports/address.service";
+import addressMongooseRepository from "./elements/ecommerce/address/adapters/address.mongoose.repository";
 
 export const websiteConfigurationService = createWebsiteConfigurationService(
   websiteConfigurationMongooseRepository
@@ -182,3 +185,8 @@ export const orderService: IOrderService = createOrderService(
 
 export const shippingMethodService: IShippingMethodService =
   createShippingMethodService(shippingMethodMongooseRepository, roleService);
+
+export const addressService: IAddressService = createAddressService(
+  addressMongooseRepository,
+  roleService
+);

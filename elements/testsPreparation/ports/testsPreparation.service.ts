@@ -60,6 +60,7 @@ import fieldMongooseRepository from "../../field/adapters/field.mongoose.reposit
 import Order from "../../ecommerce/order/adapters/order.mongoose.model";
 import { fileService } from "../../../ioc";
 import fileMongooseRepository from "../../file/adapters/file.mongoose.repository";
+import Address from "../../ecommerce/address/adapters/address.mongoose.model";
 
 const createTestsPreparationService = (
   fieldRepository: IFieldRepository
@@ -99,6 +100,8 @@ const createTestsPreparationService = (
 
     await Order.deleteMany({});
     await Cart.deleteMany({});
+
+    await Address.deleteMany({});
   },
   createFile: async (url: string, currentUser: IUser): Promise<IFile> => {
     const file: IFileCommand = {

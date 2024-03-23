@@ -19,6 +19,7 @@ import cartRouter from "./elements/ecommerce/cart/adapters/cart.express.router";
 import orderRouter from "./elements/ecommerce/order/adapters/order.express.router";
 import paymentMethodRouter from "./elements/ecommerce/paymentMethod/adapters/paymentMethod.express.router";
 import shippingMethodRouter from "./elements/ecommerce/shippingMethod/adapters/shippingMethod.express.router";
+import addressRouter from "./elements/ecommerce/address/adapters/address.express.router";
 
 const router = Router();
 
@@ -41,6 +42,7 @@ router.use("/cart", cartRouter);
 router.use("/orders", orderRouter);
 router.use("/paymentMethods", paymentMethodRouter);
 router.use("/shippingMethods", shippingMethodRouter);
+router.use("/addresses", addressRouter);
 
 router.use("/", (req: Request, res: Response) => {
   res.status(200).send("Hello!");
