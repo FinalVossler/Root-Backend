@@ -7,6 +7,7 @@ interface ICart {
   products: {
     quantity: number;
     product: IEntity | string;
+    sided: boolean;
   }[];
 }
 

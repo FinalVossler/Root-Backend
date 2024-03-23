@@ -11,6 +11,7 @@ const cartToReadDto = (cart: ICart): ICartReadDto => {
       return {
         product: entityToReadDto(productInformation.product as IEntity),
         quantity: productInformation.quantity,
+        sided: productInformation.sided,
       };
     }),
     user: cart.user,

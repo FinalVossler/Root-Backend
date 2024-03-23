@@ -38,6 +38,7 @@ const cartMongooseRepository: ICartRepository = {
           products: command.products.map((product) => ({
             quantity: product.quantity,
             product: new mongoose.Types.ObjectId(product.productId),
+            sided: product.sided,
           })),
         },
       },

@@ -12,7 +12,8 @@ const CartSchema = new mongoose.Schema({
   },
   products: [
     {
-      quantity: mongoose.SchemaTypes.Number,
+      quantity: { type: mongoose.SchemaTypes.Number },
+      sided: { type: mongoose.SchemaTypes.Boolean },
       product: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: "entity",
