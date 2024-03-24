@@ -33,4 +33,10 @@ addressRouter.delete(
   addressExpressController.deleteAddresses
 );
 
+addressRouter.post(
+  "/setDefaultAddress",
+  protectMiddleware,
+  addressExpressController.setDefaultAddress
+);
+
 export default addressRouter;

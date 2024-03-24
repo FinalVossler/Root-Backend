@@ -88,6 +88,37 @@ const createAddressService = (
 
     await addressRepository.deleteAddresses(addressesIds);
   },
+  setDefaultAddress: async function (addressId: string, currentUser: IUser) {
+    const userAddresses: IAddress[] = await this.getUserAddresses(
+      currentUser._id,
+      currentUser
+    );
+
+    const addressToSetToDefault = userAddresses.find(
+      (address) => address._id.toString() === addressId
+    );
+
+    if (!addressToSetToDefault) {
+      throw new Error("Address not found");
+    }
+
+    const promises: Promise<IAddress | null>[] = [];
+
+    userAddresses.forEach((address) => {
+      promises.push(
+        new Promise(async (resolve) => {
+          resolve(
+            await addressRepository.setIsDefault(
+              address._id.toString(),
+              address._id.toString() === addressId
+            )
+          );
+        })
+      );
+    });
+
+    await Promise.all(promises);
+  },
 });
 
 export default createAddressService;

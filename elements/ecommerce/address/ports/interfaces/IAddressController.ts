@@ -29,6 +29,10 @@ type IAddressController = {
     req: IRequest<{ addressesIds: string[] }>,
     currentUser: IUser
   ) => Promise<IResponseDto<IAddressReadDto[]>>;
+  setDefaultAddress: (
+    req: IRequest<{ addressId: string }>,
+    currentUser: IUser
+  ) => void;
 };
 
 export default IAddressController;

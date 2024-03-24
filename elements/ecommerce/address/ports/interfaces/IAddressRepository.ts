@@ -9,6 +9,10 @@ interface IAddressRepository {
   createAddress: (command: IAddressCreateCommand) => Promise<IAddress>;
   updateAddress: (command: IAddressUpdateCommand) => Promise<IAddress>;
   deleteAddresses: (addressesIds: string[]) => Promise<void>;
+  setIsDefault: (
+    addressId: string,
+    isDefault: boolean
+  ) => Promise<IAddress | null>;
 }
 
 export default IAddressRepository;

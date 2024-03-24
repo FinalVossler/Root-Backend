@@ -27,7 +27,7 @@ describe("Addresses", () => {
 
   beforeAll(async () => {
     addressToGet = await addressMongooseRepository.createAddress({
-      addressLine1: "13 Rue Beauregard",
+      addressLine1: "13 Rue Beauregard to get",
       addressLine2: "",
       region: "île de France",
       city: "Paris",
@@ -37,7 +37,7 @@ describe("Addresses", () => {
     });
 
     addressToUpdate = await addressMongooseRepository.createAddress({
-      addressLine1: "15 Rue Marc Seguin",
+      addressLine1: "15 Rue Marc Seguin to update",
       addressLine2: "",
       region: "île de France",
       city: "Paris",
@@ -47,7 +47,7 @@ describe("Addresses", () => {
     });
 
     addressToDelete = await addressMongooseRepository.createAddress({
-      addressLine1: "15 Boulevard Dubreuil",
+      addressLine1: "15 Boulevard Dubreuil to delete",
       addressLine2: "",
       region: "île de France",
       city: "Orsay",
@@ -65,7 +65,7 @@ describe("Addresses", () => {
     });
 
     otherUserAddress = await addressMongooseRepository.createAddress({
-      addressLine1: "13 Rue de l'autre utilisateur",
+      addressLine1: "13 Rue de l'autre utilisateur for other user",
       addressLine2: "",
       region: "île de France",
       city: "Autre",
@@ -252,6 +252,59 @@ describe("Addresses", () => {
                 );
 
                 expect(foundAddress).toBeUndefined;
+              });
+          });
+      });
+  });
+
+  it("should set default address", () => {
+    // Fetch the addresses and make sure the concerned address isn't yet set to default
+    return request(app)
+      .get("/addresses")
+      .set("Authorization", "Bearer " + adminToken)
+      .expect(200)
+      .then((res) => {
+        const result: IResponseDto<IAddressReadDto[]> = res.body;
+
+        expect(result.success).toBeTruthy();
+
+        const receivedAddressToGet: IAddressReadDto | undefined =
+          result.data?.find(
+            (el) =>
+              el._id.toString() ===
+              (addressToGet as IAddressReadDto)._id.toString()
+          );
+
+        expect(receivedAddressToGet).not.toBeUndefined;
+
+        expect(receivedAddressToGet?.isDefault).not.toBeTruthy();
+
+        // Now set the address to default
+        return request(app)
+          .post("/addresses/setDefaultAddress")
+          .send({ addressId: addressToGet?._id.toString() })
+          .set("Authorization", "Bearer " + adminToken)
+          .then(() => {
+            // Now refetch addresses and make sure the concerned address was set to default
+            return request(app)
+              .get("/addresses")
+              .set("Authorization", "Bearer " + adminToken)
+              .expect(200)
+              .then((res) => {
+                const result: IResponseDto<IAddressReadDto[]> = res.body;
+
+                expect(result.success).toBeTruthy();
+
+                const receivedAddressToGet: IAddressReadDto | undefined =
+                  result.data?.find(
+                    (el) =>
+                      el._id.toString() ===
+                      (addressToGet as IAddressReadDto)._id.toString()
+                  );
+
+                expect(receivedAddressToGet).not.toBeUndefined();
+
+                expect(receivedAddressToGet?.isDefault).toBeTruthy();
               });
           });
       });

@@ -63,6 +63,12 @@ const addressMongooseRepository: IAddressRepository = {
       },
     });
   },
+  setIsDefault: async (addressId: string, isDefault: boolean) => {
+    return await Address.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(addressId) },
+      { $set: { isDefault: Boolean(isDefault) } }
+    );
+  },
 };
 
 export default addressMongooseRepository;

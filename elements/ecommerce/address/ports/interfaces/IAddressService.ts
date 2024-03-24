@@ -1,4 +1,8 @@
-import { IAddressCreateCommand, IAddressUpdateCommand } from "roottypes";
+import {
+  IAddressCreateCommand,
+  IAddressReadDto,
+  IAddressUpdateCommand,
+} from "roottypes";
 
 import IAddress from "./IAddress";
 import IUser from "../../../../user/ports/interfaces/IUser";
@@ -19,6 +23,7 @@ interface IAddressService {
     paymentMethodsIds: string[],
     currentUser: IUser
   ) => Promise<void>;
+  setDefaultAddress: (addressId: string, currentUser: IUser) => Promise<void>;
 }
 
 export default IAddressService;

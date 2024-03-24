@@ -14,6 +14,7 @@ const addressToReadDto = (address: IAddress): IAddressReadDto => {
     city: address.city,
 
     user: address.user ? userToReadDto(address.user) : undefined,
+    isDefault: Boolean(address.isDefault),
   };
 };
 

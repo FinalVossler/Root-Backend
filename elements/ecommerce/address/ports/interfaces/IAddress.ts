@@ -10,6 +10,7 @@ interface IAddress {
   city: string;
 
   user?: IUser | string;
+  isDefault?: boolean;
 }
 
 export default IAddress;

@@ -10,6 +10,7 @@ const AddressSchema = new mongoose.Schema<IAddress>({
   region: { type: mongoose.SchemaTypes.String },
   city: { type: mongoose.SchemaTypes.String },
   user: { type: mongoose.SchemaTypes.ObjectId, ref: "user" },
+  isDefault: { type: mongoose.SchemaTypes.Boolean },
 });
 
 const Address = mongoose.model("address", AddressSchema);

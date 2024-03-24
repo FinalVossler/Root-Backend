@@ -74,6 +74,12 @@ const createAddressController = (
         data: null,
       };
     },
+    setDefaultAddress: async (
+      req: IRequest<{ addressId: string }>,
+      currentUser: IUser
+    ) => {
+      await addressService.setDefaultAddress(req.body.addressId, currentUser);
+    },
   };
 };
 
