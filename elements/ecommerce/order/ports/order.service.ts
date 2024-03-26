@@ -66,9 +66,7 @@ const createOrderService = (
 
       // Find the payment method
       const paymentMethod: IPaymentMethod | null =
-        await paymentMethodService.getPaymentMethodById(
-          command.paymentMethodId
-        );
+        order.paymentMethod as IPaymentMethod;
 
       if (!paymentMethod) {
         throw new Error("Payment method not found");

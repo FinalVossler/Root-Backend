@@ -20,6 +20,12 @@ const OrderSchema = new mongoose.Schema<IOrder>({
   shippingMethod: {
     type: mongoose.SchemaTypes.String,
     required: true,
+    ref: "shippingMethod",
+  },
+  paymentMethod: {
+    type: mongoose.SchemaTypes.String,
+    required: true,
+    ref: "paymentMethod",
   },
   checkoutSessionId: {
     type: mongoose.SchemaTypes.String,

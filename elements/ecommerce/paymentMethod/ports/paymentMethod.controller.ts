@@ -1,5 +1,6 @@
 import {
   IPaymentMethodCreateCommand,
+  IPaymentMethodReadDto,
   IPaymentMethodUpdateCommand,
 } from "roottypes";
 
@@ -20,7 +21,9 @@ const createPaymentMethodController = (
 
       return {
         success: true,
-        data: paymentMethods.map((p) => paymentMethodToReadDto(p)),
+        data: paymentMethods.map(
+          (p) => paymentMethodToReadDto(p) as IPaymentMethodReadDto
+        ),
       };
     },
     createPaymentMethod: async (
@@ -32,7 +35,7 @@ const createPaymentMethodController = (
 
       return {
         success: true,
-        data: paymentMethodToReadDto(paymentMethod),
+        data: paymentMethodToReadDto(paymentMethod) as IPaymentMethodReadDto,
       };
     },
     updatePaymentMethod: async (
@@ -44,7 +47,7 @@ const createPaymentMethodController = (
 
       return {
         success: true,
-        data: paymentMethodToReadDto(paymentMethod),
+        data: paymentMethodToReadDto(paymentMethod) as IPaymentMethodReadDto,
       };
     },
     deletePaymentMethods: async (

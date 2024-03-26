@@ -3,6 +3,7 @@ import { OrderStatusEnum } from "roottypes";
 import IUser from "../../../../user/ports/interfaces/IUser";
 import IShippingMethod from "../../../shippingMethod/ports/interfaces/IShippingMethod";
 import IEntity from "../../../../entity/ports/interfaces/IEntity";
+import IPaymentMethod from "../../../paymentMethod/ports/interfaces/IPaymentMethod";
 
 interface IOrder {
   _id: string;
@@ -11,6 +12,7 @@ interface IOrder {
   total: number;
   status: OrderStatusEnum;
   shippingMethod: IShippingMethod | string;
+  paymentMethod: IPaymentMethod | string;
   shippingAddress: {
     country: string;
     postalCode: string;

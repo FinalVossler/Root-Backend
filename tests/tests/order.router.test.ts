@@ -136,6 +136,7 @@ describe("Orders", () => {
         region: "2",
       },
       shippingMethodId: shippingMethod._id.toString(),
+      paymentMethodId: paymentMethod._id.toString(),
       status: OrderStatusEnum.Pending,
       total: 500,
       userId: adminUser._id.toString(),
@@ -199,6 +200,7 @@ describe("Orders", () => {
         region: "2",
       },
       shippingMethodId: shippingMethod?._id.toString() || "",
+      paymentMethodId: paymentMethod?._id.toString() || "",
       status: OrderStatusEnum.Pending,
       total: 200,
       userId: adminUser._id.toString(),
@@ -245,7 +247,6 @@ describe("Orders", () => {
   it("should checkout order and make sure the stock was updated", () => {
     const command: IOrderCheckoutCommand = {
       orderId: orderToUpdateAndCheckout?._id.toString() || "",
-      paymentMethodId: paymentMethod?._id.toString() || "",
     };
     expect(orderToUpdateAndCheckout?.checkoutSessionId).toBeUndefined;
     return request(app)

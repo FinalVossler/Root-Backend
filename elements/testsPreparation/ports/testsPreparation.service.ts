@@ -58,9 +58,9 @@ import IMicroFrontendComponent from "../../microFontendComponent/ports/interface
 import Cart from "../../ecommerce/cart/adapters/cart.mongoose.model";
 import fieldMongooseRepository from "../../field/adapters/field.mongoose.repository";
 import Order from "../../ecommerce/order/adapters/order.mongoose.model";
-import { fileService } from "../../../ioc";
 import fileMongooseRepository from "../../file/adapters/file.mongoose.repository";
 import Address from "../../ecommerce/address/adapters/address.mongoose.model";
+import entityMongooseRepository from "../../entity/adapters/entity.mongoose.repository";
 
 const createTestsPreparationService = (
   fieldRepository: IFieldRepository
@@ -1522,6 +1522,13 @@ const createTestsPreparationService = (
       uuid: "510103cd-c25f-4194-a39a-30ec731cae61",
       name: "61wCwQKBqpL_AC_UY1000_.jpg",
     });
+    const greenShirtImage: IFile = await fileMongooseRepository.create({
+      isImage: true,
+      url: "https://ucarecdn.com/57694474-526e-4103-9562-1f7b44265319/31JauF3aIL_AC_UY1000_.jpg",
+      uuid: "510103cd-c25f-4194-a39a-30ec731cae62",
+      name: "31Ja-uF3aIL._AC_UY1000_.jpg",
+    });
+
     const product1CreateCommand: IEntityCreateCommand = {
       assignedUsersIds: [],
       language: "en",
@@ -1563,7 +1570,7 @@ const createTestsPreparationService = (
               url: "https://ucarecdn.com/510103cd-c25f-4194-a39a-30ec731cae61/",
               uuid: "510103cd-c25f-4194-a39a-30ec731cae61",
               name: "61wCwQKBqpL_AC_UY1000_.jpg",
-              _id: imageField._id.toString(),
+              _id: blueShirtImage._id?.toString(),
             },
           ],
           tableValues: [],
@@ -1572,6 +1579,59 @@ const createTestsPreparationService = (
         },
       ],
     };
+    const product2CreateCommand: IEntityCreateCommand = {
+      assignedUsersIds: [],
+      language: "en",
+      modelId: sellableModel._id.toString(),
+      entityFieldValues: [
+        {
+          fieldId: priceField._id.toString(),
+          files: [],
+          tableValues: [],
+          value: "30",
+          yearTableValues: [],
+        },
+        {
+          fieldId: quantityField._id.toString(),
+          files: [],
+          tableValues: [],
+          value: "10",
+          yearTableValues: [],
+        },
+        {
+          fieldId: descriptionField._id.toString(),
+          files: [],
+          tableValues: [],
+          value: "Just a green shirt. I hope you like it :)",
+          yearTableValues: [],
+        },
+        {
+          fieldId: productNameField._id.toString(),
+          files: [],
+          tableValues: [],
+          value: "Green shirt",
+          yearTableValues: [],
+        },
+        {
+          fieldId: imageField._id.toString(),
+          files: [
+            {
+              isImage: true,
+              url: "https://ucarecdn.com/57694474-526e-4103-9562-1f7b44265319/31JauF3aIL_AC_UY1000_.jpg",
+              uuid: "510103cd-c25f-4194-a39a-30ec731cae62",
+              name: "31Ja-uF3aIL._AC_UY1000_.jpg",
+              _id: greenShirtImage._id?.toString(),
+            },
+          ],
+          tableValues: [],
+          value: "20",
+          yearTableValues: [],
+        },
+      ],
+    };
+
+    await entityMongooseRepository.create(product1CreateCommand, adminUser._id);
+    await entityMongooseRepository.create(product2CreateCommand, adminUser._id);
   },
 });
 

@@ -12,6 +12,7 @@ const orderMongooseRepository: IOrderRepository = {
         date: command.date,
         shippingAddress: { ...command.shippingAddress },
         shippingMethod: command.shippingMethodId,
+        paymentMethod: command.paymentMethodId,
         products: command.products.map((productInfo) => ({
           product: productInfo.productId,
           quantity: productInfo.quantity,
@@ -57,6 +58,14 @@ const populationOptions = [
     path: "products.product",
     model: "entity",
     populate: entityPopulationOptions,
+  },
+  {
+    path: "paymentMethod",
+    model: "paymentMethod",
+  },
+  {
+    path: "shippingMethod",
+    model: "shippingMethod",
   },
 ];
 

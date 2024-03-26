@@ -5,6 +5,7 @@ import { entityToReadDto } from "../../../entity/ports/entity.toReadDto";
 import IEntity from "../../../entity/ports/interfaces/IEntity";
 import shippingMethodToReadDto from "../../shippingMethod/ports/shippingMethod.toReadDto";
 import { userToReadDto } from "../../../user/ports/user.toReadDto";
+import paymentMethodToReadDto from "../../paymentMethod/ports/PaymentMethod.toReadDto";
 
 const orderToReadDto = (order: IOrder): IOrderReadDto => {
   return {
@@ -17,6 +18,7 @@ const orderToReadDto = (order: IOrder): IOrderReadDto => {
     })),
     shippingAddress: order.shippingAddress,
     shippingMethod: shippingMethodToReadDto(order.shippingMethod),
+    paymentMethod: paymentMethodToReadDto(order.paymentMethod),
     status: order.status,
     total: order.total,
     user: userToReadDto(order.user),
