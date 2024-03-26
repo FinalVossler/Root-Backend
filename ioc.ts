@@ -65,12 +65,12 @@ import paymentMethodMongooseRepository from "./elements/ecommerce/paymentMethod/
 import IShippingMethodService from "./elements/ecommerce/shippingMethod/ports/interfaces/IShippingMethodService";
 import createShippingMethodService from "./elements/ecommerce/shippingMethod/ports/shippingMethod.service";
 import shippingMethodMongooseRepository from "./elements/ecommerce/shippingMethod/adapters/shippingMethod.mongoose.repository";
-import IPaymentService, {
-  IMakePaymentCommand,
-} from "./elements/ecommerce/order/ports/interfaces/IPaymentService";
+import IPaymentService from "./elements/ecommerce/order/ports/interfaces/IPaymentService";
 import IAddressService from "./elements/ecommerce/address/ports/interfaces/IAddressService";
 import createAddressService from "./elements/ecommerce/address/ports/address.service";
 import addressMongooseRepository from "./elements/ecommerce/address/adapters/address.mongoose.repository";
+import IMakePaymentCommand from "./elements/ecommerce/order/ports/interfaces/IMakePaymentCommand";
+import stripePaymentService from "./elements/ecommerce/order/adapters/payment.stripe.service";
 
 export const websiteConfigurationService = createWebsiteConfigurationService(
   websiteConfigurationMongooseRepository
@@ -169,18 +169,25 @@ export const cartService: ICartService = createCartService(
   cartMongooseRepository
 );
 
-const paymentService: IPaymentService = {
-  makePayment: (command: IMakePaymentCommand) =>
-    new Promise((resolve) => resolve("checkoutsessionid")),
-};
-
 export const paymentMethodService: IPaymentMethodService =
   createPaymentMethodService(paymentMethodMongooseRepository, roleService);
 
+const mockedPaymentService: IPaymentService = {
+  makePayment: (command: IMakePaymentCommand) =>
+    new Promise((resolve) =>
+      resolve({ checkoutSessionId: "", checkoutSessionUrl: "" })
+    ),
+};
+export const mockedOrderService: IOrderService = createOrderService(
+  orderMongooseRepository,
+  mockedPaymentService
+);
+
+export const paymentService = stripePaymentService;
+
 export const orderService: IOrderService = createOrderService(
   orderMongooseRepository,
-  paymentService,
-  paymentMethodService
+  paymentService
 );
 
 export const shippingMethodService: IShippingMethodService =

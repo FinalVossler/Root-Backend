@@ -29,6 +29,7 @@ interface IOrder {
   }[];
 
   checkoutSessionId: string;
+  checkoutSessionUrl: string;
 }
 
 export default IOrder;

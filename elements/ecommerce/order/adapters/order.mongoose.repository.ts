@@ -12,7 +12,6 @@ const orderMongooseRepository: IOrderRepository = {
         date: command.date,
         shippingAddress: { ...command.shippingAddress },
         shippingMethod: command.shippingMethodId,
-        paymentMethod: command.paymentMethodId,
         products: command.products.map((productInfo) => ({
           product: productInfo.productId,
           quantity: productInfo.quantity,
@@ -21,6 +20,11 @@ const orderMongooseRepository: IOrderRepository = {
         status: command.status,
         user: command.userId,
         checkoutSessionId: undefined,
+        ...(command.paymentMethodId
+          ? {
+              paymentMethod: command.paymentMethodId,
+            }
+          : {}),
       })
     ).populate(populationOptions);
 
@@ -32,10 +36,14 @@ const orderMongooseRepository: IOrderRepository = {
       populationOptions
     );
   },
-  setCheckoutSessionId: async (orderId: string, checkoutSessionId: string) => {
+  setCheckoutSessionIdAndUrl: async (
+    orderId: string,
+    checkoutSessionId: string,
+    checkoutSessionUrl
+  ) => {
     return await Order.findOneAndUpdate(
       { _id: new mongoose.Types.ObjectId(orderId) },
-      { $set: { checkoutSessionId } },
+      { $set: { checkoutSessionId, checkoutSessionUrl } },
       { new: true }
     ).populate(populationOptions);
   },

@@ -24,10 +24,12 @@ const OrderSchema = new mongoose.Schema<IOrder>({
   },
   paymentMethod: {
     type: mongoose.SchemaTypes.String,
-    required: true,
     ref: "paymentMethod",
   },
   checkoutSessionId: {
+    type: mongoose.SchemaTypes.String,
+  },
+  checkoutSessionUrl: {
     type: mongoose.SchemaTypes.String,
   },
   products: [

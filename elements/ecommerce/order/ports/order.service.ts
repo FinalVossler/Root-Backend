@@ -8,7 +8,6 @@ import IOrderService from "./interfaces/IOrderService";
 import IOrderRepository from "./interfaces/IOrderRepository";
 import IOrder from "./interfaces/IOrder";
 import IUser from "../../../user/ports/interfaces/IUser";
-import IPaymentMethodService from "../../paymentMethod/ports/interfaces/IPaymentMethodService";
 import IPaymentMethod from "../../paymentMethod/ports/interfaces/IPaymentMethod";
 import { entityService } from "../../../../ioc";
 import IEntity from "../../../entity/ports/interfaces/IEntity";
@@ -16,8 +15,7 @@ import IPaymentService from "./interfaces/IPaymentService";
 
 const createOrderService = (
   orderRepository: IOrderRepository,
-  paymentService: IPaymentService,
-  paymentMethodService: IPaymentMethodService
+  paymentService: IPaymentService
 ): IOrderService => {
   return {
     createOrder: async (command: IOrderCreateCommand) => {
@@ -88,17 +86,20 @@ const createOrderService = (
       });
 
       // Make payment here
-      const checkoutSessionId: string = await paymentService.makePayment({
-        cancelUrl: "",
-        paymentMethod: paymentMethod.slug,
-        successUrl: "",
-        total: order.total,
-      });
+      const { checkoutSessionId, checkoutSessionUrl } =
+        await paymentService.makePayment({
+          paymentMethod: paymentMethod.slug,
+          successUrl: process.env.ORIGIN + "/successfulPayment",
+          cancelUrl: process.env.ORIGIN + "/cancelledPayment",
+          total: order.total,
+          currency: "usd",
+        });
 
-      // Now update the checkout session id
-      order = (await orderRepository.setCheckoutSessionId(
+      // Now update the checkout session id and the checkout url
+      order = (await orderRepository.setCheckoutSessionIdAndUrl(
         command.orderId,
-        checkoutSessionId
+        checkoutSessionId,
+        checkoutSessionUrl
       )) as IOrder;
 
       // Now reduce the number of items in stock

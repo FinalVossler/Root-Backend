@@ -37,7 +37,7 @@ describe("Orders", () => {
   const adminToken: string = userService.generateToken(adminUser);
 
   const quantity: number = 10;
-  const price: number = 100;
+  const price: number = 0.01;
   const quantityToCheckout: number = 5;
   const remainingQuantity = quantity - quantityToCheckout;
 
@@ -109,7 +109,7 @@ describe("Orders", () => {
       await shippingMethodMongooseRepository.createShippingMethod({
         language: "en",
         name: "card",
-        price: 40,
+        price: 0.001,
       });
 
     paymentMethod = await paymentMethodMongooseRepository.createPaymentMethod({
@@ -138,7 +138,7 @@ describe("Orders", () => {
       shippingMethodId: shippingMethod._id.toString(),
       paymentMethodId: paymentMethod._id.toString(),
       status: OrderStatusEnum.Pending,
-      total: 500,
+      total: 0.0001,
       userId: adminUser._id.toString(),
     };
 
@@ -187,7 +187,7 @@ describe("Orders", () => {
       products: [
         {
           productId: sellableEntity?._id.toString() || "",
-          price: 100,
+          price: 0.01,
           quantity: 2,
         },
       ],
@@ -202,7 +202,7 @@ describe("Orders", () => {
       shippingMethodId: shippingMethod?._id.toString() || "",
       paymentMethodId: paymentMethod?._id.toString() || "",
       status: OrderStatusEnum.Pending,
-      total: 200,
+      total: 0.0001,
       userId: adminUser._id.toString(),
     };
 

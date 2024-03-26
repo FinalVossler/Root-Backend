@@ -17,12 +17,17 @@ const orderToReadDto = (order: IOrder): IOrderReadDto => {
       quantity: productInformation.price,
     })),
     shippingAddress: order.shippingAddress,
-    shippingMethod: shippingMethodToReadDto(order.shippingMethod),
-    paymentMethod: paymentMethodToReadDto(order.paymentMethod),
+    shippingMethod: order.shippingMethod
+      ? shippingMethodToReadDto(order.shippingMethod)
+      : "",
+    paymentMethod: order.paymentMethod
+      ? paymentMethodToReadDto(order.paymentMethod)
+      : "",
     status: order.status,
     total: order.total,
     user: userToReadDto(order.user),
     checkoutSessionId: order.checkoutSessionId,
+    checkoutSessionUrl: order.checkoutSessionUrl,
   };
 };
 

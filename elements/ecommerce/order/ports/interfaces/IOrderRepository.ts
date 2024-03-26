@@ -9,9 +9,10 @@ interface IOrderRepository {
     orderId: string,
     status: OrderStatusEnum
   ) => Promise<IOrder | null>;
-  setCheckoutSessionId: (
+  setCheckoutSessionIdAndUrl: (
     orderId: string,
-    checkoutSessionId: string
+    checkoutSessionId: string,
+    checkoutSessionUrl: string
   ) => Promise<IOrder | null>;
   deleteOrders: (orderIds: string[]) => Promise<void>;
 }

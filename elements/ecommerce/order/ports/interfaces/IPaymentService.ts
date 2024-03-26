@@ -1,10 +1,7 @@
-export interface IMakePaymentCommand {
-  total: number;
-  successUrl: string;
-  cancelUrl: string;
-  paymentMethod: string;
-}
+import IMakePaymentCommand from "./IMakePaymentCommand";
 
 export default interface IPaymentService {
-  makePayment: (command: IMakePaymentCommand) => Promise<string>;
+  makePayment: (
+    command: IMakePaymentCommand
+  ) => Promise<{ checkoutSessionId: string; checkoutSessionUrl: string }>;
 }
