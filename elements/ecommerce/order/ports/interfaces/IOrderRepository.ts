@@ -4,7 +4,7 @@ import IOrder from "./IOrder";
 
 interface IOrderRepository {
   getOrderById: (orderId: string) => Promise<IOrder | null>;
-  createOrder: (command: IOrderCreateCommand) => Promise<IOrder>;
+  createOrder: (command: IOrderCreateCommand, total: number) => Promise<IOrder>;
   updateOrderStatus: (
     orderId: string,
     status: OrderStatusEnum

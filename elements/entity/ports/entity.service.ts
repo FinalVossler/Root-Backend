@@ -329,6 +329,20 @@ const createEntityService = (
 
     return entity;
   },
+
+  getByIdWithUncheckedPermissions: async (
+    entityId: string
+  ): Promise<IEntity> => {
+    const entity: IEntity | undefined = await entityRepository.getById(
+      entityId
+    );
+
+    if (!entity) {
+      throw new Error("Entity not found");
+    }
+
+    return entity;
+  },
   searchEntities: async (
     command: IEntitiesSearchCommand,
     currentUser: IUser

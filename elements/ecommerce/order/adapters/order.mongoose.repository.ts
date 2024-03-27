@@ -6,7 +6,7 @@ import Order from "./order.mongoose.model";
 import { entityPopulationOptions } from "../../../entity/adapters/entity.mongoose.repository";
 
 const orderMongooseRepository: IOrderRepository = {
-  createOrder: async (command: IOrderCreateCommand) => {
+  createOrder: async (command: IOrderCreateCommand, total: number) => {
     const order = (
       await Order.create({
         date: command.date,
@@ -16,7 +16,7 @@ const orderMongooseRepository: IOrderRepository = {
           product: productInfo.productId,
           quantity: productInfo.quantity,
         })),
-        total: command.total,
+        total,
         status: command.status,
         user: command.userId,
         checkoutSessionId: undefined,

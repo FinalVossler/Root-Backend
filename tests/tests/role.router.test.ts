@@ -24,14 +24,20 @@ import {
   StaticPermissionEnum,
 } from "roottypes";
 import { IField } from "../../elements/field/ports/interfaces/IField";
-import { userService } from "../../ioc";
+import {
+  entityService,
+  fieldService,
+  modelService,
+  roleService,
+  userService,
+} from "../../ioc";
 import IModel from "../../elements/model/ports/interfaces/IModel";
 import IRole from "../../elements/role/ports/interfaces/IRole";
 import IEntity from "../../elements/entity/ports/interfaces/IEntity";
 import fieldMongooseRepository from "../../elements/field/adapters/field.mongoose.repository";
 
 jest.setTimeout(50000);
-describe("roles", () => {
+describe("Roles", () => {
   const adminToken = userService.generateToken(adminUser);
   const roleToSearchName = "To find by search";
   let createdRole: IRoleReadDto | undefined;
@@ -123,31 +129,43 @@ describe("roles", () => {
     const promises: Promise<any>[] = [];
     if (field1) {
       promises.push(
-        fieldMongooseRepository.deleteFields([field1._id.toString()])
+        fieldService.deleteFields([field1._id.toString()], adminUser)
       );
     }
     if (field2) {
       promises.push(
-        fieldMongooseRepository.deleteFields([field2._id.toString()])
+        fieldService.deleteFields([field2._id.toString()], adminUser)
       );
     }
     if (model) {
-      promises.push(modelRepository.deleteModels([model._id.toString()]));
+      promises.push(
+        modelService.deleteModels([model._id.toString()], adminUser)
+      );
     }
     if (entity) {
-      promises.push(entityRepository.deleteEntities([entity._id.toString()]));
+      promises.push(
+        entityService.deleteEntities([entity._id.toString()], adminUser)
+      );
     }
     if (createdRole) {
-      promises.push(roleRepository.deleteRoles([createdRole._id.toString()]));
+      promises.push(
+        roleService.deleteRoles([createdRole._id.toString()], adminUser)
+      );
     }
     if (roleToUpdate) {
-      promises.push(roleRepository.deleteRoles([roleToUpdate._id.toString()]));
+      promises.push(
+        roleService.deleteRoles([roleToUpdate._id.toString()], adminUser)
+      );
     }
     if (roleToDelete) {
-      promises.push(roleRepository.deleteRoles([roleToDelete._id.toString()]));
+      promises.push(
+        roleService.deleteRoles([roleToDelete._id.toString()], adminUser)
+      );
     }
     if (roleToSearch) {
-      promises.push(roleRepository.deleteRoles([roleToSearch._id.toString()]));
+      promises.push(
+        roleService.deleteRoles([roleToSearch._id.toString()], adminUser)
+      );
     }
 
     await Promise.all(promises);

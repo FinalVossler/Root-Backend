@@ -53,6 +53,7 @@ interface IEntityService {
   ) => Promise<{ entities: IEntity[]; total: number }>;
   deleteEntities: (entitiesIds: string[], currentUser: IUser) => Promise<void>;
   getById: (entityId: string, currentUser: IUser) => Promise<IEntity>;
+  getByIdWithUncheckedPermissions: (entityId: string) => Promise<IEntity>;
   searchEntities: (
     command: IEntitiesSearchCommand,
     currentUser: IUser

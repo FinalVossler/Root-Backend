@@ -10,23 +10,89 @@ import IOrderRepository from "./interfaces/IOrderRepository";
 import IOrder from "./interfaces/IOrder";
 import IUser from "../../../user/ports/interfaces/IUser";
 import IPaymentMethod from "../../paymentMethod/ports/interfaces/IPaymentMethod";
-import { entityService } from "../../../../ioc";
 import IEntity from "../../../entity/ports/interfaces/IEntity";
 import IPaymentService from "./interfaces/IPaymentService";
 import IPaymentMethodService from "../../paymentMethod/ports/interfaces/IPaymentMethodService";
+import IShippingMethod from "../../shippingMethod/ports/interfaces/IShippingMethod";
+import { IField } from "../../../field/ports/interfaces/IField";
+import IModel from "../../../model/ports/interfaces/IModel";
+import IEntityService from "../../../entity/ports/interfaces/IEntityService";
+import IShippingMethodService from "../../shippingMethod/ports/interfaces/IShippingMethodService";
 
 const createOrderService = (
   orderRepository: IOrderRepository,
   paymentService: IPaymentService,
-  paymentMethodService: IPaymentMethodService
+  paymentMethodService: IPaymentMethodService,
+  entityService: IEntityService,
+  shippingMethodService: IShippingMethodService
 ): IOrderService => {
   return {
+    getOrderTotal: function (params, shippingMethod) {
+      const totalProductsPrice: number = params.reduce((acc, productInfo) => {
+        const priceFieldId: string = (
+          (productInfo.product as IEntityReadDto).model as IModel
+        ).priceField?.toString() as string;
+
+        const price = parseInt(
+          (productInfo.product as IEntityReadDto).entityFieldValues
+            .find(
+              (efv) => (efv.field as IField)._id.toString() === priceFieldId
+            )
+            ?.value.at(0)?.text || "0"
+        );
+        const subTotal = price * productInfo.quantity;
+
+        return acc + subTotal;
+      }, 0);
+
+      const total = totalProductsPrice + shippingMethod.price;
+
+      return total;
+    },
     createOrder: async function (
       command: IOrderCreateCommand,
       currentUser: IUser
     ) {
-      let order: IOrder = await orderRepository.createOrder(command);
+      // Find the shipping method first
+      const shippingMethod = await shippingMethodService.getShippingMethodById(
+        command.shippingMethodId
+      );
 
+      if (!shippingMethod) {
+        throw new Error("shipping method not found");
+      }
+
+      // Now get each entity in the order
+      const getEntitiesPromises: Promise<IEntity>[] = [];
+      command.products.forEach((productInfo) => {
+        getEntitiesPromises.push(
+          new Promise(async (resolve, reject) => {
+            const entity = await entityService.getByIdWithUncheckedPermissions(
+              productInfo.productId
+            );
+
+            resolve(entity);
+          })
+        );
+      });
+      const entities: IEntity[] = await Promise.all(getEntitiesPromises);
+
+      // Now calculate the total based on the entities' prices and the shipping method price
+      const total = (this as IOrderService).getOrderTotal(
+        entities.map((entity) => ({
+          product: entity,
+          quantity:
+            command.products.find(
+              (productInfo) => productInfo.productId === entity._id.toString()
+            )?.quantity || 0,
+        })),
+        shippingMethod
+      );
+
+      // Now create the order
+      let order: IOrder = await orderRepository.createOrder(command, total);
+
+      // And now generate the checkout session ID and URL
       return await (this as IOrderService).checkout(
         { orderId: order._id.toString() },
         currentUser,
@@ -81,6 +147,14 @@ const createOrderService = (
         throw new Error("Payment method not found");
       }
 
+      // Find the shipping method
+      const shippingMethod: IShippingMethod | null =
+        order.shippingMethod as IShippingMethod;
+
+      if (!shippingMethod) {
+        throw new Error("shipping method not found");
+      }
+
       // Check available stock
       const checkStockPromises: Promise<void>[] = [];
       order.products.forEach((productInfo) => {
@@ -96,7 +170,7 @@ const createOrderService = (
         );
       });
 
-      // Make payment here
+      // Generate checkout session id and checkout url
       const { checkoutSessionId, checkoutSessionUrl } =
         await paymentService.makePayment({
           paymentMethod: paymentMethod.slug,

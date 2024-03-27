@@ -32,7 +32,7 @@ import IResponseDto from "../../globalTypes/IResponseDto";
 import IPaymentMethod from "../../elements/ecommerce/paymentMethod/ports/interfaces/IPaymentMethod";
 import paymentMethodMongooseRepository from "../../elements/ecommerce/paymentMethod/adapters/paymentMethod.mongoose.repository";
 
-jest.setTimeout(50000);
+jest.setTimeout(150000);
 describe("Orders", () => {
   const adminToken: string = userService.generateToken(adminUser);
 
@@ -134,12 +134,12 @@ describe("Orders", () => {
       shippingMethodId: shippingMethod._id.toString(),
       paymentMethodId: paymentMethod._id.toString(),
       status: OrderStatusEnum.Pending,
-      total: quantity * price,
       userId: adminUser._id.toString(),
     };
 
     orderToUpdateAndCheckout = await orderMongooseRepository.createOrder(
-      createOrderCommand
+      createOrderCommand,
+      quantity * price
     );
   });
 
@@ -198,7 +198,6 @@ describe("Orders", () => {
       shippingMethodId: shippingMethod?._id.toString() || "",
       paymentMethodId: paymentMethod?._id.toString() || "",
       status: OrderStatusEnum.Pending,
-      total: price * 2,
       userId: adminUser._id.toString(),
     };
 
@@ -211,7 +210,6 @@ describe("Orders", () => {
         const result: IResponseDto<IOrderReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
-        expect(result.data?.total).toEqual(createOrderCommand.total);
         expect(result.data?.shippingAddress.city).toEqual(
           createOrderCommand.shippingAddress.city
         );

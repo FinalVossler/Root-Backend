@@ -196,20 +196,23 @@ export const paymentMethodService: IPaymentMethodService =
     paymentService
   );
 
+export const shippingMethodService: IShippingMethodService =
+  createShippingMethodService(shippingMethodMongooseRepository, roleService);
 export const mockedOrderService: IOrderService = createOrderService(
   orderMongooseRepository,
   mockedPaymentService,
-  mockedPaymentMethodService
+  mockedPaymentMethodService,
+  entityService,
+  shippingMethodService
 );
 
 export const orderService: IOrderService = createOrderService(
   orderMongooseRepository,
   paymentService,
-  paymentMethodService
+  paymentMethodService,
+  entityService,
+  shippingMethodService
 );
-
-export const shippingMethodService: IShippingMethodService =
-  createShippingMethodService(shippingMethodMongooseRepository, roleService);
 
 export const addressService: IAddressService = createAddressService(
   addressMongooseRepository,

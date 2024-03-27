@@ -205,7 +205,9 @@ const roleMongooseRepository = {
   deleteRoles: async (rolesIds: string[]): Promise<null> => {
     for (let i = 0; i < rolesIds.length; i++) {
       // delete role entity permissions first
-      const role: IRole = (await Role.findById(rolesIds[i])
+      const role: IRole = (await Role.findById(
+        new mongoose.Types.ObjectId(rolesIds[i])
+      )
         .populate(populationOptions)
         .exec()) as IRole;
 
