@@ -180,6 +180,7 @@ const mockedPaymentService: IPaymentService = {
       })
     ),
   checkPaymentMethodValidity: async (_: string) => true,
+  isPaymentSuccessful: async (_: string) => true,
 };
 
 export const mockedPaymentMethodService: IPaymentMethodService =

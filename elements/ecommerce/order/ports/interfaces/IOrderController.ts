@@ -21,6 +21,12 @@ type IOrderController = {
     req: IRequest<IOrderCheckoutCommand>,
     currentUser: IUser
   ) => Promise<IResponseDto<IOrderReadDto>>;
+  isPaymentSuccessful: (
+    req: IRequest<any, { orderId: string }>,
+    currentUser: IUser
+  ) => Promise<
+    IResponseDto<{ isPaymentSuccessful: boolean; order: IOrderReadDto }>
+  >;
 };
 
 export default IOrderController;

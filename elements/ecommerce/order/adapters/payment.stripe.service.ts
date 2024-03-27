@@ -85,6 +85,22 @@ const stripePaymentService: IPaymentService = {
 
     throw new Error("Error generating payment url");
   },
+  isPaymentSuccessful: async function (sessionId: string) {
+    try {
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      const paymentIntentId = session.payment_intent;
+      if (!paymentIntentId) {
+        return false;
+      }
+      const paymentIntent = await stripe.paymentIntents.retrieve(
+        paymentIntentId as string
+      );
+
+      return paymentIntent.status === "succeeded";
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 export default stripePaymentService;

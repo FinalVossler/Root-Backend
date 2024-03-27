@@ -10,6 +10,7 @@ import IEntity from "../../../../entity/ports/interfaces/IEntity";
 import IShippingMethod from "../../../shippingMethod/ports/interfaces/IShippingMethod";
 
 interface IOrderService {
+  getOrderById: (orderId: string) => Promise<IOrder | null>;
   getOrderTotal: (
     params: { product: IEntity; quantity: number }[],
     shippingMethod: IShippingMethod
@@ -27,6 +28,10 @@ interface IOrderService {
     currentUser: IUser,
     orderFromCreation?: IOrder
   ) => Promise<IOrder>;
+  isPaymentSuccessful: (
+    orderId: string,
+    currentUser: IUser
+  ) => Promise<{ isPaymentSuccessful: boolean; order: IOrder }>;
 }
 
 export default IOrderService;

@@ -27,6 +27,9 @@ const createOrderService = (
   shippingMethodService: IShippingMethodService
 ): IOrderService => {
   return {
+    getOrderById: async function (orderId: string) {
+      return await orderRepository.getOrderById(orderId);
+    },
     getOrderTotal: function (params, shippingMethod) {
       const totalProductsPrice: number = params.reduce((acc, productInfo) => {
         const priceFieldId: string = (
@@ -222,6 +225,43 @@ const createOrderService = (
       return (await orderRepository.getOrderById(
         order._id.toString()
       )) as IOrder;
+    },
+    isPaymentSuccessful: async function (orderId: string, currentUser: IUser) {
+      let order: IOrder | null = await (this as IOrderService).getOrderById(
+        orderId
+      );
+
+      if (!order) {
+        throw new Error("Order not found");
+      }
+
+      const orderUserId =
+        typeof order.user === "string"
+          ? order.user
+          : order?.user._id.toString();
+
+      if (currentUser._id.toString() !== orderUserId) {
+        throw new Error("Permission denied");
+      }
+
+      if (!order.checkoutSessionId) {
+        throw new Error("Doesn't doesn't possess a checkout session id");
+      }
+
+      const isPaymentSuccessful: boolean =
+        await paymentService.isPaymentSuccessful(order.checkoutSessionId);
+
+      if (order.status === OrderStatusEnum.Pending) {
+        order = await (this as IOrderService).updateOrderStatus(
+          order._id,
+          OrderStatusEnum.Paid
+        );
+      }
+
+      return {
+        isPaymentSuccessful,
+        order,
+      };
     },
   };
 };

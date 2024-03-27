@@ -5,4 +5,5 @@ export default interface IPaymentService {
     command: IMakePaymentCommand
   ) => Promise<{ checkoutSessionId: string; checkoutSessionUrl: string }>;
   checkPaymentMethodValidity: (paymentMethod: string) => Promise<boolean>;
+  isPaymentSuccessful: (sessionId: string) => Promise<boolean>;
 }

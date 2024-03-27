@@ -17,4 +17,10 @@ orderRouter.post(
   orderExpressController.checkout
 );
 
+orderRouter.get(
+  "/isPaymentSuccessful/:orderId",
+  protectMiddleware,
+  orderExpressController.isPaymentSuccessful
+);
+
 export default orderRouter;

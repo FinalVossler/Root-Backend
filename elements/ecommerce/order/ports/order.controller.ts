@@ -53,6 +53,18 @@ const createOrderController = (
         data: orderToReadDto(order),
       };
     },
+    isPaymentSuccessful: async (
+      req: IRequest<any, { orderId: string }>,
+      currentUser: IUser
+    ) => {
+      const { isPaymentSuccessful, order } =
+        await orderService.isPaymentSuccessful(req.params.orderId, currentUser);
+
+      return {
+        success: true,
+        data: { isPaymentSuccessful, order: orderToReadDto(order) },
+      };
+    },
   };
 };
 
