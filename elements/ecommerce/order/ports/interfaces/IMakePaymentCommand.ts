@@ -4,6 +4,7 @@ interface IMakePaymentCommand {
   cancelUrl: string;
   paymentMethod: string;
   currency: string;
+  productName: string;
 }
 
 export default IMakePaymentCommand;

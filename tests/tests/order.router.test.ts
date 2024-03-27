@@ -37,7 +37,7 @@ describe("Orders", () => {
   const adminToken: string = userService.generateToken(adminUser);
 
   const quantity: number = 10;
-  const price: number = 0.01;
+  const price: number = 0.001;
   const quantityToCheckout: number = 5;
   const remainingQuantity = quantity - quantityToCheckout;
 
@@ -56,12 +56,8 @@ describe("Orders", () => {
   beforeAll(async () => {
     const promises: Promise<IField>[] = [];
     promises.push(
-      fieldMongooseRepository.create(
-        createCreateFieldCommand("Entity test Field1")
-      ),
-      fieldMongooseRepository.create(
-        createCreateFieldCommand("Entity test Field2")
-      )
+      fieldMongooseRepository.create(createCreateFieldCommand("Price")),
+      fieldMongooseRepository.create(createCreateFieldCommand("Quantity"))
     );
 
     const res = await Promise.all(promises);
@@ -109,7 +105,7 @@ describe("Orders", () => {
       await shippingMethodMongooseRepository.createShippingMethod({
         language: "en",
         name: "card",
-        price: 0.001,
+        price,
       });
 
     paymentMethod = await paymentMethodMongooseRepository.createPaymentMethod({
@@ -123,7 +119,7 @@ describe("Orders", () => {
       products: [
         {
           productId: sellableEntity._id.toString(),
-          price: parseInt(entityPriceFieldValueCommand1.value),
+          price,
           quantity: quantityToCheckout,
         },
       ],
@@ -138,7 +134,7 @@ describe("Orders", () => {
       shippingMethodId: shippingMethod._id.toString(),
       paymentMethodId: paymentMethod._id.toString(),
       status: OrderStatusEnum.Pending,
-      total: 0.0001,
+      total: quantity * price,
       userId: adminUser._id.toString(),
     };
 
@@ -187,7 +183,7 @@ describe("Orders", () => {
       products: [
         {
           productId: sellableEntity?._id.toString() || "",
-          price: 0.01,
+          price,
           quantity: 2,
         },
       ],
@@ -202,7 +198,7 @@ describe("Orders", () => {
       shippingMethodId: shippingMethod?._id.toString() || "",
       paymentMethodId: paymentMethod?._id.toString() || "",
       status: OrderStatusEnum.Pending,
-      total: 0.0001,
+      total: price * 2,
       userId: adminUser._id.toString(),
     };
 
@@ -249,6 +245,7 @@ describe("Orders", () => {
       orderId: orderToUpdateAndCheckout?._id.toString() || "",
     };
     expect(orderToUpdateAndCheckout?.checkoutSessionId).toBeUndefined;
+
     return request(app)
       .post("/orders/checkout")
       .set("Authorization", "Bearer " + adminToken)

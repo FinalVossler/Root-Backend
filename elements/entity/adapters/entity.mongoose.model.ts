@@ -23,7 +23,7 @@ const EntitySchema = new mongoose.Schema<IEntity>(
         files: [
           {
             type: mongoose.SchemaTypes.ObjectId,
-            ref: File.modelName,
+            ref: "file",
           },
         ],
         tableValues: [

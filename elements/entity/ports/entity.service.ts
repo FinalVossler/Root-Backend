@@ -356,7 +356,7 @@ const createEntityService = (
       .find(
         (f) =>
           (f.field as IField)._id.toString() ===
-          (model.priceField as IField)._id.toString()
+          (model.quantityField as IField)._id.toString()
       )
       ?.value.at(0)?.text;
     if (!oldStockAsString) {
@@ -366,7 +366,12 @@ const createEntityService = (
     const oldStock = parseInt(oldStockAsString);
 
     if (reduceBy > oldStock) {
-      throw new Error("Insufficient stock");
+      throw new Error(
+        "Insufficient stock => old stock=" +
+          oldStock +
+          ", reduce by=" +
+          reduceBy
+      );
     }
 
     return { model, stock: oldStock };
@@ -384,7 +389,13 @@ const createEntityService = (
       entityFieldValues: entity.entityFieldValues.map((fieldValue) => ({
         fieldId: (fieldValue.field as IField)._id,
         files: (fieldValue.files as IFile[]).map((file) => ({
-          ...file,
+          _id: file._id,
+          isImage: file.isImage,
+          name: file.name,
+          ownerId: file.ownerId,
+          url: file.url,
+          uuid: file.uuid,
+          // ...file,
         })),
         tableValues:
           fieldValue.tableValues?.map((tableValue) => ({

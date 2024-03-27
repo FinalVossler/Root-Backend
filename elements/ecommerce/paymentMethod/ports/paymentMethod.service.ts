@@ -9,10 +9,12 @@ import IUser from "../../../user/ports/interfaces/IUser";
 import IPaymentMethod from "./interfaces/IPaymentMethod";
 import IPaymentMethodRepository from "./interfaces/IPaymentMethodRepository";
 import IRoleService from "../../../role/ports/interfaces/IRoleService";
+import IPaymentService from "../../order/ports/interfaces/IPaymentService";
 
 const createPaymentMethodService = (
   paymentMethodRepository: IPaymentMethodRepository,
-  roleService: IRoleService
+  roleService: IRoleService,
+  paymentService: IPaymentService
 ): IPaymentMethodService => ({
   getPaymentMethodById: async (paymentMethodId: string) => {
     return paymentMethodRepository.getPaymentMethodById(paymentMethodId);
@@ -45,6 +47,10 @@ const createPaymentMethodService = (
       throw new Error("Permission denied");
     }
 
+    if (!(await paymentService.checkPaymentMethodValidity(command.slug))) {
+      throw new Error("Unsupported payment method");
+    }
+
     const paymentMethod: IPaymentMethod =
       await paymentMethodRepository.createPaymentMethod(command);
 
@@ -61,6 +67,10 @@ const createPaymentMethodService = (
       })
     ) {
       throw new Error("Permission denied");
+    }
+
+    if (!(await paymentService.checkPaymentMethodValidity(command.slug))) {
+      throw new Error("Unsupported payment method");
     }
 
     const paymentMethod: IPaymentMethod =

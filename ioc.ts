@@ -169,25 +169,43 @@ export const cartService: ICartService = createCartService(
   cartMongooseRepository
 );
 
-export const paymentMethodService: IPaymentMethodService =
-  createPaymentMethodService(paymentMethodMongooseRepository, roleService);
+export const paymentService = stripePaymentService;
 
 const mockedPaymentService: IPaymentService = {
   makePayment: (command: IMakePaymentCommand) =>
     new Promise((resolve) =>
-      resolve({ checkoutSessionId: "", checkoutSessionUrl: "" })
+      resolve({
+        checkoutSessionId: "checkoutSessionId",
+        checkoutSessionUrl: "http://someCheckoutUrl.com",
+      })
     ),
+  checkPaymentMethodValidity: async (_: string) => true,
 };
+
+export const mockedPaymentMethodService: IPaymentMethodService =
+  createPaymentMethodService(
+    paymentMethodMongooseRepository,
+    roleService,
+    mockedPaymentService
+  );
+
+export const paymentMethodService: IPaymentMethodService =
+  createPaymentMethodService(
+    paymentMethodMongooseRepository,
+    roleService,
+    paymentService
+  );
+
 export const mockedOrderService: IOrderService = createOrderService(
   orderMongooseRepository,
-  mockedPaymentService
+  mockedPaymentService,
+  mockedPaymentMethodService
 );
-
-export const paymentService = stripePaymentService;
 
 export const orderService: IOrderService = createOrderService(
   orderMongooseRepository,
-  paymentService
+  paymentService,
+  paymentMethodService
 );
 
 export const shippingMethodService: IShippingMethodService =

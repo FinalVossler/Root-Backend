@@ -1,4 +1,5 @@
 import {
+  IEntityReadDto,
   IOrderCheckoutCommand,
   IOrderCreateCommand,
   OrderStatusEnum,
@@ -12,16 +13,25 @@ import IPaymentMethod from "../../paymentMethod/ports/interfaces/IPaymentMethod"
 import { entityService } from "../../../../ioc";
 import IEntity from "../../../entity/ports/interfaces/IEntity";
 import IPaymentService from "./interfaces/IPaymentService";
+import IPaymentMethodService from "../../paymentMethod/ports/interfaces/IPaymentMethodService";
 
 const createOrderService = (
   orderRepository: IOrderRepository,
-  paymentService: IPaymentService
+  paymentService: IPaymentService,
+  paymentMethodService: IPaymentMethodService
 ): IOrderService => {
   return {
-    createOrder: async (command: IOrderCreateCommand) => {
-      const order: IOrder = await orderRepository.createOrder(command);
+    createOrder: async function (
+      command: IOrderCreateCommand,
+      currentUser: IUser
+    ) {
+      let order: IOrder = await orderRepository.createOrder(command);
 
-      return order;
+      return await (this as IOrderService).checkout(
+        { orderId: order._id.toString() },
+        currentUser,
+        order
+      );
     },
     updateOrderStatus: async (
       orderId: string,
@@ -40,11 +50,12 @@ const createOrderService = (
     },
     checkout: async function (
       command: IOrderCheckoutCommand,
-      currentUser: IUser
+      currentUser: IUser,
+      orderFromCreation?: IOrder
     ) {
-      let order: IOrder | null = await orderRepository.getOrderById(
-        command.orderId
-      );
+      let order: IOrder | null =
+        orderFromCreation ||
+        (await orderRepository.getOrderById(command.orderId));
 
       if (!order) {
         throw new Error("Order doesn't exist");
@@ -89,10 +100,21 @@ const createOrderService = (
       const { checkoutSessionId, checkoutSessionUrl } =
         await paymentService.makePayment({
           paymentMethod: paymentMethod.slug,
-          successUrl: process.env.ORIGIN + "/successfulPayment",
-          cancelUrl: process.env.ORIGIN + "/cancelledPayment",
+          successUrl:
+            process.env.ORIGIN + "/successfulPayment/" + order._id.toString(),
+          cancelUrl:
+            process.env.ORIGIN + "/cancelledPayment/" + order._id.toString(),
           total: order.total,
           currency: "usd",
+          productName: order.products.reduce(
+            (acc, productInfo, index) =>
+              acc +
+              productInfo.quantity +
+              "X" +
+              (productInfo.product as IEntityReadDto)._id.toString() +
+              (index < (order?.products.length || 0) - 1 ? "," : ""),
+            ""
+          ),
         });
 
       // Now update the checkout session id and the checkout url

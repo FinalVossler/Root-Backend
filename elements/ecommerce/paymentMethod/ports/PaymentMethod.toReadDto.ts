@@ -5,8 +5,6 @@ import IPaymentMethod from "./interfaces/IPaymentMethod";
 const paymentMethodToReadDto = (
   paymentMethod: IPaymentMethod | string
 ): IPaymentMethodReadDto | string => {
-  console.log("paymentMethod", paymentMethod);
-  console.log("type of payment method", typeof paymentMethod);
   if (
     typeof paymentMethod === "string" ||
     Object.keys(paymentMethod).length === 0
