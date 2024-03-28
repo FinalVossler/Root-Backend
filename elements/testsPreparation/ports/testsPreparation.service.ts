@@ -1382,6 +1382,7 @@ const createTestsPreparationService = (
       type: FieldTypeEnum.Text,
       options: [],
     };
+
     const priceFieldCreateCommand: IFieldCreateCommand = {
       canChooseFromExistingFiles: true,
       fieldEvents: [],
@@ -1538,7 +1539,7 @@ const createTestsPreparationService = (
           fieldId: priceField._id.toString(),
           files: [],
           tableValues: [],
-          value: "20",
+          value: "20000",
           yearTableValues: [],
         },
         {
@@ -1588,7 +1589,7 @@ const createTestsPreparationService = (
           fieldId: priceField._id.toString(),
           files: [],
           tableValues: [],
-          value: "30",
+          value: "30000",
           yearTableValues: [],
         },
         {

@@ -178,9 +178,9 @@ const createOrderService = (
         await paymentService.makePayment({
           paymentMethod: paymentMethod.slug,
           successUrl:
-            process.env.ORIGIN + "/successfulPayment/" + order._id.toString(),
+            process.env.ORIGIN + "/paymentResult/" + order._id.toString(),
           cancelUrl:
-            process.env.ORIGIN + "/cancelledPayment/" + order._id.toString(),
+            process.env.ORIGIN + "/paymentResult/" + order._id.toString(),
           total: order.total,
           currency: "usd",
           productName: order.products.reduce(
