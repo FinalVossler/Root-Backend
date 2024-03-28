@@ -126,6 +126,10 @@ const createOrderService = (
         orderFromCreation ||
         (await orderRepository.getOrderById(command.orderId));
 
+      if (order?.status !== OrderStatusEnum.Pending) {
+        throw new Error("Order is already paid");
+      }
+
       if (!order) {
         throw new Error("Order doesn't exist");
       }

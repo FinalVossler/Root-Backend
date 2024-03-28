@@ -4,7 +4,9 @@ import IMakePaymentCommand from "../ports/interfaces/IMakePaymentCommand";
 import IPaymentService from "../ports/interfaces/IPaymentService";
 
 const stripe = new Stripe(
-  "sk_test_51OyfpxHlNjF4yi4gp0qrLssqRN6hqI45VvM7Sol7QUK10hfsflBS7YXimZNrWDL5235BS7KxmZYR141IRS8Rjspx00a7VWjTRo"
+  process.env.STRIPE_SECRET_KEY ||
+    // testing key:
+    "sk_test_51OyfpxHlNjF4yi4gp0qrLssqRN6hqI45VvM7Sol7QUK10hfsflBS7YXimZNrWDL5235BS7KxmZYR141IRS8Rjspx00a7VWjTRo"
 );
 
 const stripePaymentService: IPaymentService = {
