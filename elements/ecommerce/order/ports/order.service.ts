@@ -3,6 +3,7 @@ import {
   IOrderCheckoutCommand,
   IOrderCreateCommand,
   IPaginationCommand,
+  OrderNegativeStatusEnum,
   OrderStatusEnum,
   SuperRoleEnum,
 } from "roottypes";
@@ -137,11 +138,16 @@ const createOrderService = (
     },
     updateOrderStatus: async (
       orderId: string,
-      newOrderStatus: OrderStatusEnum
+      newOrderStatus: OrderStatusEnum | OrderNegativeStatusEnum
     ) => {
+      const isNegative = Object.values(OrderNegativeStatusEnum).some(
+        (value) => value === newOrderStatus
+      );
+
       const order: IOrder | null = await orderRepository.updateOrderStatus(
         orderId,
-        newOrderStatus
+        newOrderStatus,
+        isNegative
       );
 
       if (!order) {

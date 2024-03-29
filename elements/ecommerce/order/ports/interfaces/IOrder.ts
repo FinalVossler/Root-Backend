@@ -1,4 +1,4 @@
-import { OrderStatusEnum } from "roottypes";
+import { OrderNegativeStatusEnum, OrderStatusEnum } from "roottypes";
 
 import IUser from "../../../../user/ports/interfaces/IUser";
 import IShippingMethod from "../../../shippingMethod/ports/interfaces/IShippingMethod";
@@ -12,6 +12,7 @@ interface IOrder {
   date: string;
   total: number;
   status: OrderStatusEnum;
+  negativeStatus?: OrderNegativeStatusEnum;
   shippingMethod: IShippingMethod | string;
   paymentMethod: IPaymentMethod | string;
   shippingAddress: {

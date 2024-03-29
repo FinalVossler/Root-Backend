@@ -1,11 +1,11 @@
 import {
   IOrderCreateCommand,
   IPaginationCommand,
+  OrderNegativeStatusEnum,
   OrderStatusEnum,
 } from "roottypes";
 
 import IOrder from "./IOrder";
-import IUser from "../../../../user/ports/interfaces/IUser";
 import IPaginationResponse from "../../../../../globalTypes/IPaginationResponse";
 
 interface IOrderRepository {
@@ -21,7 +21,8 @@ interface IOrderRepository {
   ) => Promise<IOrder>;
   updateOrderStatus: (
     orderId: string,
-    status: OrderStatusEnum
+    status: OrderStatusEnum | OrderNegativeStatusEnum,
+    isNegativeStatus: boolean
   ) => Promise<IOrder | null>;
   setCheckoutSessionIdAndUrl: (
     orderId: string,

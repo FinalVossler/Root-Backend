@@ -3,6 +3,7 @@ import {
   IOrderCreateCommand,
   IOrderReadDto,
   IPaginationCommand,
+  OrderNegativeStatusEnum,
   OrderStatusEnum,
 } from "roottypes";
 
@@ -21,7 +22,10 @@ type IOrderController = {
     currentUser: IUser
   ) => Promise<IResponseDto<IOrderReadDto>>;
   updateOrderStatus: (
-    req: IRequest<{ orderId: string; status: OrderStatusEnum }>
+    req: IRequest<{
+      orderId: string;
+      status: OrderStatusEnum | OrderNegativeStatusEnum;
+    }>
   ) => Promise<IResponseDto<IOrderReadDto>>;
   checkout: (
     req: IRequest<IOrderCheckoutCommand>,

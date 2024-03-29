@@ -59,6 +59,10 @@ const OrderSchema = new mongoose.Schema<IOrder>({
     type: mongoose.SchemaTypes.String,
     required: true,
   },
+  negativeStatus: {
+    type: mongoose.SchemaTypes.String,
+    required: true,
+  },
 });
 
 const Order = mongoose.model<IOrder, IOrderModel>("order", OrderSchema);

@@ -72,10 +72,14 @@ const orderMongooseRepository: IOrderRepository = {
       { new: true }
     ).populate(populationOptions);
   },
-  updateOrderStatus: async (orderId: string, status: OrderStatusEnum) => {
+  updateOrderStatus: async (
+    orderId: string,
+    status: OrderStatusEnum,
+    isNegative: boolean
+  ) => {
     return await Order.findOneAndUpdate(
       { _id: new mongoose.Types.ObjectId(orderId) },
-      { $set: { status } },
+      { $set: isNegative ? { negativeStatus: status } : { status } },
       { new: true }
     ).populate(populationOptions);
   },
