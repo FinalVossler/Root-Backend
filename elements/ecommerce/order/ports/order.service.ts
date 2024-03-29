@@ -2,7 +2,9 @@ import {
   IEntityReadDto,
   IOrderCheckoutCommand,
   IOrderCreateCommand,
+  IPaginationCommand,
   OrderStatusEnum,
+  SuperRoleEnum,
 } from "roottypes";
 
 import IOrderService from "./interfaces/IOrderService";
@@ -30,6 +32,15 @@ const createOrderService = (
     getOrderById: async function (orderId: string) {
       return await orderRepository.getOrderById(orderId);
     },
+    generateUniqueOrderNumber: function () {
+      const prefix = Math.floor(Math.random() * 1000); // Generate a random 3-digit number for the prefix
+      const middle = Math.floor(Math.random() * 10000000); // Generate a random 7-digit number for the middle part
+      const suffix = Math.floor(Math.random() * 10000000); // Generate a random 7-digit number for the suffix
+
+      return `${prefix.toString().padStart(3, "0")}-${middle
+        .toString()
+        .padStart(7, "0")}-${suffix.toString().padStart(7, "0")}`;
+    },
     getOrderTotal: function (params, shippingMethod) {
       const totalProductsPrice: number = params.reduce((acc, productInfo) => {
         const priceFieldId: string = (
@@ -51,6 +62,20 @@ const createOrderService = (
       const total = totalProductsPrice + shippingMethod.price;
 
       return total;
+    },
+    getUserOrders: async (
+      command: IPaginationCommand,
+      userId: string,
+      currentUser: IUser
+    ) => {
+      if (
+        currentUser.superRole !== SuperRoleEnum.SuperAdmin &&
+        currentUser._id.toString() !== userId
+      ) {
+        throw new Error("Permission denied");
+      }
+
+      return await orderRepository.getUserOrders(command, userId);
     },
     createOrder: async function (
       command: IOrderCreateCommand,
@@ -92,8 +117,16 @@ const createOrderService = (
         shippingMethod
       );
 
+      // Generate a unique order number
+      const orderNumber: string = (
+        this as IOrderService
+      ).generateUniqueOrderNumber();
       // Now create the order
-      let order: IOrder = await orderRepository.createOrder(command, total);
+      let order: IOrder = await orderRepository.createOrder(
+        command,
+        total,
+        orderNumber
+      );
 
       // And now generate the checkout session ID and URL
       return await (this as IOrderService).checkout(

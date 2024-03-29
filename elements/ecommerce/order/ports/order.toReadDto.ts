@@ -10,6 +10,7 @@ import paymentMethodToReadDto from "../../paymentMethod/ports/PaymentMethod.toRe
 const orderToReadDto = (order: IOrder): IOrderReadDto => {
   return {
     _id: order._id,
+    number: order.number,
     date: order.date,
     products: order.products.map((productInformation) => ({
       price: productInformation.price,

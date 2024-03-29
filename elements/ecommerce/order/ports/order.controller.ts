@@ -1,6 +1,7 @@
 import {
   IOrderCheckoutCommand,
   IOrderCreateCommand,
+  IPaginationCommand,
   OrderStatusEnum,
 } from "roottypes";
 
@@ -15,6 +16,24 @@ const createOrderController = (
   orderService: IOrderService
 ): IOrderController => {
   return {
+    getUserOrders: async (
+      req: IRequest<{ paginationCommand: IPaginationCommand; userId: string }>,
+      currentUser: IUser
+    ) => {
+      const result = await orderService.getUserOrders(
+        req.body.paginationCommand,
+        currentUser._id.toString(),
+        currentUser
+      );
+
+      return {
+        data: {
+          data: result.data.map((o) => orderToReadDto(o)),
+          total: result.total,
+        },
+        success: true,
+      };
+    },
     createOrder: async (
       req: IRequest<IOrderCreateCommand>,
       currentUser: IUser

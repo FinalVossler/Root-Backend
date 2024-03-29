@@ -5,6 +5,12 @@ import orderExpressController from "./order.express.controller";
 
 const orderRouter = Router();
 
+orderRouter.post(
+  "/getUserOrders",
+  protectMiddleware,
+  orderExpressController.getUserOrders
+);
+
 orderRouter.post("/", protectMiddleware, orderExpressController.createOrder);
 orderRouter.put(
   "/updateOrderStatus",

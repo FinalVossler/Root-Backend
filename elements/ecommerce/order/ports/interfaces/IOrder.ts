@@ -8,6 +8,7 @@ import IPaymentMethod from "../../../paymentMethod/ports/interfaces/IPaymentMeth
 interface IOrder {
   _id: string;
   user: IUser | string;
+  number: string;
   date: string;
   total: number;
   status: OrderStatusEnum;

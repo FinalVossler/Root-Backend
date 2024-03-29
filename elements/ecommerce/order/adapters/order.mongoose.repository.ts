@@ -1,14 +1,39 @@
 import mongoose from "mongoose";
-import { IOrderCreateCommand, OrderStatusEnum } from "roottypes";
+import {
+  IOrderCreateCommand,
+  IPaginationCommand,
+  OrderStatusEnum,
+} from "roottypes";
 
 import IOrderRepository from "../ports/interfaces/IOrderRepository";
 import Order from "./order.mongoose.model";
 import { entityPopulationOptions } from "../../../entity/adapters/entity.mongoose.repository";
+import IOrder from "../ports/interfaces/IOrder";
 
 const orderMongooseRepository: IOrderRepository = {
-  createOrder: async (command: IOrderCreateCommand, total: number) => {
+  getUserOrders: async (command: IPaginationCommand, userId: string) => {
+    const orders: IOrder[] = await Order.find({
+      user: new mongoose.Types.ObjectId(userId),
+    })
+      .skip((command.page - 1) * command.limit)
+      .limit(command.limit)
+      .populate(populationOptions)
+      .exec();
+
+    const total: number = await Order.find({
+      user: new mongoose.Types.ObjectId(userId),
+    }).count();
+
+    return { data: orders, total };
+  },
+  createOrder: async (
+    command: IOrderCreateCommand,
+    total: number,
+    number: string
+  ) => {
     const order = (
       await Order.create({
+        number,
         date: command.date,
         shippingAddress: { ...command.shippingAddress },
         shippingMethod: command.shippingMethodId,

@@ -2,14 +2,20 @@ import {
   IOrderCheckoutCommand,
   IOrderCreateCommand,
   IOrderReadDto,
+  IPaginationCommand,
   OrderStatusEnum,
 } from "roottypes";
 
 import IRequest from "../../../../../globalTypes/IRequest";
 import IUser from "../../../../user/ports/interfaces/IUser";
 import IResponseDto from "../../../../../globalTypes/IResponseDto";
+import IPaginationResponse from "../../../../../globalTypes/IPaginationResponse";
 
 type IOrderController = {
+  getUserOrders: (
+    req: IRequest<{ paginationCommand: IPaginationCommand; userId: string }>,
+    currentUser: IUser
+  ) => Promise<IResponseDto<IPaginationResponse<IOrderReadDto>>>;
   createOrder: (
     req: IRequest<IOrderCreateCommand>,
     currentUser: IUser

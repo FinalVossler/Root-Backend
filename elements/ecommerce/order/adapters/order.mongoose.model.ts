@@ -5,6 +5,10 @@ import IOrder from "../ports/interfaces/IOrder";
 interface IOrderModel extends mongoose.Model<IOrder> {}
 
 const OrderSchema = new mongoose.Schema<IOrder>({
+  number: {
+    type: mongoose.SchemaTypes.String,
+    required: true,
+  },
   user: {
     type: mongoose.SchemaTypes.ObjectId,
     ref: "user",
