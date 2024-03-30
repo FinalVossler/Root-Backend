@@ -5,6 +5,7 @@ import IModel from "../../../model/ports/interfaces/IModel";
 import IUser from "../../../user/ports/interfaces/IUser";
 import IFile from "../../../file/ports/interfaces/IFile";
 import IFieldTableElement from "../../../fieldTableElement/ports/IFieldTableElement";
+import IShippingMethod from "../../../ecommerce/shippingMethod/ports/interfaces/IShippingMethod";
 
 export interface IEntityFieldValue {
   field: IField | string;
@@ -35,6 +36,7 @@ export default interface IEntity {
   assignedUsers?: (IUser | string)[];
   customData?: string;
   owner?: IUser | string;
+  availableShippingMethods?: (IShippingMethod | string)[];
 
   createdAt: string;
   updatedAt: string;

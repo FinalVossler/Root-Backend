@@ -70,6 +70,12 @@ const EntitySchema = new mongoose.Schema<IEntity>(
       type: mongoose.SchemaTypes.ObjectId,
       ref: "user",
     },
+    availableShippingMethods: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "shippingMethod",
+      },
+    ],
   },
   {
     timestamps: true,

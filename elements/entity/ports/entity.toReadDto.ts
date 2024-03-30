@@ -8,6 +8,7 @@ import {
 } from "../../field/ports/field.toReadDto";
 import { fileToReadDto } from "../../file/ports/file.toReadDto";
 import IEntity, { IEntityFieldValue } from "./interfaces/IEntity";
+import shippingMethodToReadDto from "../../ecommerce/shippingMethod/ports/shippingMethod.toReadDto";
 
 export const entityToReadDto = (entity: IEntity): IEntityReadDto => {
   return {
@@ -23,6 +24,9 @@ export const entityToReadDto = (entity: IEntity): IEntityReadDto => {
     updatedAt: entity.updatedAt,
     customData: entity.customData,
     owner: entity.owner ? userToReadDto(entity.owner) : entity.owner,
+    availableShippingMethods:
+      entity.availableShippingMethods?.map((s) => shippingMethodToReadDto(s)) ||
+      [],
   };
 };
 

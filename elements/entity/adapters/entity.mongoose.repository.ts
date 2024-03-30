@@ -74,6 +74,10 @@ const entityMongooseRepository: IEntityRepository = {
       })),
       assignedUsers: command.assignedUsersIds,
       owner: ownerId ? new mongoose.Types.ObjectId(ownerId) : undefined,
+      availableShippingMethods:
+        command.availableShippingMethodsIds?.map(
+          (id) => new mongoose.Types.ObjectId(id)
+        ) || [],
     });
 
     return entity.populate(entityPopulationOptions);
@@ -165,6 +169,10 @@ const entityMongooseRepository: IEntityRepository = {
             }
           ),
           assignedUsers: command.assignedUsersIds,
+          availableShippingMethods:
+            command.availableShippingMethodsIds?.map(
+              (id) => new mongoose.Types.ObjectId(id)
+            ) || [],
         },
       }
     );
@@ -358,6 +366,7 @@ export const entityPopulationOptions = [
     ],
   },
   { path: "owner", model: "user" },
+  { path: "availableShippingMethods", model: "shippingMethod" },
 ];
 
 export default entityMongooseRepository;
