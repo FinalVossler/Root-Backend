@@ -42,7 +42,52 @@ const createOrderService = (
         .toString()
         .padStart(7, "0")}-${suffix.toString().padStart(7, "0")}`;
     },
-    getOrderTotal: function (params, shippingMethod) {
+    getOrderTotal: function (
+      params: {
+        product: IEntity;
+        quantity: number;
+        shippingMethod: IShippingMethod | undefined;
+      }[]
+    ) {
+      // Find the total of shipping methods by owner (Each owner is going to be paid for each individual shipping method chosen for him)
+      const ownersShippingMethods: { [ownerId: string]: IShippingMethod[] } =
+        {};
+
+      params.forEach((productInfo) => {
+        if (productInfo.product.owner) {
+          const owner = productInfo.product.owner as IUser;
+          const ownerShippingMethods: IShippingMethod[] =
+            ownersShippingMethods[owner._id.toString()] || [];
+          // Add the shipping method id if it isn't already added:
+          if (
+            productInfo.shippingMethod &&
+            !ownerShippingMethods.some(
+              (shippingMethod) =>
+                shippingMethod._id.toString() ===
+                (productInfo.shippingMethod as IShippingMethod)._id.toString()
+            )
+          ) {
+            // Push the shipping method
+            ownersShippingMethods[owner._id.toString()] = [
+              ...(ownersShippingMethods[owner._id.toString()] || []),
+              productInfo.shippingMethod,
+            ];
+          }
+        }
+      });
+
+      const totalShippingMethodsPrice: number = Object.keys(
+        ownersShippingMethods
+      ).reduce((acc, key) => {
+        return (
+          acc +
+          ownersShippingMethods[key].reduce(
+            (secAcc, shippingMethod) => secAcc + shippingMethod.price,
+            0
+          )
+        );
+      }, 0);
+
       const totalProductsPrice: number = params.reduce((acc, productInfo) => {
         const priceFieldId: string = (
           (productInfo.product as IEntityReadDto).model as IModel
@@ -60,7 +105,7 @@ const createOrderService = (
         return acc + subTotal;
       }, 0);
 
-      const total = totalProductsPrice + shippingMethod.price;
+      const total = totalProductsPrice + totalShippingMethodsPrice;
 
       return total;
     },
@@ -82,14 +127,33 @@ const createOrderService = (
       command: IOrderCreateCommand,
       currentUser: IUser
     ) {
-      // Find the shipping method first
-      const shippingMethod = await shippingMethodService.getShippingMethodById(
-        command.shippingMethodId
-      );
+      // Get all concerned shipping methods
+      const getShippingMethodsPromises: Promise<IShippingMethod>[] = [];
+      const shippingMethodIdTracker: { [shippingMethodId: string]: string } =
+        {};
+      command.products.forEach((productInfo) => {
+        if (!shippingMethodIdTracker[productInfo.shippingMethodId]) {
+          getShippingMethodsPromises.push(
+            new Promise(async (resolve, reject) => {
+              const shippingMethod =
+                await shippingMethodService.getShippingMethodById(
+                  productInfo.shippingMethodId
+                );
 
-      if (!shippingMethod) {
-        throw new Error("shipping method not found");
-      }
+              if (shippingMethod) {
+                shippingMethodIdTracker[productInfo.shippingMethodId] =
+                  productInfo.shippingMethodId;
+                resolve(shippingMethod);
+              } else {
+                throw new Error("shipping method not found");
+                reject(null);
+              }
+            })
+          );
+        }
+      });
+
+      const shippingMethods = await Promise.all(getShippingMethodsPromises);
 
       // Now get each entity in the order
       const getEntitiesPromises: Promise<IEntity>[] = [];
@@ -106,7 +170,7 @@ const createOrderService = (
       });
       const entities: IEntity[] = await Promise.all(getEntitiesPromises);
 
-      // Now calculate the total based on the entities' prices and the shipping method price
+      // Now calculate the total based on the entities' prices and the shipping methods' prices
       const total = (this as IOrderService).getOrderTotal(
         entities.map((entity) => ({
           product: entity,
@@ -114,8 +178,14 @@ const createOrderService = (
             command.products.find(
               (productInfo) => productInfo.productId === entity._id.toString()
             )?.quantity || 0,
-        })),
-        shippingMethod
+          shippingMethod: shippingMethods.find(
+            (shippingMethod) =>
+              shippingMethod._id.toString() ===
+              command.products.find(
+                (productInfo) => productInfo.productId === entity._id.toString()
+              )?.shippingMethodId
+          ),
+        }))
       );
 
       // Generate a unique order number
@@ -191,14 +261,6 @@ const createOrderService = (
 
       if (!paymentMethod) {
         throw new Error("Payment method not found");
-      }
-
-      // Find the shipping method
-      const shippingMethod: IShippingMethod | null =
-        order.shippingMethod as IShippingMethod;
-
-      if (!shippingMethod) {
-        throw new Error("shipping method not found");
       }
 
       // Check available stock

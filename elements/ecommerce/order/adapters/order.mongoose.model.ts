@@ -21,11 +21,6 @@ const OrderSchema = new mongoose.Schema<IOrder>({
     type: mongoose.SchemaTypes.Number,
     required: true,
   },
-  shippingMethod: {
-    type: mongoose.SchemaTypes.String,
-    required: true,
-    ref: "shippingMethod",
-  },
   paymentMethod: {
     type: mongoose.SchemaTypes.String,
     ref: "paymentMethod",
@@ -45,6 +40,11 @@ const OrderSchema = new mongoose.Schema<IOrder>({
       quantity: {
         type: mongoose.SchemaTypes.Number,
       },
+
+      shippingMethod: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "shippingMethod ",
+      },
     },
   ],
   shippingAddress: {
@@ -61,7 +61,7 @@ const OrderSchema = new mongoose.Schema<IOrder>({
   },
   negativeStatus: {
     type: mongoose.SchemaTypes.String,
-    required: true,
+    required: false,
   },
 });
 

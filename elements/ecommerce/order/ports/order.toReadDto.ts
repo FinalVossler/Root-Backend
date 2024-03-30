@@ -16,11 +16,11 @@ const orderToReadDto = (order: IOrder): IOrderReadDto => {
       price: productInformation.price,
       product: entityToReadDto(productInformation.product as IEntity),
       quantity: productInformation.price,
+      shippingMethod: productInformation.shippingMethod
+        ? shippingMethodToReadDto(productInformation.shippingMethod)
+        : "",
     })),
     shippingAddress: order.shippingAddress,
-    shippingMethod: order.shippingMethod
-      ? shippingMethodToReadDto(order.shippingMethod)
-      : "",
     paymentMethod: order.paymentMethod
       ? paymentMethodToReadDto(order.paymentMethod)
       : "",

@@ -39,7 +39,7 @@
     "moment": "^2.29.4",
     "mongoose": "^6.8.2",
     "nodemailer": "^6.9.1",
-    "roottypes": "^1.0.83",
+    "roottypes": "^1.0.85",
     "slugify": "^1.6.5",
     "socket.io": "^4.5.4",
     "stripe": "^14.22.0"

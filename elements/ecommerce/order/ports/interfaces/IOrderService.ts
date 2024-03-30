@@ -21,8 +21,11 @@ interface IOrderService {
   getOrderById: (orderId: string) => Promise<IOrder | null>;
   generateUniqueOrderNumber: () => string;
   getOrderTotal: (
-    params: { product: IEntity; quantity: number }[],
-    shippingMethod: IShippingMethod
+    params: {
+      product: IEntity;
+      quantity: number;
+      shippingMethod: IShippingMethod | undefined;
+    }[]
   ) => number;
   createOrder: (
     command: IOrderCreateCommand,

@@ -13,7 +13,6 @@ interface IOrder {
   total: number;
   status: OrderStatusEnum;
   negativeStatus?: OrderNegativeStatusEnum;
-  shippingMethod: IShippingMethod | string;
   paymentMethod: IPaymentMethod | string;
   shippingAddress: {
     country: string;
@@ -28,6 +27,7 @@ interface IOrder {
     product: IEntity | string;
     quantity: number;
     price: number;
+    shippingMethod: IShippingMethod | string;
   }[];
 
   checkoutSessionId: string;
