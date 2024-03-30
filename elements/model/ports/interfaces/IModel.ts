@@ -1,4 +1,4 @@
-import { ITranslatedText } from "roottypes";
+import { IModelOrderAssociationConfig, ITranslatedText } from "roottypes";
 
 import { IEvent } from "../../../event/ports/interfaces/IEvent";
 import { IField } from "../../../field/ports/interfaces/IField";
@@ -16,6 +16,9 @@ export interface IModel {
   quantityField?: IField | string;
   priceField?: IField | string;
   imageField?: IField | string;
+
+  isForOrders?: boolean;
+  orderAssociationConfig?: IModelOrderAssociationConfig;
 
   createdAt: string;
   updatedAt: string;

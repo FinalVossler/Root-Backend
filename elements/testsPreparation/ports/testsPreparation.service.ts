@@ -451,6 +451,8 @@ const createTestsPreparationService = (
         modelEvents: [],
         name: "Case",
         modelFields: [],
+        isForOrders: false,
+
         states: [
           {
             exclusive: false,
@@ -531,6 +533,8 @@ const createTestsPreparationService = (
         language: "en",
         modelEvents: [],
         name: model.name?.at(0)?.text || "",
+        isForOrders: false,
+
         states:
           model.states?.map((s) => ({
             _id: s._id?.toString(),
@@ -1509,6 +1513,7 @@ const createTestsPreparationService = (
       quantityFieldId: quantityField._id.toString(),
       imageFieldId: imageField._id.toString(),
       name: "Product",
+      isForOrders: false,
       states: [],
       subStates: [],
     };

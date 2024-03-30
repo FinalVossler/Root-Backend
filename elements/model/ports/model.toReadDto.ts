@@ -42,6 +42,8 @@ export const modelToReadDto = (
       model.imageField !== undefined
         ? fieldToReadDto(model.imageField)
         : undefined,
+    isForOrders: model.isForOrders,
+    orderAssociationConfig: model.orderAssociationConfig,
 
     createdAt: model.createdAt,
     updatedAt: model.updatedAt,

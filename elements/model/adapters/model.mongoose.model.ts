@@ -90,6 +90,20 @@ const ModelSchema = new mongoose.Schema<IModel>(
       ref: "field",
       required: false,
     },
+    isForOrders: {
+      type: mongoose.SchemaTypes.Boolean,
+    },
+    orderAssociationConfig: {
+      modelOrderAssociationPermission: {
+        type: mongoose.SchemaTypes.String,
+      },
+      modelOrderAssociationLevel: {
+        type: mongoose.SchemaTypes.String,
+      },
+      isList: {
+        type: mongoose.SchemaTypes.Boolean,
+      },
+    },
   },
   {
     timestamps: true,

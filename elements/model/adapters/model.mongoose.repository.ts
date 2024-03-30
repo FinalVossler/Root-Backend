@@ -67,6 +67,9 @@ const modelMongooseRepository: IModelRepository = {
       quantityField: command.quantityFieldId,
       priceField: command.priceFieldId,
       imageField: command.imageFieldId,
+
+      isForOrders: command.isForOrders,
+      orderAssociationConfig: command.orderAssociationConfig,
     });
 
     return model.populate(populationOptions);
@@ -151,6 +154,9 @@ const modelMongooseRepository: IModelRepository = {
           quantityField: command.quantityFieldId,
           priceField: command.priceFieldId,
           imageField: command.imageFieldId,
+
+          isForOrders: command.isForOrders,
+          orderAssociationConfig: command.orderAssociationConfig,
         },
       }
     );

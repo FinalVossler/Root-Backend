@@ -69,6 +69,7 @@ export const createCreateModelCommand = (
       stateType: ModelStateTypeEnum.SubState,
     },
   ],
+  isForOrders: false,
   ...(priceFieldId ? { priceFieldId } : {}),
   ...(quantityFieldId ? { quantityFieldId } : {}),
 });
