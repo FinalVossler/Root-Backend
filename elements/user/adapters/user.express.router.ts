@@ -34,6 +34,11 @@ router.post("/forgotPasswordChangePassword", forgotPasswordChangePassword);
 router.post("/verifyPasswordToken", protectMiddleware, verifyPasswordToken);
 router.post("/", protectMiddleware, userExpressController.createUser);
 router.post("/getUsers", protectMiddleware, userExpressController.getUsers);
+router.post(
+  "/getUsersByIds",
+  protectMiddleware,
+  userExpressController.getUsersByIds
+);
 router.delete("/", protectMiddleware, userExpressController.deleteUsers);
 router.post("/search", userExpressController.searchUsers);
 router.post("/searchByRole", userExpressController.searchUsersByRole);

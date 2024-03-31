@@ -233,9 +233,11 @@ const modelMongooseRepository: IModelRepository = {
     command: IModelsGetCommand,
     ids: string[]
   ): Promise<{ total: number; models: IModel[] }> => {
-    const models: IModel[] = (await Model.find({
+    const queryConditions = {
       _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
-    })
+    };
+
+    const models: IModel[] = (await Model.find(queryConditions)
       .sort({ createAt: -1 })
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
@@ -244,7 +246,7 @@ const modelMongooseRepository: IModelRepository = {
       .populate(populationOptions)
       .exec()) as IModel[];
 
-    const total: number = await Model.find({}).count();
+    const total: number = await Model.find(queryConditions).count();
 
     return { models, total };
   },

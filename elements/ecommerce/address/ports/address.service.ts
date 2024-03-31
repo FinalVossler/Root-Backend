@@ -33,11 +33,11 @@ const createAddressService = (
   },
   getUserAddresses: async (userId: string, currentUser: IUser) => {
     if (
+      userId !== currentUser._id.toString() &&
       !roleService.checkPermission({
         user: currentUser,
         permission: PermissionEnum.CreateAddress,
-      }) &&
-      userId !== currentUser._id.toString()
+      })
     ) {
       throw new Error("Permission denied");
     }
@@ -49,7 +49,9 @@ const createAddressService = (
     return address;
   },
   createAddress: async (command: IAddressCreateCommand, currentUser: IUser) => {
+    // All clients/users should be able to create an address for themselves
     if (
+      command.userId !== currentUser._id.toString() &&
       !roleService.checkPermission({
         user: currentUser,
         permission: PermissionEnum.CreateAddress,
@@ -63,7 +65,9 @@ const createAddressService = (
     return address;
   },
   updateAddress: async (command: IAddressUpdateCommand, currentUser: IUser) => {
+    // All clients/users should be able to create an address for themselves
     if (
+      command.userId !== currentUser._id.toString() &&
       !roleService.checkPermission({
         user: currentUser,
         permission: PermissionEnum.UpdateAddress,

@@ -85,6 +85,9 @@ type IUserController = {
     req: IRequest<IUsersGetCommand>,
     currentUser: IUser
   ) => Promise<IResponseDto<IPaginationResponse<IUserReadDto>>>;
+  getUsersByIds: (
+    req: IRequest<{ usersIds: string[] }>
+  ) => Promise<IResponseDto<IUserReadDto[]>>;
   deleteUsers: (
     req: IRequest<string[]>,
     currentUser: IUser

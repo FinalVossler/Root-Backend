@@ -18,14 +18,15 @@ const createShippingMethodService = (
     return paymentMethodRepository.getShippingMethodById(paymentMethodId);
   },
   getShippingMethods: async (currentUser: IUser) => {
-    if (
-      !roleService.checkPermission({
-        user: currentUser,
-        permission: PermissionEnum.ReadShippingMethod,
-      })
-    ) {
-      throw new Error("Permission denied");
-    }
+    // Shipping methods should be accessible for anyone trying to buy
+    // if (
+    //   !roleService.checkPermission({
+    //     user: currentUser,
+    //     permission: PermissionEnum.ReadShippingMethod,
+    //   })
+    // ) {
+    //   throw new Error("Permission denied");
+    // }
 
     const paymentMethods: IShippingMethod[] =
       await paymentMethodRepository.getShippingMethods();

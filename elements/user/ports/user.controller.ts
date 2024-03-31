@@ -229,6 +229,14 @@ const createUserController = (userService: IUserService): IUserController => ({
       },
     };
   },
+  getUsersByIds: async (req: IRequest<{ usersIds: string[] }>) => {
+    const users = await userService.getByIds(req.body.usersIds);
+
+    return {
+      success: true,
+      data: users.map((p) => userToReadDto(p) as IUserReadDto),
+    };
+  },
   deleteUsers: async (req: IRequest<string[]>, currentUser: IUser) => {
     const usersIds: string[] = req.body;
     await userService.deleteUsers(usersIds, currentUser);

@@ -20,14 +20,15 @@ const createPaymentMethodService = (
     return paymentMethodRepository.getPaymentMethodById(paymentMethodId);
   },
   getPaymentMethods: async (currentUser: IUser) => {
-    if (
-      !roleService.checkPermission({
-        user: currentUser,
-        permission: PermissionEnum.ReadPaymentMethod,
-      })
-    ) {
-      throw new Error("Permission denied");
-    }
+    // Payment methods should be accessible for anyone trying to buy
+    // if (
+    //   !roleService.checkPermission({
+    //     user: currentUser,
+    //     permission: PermissionEnum.ReadPaymentMethod,
+    //   })
+    // ) {
+    //   throw new Error("Permission denied");
+    // }
 
     const paymentMethods: IPaymentMethod[] =
       await paymentMethodRepository.getPaymentMethods();
