@@ -37,8 +37,16 @@ const userMongooseRepository: IUserRepository = {
 
     return { users, total };
   },
-  save: async (command: IUserRegisterCommand): Promise<IUser> => {
-    const user: IUser = (await User.create(command)) as IUser;
+  save: async (
+    command: IUserRegisterCommand,
+    automaticallyAssignedRoleIdAtRegistration
+  ): Promise<IUser> => {
+    const user: IUser = (await User.create({
+      ...command,
+      role: new mongoose.Types.ObjectId(
+        automaticallyAssignedRoleIdAtRegistration
+      ),
+    })) as IUser;
 
     return user;
   },

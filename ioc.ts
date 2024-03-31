@@ -146,7 +146,8 @@ export const userService: IUserService = createUserService(
   postService,
   messageService,
   reactionService,
-  fileService
+  fileService,
+  websiteConfigurationService
 );
 
 export const entityEventNotificationService: IEntityEventNotificationService =

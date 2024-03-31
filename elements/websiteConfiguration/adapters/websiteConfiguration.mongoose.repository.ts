@@ -68,6 +68,8 @@ const websiteConfigurationMongooseRepository: IWebsiteConfigurationRepository =
             logo1: logo1?._id,
             logo2: logo2?._id,
             staticText: command.staticText,
+            automaticallyAssignedRoleAtRegistration:
+              command.automaticallyAssignedRoleIdAtRegistration,
           },
         }
       );

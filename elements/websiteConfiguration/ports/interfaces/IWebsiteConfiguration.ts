@@ -1,6 +1,7 @@
 import { ITheme, ITranslatedText } from "roottypes";
 
 import IFile from "../../../file/ports/interfaces/IFile";
+import IRole from "../../../role/ports/interfaces/IRole";
 
 export default interface IWebsiteConfiguration {
   _id?: string;
@@ -18,6 +19,7 @@ export default interface IWebsiteConfiguration {
   tabIcon?: IFile | string;
   logo1?: IFile | string;
   logo2?: IFile | string;
+  automaticallyAssignedRoleAtRegistration?: IRole | string;
 
   staticText?: any;
 }

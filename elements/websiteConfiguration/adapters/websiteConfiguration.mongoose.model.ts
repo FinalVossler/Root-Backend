@@ -92,6 +92,10 @@ const WebsiteConfigurationSchema = new mongoose.Schema<IWebsiteConfiguration>(
       type: mongoose.SchemaTypes.ObjectId,
       ref: "file",
     },
+    automaticallyAssignedRoleAtRegistration: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "role",
+    },
   },
   {
     timestamps: true,

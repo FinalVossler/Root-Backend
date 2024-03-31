@@ -29,6 +29,7 @@ import IPasswordHandler from "./interfaces/IPasswordHandler";
 import IPostService from "../../post/ports/interfaces/IPostService";
 import IReactionService from "../../chat/reaction/ports/interfaces/IReactionService";
 import IFileService from "../../file/ports/interfaces/IFileService";
+import IWebsiteConfigurationService from "../../websiteConfiguration/ports/interfaces/IWebsiteConfigurationService";
 
 const createUserService = (
   roleService: IRoleService,
@@ -39,7 +40,8 @@ const createUserService = (
   postService: IPostService,
   messageService: IMessageService,
   reactionService: IReactionService,
-  fileService: IFileService
+  fileService: IFileService,
+  websiteConfigurationService: IWebsiteConfigurationService
 ): IUserService => ({
   generatePasswordHash: async function (password: string): Promise<string> {
     const salt: string = await passwordHandler.genSalt(10);
@@ -72,7 +74,14 @@ const createUserService = (
   register: async function (
     command: IUserRegisterCommand
   ): Promise<{ user: IUser; token: string }> {
-    const user: IUser = await userRepository.save(command);
+    const automaticallyAssignedRoleIdAtRegistration = (
+      await websiteConfigurationService.get()
+    ).automaticallyAssignedRoleAtRegistration as string;
+
+    const user: IUser = await userRepository.save(
+      command,
+      automaticallyAssignedRoleIdAtRegistration
+    );
 
     const token: string = this.generateToken(user);
 

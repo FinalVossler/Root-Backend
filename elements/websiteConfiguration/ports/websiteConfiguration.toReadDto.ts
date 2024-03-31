@@ -2,6 +2,7 @@ import { IWebsiteConfigurationReadDto } from "roottypes";
 
 import { fileToReadDto } from "../../file/ports/file.toReadDto";
 import IWebsiteConfiguration from "./interfaces/IWebsiteConfiguration";
+import { roleToReadDto } from "../../role/ports/role.toReadDto";
 
 export const websiteConfigurationToReadDto = (
   websiteConfiguration: IWebsiteConfiguration
@@ -29,5 +30,11 @@ export const websiteConfigurationToReadDto = (
     logo2: websiteConfiguration.logo2
       ? fileToReadDto(websiteConfiguration.logo2)
       : undefined,
+    automaticallyAssignedRoleAtRegistration:
+      websiteConfiguration.automaticallyAssignedRoleAtRegistration
+        ? roleToReadDto(
+            websiteConfiguration.automaticallyAssignedRoleAtRegistration
+          )
+        : undefined,
   };
 };

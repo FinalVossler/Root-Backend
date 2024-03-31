@@ -16,7 +16,10 @@ export default interface IUserRepository {
     command: IChatGetContactsCommand,
     currentUser: IUser
   ) => Promise<{ users: IUser[]; total: number }>;
-  save: (command: IUserRegisterCommand) => Promise<IUser>;
+  save: (
+    command: IUserRegisterCommand,
+    automaticallyAssignedRoleIdAtRegistration?: string
+  ) => Promise<IUser>;
   getById: (id: string) => Promise<IUser>;
   getContactsByIds: (usersIds: string[]) => Promise<IUser[]>;
   getByEmail: (email: string) => Promise<IUser>;
