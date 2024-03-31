@@ -14,7 +14,12 @@ import IPaginationResponse from "../../../../../globalTypes/IPaginationResponse"
 
 interface IOrderService {
   getUserOrders: (
-    command: IPaginationCommand,
+    paginationCommand: IPaginationCommand,
+    userId: string,
+    currentUser: IUser
+  ) => Promise<IPaginationResponse<IOrder>>;
+  getUserSales: (
+    paginationCommand: IPaginationCommand,
     userId: string,
     currentUser: IUser
   ) => Promise<IPaginationResponse<IOrder>>;
@@ -44,6 +49,11 @@ interface IOrderService {
     orderId: string,
     currentUser: IUser
   ) => Promise<{ isPaymentSuccessful: boolean; order: IOrder }>;
+
+  getOrderAssociatedEntities: (
+    orderId: string,
+    currentUser
+  ) => Promise<IEntity[]>;
 }
 
 export default IOrderService;

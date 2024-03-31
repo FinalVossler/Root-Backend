@@ -38,6 +38,11 @@ export default interface IEntity {
   owner?: IUser | string;
   availableShippingMethods?: (IShippingMethod | string)[];
 
+  orderAssociationConfig?: {
+    orderId: string;
+    productId?: string;
+  };
+
   createdAt: string;
   updatedAt: string;
 }

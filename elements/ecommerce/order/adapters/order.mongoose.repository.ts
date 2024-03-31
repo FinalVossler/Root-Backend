@@ -9,12 +9,15 @@ import IOrderRepository from "../ports/interfaces/IOrderRepository";
 import Order from "./order.mongoose.model";
 import { entityPopulationOptions } from "../../../entity/adapters/entity.mongoose.repository";
 import IOrder from "../ports/interfaces/IOrder";
+import Entity from "../../../entity/adapters/entity.mongoose.model";
+import IEntity from "../../../entity/ports/interfaces/IEntity";
 
 const orderMongooseRepository: IOrderRepository = {
   getUserOrders: async (command: IPaginationCommand, userId: string) => {
     const orders: IOrder[] = await Order.find({
       user: new mongoose.Types.ObjectId(userId),
     })
+      .sort({ createdAt: -1 })
       .skip((command.page - 1) * command.limit)
       .limit(command.limit)
       .populate(populationOptions)
@@ -23,6 +26,34 @@ const orderMongooseRepository: IOrderRepository = {
     const total: number = await Order.find({
       user: new mongoose.Types.ObjectId(userId),
     }).count();
+
+    return { data: orders, total };
+  },
+  getUserSales: async (
+    paginationCommand: IPaginationCommand,
+    userId: string
+  ) => {
+    const userProductsIds = (
+      await Entity.find({ owner: new mongoose.Types.ObjectId(userId) })
+    ).map((e) => e._id);
+
+    const queryParams = {
+      products: {
+        $elemMatch: {
+          product: {
+            $in: userProductsIds.map((pId) => new mongoose.Types.ObjectId(pId)),
+          },
+        },
+      },
+    };
+    const orders = await Order.find(queryParams)
+      .sort({ createdAt: -1 })
+      .skip((paginationCommand.page - 1) * paginationCommand.limit)
+      .limit(paginationCommand.limit)
+      .populate(populationOptions)
+      .exec();
+
+    const total = await Order.find(queryParams).count();
 
     return { data: orders, total };
   },
@@ -88,9 +119,20 @@ const orderMongooseRepository: IOrderRepository = {
       _id: { $in: ordersIds.map((id) => new mongoose.Types.ObjectId(id)) },
     });
   },
+  getOrderAssociatedEntities: async (orderId: string) => {
+    const entities: IEntity[] = await Entity.find({
+      orderAssociationConfig: { orderId },
+    }).populate(entityPopulationOptions);
+
+    return entities;
+  },
 };
 
 const populationOptions = [
+  {
+    path: "user",
+    model: "user",
+  },
   {
     path: "products.product",
     model: "entity",

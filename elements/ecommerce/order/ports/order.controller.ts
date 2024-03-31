@@ -11,6 +11,7 @@ import IUser from "../../../user/ports/interfaces/IUser";
 import IOrder from "./interfaces/IOrder";
 import IOrderService from "./interfaces/IOrderService";
 import orderToReadDto from "./order.toReadDto";
+import { entityToReadDto } from "../../../entity/ports/entity.toReadDto";
 
 const createOrderController = (
   orderService: IOrderService
@@ -21,6 +22,24 @@ const createOrderController = (
       currentUser: IUser
     ) => {
       const result = await orderService.getUserOrders(
+        req.body.paginationCommand,
+        currentUser._id.toString(),
+        currentUser
+      );
+
+      return {
+        data: {
+          data: result.data.map((o) => orderToReadDto(o)),
+          total: result.total,
+        },
+        success: true,
+      };
+    },
+    getUserSales: async (
+      req: IRequest<{ paginationCommand: IPaginationCommand; userId: string }>,
+      currentUser: IUser
+    ) => {
+      const result = await orderService.getUserSales(
         req.body.paginationCommand,
         currentUser._id.toString(),
         currentUser
@@ -82,6 +101,20 @@ const createOrderController = (
       return {
         success: true,
         data: { isPaymentSuccessful, order: orderToReadDto(order) },
+      };
+    },
+    getOrderAssociatedEntities: async (
+      req: IRequest<any, { orderId: string }>,
+      currentUser: IUser
+    ) => {
+      const entities = await orderService.getOrderAssociatedEntities(
+        req.params.orderId,
+        currentUser
+      );
+
+      return {
+        success: true,
+        data: entities.map((e) => entityToReadDto(e)),
       };
     },
   };

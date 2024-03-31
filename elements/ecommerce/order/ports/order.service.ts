@@ -21,6 +21,7 @@ import { IField } from "../../../field/ports/interfaces/IField";
 import IModel from "../../../model/ports/interfaces/IModel";
 import IEntityService from "../../../entity/ports/interfaces/IEntityService";
 import IShippingMethodService from "../../shippingMethod/ports/interfaces/IShippingMethodService";
+import mongoose from "mongoose";
 
 const createOrderService = (
   orderRepository: IOrderRepository,
@@ -123,6 +124,40 @@ const createOrderService = (
 
       return await orderRepository.getUserOrders(command, userId);
     },
+    getUserSales: async (
+      command: IPaginationCommand,
+      userId: string,
+      currentUser: IUser
+    ) => {
+      if (
+        currentUser.superRole !== SuperRoleEnum.SuperAdmin &&
+        currentUser._id.toString() !== userId
+      ) {
+        throw new Error("Permission denied");
+      }
+
+      const { total, data } = await orderRepository.getUserSales(
+        command,
+        userId
+      );
+
+      // Take each product in the order and take off products that don't belong to the user (for security purposes)
+      // A user doesn't need to see a client's other produts within a simple order. He only needs to see his owns products
+      const filteredData = data.map((order) => {
+        //@ts-ignore
+        const plainOrder = order.toObject();
+        return {
+          ...plainOrder,
+          products: (plainOrder as IOrder).products.filter(
+            (p) =>
+              ((p.product as IEntityReadDto).owner as IUser)._id.toString() ===
+              userId
+          ),
+        };
+      });
+
+      return { total, data: filteredData };
+    },
     createOrder: async function (
       command: IOrderCreateCommand,
       currentUser: IUser
@@ -146,7 +181,6 @@ const createOrderService = (
                 resolve(shippingMethod);
               } else {
                 throw new Error("shipping method not found");
-                reject(null);
               }
             })
           );
@@ -367,6 +401,18 @@ const createOrderService = (
         isPaymentSuccessful,
         order,
       };
+    },
+    getOrderAssociatedEntities: async function (
+      orderId: string,
+      currentUser: IUser
+    ) {
+      const order: IOrder | null = await (this as IOrderService).getOrderById(
+        orderId
+      );
+
+      if (!order) throw new Error("Order not found");
+
+      return await orderRepository.getOrderAssociatedEntities(orderId);
     },
   };
 };

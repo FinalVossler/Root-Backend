@@ -11,6 +11,12 @@ orderRouter.post(
   orderExpressController.getUserOrders
 );
 
+orderRouter.post(
+  "/getUserSales",
+  protectMiddleware,
+  orderExpressController.getUserSales
+);
+
 orderRouter.post("/", protectMiddleware, orderExpressController.createOrder);
 orderRouter.put(
   "/updateOrderStatus",
@@ -27,6 +33,12 @@ orderRouter.get(
   "/isPaymentSuccessful/:orderId",
   protectMiddleware,
   orderExpressController.isPaymentSuccessful
+);
+
+orderRouter.get(
+  "/getOrderAssociatedEntities/:orderId",
+  protectMiddleware,
+  orderExpressController.getOrderAssociatedEntities
 );
 
 export default orderRouter;

@@ -76,6 +76,10 @@ const EntitySchema = new mongoose.Schema<IEntity>(
         ref: "shippingMethod",
       },
     ],
+    orderAssociationConfig: {
+      orderId: { type: mongoose.SchemaTypes.String },
+      productId: { type: mongoose.SchemaTypes.String },
+    },
   },
   {
     timestamps: true,

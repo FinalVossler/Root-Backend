@@ -27,6 +27,8 @@ export const entityToReadDto = (entity: IEntity): IEntityReadDto => {
     availableShippingMethods:
       entity.availableShippingMethods?.map((s) => shippingMethodToReadDto(s)) ||
       [],
+
+    orderAssociationConfig: entity.orderAssociationConfig,
   };
 };
 

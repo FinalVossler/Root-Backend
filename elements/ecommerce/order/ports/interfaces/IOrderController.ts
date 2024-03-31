@@ -1,4 +1,5 @@
 import {
+  IEntityReadDto,
   IOrderCheckoutCommand,
   IOrderCreateCommand,
   IOrderReadDto,
@@ -14,6 +15,10 @@ import IPaginationResponse from "../../../../../globalTypes/IPaginationResponse"
 
 type IOrderController = {
   getUserOrders: (
+    req: IRequest<{ paginationCommand: IPaginationCommand; userId: string }>,
+    currentUser: IUser
+  ) => Promise<IResponseDto<IPaginationResponse<IOrderReadDto>>>;
+  getUserSales: (
     req: IRequest<{ paginationCommand: IPaginationCommand; userId: string }>,
     currentUser: IUser
   ) => Promise<IResponseDto<IPaginationResponse<IOrderReadDto>>>;
@@ -37,6 +42,10 @@ type IOrderController = {
   ) => Promise<
     IResponseDto<{ isPaymentSuccessful: boolean; order: IOrderReadDto }>
   >;
+  getOrderAssociatedEntities: (
+    req: IRequest<any, { orderId: string }>,
+    currentUser: IUser
+  ) => Promise<IResponseDto<IEntityReadDto[]>>;
 };
 
 export default IOrderController;

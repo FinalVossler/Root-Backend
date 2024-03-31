@@ -78,6 +78,9 @@ const entityMongooseRepository: IEntityRepository = {
         command.availableShippingMethodsIds?.map(
           (id) => new mongoose.Types.ObjectId(id)
         ) || [],
+      ...(command.orderAssociationConfig
+        ? { orderAssociationConfig: command.orderAssociationConfig }
+        : {}),
     });
 
     return entity.populate(entityPopulationOptions);
@@ -173,6 +176,9 @@ const entityMongooseRepository: IEntityRepository = {
             command.availableShippingMethodsIds?.map(
               (id) => new mongoose.Types.ObjectId(id)
             ) || [],
+          ...(command.orderAssociationConfig
+            ? { orderAssociationConfig: command.orderAssociationConfig }
+            : {}),
         },
       }
     );

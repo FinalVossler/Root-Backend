@@ -32,6 +32,9 @@ interface IOrder {
 
   checkoutSessionId: string;
   checkoutSessionUrl: string;
+
+  createdAt: string;
+  updatedAt: string;
 }
 
 export default IOrder;

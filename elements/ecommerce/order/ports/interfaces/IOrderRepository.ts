@@ -7,10 +7,15 @@ import {
 
 import IOrder from "./IOrder";
 import IPaginationResponse from "../../../../../globalTypes/IPaginationResponse";
+import IEntity from "../../../../entity/ports/interfaces/IEntity";
 
 interface IOrderRepository {
   getUserOrders: (
     command: IPaginationCommand,
+    userId: string
+  ) => Promise<IPaginationResponse<IOrder>>;
+  getUserSales: (
+    paginationCommand: IPaginationCommand,
     userId: string
   ) => Promise<IPaginationResponse<IOrder>>;
   getOrderById: (orderId: string) => Promise<IOrder | null>;
@@ -30,6 +35,7 @@ interface IOrderRepository {
     checkoutSessionUrl: string
   ) => Promise<IOrder | null>;
   deleteOrders: (orderIds: string[]) => Promise<void>;
+  getOrderAssociatedEntities: (orderId: string) => Promise<IEntity[]>;
 }
 
 export default IOrderRepository;
