@@ -121,7 +121,7 @@ const orderMongooseRepository: IOrderRepository = {
   },
   getOrderAssociatedEntities: async (orderId: string) => {
     const entities: IEntity[] = await Entity.find({
-      orderAssociationConfig: { orderId },
+      "orderAssociationConfig.orderId": orderId,
     }).populate(entityPopulationOptions);
 
     return entities;
