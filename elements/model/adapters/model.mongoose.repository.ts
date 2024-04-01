@@ -16,7 +16,10 @@ import { IEventRequestHeader } from "../../event/ports/interfaces/IEvent";
 import IModelState from "../../modelState/ports/interfaces/IModelState";
 
 const modelMongooseRepository: IModelRepository = {
-  create: async (command: IModelCreateCommand): Promise<IModel> => {
+  create: async (
+    command: IModelCreateCommand,
+    ownerId?: string
+  ): Promise<IModel> => {
     // create model states first:
     const modelStates: IModelState[] =
       await modelStateMongooseRepository.createMany(command.states);
@@ -70,6 +73,8 @@ const modelMongooseRepository: IModelRepository = {
 
       isForOrders: command.isForOrders,
       orderAssociationConfig: command.orderAssociationConfig,
+
+      owner: new mongoose.Types.ObjectId(ownerId),
     });
 
     return model.populate(populationOptions);
@@ -184,6 +189,24 @@ const modelMongooseRepository: IModelRepository = {
       .exec()) as IModel[];
 
     const total: number = await Model.find({}).count();
+
+    return { models, total };
+  },
+  getOwnModels: async (
+    command: IModelsGetCommand,
+    ownerId: string
+  ): Promise<{ total: number; models: IModel[] }> => {
+    const conditionsQuery = { owner: new mongoose.Types.ObjectId(ownerId) };
+    const models: IModel[] = (await Model.find(conditionsQuery)
+      .sort({ createAt: -1 })
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
+      .exec()) as IModel[];
+
+    const total: number = await Model.find(conditionsQuery).count();
 
     return { models, total };
   },

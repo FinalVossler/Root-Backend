@@ -104,6 +104,10 @@ const ModelSchema = new mongoose.Schema<IModel>(
         type: mongoose.SchemaTypes.Boolean,
       },
     },
+    owner: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "user",
+    },
   },
   {
     timestamps: true,

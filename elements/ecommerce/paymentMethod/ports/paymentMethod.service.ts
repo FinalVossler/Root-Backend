@@ -20,15 +20,7 @@ const createPaymentMethodService = (
     return paymentMethodRepository.getPaymentMethodById(paymentMethodId);
   },
   getPaymentMethods: async (currentUser: IUser) => {
-    // Payment methods should be accessible for anyone trying to buy
-    // if (
-    //   !roleService.checkPermission({
-    //     user: currentUser,
-    //     permission: PermissionEnum.ReadPaymentMethod,
-    //   })
-    // ) {
-    //   throw new Error("Permission denied");
-    // }
+    // Payment methods should be accessible for anyone trying to buy. No need for permission checking here
 
     const paymentMethods: IPaymentMethod[] =
       await paymentMethodRepository.getPaymentMethods();
@@ -39,14 +31,10 @@ const createPaymentMethodService = (
     command: IPaymentMethodCreateCommand,
     currentUser: IUser
   ) => {
-    if (
-      !roleService.checkPermission({
-        user: currentUser,
-        permission: PermissionEnum.CreatePaymentMethod,
-      })
-    ) {
-      throw new Error("Permission denied");
-    }
+    roleService.checkPermission({
+      user: currentUser,
+      permission: PermissionEnum.CreatePaymentMethod,
+    });
 
     if (!(await paymentService.checkPaymentMethodValidity(command.slug))) {
       throw new Error("Unsupported payment method");
@@ -61,14 +49,10 @@ const createPaymentMethodService = (
     command: IPaymentMethodUpdateCommand,
     currentUser: IUser
   ) => {
-    if (
-      !roleService.checkPermission({
-        user: currentUser,
-        permission: PermissionEnum.UpdatePaymentMethod,
-      })
-    ) {
-      throw new Error("Permission denied");
-    }
+    roleService.checkPermission({
+      user: currentUser,
+      permission: PermissionEnum.UpdatePaymentMethod,
+    });
 
     if (!(await paymentService.checkPaymentMethodValidity(command.slug))) {
       throw new Error("Unsupported payment method");
@@ -83,14 +67,10 @@ const createPaymentMethodService = (
     paymentMethodsIds: string[],
     currentUser: IUser
   ) => {
-    if (
-      !roleService.checkPermission({
-        user: currentUser,
-        permission: PermissionEnum.DeletePaymentMethod,
-      })
-    ) {
-      throw new Error("Permission denied");
-    }
+    roleService.checkPermission({
+      user: currentUser,
+      permission: PermissionEnum.DeletePaymentMethod,
+    });
 
     await paymentMethodRepository.deletePaymentMethods(paymentMethodsIds);
   },

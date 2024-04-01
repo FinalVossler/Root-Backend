@@ -37,14 +37,10 @@ const createShippingMethodService = (
     command: IShippingMethodCreateCommand,
     currentUser: IUser
   ) => {
-    if (
-      !roleService.checkPermission({
-        user: currentUser,
-        permission: PermissionEnum.CreateShippingMethod,
-      })
-    ) {
-      throw new Error("Permission denied");
-    }
+    roleService.checkPermission({
+      user: currentUser,
+      permission: PermissionEnum.CreateShippingMethod,
+    });
 
     const paymentMethod: IShippingMethod =
       await paymentMethodRepository.createShippingMethod(command);
@@ -55,14 +51,10 @@ const createShippingMethodService = (
     command: IShippingMethodUpdateCommand,
     currentUser: IUser
   ) => {
-    if (
-      !roleService.checkPermission({
-        user: currentUser,
-        permission: PermissionEnum.UpdateShippingMethod,
-      })
-    ) {
-      throw new Error("Permission denied");
-    }
+    roleService.checkPermission({
+      user: currentUser,
+      permission: PermissionEnum.UpdateShippingMethod,
+    });
 
     const paymentMethod: IShippingMethod =
       await paymentMethodRepository.updateShippingMethod(command);
@@ -73,14 +65,10 @@ const createShippingMethodService = (
     paymentMethodsIds: string[],
     currentUser: IUser
   ) => {
-    if (
-      !roleService.checkPermission({
-        user: currentUser,
-        permission: PermissionEnum.DeleteShippingMethod,
-      })
-    ) {
-      throw new Error("Permission denied");
-    }
+    roleService.checkPermission({
+      user: currentUser,
+      permission: PermissionEnum.DeleteShippingMethod,
+    });
 
     await paymentMethodRepository.deleteShippingMethods(paymentMethodsIds);
   },

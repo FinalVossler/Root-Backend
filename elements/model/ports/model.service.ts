@@ -36,7 +36,10 @@ const createModelService = (
       permission: PermissionEnum.CreateModel,
     });
 
-    const model: IModel = await modelRepository.create(command);
+    const model: IModel = await modelRepository.create(
+      command,
+      currentUser._id.toString()
+    );
 
     return model;
   },
@@ -44,13 +47,21 @@ const createModelService = (
     command: IModelUpdateCommand,
     currentUser: IUser
   ): Promise<IModel> => {
+    const model: IModel = await modelRepository.getById(command._id);
+
+    if (!model) {
+      throw new Error("Model not not found");
+    }
+
     roleService.checkPermission({
       user: currentUser,
       permission: PermissionEnum.UpdateModel,
+      elementsOwners: [model.owner],
+      ownerPermission: PermissionEnum.UpdateOwnModel,
     });
-    const model: IModel = await modelRepository.update(command);
+    const updatedModel: IModel = await modelRepository.update(command);
 
-    return model;
+    return updatedModel;
   },
   getModels: async function (
     command: IModelsGetCommand,
@@ -61,6 +72,7 @@ const createModelService = (
       roleService.checkPermission({
         user: currentUser,
         permission: PermissionEnum.ReadModel,
+        ownerPermission: PermissionEnum.ReadOwnModel,
       });
     } catch (e) {
       // If we can't read the models, we should at least be able to read the entities to which we have read access (and that are based on the models)
@@ -81,9 +93,23 @@ const createModelService = (
       };
     }
 
-    const { models, total } = await modelRepository.getModels(command);
+    if (
+      roleService.hasPermission({
+        user: currentUser,
+        permission: PermissionEnum.ReadModel,
+      })
+    ) {
+      const { models, total } = await modelRepository.getModels(command);
 
-    return { models, total };
+      return { models, total };
+    } else {
+      const { models, total } = await modelRepository.getOwnModels(
+        command,
+        currentUser._id.toString()
+      );
+
+      return { models, total };
+    }
   },
   getById: async (id: string): Promise<IModel> => {
     return await modelRepository.getById(id);

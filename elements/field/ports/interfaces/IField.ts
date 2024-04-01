@@ -2,6 +2,7 @@ import { FieldTypeEnum, ITranslatedText } from "roottypes";
 
 import { IEvent } from "../../../event/ports/interfaces/IEvent";
 import IFieldTableElement from "../../../fieldTableElement/ports/IFieldTableElement";
+import IUser from "../../../user/ports/interfaces/IUser";
 
 export type IFieldOption = {
   value: string;
@@ -21,6 +22,8 @@ export interface IField {
     rows: (IFieldTableElement | string)[];
     yearTable: boolean;
   };
+
+  owner?: IUser | string;
 
   createdAt: string;
   updatedAt: string;

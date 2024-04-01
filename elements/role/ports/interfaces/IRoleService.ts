@@ -28,14 +28,27 @@ export default interface IRoleService {
     command: IRolesSearchCommand,
     currentUser: IUser
   ) => Promise<{ roles: IRole[]; total: number }>;
-  checkEntityPermission: (command: {
+  hasEntityPermission: (command: {
     user: IUser;
     modelId: string;
     staticPermission: StaticPermissionEnum;
   }) => boolean;
+  checkEntityPermission: (command: {
+    user: IUser;
+    modelId: string;
+    staticPermission: StaticPermissionEnum;
+  }) => never | void;
   checkPermission: (command: {
     user?: IUser;
     permission: PermissionEnum;
+    elementsOwners?: (string | IUser | undefined)[];
+    ownerPermission?: PermissionEnum;
+  }) => never | void;
+  hasPermission: (command: {
+    user?: IUser;
+    permission: PermissionEnum;
+    elementsOwners?: (string | IUser | undefined)[];
+    ownerPermission?: PermissionEnum;
   }) => boolean;
   getRolesWithEntityPermissionsForModel: (modelId: string) => Promise<IRole[]>;
 }

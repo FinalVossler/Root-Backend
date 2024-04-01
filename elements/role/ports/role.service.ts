@@ -83,7 +83,7 @@ const createRoleService = (
 
     return { roles, total };
   },
-  checkEntityPermission: function ({
+  hasEntityPermission: function ({
     user,
     modelId,
     staticPermission,
@@ -105,21 +105,41 @@ const createRoleService = (
         ?.permissions.find((p) => p === staticPermission)
     );
 
-    if (!hasAccess) {
-      throw new Error("Permission denied");
-    }
-
     return hasAccess;
   },
-  checkPermission: function ({
+  checkEntityPermission: function ({
+    user,
+    modelId,
+    staticPermission,
+  }: {
+    user: IUser;
+    modelId: string;
+    staticPermission: StaticPermissionEnum;
+  }): never | void {
+    if (
+      !(this as IRoleService).hasEntityPermission({
+        user,
+        modelId,
+        staticPermission,
+      })
+    ) {
+      throw new Error("Permission denied");
+    }
+  },
+  hasPermission: function ({
     user,
     permission,
+    elementsOwners,
+    ownerPermission,
   }: {
     user?: IUser;
     permission: PermissionEnum;
+    elementsOwners?: (string | IUser | undefined)[];
+
+    ownerPermission?: PermissionEnum;
   }): boolean {
     if (!user) {
-      throw new Error("Permission denied");
+      return false;
     }
 
     if (user.superRole === SuperRoleEnum.SuperAdmin) {
@@ -133,10 +153,54 @@ const createRoleService = (
           (user.role as IRole)?.permissions.indexOf(permission) > -1
       )
     ) {
-      throw new Error("Permission denied");
+      // If the permission isn't met, but we passed the elements owners and the owner permission, then we are trying to access a single entity.
+      // We should then check if the user is the actual owner of all elements and if the owner permission is checked.
+      if (elementsOwners && elementsOwners.length > 0 && ownerPermission) {
+        const isOwnerOfAllElements: boolean = elementsOwners.every(
+          (owner) =>
+            (typeof owner === "string" ? owner : owner?._id.toString()) ===
+            user._id.toString()
+        );
+
+        if (!isOwnerOfAllElements) return false;
+        else
+          return (this as IRoleService).hasPermission({
+            user,
+            permission: ownerPermission,
+          });
+      }
+      // If the owner isn't defined, but we passed the ownerPermission, then we are trying to only read one's own elements.
+      // Check if one's own elements are permitted.
+      if ((!elementsOwners || elementsOwners.length === 0) && ownerPermission) {
+        return (this as IRoleService).hasPermission({ user, permission });
+      }
+
+      return false;
     }
 
     return true;
+  },
+  checkPermission: function ({
+    user,
+    permission,
+    elementsOwners,
+    ownerPermission,
+  }: {
+    user?: IUser;
+    permission: PermissionEnum;
+    elementsOwners?: (string | IUser | undefined)[];
+    ownerPermission?: PermissionEnum;
+  }): never | void {
+    if (
+      !(this as IRoleService).hasPermission({
+        user,
+        permission,
+        elementsOwners,
+        ownerPermission,
+      })
+    ) {
+      throw new Error("Permission denied");
+    }
   },
   getRolesWithEntityPermissionsForModel: async function (
     modelId: string

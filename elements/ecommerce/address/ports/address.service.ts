@@ -18,29 +18,23 @@ const createAddressService = (
     return addressRepository.getAddressById(addressId);
   },
   getAddresses: async (currentUser: IUser) => {
-    if (
-      !roleService.checkPermission({
-        user: currentUser,
-        permission: PermissionEnum.ReadAddress,
-      })
-    ) {
-      throw new Error("Permission denied");
-    }
+    roleService.checkPermission({
+      user: currentUser,
+      permission: PermissionEnum.ReadAddress,
+    });
 
     const address: IAddress[] = await addressRepository.getAddresses();
 
     return address;
   },
   getUserAddresses: async (userId: string, currentUser: IUser) => {
-    if (
-      userId !== currentUser._id.toString() &&
-      !roleService.checkPermission({
-        user: currentUser,
-        permission: PermissionEnum.CreateAddress,
-      })
-    ) {
+    if (userId !== currentUser._id.toString()) {
       throw new Error("Permission denied");
     }
+    roleService.checkPermission({
+      user: currentUser,
+      permission: PermissionEnum.CreateAddress,
+    });
 
     const address: IAddress[] = await addressRepository.getUserAddresses(
       userId
@@ -50,15 +44,13 @@ const createAddressService = (
   },
   createAddress: async (command: IAddressCreateCommand, currentUser: IUser) => {
     // All clients/users should be able to create an address for themselves
-    if (
-      command.userId !== currentUser._id.toString() &&
-      !roleService.checkPermission({
-        user: currentUser,
-        permission: PermissionEnum.CreateAddress,
-      })
-    ) {
+    if (command.userId !== currentUser._id.toString()) {
       throw new Error("Permission denied");
     }
+    roleService.checkPermission({
+      user: currentUser,
+      permission: PermissionEnum.CreateAddress,
+    });
 
     const address: IAddress = await addressRepository.createAddress(command);
 
@@ -66,29 +58,23 @@ const createAddressService = (
   },
   updateAddress: async (command: IAddressUpdateCommand, currentUser: IUser) => {
     // All clients/users should be able to create an address for themselves
-    if (
-      command.userId !== currentUser._id.toString() &&
-      !roleService.checkPermission({
-        user: currentUser,
-        permission: PermissionEnum.UpdateAddress,
-      })
-    ) {
+    if (command.userId !== currentUser._id.toString()) {
       throw new Error("Permission denied");
     }
+    roleService.checkPermission({
+      user: currentUser,
+      permission: PermissionEnum.UpdateAddress,
+    });
 
     const address: IAddress = await addressRepository.updateAddress(command);
 
     return address;
   },
   deleteAddresses: async (addressesIds: string[], currentUser: IUser) => {
-    if (
-      !roleService.checkPermission({
-        user: currentUser,
-        permission: PermissionEnum.DeleteAddress,
-      })
-    ) {
-      throw new Error("Permission denied");
-    }
+    roleService.checkPermission({
+      user: currentUser,
+      permission: PermissionEnum.DeleteAddress,
+    });
 
     await addressRepository.deleteAddresses(addressesIds);
   },

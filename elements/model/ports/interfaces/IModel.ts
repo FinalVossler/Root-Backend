@@ -3,6 +3,7 @@ import { IModelOrderAssociationConfig, ITranslatedText } from "roottypes";
 import { IEvent } from "../../../event/ports/interfaces/IEvent";
 import { IField } from "../../../field/ports/interfaces/IField";
 import IModelState from "../../../modelState/ports/interfaces/IModelState";
+import IUser from "../../../user/ports/interfaces/IUser";
 
 export interface IModel {
   _id: string;
@@ -19,6 +20,8 @@ export interface IModel {
 
   isForOrders?: boolean;
   orderAssociationConfig?: IModelOrderAssociationConfig;
+
+  owner?: IUser | string;
 
   createdAt: string;
   updatedAt: string;

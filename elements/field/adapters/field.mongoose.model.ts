@@ -51,6 +51,10 @@ const FieldSchema = new mongoose.Schema<IField>(
         type: mongoose.SchemaTypes.Boolean,
       },
     },
+    owner: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "user",
+    },
   },
   {
     timestamps: true,

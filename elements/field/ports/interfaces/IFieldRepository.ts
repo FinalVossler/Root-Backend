@@ -8,11 +8,15 @@ import {
 import { IField } from "./IField";
 
 interface IFieldRepository {
-  create: (command: IFieldCreateCommand) => Promise<IField>;
+  create: (command: IFieldCreateCommand, ownerId?: string) => Promise<IField>;
   update: (command: IFieldUpdateCommand) => Promise<IField>;
   getById: (id: string) => Promise<IField>;
   getFields: (
     command: IFieldsGetCommand
+  ) => Promise<{ total: number; fields: IField[] }>;
+  getOwnFields: (
+    command: IFieldsGetCommand,
+    ownerId: string
   ) => Promise<{ total: number; fields: IField[] }>;
   deleteFields: (fieldsIds: string[]) => Promise<void>;
   search: (

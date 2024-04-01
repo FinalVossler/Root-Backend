@@ -17,7 +17,10 @@ import { IEventRequestHeader } from "../../event/ports/interfaces/IEvent";
 import IFieldTableElement from "../../fieldTableElement/ports/IFieldTableElement";
 
 const fieldMongooseRepository: IFieldRepository = {
-  create: async (command: IFieldCreateCommand): Promise<IField> => {
+  create: async (
+    command: IFieldCreateCommand,
+    ownerId?: string
+  ): Promise<IField> => {
     const createdColumns: IFieldTableElement[] =
       await fieldTableElementRepository.createMany(
         command.tableOptions.columns
@@ -59,6 +62,7 @@ const fieldMongooseRepository: IFieldRepository = {
         rows: createdRows.map((r) => r._id),
         yearTable: command.tableOptions.yearTable,
       },
+      owner: new mongoose.Types.ObjectId(ownerId),
     });
 
     await field.populate(populationOptions);
@@ -252,6 +256,24 @@ const fieldMongooseRepository: IFieldRepository = {
       .exec();
 
     const total: number = await Field.find({}).count();
+
+    return { fields, total };
+  },
+  getOwnFields: async (
+    command: IFieldsGetCommand,
+    ownerId: string
+  ): Promise<{ total: number; fields: IField[] }> => {
+    const queryCondition = { owner: new mongoose.Types.ObjectId(ownerId) };
+    const fields: IField[] = await Field.find(queryCondition)
+      .sort({ createdAt: -1 })
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
+      .exec();
+
+    const total: number = await Field.find(queryCondition).count();
 
     return { fields, total };
   },

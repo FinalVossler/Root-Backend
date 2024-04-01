@@ -31,22 +31,33 @@ const createFieldService = (
         permission: PermissionEnum.CreateField,
       });
 
-      const field: IField = await fieldRepository.create(command);
+      const field: IField = await fieldRepository.create(
+        command,
+        currentUser._id.toString()
+      );
 
       return field;
     },
-    updateField: async (
+    updateField: async function (
       command: IFieldUpdateCommand,
       currentUser: IUser
-    ): Promise<IField> => {
+    ): Promise<IField> {
+      const field: IField = await fieldRepository.getById(command._id);
+
+      if (!field) {
+        throw new Error("Field not found");
+      }
+
       roleService.checkPermission({
         user: currentUser,
         permission: PermissionEnum.UpdateField,
+        elementsOwners: [field.owner],
+        ownerPermission: PermissionEnum.UpdateOwnField,
       });
 
-      const field: IField = await fieldRepository.update(command);
+      const updatedField: IField = await fieldRepository.update(command);
 
-      return field;
+      return updatedField;
     },
     getFields: async (
       command: IFieldsGetCommand,
@@ -55,19 +66,36 @@ const createFieldService = (
       roleService.checkPermission({
         user: currentUser,
         permission: PermissionEnum.ReadField,
+        ownerPermission: PermissionEnum.ReadOwnField,
       });
 
-      const { fields, total } = await fieldRepository.getFields(command);
-
-      return { fields, total };
+      if (
+        roleService.hasPermission({
+          user: currentUser,
+          permission: PermissionEnum.ReadField,
+        })
+      ) {
+        const { fields, total } = await fieldRepository.getFields(command);
+        return { fields, total };
+      } else {
+        const { fields, total } = await fieldRepository.getOwnFields(
+          command,
+          currentUser._id.toString()
+        );
+        return { fields, total };
+      }
     },
     deleteFields: async (
       fieldsIds: string[],
       currentUser: IUser
     ): Promise<void> => {
+      const fields = await fieldRepository.getByIds(fieldsIds);
+
       roleService.checkPermission({
         user: currentUser,
         permission: PermissionEnum.DeleteField,
+        ownerPermission: PermissionEnum.DeleteOwnField,
+        elementsOwners: fields.map((field) => field.owner),
       });
 
       const cascadeDeletePromises: Promise<void>[] = [];
