@@ -225,6 +225,13 @@ const entityMongooseRepository: IEntityRepository = {
 
     return entity;
   },
+  getUnpopulatedByIds: async (ids: string[]): Promise<IEntity[]> => {
+    const entities = await Entity.find({
+      _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
+    });
+
+    return entities;
+  },
   getAssignedEntitiesByModel: async (
     command: IEntitiesGetCommand
   ): Promise<{ total: number; entities: IEntity[] }> => {
@@ -311,6 +318,33 @@ const entityMongooseRepository: IEntityRepository = {
   },
   deleteByModel: async (modelId: string) => {
     await Entity.deleteMany({ model: new mongoose.Types.ObjectId(modelId) });
+  },
+  copyEntities: async function (ids: string[]) {
+    const entitiesToCopy = await (
+      this as IEntityRepository
+    ).getUnpopulatedByIds(ids);
+
+    const copyPromises: Promise<IEntity>[] = [];
+
+    entitiesToCopy.forEach((entity) => {
+      const promise = new Promise<IEntity>(async (resolve, reject) => {
+        // @ts-ignore
+        const entityObject = entity.toObject
+          ? // @ts-ignore
+            { ...entity.toObject() }
+          : { ...entity };
+        delete entityObject._id;
+        const copiedEntity = await Entity.create(entityObject);
+
+        resolve(copiedEntity.populate(entityPopulationOptions));
+
+        copyPromises.push(promise);
+      });
+    });
+
+    const copiedEntities = await Promise.all(copyPromises);
+
+    return copiedEntities;
   },
 };
 

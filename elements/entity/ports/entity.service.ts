@@ -7,6 +7,7 @@ import {
   IEntityCreateCommand,
   IEntityFieldValueCommand,
   IEntityUpdateCommand,
+  PermissionEnum,
   StaticPermissionEnum,
   SuperRoleEnum,
 } from "roottypes";
@@ -436,6 +437,21 @@ const createEntityService = (
     };
 
     await entityRepository.update(command);
+  },
+  copyEntities: async function (
+    modelId: string,
+    entitiesIds: string[],
+    currentUser: IUser
+  ) {
+    roleService.checkEntityPermission({
+      user: currentUser,
+      modelId,
+      staticPermission: StaticPermissionEnum.Create,
+    });
+
+    const copiedEntities = await entityRepository.copyEntities(entitiesIds);
+
+    return copiedEntities;
   },
 });
 

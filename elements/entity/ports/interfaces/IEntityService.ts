@@ -66,6 +66,11 @@ interface IEntityService {
     checkBy: number
   ) => Promise<{ model: IModel; stock: number }>;
   reduceStock: (entity: IEntity, reduceBy: number) => Promise<void>;
+  copyEntities: (
+    modelId: string,
+    entitiesIds: string[],
+    currentUser: IUser
+  ) => Promise<IEntity[]>;
 }
 
 export default IEntityService;

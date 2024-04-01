@@ -20,6 +20,7 @@ interface IEntityRepository {
   ) => Promise<{ total: number; entities: IEntity[] }>;
   deleteEntities: (entitiesIds: string[]) => Promise<void>;
   getById: (entityId: string) => Promise<IEntity | undefined>;
+  getUnpopulatedByIds: (ids: string[]) => Promise<IEntity[]>;
   getAssignedEntitiesByModel: (
     command: IEntitiesGetCommand
   ) => Promise<{ total: number; entities: IEntity[] }>;
@@ -30,6 +31,7 @@ interface IEntityRepository {
     command: IEntitiesSetCustomDataKeyValueCommand
   ) => Promise<void>;
   deleteByModel: (modelId: string) => Promise<void>;
+  copyEntities: (ids: string[]) => Promise<IEntity[]>;
 }
 
 export default IEntityRepository;

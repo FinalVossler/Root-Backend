@@ -128,6 +128,21 @@ const createEntityController = (
       data: {},
     };
   },
+  copyEntities: async (
+    req: IRequest<{ modelId: string; entitiesIds: string[] }>,
+    currentUser: IUser
+  ) => {
+    const copiedEntities = await entityService.copyEntities(
+      req.body.modelId,
+      req.body.entitiesIds,
+      currentUser
+    );
+
+    return {
+      success: true,
+      data: copiedEntities.map((e) => entityToReadDto(e)),
+    };
+  },
 });
 
 export default createEntityController;

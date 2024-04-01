@@ -45,6 +45,10 @@ type IEntityController = {
     req: IRequest<IEntitiesSetCustomDataKeyValueCommand>,
     currentUser: IUser
   ) => Promise<IResponseDto<any>>;
+  copyEntities: (
+    req: IRequest<{ modelId: string; entitiesIds: string[] }>,
+    currentUser: IUser
+  ) => Promise<IResponseDto<IEntityReadDto[]>>;
 };
 
 export default IEntityController;
