@@ -40,7 +40,7 @@ interface IEntityRepository {
   getEntityChildren: (entityId: string) => Promise<IEntity[]>;
   updateEntitiesParents: (
     entitiesIds: string[],
-    parentEntityId: string | undefined
+    parentEntityId: string | null
   ) => Promise<void>;
 }
 

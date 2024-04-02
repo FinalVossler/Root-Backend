@@ -379,10 +379,10 @@ const createEntityService = (
             safeChild._id.toString()
           );
 
-          // Set the safe child parent to undefined, because it's itself a parent now
+          // Set the safe child parent to null, because it's itself a parent now
           await entityRepository.updateEntitiesParents(
             [safeChild._id.toString()],
-            undefined
+            null
           );
         }
       }
@@ -619,24 +619,20 @@ const createEntityService = (
         const clonedEntity: IEntity = _.cloneDeep(entity);
         //@ts-ignore
         delete clonedEntity._id;
-        possibility.forEach((optionConfig) => {
-          const fieldValue: IEntityFieldValue | undefined =
-            clonedEntity.entityFieldValues.find(
-              (efv) => getElementId(efv.field) === optionConfig.field._id
-            );
 
-          if (fieldValue) {
-            fieldValue.value = fieldValue?.value.map((v) => ({
-              language: v.language,
-              text: optionConfig.option.value,
-            }));
-          } else {
-            clonedEntity.entityFieldValues.push({
-              field: optionConfig.field._id,
-              files: [],
-              value: [{ language: "en", text: optionConfig.option.value }],
-            });
-          }
+        // Remove all entity field values that are associated to the variation fields
+        clonedEntity.entityFieldValues = clonedEntity.entityFieldValues.filter(
+          (efv) =>
+            !possibility.find(
+              (p) => p.field._id.toString() === getElementId(efv.field)
+            )
+        );
+        possibility.forEach((optionConfig) => {
+          clonedEntity.entityFieldValues.push({
+            field: optionConfig.field._id,
+            files: [],
+            value: [{ language: "en", text: optionConfig.option.value }],
+          });
         });
 
         clonedEntity.parentEntity = entityId;
