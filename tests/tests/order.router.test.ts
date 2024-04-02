@@ -15,7 +15,7 @@ import fieldMongooseRepository from "../../elements/field/adapters/field.mongoos
 import { IField } from "../../elements/field/ports/interfaces/IField";
 import modelMongooseRepository from "../../elements/model/adapters/model.mongoose.repository";
 import IModel from "../../elements/model/ports/interfaces/IModel";
-import { modelService, userService } from "../../ioc";
+import { modelService, orderService, userService } from "../../ioc";
 import {
   adminUser,
   createCreateFieldCommand,
@@ -121,6 +121,7 @@ describe("Orders", () => {
           productId: sellableEntity._id.toString(),
           price,
           quantity: quantityToCheckout,
+          shippingMethodId: shippingMethod._id.toString(),
         },
       ],
       shippingAddress: {
@@ -131,15 +132,17 @@ describe("Orders", () => {
         postalCode: "75002",
         region: "2",
       },
-      shippingMethodId: shippingMethod._id.toString(),
       paymentMethodId: paymentMethod._id.toString(),
       status: OrderStatusEnum.Pending,
       userId: adminUser._id.toString(),
     };
 
+    const orderNumber: string = orderService.generateUniqueOrderNumber();
+
     orderToUpdateAndCheckout = await orderMongooseRepository.createOrder(
       createOrderCommand,
-      quantity * price
+      quantity * price,
+      orderNumber
     );
   });
 
@@ -177,14 +180,15 @@ describe("Orders", () => {
     }
   });
 
-  it("should create an order", () => {
+  it("should create an order and make sure the checkout session id and url are generated and that the quantity was modified", () => {
     const createOrderCommand: IOrderCreateCommand = {
       date: moment().toString(),
       products: [
         {
           productId: sellableEntity?._id.toString() || "",
           price,
-          quantity: 2,
+          quantity: quantityToCheckout,
+          shippingMethodId: shippingMethod?._id.toString() || "",
         },
       ],
       shippingAddress: {
@@ -195,7 +199,6 @@ describe("Orders", () => {
         postalCode: "75002",
         region: "2",
       },
-      shippingMethodId: shippingMethod?._id.toString() || "",
       paymentMethodId: paymentMethod?._id.toString() || "",
       status: OrderStatusEnum.Pending,
       userId: adminUser._id.toString(),
@@ -218,41 +221,6 @@ describe("Orders", () => {
           createOrderCommand.products.length
         );
         expect(result.data?.status).toEqual(createOrderCommand.status);
-      });
-  });
-
-  it("should update order status", () => {
-    return request(app)
-      .put("/orders/updateOrderStatus")
-      .set("Authorization", "Bearer " + adminToken)
-      .send({
-        orderId: orderToUpdateAndCheckout?._id.toString(),
-        status: OrderStatusEnum.OnHold,
-      })
-      .expect(200)
-      .then((res) => {
-        const result: IResponseDto<IOrderReadDto> = res.body;
-
-        expect(result.success).toBeTruthy();
-        expect(result.data?.status).toEqual(OrderStatusEnum.OnHold);
-      });
-  });
-
-  it("should checkout order and make sure the stock was updated", () => {
-    const command: IOrderCheckoutCommand = {
-      orderId: orderToUpdateAndCheckout?._id.toString() || "",
-    };
-    expect(orderToUpdateAndCheckout?.checkoutSessionId).toBeUndefined;
-
-    return request(app)
-      .post("/orders/checkout")
-      .set("Authorization", "Bearer " + adminToken)
-      .send(command)
-      .expect(200)
-      .then((res) => {
-        const result: IResponseDto<IOrderReadDto> = res.body;
-
-        expect(result.success).toBeTruthy();
         expect(result.data?.checkoutSessionId).not.toBeUndefined;
         expect(result.data?.checkoutSessionId.length).toBeGreaterThan(0);
 
@@ -274,6 +242,23 @@ describe("Orders", () => {
                 remainingQuantity + ""
             );
           });
+      });
+  });
+
+  it("should update order status", () => {
+    return request(app)
+      .put("/orders/updateOrderStatus")
+      .set("Authorization", "Bearer " + adminToken)
+      .send({
+        orderId: orderToUpdateAndCheckout?._id.toString(),
+        status: OrderStatusEnum.OutForDelivery,
+      })
+      .expect(200)
+      .then((res) => {
+        const result: IResponseDto<IOrderReadDto> = res.body;
+
+        expect(result.success).toBeTruthy();
+        expect(result.data?.status).toEqual(OrderStatusEnum.OutForDelivery);
       });
   });
 });

@@ -62,7 +62,9 @@ const createUserService = (
     return { users, total };
   },
   getById: async function (userId: string): Promise<IUser> {
-    const user: IUser = await userRepository.getById(userId);
+    const user = await userRepository.getById(userId);
+
+    if (!user) throw new Error("User not found");
 
     return user;
   },
@@ -129,7 +131,11 @@ const createUserService = (
       );
     }
 
-    const user: IUser = await userRepository.update(command);
+    const user = await userRepository.update(command);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
 
     return user;
   },
@@ -137,17 +143,25 @@ const createUserService = (
     command: IUserUpdateProfilePictureCommand,
     currentUser: IUser
   ): Promise<IUser> {
-    const user: IUser = await userRepository.updateProfilePicture(
+    const user = await userRepository.updateProfilePicture(
       command,
       currentUser
     );
+
+    if (!user) {
+      throw new Error("User not found");
+    }
 
     return user;
   },
   getByToken: async function (token: string): Promise<IUser> {
     const signedUser: ISignedUser = tokenHandler.decode(token);
 
-    const user: IUser = await userRepository.getById(signedUser._id.toString());
+    const user = await userRepository.getById(signedUser._id.toString());
+
+    if (!user) {
+      throw new Error("User not found");
+    }
 
     return user;
   },

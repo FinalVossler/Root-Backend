@@ -20,15 +20,15 @@ export default interface IUserRepository {
     command: IUserRegisterCommand,
     automaticallyAssignedRoleIdAtRegistration?: string
   ) => Promise<IUser>;
-  getById: (id: string) => Promise<IUser>;
+  getById: (id: string) => Promise<IUser | null | undefined>;
   getContactsByIds: (usersIds: string[]) => Promise<IUser[]>;
   getByEmail: (email: string) => Promise<IUser>;
   deleteByEmail: (email: string) => Promise<void>;
-  update: (command: IUserUpdateCommand) => Promise<IUser>;
+  update: (command: IUserUpdateCommand) => Promise<IUser | null | undefined>;
   updateProfilePicture: (
     command: IUserUpdateProfilePictureCommand,
     currentUser: IUser
-  ) => Promise<IUser>;
+  ) => Promise<IUser | null | undefined>;
   setPasswordChangeToken: (token: string, currentUser: IUser) => Promise<void>;
   changePassword: (
     newPasswordHash: string,

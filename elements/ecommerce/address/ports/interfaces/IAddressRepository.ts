@@ -12,7 +12,7 @@ interface IAddressRepository {
   setIsDefault: (
     addressId: string,
     isDefault: boolean
-  ) => Promise<IAddress | null>;
+  ) => Promise<IAddress | null | undefined>;
 }
 
 export default IAddressRepository;

@@ -95,7 +95,7 @@ const entityPermissionMongooseRepository: IEntityPermissionRepository = {
         command.entityEventNotifications
       );
 
-    const entityPermission: IEntityPermission = await EntityPermission.create({
+    const entityPermission = await EntityPermission.create({
       model: command.modelId,
       permissions: command.permissions.map((p) => p.toString()),
       entityFieldPermissions: command.entityFieldPermissions.map(
@@ -113,7 +113,7 @@ const entityPermissionMongooseRepository: IEntityPermissionRepository = {
       },
     });
 
-    return entityPermission;
+    return entityPermission.toObject();
   },
   updateEntityPermission: async (
     command: IEntityPermissionUpdateCommand,
@@ -185,14 +185,13 @@ const entityPermissionMongooseRepository: IEntityPermissionRepository = {
       }
     ).exec();
 
-    const entityPermission: IEntityPermission | null =
-      await EntityPermission.findById(command._id);
+    const entityPermission = await EntityPermission.findById(command._id);
 
     if (!entityPermission) {
       throw new Error("Entity permission not found");
     }
 
-    return entityPermission;
+    return entityPermission.toObject();
   },
   deleteByIds: async (ids: string[]): Promise<void> => {
     for (let i = 0; i < ids.length; i++) {
@@ -249,11 +248,11 @@ const entityPermissionMongooseRepository: IEntityPermissionRepository = {
   getModelEntityPermissions: async (
     modelId: string
   ): Promise<IEntityPermission[]> => {
-    const entityPermissions: IEntityPermission[] = await EntityPermission.find({
+    const entityPermissions = await EntityPermission.find({
       model: new mongoose.Types.ObjectId(modelId),
     });
 
-    return entityPermissions;
+    return entityPermissions.map((e) => e.toObject());
   },
 };
 

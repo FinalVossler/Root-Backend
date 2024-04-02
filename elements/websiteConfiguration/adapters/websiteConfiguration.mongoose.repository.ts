@@ -10,11 +10,12 @@ import IWebsiteConfigurationRepository from "../ports/interfaces/IWebsiteConfigu
 const websiteConfigurationMongooseRepository: IWebsiteConfigurationRepository =
   {
     get: async (): Promise<IWebsiteConfiguration> => {
-      const configurations: IWebsiteConfiguration[] =
+      const configurations: IWebsiteConfiguration[] = (
         await WebsiteConfiguration.find()
           .populate("tabIcon")
           .populate("logo1")
-          .populate("logo2");
+          .populate("logo2")
+      ).map((w) => w.toObject());
 
       if (configurations.length === 0) {
         const newConfiguration: IWebsiteConfiguration =
@@ -77,7 +78,7 @@ const websiteConfigurationMongooseRepository: IWebsiteConfigurationRepository =
       return await websiteConfigurationMongooseRepository.get();
     },
     create: async (): Promise<IWebsiteConfiguration> => {
-      const configuration: IWebsiteConfiguration =
+      const configuration: IWebsiteConfiguration = (
         await WebsiteConfiguration.create({
           title: "",
           description: [
@@ -93,9 +94,10 @@ const websiteConfigurationMongooseRepository: IWebsiteConfigurationRepository =
           withRegistration: false,
           withTaskManagement: false,
           mainLanguages: ["en", "fr"],
-        });
+        })
+      ).toObject();
 
-      return configuration as IWebsiteConfiguration;
+      return configuration;
     },
   };
 

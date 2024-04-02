@@ -7,16 +7,22 @@ import Address from "./address.mongoose.model";
 
 const addressMongooseRepository: IAddressRepository = {
   getAddressById: async (addressId: string) => {
-    return await Address.findById(new mongoose.Types.ObjectId(addressId));
+    const address = await Address.findById(
+      new mongoose.Types.ObjectId(addressId)
+    );
+
+    return address?.toObject() || null;
   },
   getAddresses: async () => {
-    return await Address.find({});
+    return (await Address.find({})).map((a) => a.toObject());
   },
   getUserAddresses: async (userId: string) => {
-    return await Address.find({ user: new mongoose.Types.ObjectId(userId) });
+    return (
+      await Address.find({ user: new mongoose.Types.ObjectId(userId) })
+    ).map((a) => a.toObject());
   },
   createAddress: async (command: IAddressCreateCommand) => {
-    const address: IAddress = await Address.create({
+    const address = await Address.create({
       addressLine1: command.addressLine1,
       addressLine2: command.addressLine2,
       city: command.city,
@@ -26,7 +32,7 @@ const addressMongooseRepository: IAddressRepository = {
       user: command.userId,
     });
 
-    return address;
+    return address.toObject();
   },
   updateAddress: async (command: IAddressUpdateCommand) => {
     const oldAddress: IAddress | null = await Address.findOne({
@@ -37,7 +43,7 @@ const addressMongooseRepository: IAddressRepository = {
       throw new Error("Address to update not found");
     }
 
-    const newAddress: IAddress | null = await Address.findOneAndUpdate(
+    const newAddress = await Address.findOneAndUpdate(
       { _id: new mongoose.Types.ObjectId(command._id) },
       {
         $set: {
@@ -52,7 +58,7 @@ const addressMongooseRepository: IAddressRepository = {
       { new: true }
     );
 
-    return newAddress as IAddress;
+    return newAddress?.toObject() as IAddress;
   },
   deleteAddresses: async (addressesIds: string[]) => {
     await Address.deleteMany({
@@ -64,10 +70,13 @@ const addressMongooseRepository: IAddressRepository = {
     });
   },
   setIsDefault: async (addressId: string, isDefault: boolean) => {
-    return await Address.findOneAndUpdate(
-      { _id: new mongoose.Types.ObjectId(addressId) },
-      { $set: { isDefault: Boolean(isDefault) } }
-    );
+    return (
+      await Address.findOneAndUpdate(
+        { _id: new mongoose.Types.ObjectId(addressId) },
+        { $set: { isDefault: Boolean(isDefault) } },
+        { new: true }
+      )
+    )?.toObject();
   },
 };
 

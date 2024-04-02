@@ -67,7 +67,7 @@ const fieldMongooseRepository: IFieldRepository = {
 
     await field.populate(populationOptions);
 
-    return field;
+    return field.toObject();
   },
   update: async function (command: IFieldUpdateCommand): Promise<IField> {
     const field: IField | null = await Field.findById(command._id);
@@ -234,14 +234,12 @@ const fieldMongooseRepository: IFieldRepository = {
     return newField;
   },
   getById: async (id: string): Promise<IField> => {
-    const field: IField | null = await Field.findById(id).populate(
-      populationOptions
-    );
+    const field = await Field.findById(id).populate(populationOptions);
 
     if (!field) {
       throw new Error("Field not found");
     }
-    return field;
+    return field.toObject();
   },
   getFields: async (
     command: IFieldsGetCommand,
@@ -251,7 +249,7 @@ const fieldMongooseRepository: IFieldRepository = {
       ...(ownerId ? { owner: new mongoose.Types.ObjectId(ownerId) } : {}),
     };
 
-    const fields: IField[] = await Field.find(queryCondition)
+    const fields = await Field.find(queryCondition)
       .sort({ createdAt: -1 })
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
@@ -262,7 +260,7 @@ const fieldMongooseRepository: IFieldRepository = {
 
     const total: number = await Field.find(queryCondition).count();
 
-    return { fields, total };
+    return { fields: fields.map((f) => f.toObject()), total };
   },
   deleteFields: async (fieldsIds: string[]): Promise<void> => {
     for (let i = 0; i < fieldsIds.length; i++) {
@@ -280,7 +278,7 @@ const fieldMongooseRepository: IFieldRepository = {
       name: { $elemMatch: { text: { $regex: command.name } } },
     });
 
-    const fields: IField[] = await query
+    const fields = await query
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
@@ -291,14 +289,14 @@ const fieldMongooseRepository: IFieldRepository = {
       name: { $elemMatch: { text: { $regex: command.name } } },
     }).count();
 
-    return { fields, total };
+    return { fields: fields.map((f) => f.toObject()), total };
   },
   getByIds: async (ids: string[]): Promise<IField[]> => {
-    const fields: IField[] = await Field.find({
+    const fields = await Field.find({
       _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
     }).populate(populationOptions);
 
-    return fields;
+    return fields.map((f) => f.toObject());
   },
   copy: async function (ids: string[]): Promise<IField[]> {
     const fieldsToCopy: IField[] = await this.getByIds(ids);
@@ -337,7 +335,7 @@ const fieldMongooseRepository: IFieldRepository = {
                 })) || []
               );
 
-            const newField: IField = await Field.create({
+            const newField = await Field.create({
               name: field.name.map((el) => ({
                 language: el.language,
                 text: el.text,
@@ -379,7 +377,7 @@ const fieldMongooseRepository: IFieldRepository = {
       );
     });
 
-    const fields: IField[] = await Promise.all(promises);
+    const fields = await Promise.all(promises);
 
     return fields;
   },

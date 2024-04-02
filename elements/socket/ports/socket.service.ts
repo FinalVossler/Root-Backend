@@ -59,9 +59,7 @@ export const createSocketService = (
         console.log("disconnecting", userId, "socket id", socket.id);
 
         // Send messages signaling to other users that this user is no longer typing because he just disconnected
-        const userSocket: ISocket | null = await socketRepository.getUserSocket(
-          userId
-        );
+        const userSocket = await socketRepository.getUserSocket(userId);
         if (userSocket) {
           userSocket.typingStates.forEach((typingState) => {
             const typingStateCommand: ISocketTypingStateCommand = {

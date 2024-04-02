@@ -98,8 +98,10 @@ describe("Models", () => {
           stickInTable: false,
           required: false,
           modelStatesIds: [],
+          isVariation: false,
         },
       ],
+      isForOrders: false,
       name: "created model name",
       states: [
         {
@@ -172,6 +174,7 @@ describe("Models", () => {
           stickInTable: false,
           required: false,
           modelStatesIds: [],
+          isVariation: false,
         },
         {
           fieldId: field2?._id.toString() || "",
@@ -179,8 +182,10 @@ describe("Models", () => {
           stickInTable: false,
           required: false,
           modelStatesIds: [],
+          isVariation: false,
         },
       ],
+      isForOrders: false,
       name: "model to update with a new model name",
       states: [
         {

@@ -15,7 +15,7 @@ interface IModelRepository {
     ownerId?: string
   ) => Promise<{ total: number; models: IModel[] }>;
 
-  getById: (id: string) => Promise<IModel>;
+  getById: (id: string) => Promise<IModel | null | undefined>;
   getModelsContainingField: (fieldId: string) => Promise<IModel[]>;
   deleteModel: (modelId: string) => Promise<void>;
   deleteModels: (modelsIds: string[]) => Promise<void>;

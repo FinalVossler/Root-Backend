@@ -12,15 +12,14 @@ const fieldTableElementRepository: IFieldTableElementRepository = {
   create: async (
     command: IFieldTableElementCreateCommand
   ): Promise<IFieldTableElement> => {
-    const fieldTableElement: IFieldTableElement =
-      await FieldTableElement.create({
-        name:
-          command.name.length && command.name[0]["language"]
-            ? command.name
-            : [{ language: command.language, text: command.name }],
-      });
+    const fieldTableElement = await FieldTableElement.create({
+      name:
+        command.name.length && command.name[0]["language"]
+          ? command.name
+          : [{ language: command.language, text: command.name }],
+    });
 
-    return fieldTableElement;
+    return fieldTableElement.toObject();
   },
   update: async (
     command: IFieldTableElementUpdateCommand
@@ -45,14 +44,15 @@ const fieldTableElementRepository: IFieldTableElementRepository = {
       }
     );
 
-    const updatedTableElement: IFieldTableElement | null =
-      await FieldTableElement.findById(command._id).exec();
+    const updatedTableElement = await FieldTableElement.findById(
+      command._id
+    ).exec();
 
     if (!updatedTableElement) {
       throw new Error("Table element not found");
     }
 
-    return updatedTableElement;
+    return updatedTableElement.toObject();
   },
   createMany: async (
     commands: IFieldTableElementCreateCommand[]

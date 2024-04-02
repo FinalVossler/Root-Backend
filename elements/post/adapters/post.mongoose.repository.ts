@@ -30,19 +30,23 @@ const postMongooseRepository: IPostRepository = {
       (command.files as IFile[]).filter((el) => el._id)
     );
 
-    const post = await Post.create({
-      title: [{ text: command.title, language: command.language }],
-      subTitle: [{ text: command.subTitle, language: command.language }],
-      content: [{ text: command.content || "", language: command.language }],
-      files: allFiles.map((f) => f._id),
-      poster: command.posterId,
-      visibility: command.visibility,
-      design: command.design,
-      children: command.children,
-      code: command.code,
-    });
-
-    await post.populate(populationOptions);
+    const post = (
+      await (
+        await Post.create({
+          title: [{ text: command.title, language: command.language }],
+          subTitle: [{ text: command.subTitle, language: command.language }],
+          content: [
+            { text: command.content || "", language: command.language },
+          ],
+          files: allFiles.map((f) => f._id),
+          poster: command.posterId,
+          visibility: command.visibility,
+          design: command.design,
+          children: command.children,
+          code: command.code,
+        })
+      ).populate(populationOptions)
+    ).toObject();
 
     return post;
   },
@@ -58,17 +62,19 @@ const postMongooseRepository: IPostRepository = {
       );
     }
 
-    const posts: IPost[] = (await Post.find({
-      posterId: command.userId,
-      visibility: { $in: visibilities },
-    })
-      .populate(populationOptions)
-      .sort({ createdAt: -1 })
-      .skip(
-        (command.paginationCommand.page - 1) * command.paginationCommand.limit
-      )
-      .limit(command.paginationCommand.limit)
-      .exec()) as IPost[];
+    const posts: IPost[] = (
+      await Post.find({
+        posterId: command.userId,
+        visibility: { $in: visibilities },
+      })
+        .populate(populationOptions)
+        .sort({ createdAt: -1 })
+        .skip(
+          (command.paginationCommand.page - 1) * command.paginationCommand.limit
+        )
+        .limit(command.paginationCommand.limit)
+        .exec()
+    ).map((p) => p.toObject());
 
     const total: number = await Post.find({
       posterId: command.userId,
@@ -86,12 +92,14 @@ const postMongooseRepository: IPostRepository = {
       posterId: command.posterId,
     }).populate(populationOptions);
 
-    const posts: IPost[] = await query
-      .skip(
-        (command.paginationCommand.page - 1) * command.paginationCommand.limit
-      )
-      .limit(command.paginationCommand.limit)
-      .populate(populationOptions);
+    const posts: IPost[] = (
+      await query
+        .skip(
+          (command.paginationCommand.page - 1) * command.paginationCommand.limit
+        )
+        .limit(command.paginationCommand.limit)
+        .populate(populationOptions)
+    ).map((p) => p.toObject());
 
     const total = await Post.find({
       title: { $elemMatch: { text: { $regex: command.title } } },
@@ -101,16 +109,18 @@ const postMongooseRepository: IPostRepository = {
 
     return { posts, total };
   },
-  getById: async (postId: string): Promise<IPost | null> => {
-    return await Post.findById(new mongoose.Types.ObjectId(postId))
-      .populate(populationOptions)
-      .exec();
+  getById: async (postId: string) => {
+    return (
+      await Post.findById(new mongoose.Types.ObjectId(postId))
+        .populate(populationOptions)
+        .exec()
+    )?.toObject();
   },
   update: async (
     command: IPostUpdateCommand,
     oldPost: IPost,
     currentUser: IUser
-  ): Promise<IPost | null> => {
+  ) => {
     const createdFiles: IFile[] = await fileRepository.createFiles(
       command.files.filter((el) => !el._id),
       currentUser
@@ -120,35 +130,38 @@ const postMongooseRepository: IPostRepository = {
       (command.files as IFile[]).filter((el) => el._id)
     );
 
-    await Post.updateOne(
-      { _id: command._id },
-      {
-        $set: {
-          title: getNewTranslatedTextsForUpdate({
-            oldValue: oldPost.title,
-            language: command.language,
-            newText: command.title || "",
-          }),
-          children: command.children,
-          content: getNewTranslatedTextsForUpdate({
-            oldValue: oldPost.content,
-            language: command.language,
-            newText: command.content || "",
-          }),
-          design: command.design,
-          files: allFiles.map((el) => el._id),
-          subTitle: getNewTranslatedTextsForUpdate({
-            oldValue: oldPost.subTitle,
-            language: command.language,
-            newText: command.subTitle || "",
-          }),
-          code: command.code,
-          visibility: command.visibility,
+    const updatedPost = (
+      await Post.findOneAndUpdate(
+        { _id: command._id },
+        {
+          $set: {
+            title: getNewTranslatedTextsForUpdate({
+              oldValue: oldPost.title,
+              language: command.language,
+              newText: command.title || "",
+            }),
+            children: command.children,
+            content: getNewTranslatedTextsForUpdate({
+              oldValue: oldPost.content,
+              language: command.language,
+              newText: command.content || "",
+            }),
+            design: command.design,
+            files: allFiles.map((el) => el._id),
+            subTitle: getNewTranslatedTextsForUpdate({
+              oldValue: oldPost.subTitle,
+              language: command.language,
+              newText: command.subTitle || "",
+            }),
+            code: command.code,
+            visibility: command.visibility,
+          },
         },
-      }
-    );
+        { new: true }
+      ).populate(populationOptions)
+    )?.toObject();
 
-    return await postMongooseRepository.getById(command._id);
+    return updatedPost;
   },
 
   delete: async (postId: string): Promise<any> => {

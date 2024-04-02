@@ -35,6 +35,7 @@ export interface IModelField {
   states?: IModelState[];
   mainField?: boolean;
   stickInTable?: boolean;
+  isVariation?: boolean;
 }
 
 export interface IModelFieldCondition {

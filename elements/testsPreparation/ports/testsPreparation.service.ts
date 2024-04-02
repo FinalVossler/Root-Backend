@@ -556,6 +556,7 @@ const createTestsPreparationService = (
             fieldId: caseNameField._id.toString(),
             mainField: true,
             stickInTable: true,
+            isVariation: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -568,6 +569,7 @@ const createTestsPreparationService = (
             fieldId: productNameField._id.toString(),
             mainField: true,
             stickInTable: false,
+            isVariation: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -586,6 +588,7 @@ const createTestsPreparationService = (
             fieldId: countryField._id.toString(),
             mainField: true,
             stickInTable: false,
+            isVariation: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -604,6 +607,7 @@ const createTestsPreparationService = (
             fieldId: numberOfYearsOfForecastField._id.toString(),
             mainField: true,
             stickInTable: false,
+            isVariation: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -622,6 +626,7 @@ const createTestsPreparationService = (
             fieldId: costField._id.toString(),
             mainField: false,
             stickInTable: false,
+            isVariation: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -650,6 +655,7 @@ const createTestsPreparationService = (
             fieldId: priceField._id.toString(),
             mainField: false,
             stickInTable: false,
+            isVariation: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -678,6 +684,7 @@ const createTestsPreparationService = (
             fieldId: inMarketSalesDataField._id.toString(),
             mainField: false,
             stickInTable: false,
+            isVariation: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -703,6 +710,7 @@ const createTestsPreparationService = (
             fieldId: medicalInsightPPTemplateField._id.toString(),
             mainField: false,
             stickInTable: false,
+            isVariation: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -721,6 +729,7 @@ const createTestsPreparationService = (
             fieldId: kpiDashboardButtonField._id.toString(),
             mainField: false,
             stickInTable: false,
+            isVariation: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -749,6 +758,7 @@ const createTestsPreparationService = (
             fieldId: pestelButtonField._id.toString(),
             mainField: false,
             stickInTable: false,
+            isVariation: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -773,6 +783,7 @@ const createTestsPreparationService = (
             fieldId: forecastButtonField._id.toString(),
             mainField: false,
             stickInTable: false,
+            isVariation: false,
             modelStatesIds: [
               model.states
                 ?.find((s) => s.name.at(0)?.text === "Complete")
@@ -1474,6 +1485,7 @@ const createTestsPreparationService = (
           modelStatesIds: [],
           required: true,
           stickInTable: true,
+          isVariation: false,
           conditions: [],
         },
         {
@@ -1482,6 +1494,7 @@ const createTestsPreparationService = (
           modelStatesIds: [],
           required: true,
           stickInTable: false,
+          isVariation: false,
           conditions: [],
         },
         {
@@ -1490,6 +1503,7 @@ const createTestsPreparationService = (
           modelStatesIds: [],
           required: true,
           stickInTable: false,
+          isVariation: false,
           conditions: [],
         },
         {
@@ -1498,6 +1512,7 @@ const createTestsPreparationService = (
           modelStatesIds: [],
           required: true,
           stickInTable: false,
+          isVariation: false,
           conditions: [],
         },
         {
@@ -1506,6 +1521,7 @@ const createTestsPreparationService = (
           modelStatesIds: [],
           required: false,
           stickInTable: false,
+          isVariation: false,
           conditions: [],
         },
       ],

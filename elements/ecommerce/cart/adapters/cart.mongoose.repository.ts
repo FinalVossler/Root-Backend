@@ -8,7 +8,7 @@ import { entityPopulationOptions } from "../../../entity/adapters/entity.mongoos
 
 const cartMongooseRepository: ICartRepository = {
   createCart: async function (userId: string) {
-    const cart: ICart = await Cart.create({
+    await Cart.create({
       user: new mongoose.Types.ObjectId(userId),
       products: [],
     });
@@ -23,7 +23,7 @@ const cartMongooseRepository: ICartRepository = {
       .exec();
 
     if (res.length > 0) {
-      return res[0] as ICart;
+      return res[0].toObject();
     } else {
       return null;
     }
@@ -49,7 +49,7 @@ const cartMongooseRepository: ICartRepository = {
       throw new Error("Cart not found");
     }
 
-    return cart;
+    return cart.toObject();
   },
   deleteUserCart: async (userId: string) => {
     await Cart.deleteOne({ user: new mongoose.Types.ObjectId(userId) });

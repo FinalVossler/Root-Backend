@@ -87,25 +87,25 @@ const roleMongooseRepository = {
     const createdEntityPermissions: IEntityPermission[] =
       await this.createEntityPermissions(command.entityPermissions);
 
-    const role = await Role.create({
-      name: [{ language: command.language, text: command.name }],
-      permissions: command.permissions,
-      entityPermissions: createdEntityPermissions,
-    });
-
-    const createdRole: IRole | null = await Role.findById(role._id).populate(
-      populationOptions
-    );
+    const createdRole = (
+      await (
+        await Role.create({
+          name: [{ language: command.language, text: command.name }],
+          permissions: command.permissions,
+          entityPermissions: createdEntityPermissions,
+        })
+      ).populate(populationOptions)
+    ).toObject();
 
     if (!createdRole) {
       throw new Error("Role not found after creation");
     }
     return createdRole;
   },
-  update: async function (command: IRoleUpdateCommand): Promise<IRole> {
-    const role: IRole | null = await Role.findById(command._id).populate(
-      populationOptions
-    );
+  update: async function (command: IRoleUpdateCommand) {
+    const role = (
+      await Role.findById(command._id).populate(populationOptions)
+    )?.toObject();
 
     if (!role) {
       throw new Error("Role not found");
@@ -161,41 +161,44 @@ const roleMongooseRepository = {
       await this.createEntityPermissions(entityPermissionsToCreate);
     // End entity permissions to create
 
-    await Role.updateOne(
-      { _id: command._id },
-      {
-        $set: {
-          name: getNewTranslatedTextsForUpdate({
-            language: command.language,
-            newText: command.name,
-            oldValue: role.name,
-          }),
-          permissions: command.permissions,
-          entityPermissions: [
-            ...updatedEntityPermissions.map((el) => el._id),
-            ...createdEntityPermissions.map((el) => el._id),
-          ],
-        },
-      }
-    );
+    const updatedRole = (
+      await (
+        await Role.findOneAndUpdate(
+          { _id: command._id },
+          {
+            $set: {
+              name: getNewTranslatedTextsForUpdate({
+                language: command.language,
+                newText: command.name,
+                oldValue: role.name,
+              }),
+              permissions: command.permissions,
+              entityPermissions: [
+                ...updatedEntityPermissions.map((el) => el._id),
+                ...createdEntityPermissions.map((el) => el._id),
+              ],
+            },
+          },
+          { new: true }
+        )
+      )?.populate(populationOptions)
+    )?.toObject();
 
-    const newRole = await Role.findById(command._id).populate(
-      populationOptions
-    );
-
-    return newRole as IRole;
+    return updatedRole;
   },
   getRoles: async (
     command: IRolesGetCommand
   ): Promise<{ total: number; roles: IRole[] }> => {
-    const roles: IRole[] = await Role.find({})
-      .sort({ createdAt: -1 })
-      .skip(
-        (command.paginationCommand.page - 1) * command.paginationCommand.limit
-      )
-      .limit(command.paginationCommand.limit)
-      .populate(populationOptions)
-      .exec();
+    const roles: IRole[] = (
+      await Role.find({})
+        .sort({ createdAt: -1 })
+        .skip(
+          (command.paginationCommand.page - 1) * command.paginationCommand.limit
+        )
+        .limit(command.paginationCommand.limit)
+        .populate(populationOptions)
+        .exec()
+    ).map((r) => r.toObject());
 
     const total: number = await Role.find({}).count();
 
@@ -231,12 +234,14 @@ const roleMongooseRepository = {
       name: { $elemMatch: { text: { $regex: command.name } } },
     });
 
-    const roles: IRole[] = await query
-      .skip(
-        (command.paginationCommand.page - 1) * command.paginationCommand.limit
-      )
-      .limit(command.paginationCommand.limit)
-      .populate(populationOptions);
+    const roles: IRole[] = (
+      await query
+        .skip(
+          (command.paginationCommand.page - 1) * command.paginationCommand.limit
+        )
+        .limit(command.paginationCommand.limit)
+        .populate(populationOptions)
+    ).map((r) => r.toObject());
 
     const total = await Role.find({
       name: { $elemMatch: { text: { $regex: command.name } } },
@@ -247,11 +252,15 @@ const roleMongooseRepository = {
   getRolesWithEntityPermissions: async (
     entityPermissionsIds: string[]
   ): Promise<IRole[]> => {
-    const roles: IRole[] = await Role.find({
-      entityPermissions: {
-        $in: entityPermissionsIds.map((id) => new mongoose.Types.ObjectId(id)),
-      },
-    }).populate(populationOptions);
+    const roles: IRole[] = (
+      await Role.find({
+        entityPermissions: {
+          $in: entityPermissionsIds.map(
+            (id) => new mongoose.Types.ObjectId(id)
+          ),
+        },
+      }).populate(populationOptions)
+    ).map((r) => r.toObject());
 
     return roles;
   },

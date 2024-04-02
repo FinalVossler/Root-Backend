@@ -21,15 +21,17 @@ const userMongooseRepository: IUserRepository = {
     command: IChatGetContactsCommand,
     currentUser: IUser
   ): Promise<{ users: IUser[]; total: number }> => {
-    const users = await User.find({
-      _id: { $nin: [currentUser._id] },
-    })
-      .skip(
-        (command.paginationCommand.page - 1) * command.paginationCommand.limit
-      )
-      .limit(command.paginationCommand.limit)
-      .populate(populationOptions)
-      .exec();
+    const users = (
+      await User.find({
+        _id: { $nin: [currentUser._id] },
+      })
+        .skip(
+          (command.paginationCommand.page - 1) * command.paginationCommand.limit
+        )
+        .limit(command.paginationCommand.limit)
+        .populate(populationOptions)
+        .exec()
+    ).map((u) => u.toObject());
 
     const total: number = await User.find({
       _id: { $nin: [currentUser._id] },
@@ -41,26 +43,32 @@ const userMongooseRepository: IUserRepository = {
     command: IUserRegisterCommand,
     automaticallyAssignedRoleIdAtRegistration
   ): Promise<IUser> => {
-    const user: IUser = (await User.create({
-      ...command,
-      role: new mongoose.Types.ObjectId(
-        automaticallyAssignedRoleIdAtRegistration
-      ),
-    })) as IUser;
+    const user: IUser = (
+      await User.create({
+        ...command,
+        role: new mongoose.Types.ObjectId(
+          automaticallyAssignedRoleIdAtRegistration
+        ),
+      })
+    ).toObject();
 
     return user;
   },
-  getById: async (id: string): Promise<IUser> => {
-    const user: IUser = (await User.findById(
-      new mongoose.Types.ObjectId(id)
-    ).populate(populationOptions)) as IUser;
+  getById: async (id: string) => {
+    const user = (
+      await User.findById(new mongoose.Types.ObjectId(id)).populate(
+        populationOptions
+      )
+    )?.toObject();
 
     return user;
   },
   getContactsByIds: async (usersIds: string[]): Promise<IUser[]> => {
-    const users: IUser[] = (await User.find({
-      _id: { $in: usersIds.map((id) => new mongoose.Types.ObjectId(id)) },
-    }).populate(populationOptions)) as IUser[];
+    const users = (
+      await User.find({
+        _id: { $in: usersIds.map((id) => new mongoose.Types.ObjectId(id)) },
+      }).populate(populationOptions)
+    ).map((u) => u.toObject());
 
     return users;
   },
@@ -74,47 +82,51 @@ const userMongooseRepository: IUserRepository = {
   deleteByEmail: async (email: string) => {
     await User.deleteOne({ email }).exec();
   },
-  update: async (command: IUserUpdateCommand): Promise<IUser> => {
-    await User.updateOne(
-      { _id: command._id },
-      {
-        $set: {
-          firstName: command.firstName,
-          lastName: command.lastName,
-          email: command.email,
-          role: command.roleId,
-          superRole: command.superRole,
-          hasMessagingEmailsActivated: command.hasMessagingEmailsActivated,
-        },
-      }
-    ).exec();
+  update: async (command: IUserUpdateCommand) => {
+    const updatedUser = (
+      await (
+        await User.findOneAndUpdate(
+          { _id: command._id },
+          {
+            $set: {
+              firstName: command.firstName,
+              lastName: command.lastName,
+              email: command.email,
+              role: command.roleId,
+              superRole: command.superRole,
+              hasMessagingEmailsActivated: command.hasMessagingEmailsActivated,
+            },
+          },
+          {
+            new: true,
+          }
+        ).exec()
+      )?.populate(populationOptions)
+    )?.toObject();
 
-    const user: IUser = await userMongooseRepository.getById(
-      command._id.toString()
-    );
-
-    return user;
+    return updatedUser;
   },
   updateProfilePicture: async (
     command: IUserUpdateProfilePictureCommand,
     currentUser: IUser
-  ): Promise<IUser> => {
+  ) => {
     let picture: IFile | null = null;
 
     if (!command.picture._id) {
       picture = await fileRepository.create(command.picture, currentUser);
     }
 
-    await User.updateOne(
-      { _id: command.userId },
-      { $set: { profilePicture: picture ? picture._id : command.picture } }
-    );
+    const updatedUser = (
+      await (
+        await User.findOneAndUpdate(
+          { _id: command.userId },
+          { $set: { profilePicture: picture ? picture._id : command.picture } },
+          { new: true }
+        )
+      )?.populate(populationOptions)
+    )?.toObject();
 
-    const user: IUser = (await userMongooseRepository.getById(
-      command.userId.toString()
-    )) as IUser;
-
-    return user;
+    return updatedUser;
   },
   setPasswordChangeToken: async (
     token: string,
@@ -139,15 +151,19 @@ const userMongooseRepository: IUserRepository = {
     );
   },
   create: async (command: IUserCreateCommand): Promise<IUser> => {
-    const user: IUser = await User.create({
-      firstName: command.firstName,
-      lastName: command.lastName,
-      email: command.email,
-      password: command.password,
-      role: command.roleId,
-    });
+    const user = (
+      await (
+        await User.create({
+          firstName: command.firstName,
+          lastName: command.lastName,
+          email: command.email,
+          password: command.password,
+          role: command.roleId,
+        })
+      ).populate(populationOptions)
+    ).toObject();
 
-    return await userMongooseRepository.getById(user._id.toString());
+    return user;
   },
   getUsers: async (
     command: IUsersGetCommand
@@ -155,25 +171,29 @@ const userMongooseRepository: IUserRepository = {
     const findQuery = command.roleId
       ? { role: new mongoose.Types.ObjectId(command.roleId) }
       : {};
-    const users: IUser[] = await User.find(findQuery)
-      .sort({ createdAt: -1 })
-      .skip(
-        (command.paginationCommand.page - 1) * command.paginationCommand.limit
-      )
-      .limit(command.paginationCommand.limit)
-      .populate(populationOptions)
-      .exec();
+    const users: IUser[] = (
+      await User.find(findQuery)
+        .sort({ createdAt: -1 })
+        .skip(
+          (command.paginationCommand.page - 1) * command.paginationCommand.limit
+        )
+        .limit(command.paginationCommand.limit)
+        .populate(populationOptions)
+        .exec()
+    ).map((u) => u.toObject());
 
     const total: number = await User.find(findQuery).count();
 
     return { users, total };
   },
   getByIds: async (usersIds: string[]): Promise<IUser[]> => {
-    const users: IUser[] = await User.find({
-      _id: { $in: usersIds.map((id) => new mongoose.Types.ObjectId(id)) },
-    })
-      .populate(populationOptions)
-      .exec();
+    const users: IUser[] = (
+      await User.find({
+        _id: { $in: usersIds.map((id) => new mongoose.Types.ObjectId(id)) },
+      })
+        .populate(populationOptions)
+        .exec()
+    ).map((u) => u.toObject());
 
     return users;
   },
@@ -195,12 +215,14 @@ const userMongooseRepository: IUserRepository = {
       ...additionalConditions,
     });
 
-    const users: IUser[] = await query
-      .skip(
-        (command.paginationCommand.page - 1) * command.paginationCommand.limit
-      )
-      .limit(command.paginationCommand.limit)
-      .populate(populationOptions);
+    const users: IUser[] = (
+      await query
+        .skip(
+          (command.paginationCommand.page - 1) * command.paginationCommand.limit
+        )
+        .limit(command.paginationCommand.limit)
+        .populate(populationOptions)
+    ).map((u) => u.toObject());
 
     const total = await User.find({
       $text: {
@@ -212,9 +234,11 @@ const userMongooseRepository: IUserRepository = {
     return { users, total };
   },
   getRoleUsers: async (roleId: string): Promise<IUser[]> => {
-    const users: IUser[] = await User.find({
-      role: { _id: new mongoose.Types.ObjectId(roleId) },
-    }).exec();
+    const users: IUser[] = (
+      await User.find({
+        role: { _id: new mongoose.Types.ObjectId(roleId) },
+      }).exec()
+    ).map((u) => u.toObject());
 
     return users;
   },

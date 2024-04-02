@@ -15,7 +15,7 @@ interface IFileRepository {
   getUnownedFiles: (
     command: IFileGetUnownedAndSelectedFilesCommand
   ) => Promise<{ files: IFile[]; total: number }>;
-  get: (fileId: string) => Promise<IFile | null>;
+  get: (fileId: string) => Promise<IFile | null | undefined>;
   create: (file: IFileCommand, currentUser?: IUser) => Promise<IFile>;
   createFiles: (files: IFileCommand[], currentUser?: IUser) => Promise<IFile[]>;
   deleteUsersFiles: (userIds: string[]) => Promise<void>;

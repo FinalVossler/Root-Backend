@@ -47,7 +47,7 @@ const createModelService = (
     command: IModelUpdateCommand,
     currentUser: IUser
   ): Promise<IModel> => {
-    const model: IModel = await modelRepository.getById(command._id);
+    const model = await modelRepository.getById(command._id);
 
     if (!model) {
       throw new Error("Model not not found");
@@ -113,7 +113,7 @@ const createModelService = (
       return { models, total };
     }
   },
-  getById: async (id: string): Promise<IModel> => {
+  getById: async (id: string) => {
     return await modelRepository.getById(id);
   },
   getModelsByIds: async (
@@ -137,9 +137,7 @@ const createModelService = (
     });
 
     for (let i = 0; i < modelsIds.length; i++) {
-      const model: IModel | undefined = await modelRepository.getById(
-        modelsIds[i]
-      );
+      const model = await modelRepository.getById(modelsIds[i]);
 
       if (model) {
         // Deleting the entities created based on the deleted model

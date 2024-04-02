@@ -23,7 +23,7 @@ const createRoleController = (roleService: IRoleService): IRoleController => ({
     };
   },
   updateRole: async (req: IRequest<IRoleUpdateCommand>, currentUser: IUser) => {
-    const role: IRole = await roleService.updateRole(req.body, currentUser);
+    const role = (await roleService.updateRole(req.body, currentUser)) as IRole;
 
     return {
       success: true,

@@ -18,6 +18,7 @@ import userMongooseRepository from "../../elements/user/adapters/user.mongoose.r
 jest.setTimeout(50000);
 describe("Addresses", () => {
   const adminToken: string = userService.generateToken(adminUser);
+  let otherUserToken: string = "";
   let addressToGet: IAddress | undefined;
   let addressToUpdate: IAddress | undefined;
   let addressToDelete: IAddress | undefined;
@@ -63,6 +64,8 @@ describe("Addresses", () => {
       password: "rootroot",
       superRole: SuperRoleEnum.Normal,
     });
+
+    otherUserToken = userService.generateToken(otherUser);
 
     otherUserAddress = await addressMongooseRepository.createAddress({
       addressLine1: "13 Rue de l'autre utilisateur for other user",
@@ -118,7 +121,7 @@ describe("Addresses", () => {
   it("should get addresses of a specific user", () => {
     return request(app)
       .post("/addresses/getUserAddresses")
-      .set("Authorization", "Bearer " + adminToken)
+      .set("Authorization", "Bearer " + otherUserToken)
       .send({ userId: otherUser?._id.toString() })
       .expect(200)
       .then((res) => {

@@ -7,7 +7,7 @@ interface ISocketRepository {
     onlineUsersIds: string[];
     onlineUsersSockets: ISocket[];
   }>;
-  getUserSocket: (userId: string) => Promise<ISocket | null>;
+  getUserSocket: (userId: string) => Promise<ISocket | null | undefined>;
   addTypingState: (userId: string, typingState: ITypingState) => Promise<void>;
   deleteTypingState: (
     userId: string,

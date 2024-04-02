@@ -18,7 +18,7 @@ interface IOrderRepository {
     paginationCommand: IPaginationCommand,
     userId: string
   ) => Promise<IPaginationResponse<IOrder>>;
-  getOrderById: (orderId: string) => Promise<IOrder | null>;
+  getOrderById: (orderId: string) => Promise<IOrder | null | undefined>;
   createOrder: (
     command: IOrderCreateCommand,
     total: number,
@@ -28,12 +28,12 @@ interface IOrderRepository {
     orderId: string,
     status: OrderStatusEnum | OrderNegativeStatusEnum,
     isNegativeStatus: boolean
-  ) => Promise<IOrder | null>;
+  ) => Promise<IOrder | null | undefined>;
   setCheckoutSessionIdAndUrl: (
     orderId: string,
     checkoutSessionId: string,
     checkoutSessionUrl: string
-  ) => Promise<IOrder | null>;
+  ) => Promise<IOrder | null | undefined>;
   deleteOrders: (orderIds: string[]) => Promise<void>;
   getOrderAssociatedEntities: (orderId: string) => Promise<IEntity[]>;
 }

@@ -31,10 +31,6 @@ const createAddressService = (
     if (userId !== currentUser._id.toString()) {
       throw new Error("Permission denied");
     }
-    roleService.checkPermission({
-      user: currentUser,
-      permission: PermissionEnum.CreateAddress,
-    });
 
     const address: IAddress[] = await addressRepository.getUserAddresses(
       userId
@@ -79,10 +75,9 @@ const createAddressService = (
     await addressRepository.deleteAddresses(addressesIds);
   },
   setDefaultAddress: async function (addressId: string, currentUser: IUser) {
-    const userAddresses: IAddress[] = await this.getUserAddresses(
-      currentUser._id,
-      currentUser
-    );
+    const userAddresses: IAddress[] = await (
+      this as IAddressService
+    ).getUserAddresses(currentUser._id.toString(), currentUser);
 
     const addressToSetToDefault = userAddresses.find(
       (address) => address._id.toString() === addressId
@@ -92,7 +87,7 @@ const createAddressService = (
       throw new Error("Address not found");
     }
 
-    const promises: Promise<IAddress | null>[] = [];
+    const promises: Promise<IAddress | null | undefined>[] = [];
 
     userAddresses.forEach((address) => {
       promises.push(

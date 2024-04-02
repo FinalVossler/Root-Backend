@@ -62,6 +62,7 @@ export const modelFieldToReadDto = (
     states: modelField.states?.map((s) => modelStateToReadDto(s)),
     mainField: modelField.mainField,
     stickInTable: modelField.stickInTable,
+    isVariation: Boolean(modelField.isVariation),
   };
 };
 

@@ -71,6 +71,10 @@ interface IEntityService {
     entitiesIds: string[],
     currentUser: IUser
   ) => Promise<IEntity[]>;
+  generateVariations: (
+    entityId: string,
+    currentUser: IUser
+  ) => Promise<IEntity[]>;
 }
 
 export default IEntityService;

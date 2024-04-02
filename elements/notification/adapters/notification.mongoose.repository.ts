@@ -27,16 +27,18 @@ const notificationMongooseRepository: INotificationRepository = {
     total: number;
     totalUnclicked: number;
   }> => {
-    const notifications: INotification[] = await Notification.find({
-      to: { $all: [command.userId] },
-    })
-      .populate(populationOptions)
-      .sort({ createdAt: -1 })
-      .skip(
-        (command.paginationCommand.page - 1) * command.paginationCommand.limit
-      )
-      .limit(command.paginationCommand.limit)
-      .exec();
+    const notifications: INotification[] = (
+      await Notification.find({
+        to: { $all: [command.userId] },
+      })
+        .populate(populationOptions)
+        .sort({ createdAt: -1 })
+        .skip(
+          (command.paginationCommand.page - 1) * command.paginationCommand.limit
+        )
+        .limit(command.paginationCommand.limit)
+        .exec()
+    ).map((n) => n.toObject());
 
     const total: number = await Notification.find({
       to: { $all: [command.userId] },

@@ -25,6 +25,7 @@ import IEntityEventNotificationService from "../../entityEventNotification/ports
 import IEntityPermission from "../../entityPermission/ports/interfaces/IEntityPermission";
 import IFile from "../../file/ports/interfaces/IFile";
 import IFieldTableElement from "../../fieldTableElement/ports/IFieldTableElement";
+import { getElement, getElementId } from "../../../utils/getElement";
 
 const createEntityService = (
   roleService: IRoleService,
@@ -47,7 +48,11 @@ const createEntityService = (
     invalidFields: IModelField[];
     errorText: string;
   }> {
-    const model: IModel = await modelService.getById(modelId);
+    const model = await modelService.getById(modelId);
+
+    if (!model) {
+      throw new Error("model not found");
+    }
 
     const invalidFields: IModelField[] = [];
 
@@ -366,7 +371,7 @@ const createEntityService = (
     roleService.checkEntityPermission({
       user: currentUser,
       staticPermission: EntityStaticPermissionEnum.Read,
-      modelId: entity.model._id.toString(),
+      modelId: getElementId(entity.model),
 
       ownerPermission: EntityStaticPermissionEnum.Read,
       entitiesOwners: [entity.owner],
@@ -422,9 +427,11 @@ const createEntityService = (
     await entityRepository.setCustomDataKeyValue(command);
   },
   checkStock: async function (entity: IEntity, reduceBy: number) {
-    const model: IModel = await modelService.getById(
-      entity.model._id.toString()
-    );
+    const model = await modelService.getById(getElementId(entity.model));
+
+    if (!model) {
+      throw new Error("Entity model not found");
+    }
 
     const oldStockAsString: string | undefined = entity.entityFieldValues
       .find(
@@ -451,7 +458,9 @@ const createEntityService = (
     return { model, stock: oldStock };
   },
   reduceStock: async function (entity: IEntity, reduceBy: number) {
-    const { model, stock: oldStock } = await this.checkStock(entity, reduceBy);
+    const { model, stock: oldStock } = await (
+      this as IEntityService
+    ).checkStock(entity, reduceBy);
 
     const newStock: number = oldStock - reduceBy;
 
@@ -480,7 +489,7 @@ const createEntityService = (
         // Here change the stock
         value:
           (fieldValue.field as IField)._id.toString() ===
-          (model.priceField as IField)._id.toString()
+          (model.quantityField as IField)._id.toString()
             ? newStock + ""
             : fieldValue.value.at(0)?.text || "",
         yearTableValues:
@@ -511,6 +520,35 @@ const createEntityService = (
     const copiedEntities = await entityRepository.copyEntities(entitiesIds);
 
     return copiedEntities;
+  },
+  generateVariations: async (entityId: string, currentUser: IUser) => {
+    const entity = await entityRepository.getById(entityId);
+
+    if (!entity) {
+      throw new Error("Entity not found");
+    }
+    roleService.checkEntityPermission({
+      user: currentUser,
+      modelId: getElementId(entity.model),
+      staticPermission: EntityStaticPermissionEnum.Create,
+    });
+
+    const model = await modelService.getById(getElementId(entity.model));
+
+    if (!model) {
+      throw new Error("Entity model not found");
+    }
+
+    const variationFields: IField[] = model.modelFields
+      .filter((modelField) => {
+        return (
+          getElement(modelField.field).type === FieldTypeEnum.Selector &&
+          modelField.isVariation
+        );
+      })
+      .map((modelField) => getElement(modelField.field));
+
+    return [entity];
   },
 });
 

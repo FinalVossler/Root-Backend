@@ -83,7 +83,7 @@ const entityMongooseRepository: IEntityRepository = {
         : {}),
     });
 
-    return entity.populate(entityPopulationOptions);
+    return (await entity.populate(entityPopulationOptions)).toObject();
   },
   update: async function (command: IEntityUpdateCommand): Promise<IEntity> {
     const entity: IEntity | null = await Entity.findById(command._id).populate(
@@ -202,14 +202,16 @@ const entityMongooseRepository: IEntityRepository = {
       ...(ownerId ? { owner: new mongoose.Types.ObjectId(ownerId) } : {}),
     };
 
-    const entities: IEntity[] = await Entity.find(conditionsQuery)
-      .sort({ createAt: -1 })
-      .skip(
-        (command.paginationCommand.page - 1) * command.paginationCommand.limit
-      )
-      .limit(command.paginationCommand.limit)
-      .populate(entityPopulationOptions)
-      .exec();
+    const entities = (
+      await Entity.find(conditionsQuery)
+        .sort({ createAt: -1 })
+        .skip(
+          (command.paginationCommand.page - 1) * command.paginationCommand.limit
+        )
+        .limit(command.paginationCommand.limit)
+        .populate(entityPopulationOptions)
+        .exec()
+    ).map((el) => el.toObject());
 
     const total: number = await Entity.find(conditionsQuery).count();
 
@@ -225,16 +227,18 @@ const entityMongooseRepository: IEntityRepository = {
     });
   },
   getById: async (entityId: string): Promise<IEntity | undefined> => {
-    const entity: IEntity | undefined = await (
+    const entity = await (
       await Entity.findById(new mongoose.Types.ObjectId(entityId))
     )?.populate(entityPopulationOptions);
 
-    return entity;
+    return entity?.toObject();
   },
   getUnpopulatedByIds: async (ids: string[]): Promise<IEntity[]> => {
-    const entities = await Entity.find({
-      _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
-    });
+    const entities = (
+      await Entity.find({
+        _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
+      })
+    ).map((e) => e.toObject());
 
     return entities;
   },
@@ -248,7 +252,7 @@ const entityMongooseRepository: IEntityRepository = {
       ...(ownerId ? { owner: new mongoose.Types.ObjectId(ownerId) } : {}),
     };
 
-    const entities: IEntity[] = await Entity.find(findCondition)
+    const entities = await Entity.find(findCondition)
       .sort({ createAt: -1 })
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
@@ -259,7 +263,7 @@ const entityMongooseRepository: IEntityRepository = {
 
     const total: number = await Entity.find(findCondition).count();
 
-    return { entities, total };
+    return { entities: entities.map((e) => e.toObject()), total };
   },
   search: async (
     command: IEntitiesSearchCommand,
@@ -275,7 +279,7 @@ const entityMongooseRepository: IEntityRepository = {
       ...(ownerId ? { owner: new mongoose.Types.ObjectId(ownerId) } : {}),
     });
 
-    const entities: IEntity[] = await query
+    const entities = await query
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
@@ -291,7 +295,7 @@ const entityMongooseRepository: IEntityRepository = {
       },
     }).count();
 
-    return { entities, total };
+    return { entities: entities.map((e) => e.toObject()), total };
   },
   setCustomDataKeyValue: async function (
     command: IEntitiesSetCustomDataKeyValueCommand
@@ -338,13 +342,10 @@ const entityMongooseRepository: IEntityRepository = {
 
     entitiesToCopy.forEach((entity) => {
       const promise = new Promise<IEntity>(async (resolve, reject) => {
+        const newEntityObject = { ...entity };
         // @ts-ignore
-        const entityObject = entity.toObject
-          ? // @ts-ignore
-            { ...entity.toObject() }
-          : { ...entity };
-        delete entityObject._id;
-        const copiedEntity = await Entity.create(entityObject);
+        delete newEntityObject._id;
+        const copiedEntity = await Entity.create(newEntityObject);
 
         resolve(copiedEntity.populate(entityPopulationOptions));
 

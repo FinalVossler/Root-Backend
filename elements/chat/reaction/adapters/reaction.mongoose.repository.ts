@@ -37,7 +37,8 @@ const reactionMongooseRepository: IReactionRepository = {
     if (existingReaction) {
       existingReaction = await Reaction.findOneAndUpdate(
         { _id: existingReaction._id },
-        { $set: { reaction: command.reaction } }
+        { $set: { reaction: command.reaction } },
+        { new: true }
       ).populate(populationOptions);
 
       return existingReaction as IReaction;
@@ -55,7 +56,8 @@ const reactionMongooseRepository: IReactionRepository = {
           reactions: new mongoose.Types.ObjectId(reaction._id.toString()),
         },
         read: [new mongoose.Types.ObjectId(currentUser._id.toString())],
-      }
+      },
+      { new: true }
     );
 
     return reaction.populate(populationOptions);

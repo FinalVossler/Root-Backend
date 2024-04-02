@@ -19,7 +19,7 @@ interface IRoleRepository {
     oldEntityPermissions: IEntityPermission[]
   ) => Promise<IEntityPermission[]>;
   create: (command: IRoleCreateCommand) => Promise<IRole>;
-  update: (command: IRoleUpdateCommand) => Promise<IRole>;
+  update: (command: IRoleUpdateCommand) => Promise<IRole | undefined | null>;
   getRoles: (
     command: IRolesGetCommand
   ) => Promise<{ total: number; roles: IRole[] }>;

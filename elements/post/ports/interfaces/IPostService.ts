@@ -17,7 +17,7 @@ interface IPostService {
   search: (
     command: IPostsSearchCommand
   ) => Promise<{ posts: IPost[]; total: number }>;
-  getById: (postId: string) => Promise<IPost | null>;
+  getById: (postId: string) => Promise<IPost | null | undefined>;
   update: (command: IPostUpdateCommand, currentUser: IUser) => Promise<IPost>;
   delete: (postId: string, currentUser: IUser) => Promise<void>;
   deleteUsersPosts: (usersIds: string[]) => Promise<void>;

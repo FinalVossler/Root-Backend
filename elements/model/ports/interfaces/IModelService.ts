@@ -21,7 +21,7 @@ interface IModelService {
     command: IModelsGetCommand,
     currentUser: IUser
   ) => Promise<{ models: IModel[]; total: number }>;
-  getById: (id: string) => Promise<IModel>;
+  getById: (id: string) => Promise<IModel | undefined | null>;
   getModelsByIds: (
     command: IModelsGetCommand,
     ids: string[],

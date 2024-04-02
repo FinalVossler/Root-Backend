@@ -17,12 +17,12 @@ interface IPostRepository {
   search: (
     command: IPostsSearchCommand
   ) => Promise<{ posts: IPost[]; total: number }>;
-  getById: (postId: string) => Promise<IPost | null>;
+  getById: (postId: string) => Promise<IPost | null | undefined>;
   update: (
     command: IPostUpdateCommand,
     oldPost: IPost,
     currentUser: IUser
-  ) => Promise<IPost | null>;
+  ) => Promise<IPost | null | undefined>;
 
   delete: (postId: string) => Promise<any>;
   deleteUsersPosts: (usersIds: string[]) => Promise<any>;

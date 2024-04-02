@@ -29,6 +29,7 @@ import IModel from "../../elements/model/ports/interfaces/IModel";
 import IEntity from "../../elements/entity/ports/interfaces/IEntity";
 import IUser from "../../elements/user/ports/interfaces/IUser";
 import fieldMongooseRepository from "../../elements/field/adapters/field.mongoose.repository";
+import { getElement } from "../../utils/getElement";
 
 jest.setTimeout(100000);
 describe("Entities", () => {
@@ -294,7 +295,7 @@ describe("Entities", () => {
             ?.text
         );
         expect((result.data?.model as IModelReadDto)._id.toString()).toEqual(
-          entityToGetByIdAndToUseForModel1?.model._id.toString()
+          getElement(entityToGetByIdAndToUseForModel1?.model)._id.toString()
         );
       });
   });

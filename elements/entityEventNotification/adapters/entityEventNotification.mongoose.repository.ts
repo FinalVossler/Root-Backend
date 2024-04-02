@@ -14,14 +14,13 @@ const entityEventNotificationMongooseRepository: IEntityEventNotificatonReposito
     create: async (
       command: IEntityEventNotificationCreateCommand
     ): Promise<IEntityEventNotification> => {
-      const entityEventNotification: IEntityEventNotification =
-        await EntityEventNotification.create({
-          text: [{ language: command.language, text: command.text }],
-          title: [{ language: command.language, text: command.title }],
-          trigger: command.trigger,
-        });
+      const entityEventNotification = await EntityEventNotification.create({
+        text: [{ language: command.language, text: command.text }],
+        title: [{ language: command.language, text: command.title }],
+        trigger: command.trigger,
+      });
 
-      return entityEventNotification;
+      return entityEventNotification.toObject();
     },
     update: async (
       command: IEntityEventNotificationUpdateCommand,
@@ -50,14 +49,15 @@ const entityEventNotificationMongooseRepository: IEntityEventNotificatonReposito
         }
       ).exec();
 
-      const entityEventNotification: IEntityEventNotification | null =
-        await EntityEventNotification.findById(command._id);
+      const entityEventNotification = await EntityEventNotification.findById(
+        command._id
+      );
 
       if (!entityEventNotification) {
         throw new Error("entity event notification not found");
       }
 
-      return entityEventNotification;
+      return entityEventNotification.toObject();
     },
     deleteByIds: async (ids: string[]): Promise<void> => {
       await EntityEventNotification.deleteMany({

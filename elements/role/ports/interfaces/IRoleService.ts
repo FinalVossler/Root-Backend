@@ -18,7 +18,7 @@ export default interface IRoleService {
   updateRole: (
     command: IRoleUpdateCommand,
     currentUser: IUser
-  ) => Promise<IRole>;
+  ) => Promise<IRole | null | undefined>;
   getRoles: (
     command: IRolesGetCommand,
     currentUser: IUser

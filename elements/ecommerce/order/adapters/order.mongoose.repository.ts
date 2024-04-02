@@ -14,7 +14,7 @@ import IEntity from "../../../entity/ports/interfaces/IEntity";
 
 const orderMongooseRepository: IOrderRepository = {
   getUserOrders: async (command: IPaginationCommand, userId: string) => {
-    const orders: IOrder[] = await Order.find({
+    const orders = await Order.find({
       user: new mongoose.Types.ObjectId(userId),
     })
       .sort({ createdAt: -1 })
@@ -27,7 +27,7 @@ const orderMongooseRepository: IOrderRepository = {
       user: new mongoose.Types.ObjectId(userId),
     }).count();
 
-    return { data: orders, total };
+    return { data: orders.map((o) => o.toObject()), total };
   },
   getUserSales: async (
     paginationCommand: IPaginationCommand,
@@ -55,7 +55,7 @@ const orderMongooseRepository: IOrderRepository = {
 
     const total = await Order.find(queryParams).count();
 
-    return { data: orders, total };
+    return { data: orders.map((o) => o.toObject()), total };
   },
   createOrder: async (
     command: IOrderCreateCommand,
@@ -84,35 +84,41 @@ const orderMongooseRepository: IOrderRepository = {
       })
     ).populate(populationOptions);
 
-    return order;
+    return (await order).toObject();
   },
 
   getOrderById: async (orderId: string) => {
-    return await Order.findById(new mongoose.Types.ObjectId(orderId)).populate(
-      populationOptions
-    );
+    const order = await Order.findById(
+      new mongoose.Types.ObjectId(orderId)
+    ).populate(populationOptions);
+
+    return order?.toObject();
   },
   setCheckoutSessionIdAndUrl: async (
     orderId: string,
     checkoutSessionId: string,
     checkoutSessionUrl
   ) => {
-    return await Order.findOneAndUpdate(
+    const order = await Order.findOneAndUpdate(
       { _id: new mongoose.Types.ObjectId(orderId) },
       { $set: { checkoutSessionId, checkoutSessionUrl } },
       { new: true }
     ).populate(populationOptions);
+
+    return order?.toObject();
   },
   updateOrderStatus: async (
     orderId: string,
     status: OrderStatusEnum,
     isNegative: boolean
   ) => {
-    return await Order.findOneAndUpdate(
+    const order = await Order.findOneAndUpdate(
       { _id: new mongoose.Types.ObjectId(orderId) },
       { $set: isNegative ? { negativeStatus: status } : { status } },
       { new: true }
     ).populate(populationOptions);
+
+    return order?.toObject();
   },
   deleteOrders: async (ordersIds: string[]) => {
     await Order.deleteMany({
@@ -120,11 +126,11 @@ const orderMongooseRepository: IOrderRepository = {
     });
   },
   getOrderAssociatedEntities: async (orderId: string) => {
-    const entities: IEntity[] = await Entity.find({
+    const entities = await Entity.find({
       "orderAssociationConfig.orderId": orderId,
     }).populate(entityPopulationOptions);
 
-    return entities;
+    return entities.map((e) => e.toObject());
   },
 };
 

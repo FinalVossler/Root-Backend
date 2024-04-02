@@ -15,19 +15,23 @@ const fileMongooseRepository: IFileRepository = {
     user: IUser,
     command: IFileGetUserAndSelectedFilesCommand
   ): Promise<{ files: IFile[]; total: number }> => {
-    const files: IFile[] = await File.find({ ownerId: user._id })
-      .skip(
-        (command.paginationCommand.page - 1) * command.paginationCommand.limit
-      )
-      .limit(command.paginationCommand.limit);
+    const files: IFile[] = (
+      await File.find({ ownerId: user._id })
+        .skip(
+          (command.paginationCommand.page - 1) * command.paginationCommand.limit
+        )
+        .limit(command.paginationCommand.limit)
+    ).map((f) => f.toObject());
 
     const total: number = await File.find({ ownerId: user._id }).count();
 
-    const selectedFiles: IFile[] = await File.find({
-      _id: {
-        $in: command.selectedFilesIds.filter((fieldId) => Boolean(fieldId)),
-      },
-    });
+    const selectedFiles = (
+      await File.find({
+        _id: {
+          $in: command.selectedFilesIds.filter((fieldId) => Boolean(fieldId)),
+        },
+      })
+    ).map((f) => f.toObject());
 
     selectedFiles.forEach((file) => {
       if (!files.find((f) => f._id === file._id)) {
@@ -40,19 +44,23 @@ const fileMongooseRepository: IFileRepository = {
   getUnownedFiles: async (
     command: IFileGetUnownedAndSelectedFilesCommand
   ): Promise<{ files: IFile[]; total: number }> => {
-    const files: IFile[] = await File.find({ ownerId: null })
-      .skip(
-        (command.paginationCommand.page - 1) * command.paginationCommand.limit
-      )
-      .limit(command.paginationCommand.limit);
+    const files: IFile[] = (
+      await File.find({ ownerId: null })
+        .skip(
+          (command.paginationCommand.page - 1) * command.paginationCommand.limit
+        )
+        .limit(command.paginationCommand.limit)
+    ).map((f) => f.toObject());
 
     const total: number = await File.find({ ownerId: null }).count();
 
-    const selectedFiles: IFile[] = await File.find({
-      _id: {
-        $in: command.selectedFilesIds.filter((fieldId) => Boolean(fieldId)),
-      },
-    });
+    const selectedFiles: IFile[] = (
+      await File.find({
+        _id: {
+          $in: command.selectedFilesIds.filter((fieldId) => Boolean(fieldId)),
+        },
+      })
+    ).map((f) => f.toObject());
 
     selectedFiles.forEach((file) => {
       if (!files.find((f) => f._id === file._id)) {
@@ -62,10 +70,8 @@ const fileMongooseRepository: IFileRepository = {
 
     return { files, total };
   },
-  get: async (
-    fileId: mongoose.Types.ObjectId | string
-  ): Promise<IFile | null> => {
-    const file: IFile | null = await File.findById(fileId);
+  get: async (fileId: mongoose.Types.ObjectId | string) => {
+    const file = (await File.findById(fileId))?.toObject();
 
     return file;
   },
@@ -86,7 +92,7 @@ const fileMongooseRepository: IFileRepository = {
     if (file._id) {
       delete file._id;
     }
-    const newFile: IFile = (await File.create(file)) as IFile;
+    const newFile = (await File.create(file)).toObject();
 
     return newFile;
   },

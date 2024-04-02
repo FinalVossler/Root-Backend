@@ -37,7 +37,7 @@ const createPostService = (postRepository: IPostRepository): IPostService => ({
 
     return { posts, total };
   },
-  getById: async function (postId: string): Promise<IPost | null> {
+  getById: async function (postId: string) {
     return await postRepository.getById(postId);
   },
   update: async (
@@ -54,11 +54,7 @@ const createPostService = (postRepository: IPostRepository): IPostService => ({
       throw new Error("Unauthorized. The post isn't yours");
     }
 
-    const post: IPost | null = await postRepository.update(
-      command,
-      oldPost,
-      currentUser
-    );
+    const post = await postRepository.update(command, oldPost, currentUser);
 
     if (!post) {
       throw new Error("Post not found");

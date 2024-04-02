@@ -51,6 +51,7 @@ export const createCreateModelCommand = (
     stickInTable: false,
     required: false,
     modelStatesIds: [],
+    isVariation: false,
   })),
   name: modelName,
   states: [

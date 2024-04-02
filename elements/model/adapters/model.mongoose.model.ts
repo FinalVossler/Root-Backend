@@ -56,6 +56,10 @@ const ModelSchema = new mongoose.Schema<IModel>(
           type: mongoose.SchemaTypes.Boolean,
           required: false,
         },
+        isVariation: {
+          type: mongoose.SchemaTypes.Boolean,
+          required: false,
+        },
       },
     ],
     modelEvents: [EventSchema],

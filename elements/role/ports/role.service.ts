@@ -33,15 +33,14 @@ const createRoleService = (
 
     return role;
   },
-  updateRole: async function (
-    command: IRoleUpdateCommand,
-    currentUser: IUser
-  ): Promise<IRole> {
+  updateRole: async function (command: IRoleUpdateCommand, currentUser: IUser) {
     this.checkPermission({
       user: currentUser,
       permission: PermissionEnum.UpdateRole,
     });
-    const role: IRole = await roleRepository.update(command);
+    const role = await roleRepository.update(command);
+
+    if (!role) throw new Error("Role not found");
 
     return role;
   },

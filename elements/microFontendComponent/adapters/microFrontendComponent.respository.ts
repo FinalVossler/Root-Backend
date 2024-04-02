@@ -13,9 +13,11 @@ const microFrontendComponentMongooseRepository: IMicroFrontendComponentRepositor
     create: async (
       command: IMicroFrontendComponentCreateCommand
     ): Promise<IMicroFrontendComponent> => {
-      const microFrontendComponent = await MicroFrontendComponent.create({
-        name: command.name,
-      });
+      const microFrontendComponent = (
+        await MicroFrontendComponent.create({
+          name: command.name,
+        })
+      ).toObject();
 
       return microFrontendComponent;
     },
@@ -38,8 +40,8 @@ const microFrontendComponentMongooseRepository: IMicroFrontendComponentRepositor
       return newMicroFrontend;
     },
     getById: async (id: string): Promise<IMicroFrontendComponent> => {
-      const microFrontendComponent: IMicroFrontendComponent | null =
-        await MicroFrontendComponent.findById(id);
+      const microFrontendComponent: IMicroFrontendComponent | null | undefined =
+        (await MicroFrontendComponent.findById(id))?.toObject();
 
       if (!microFrontendComponent) {
         throw new Error("MicroFrontend not found");
@@ -56,10 +58,11 @@ const microFrontendComponentMongooseRepository: IMicroFrontendComponentRepositor
       return;
     },
     getByIds: async (ids: string[]): Promise<IMicroFrontendComponent[]> => {
-      const microFrontends: IMicroFrontendComponent[] =
+      const microFrontends: IMicroFrontendComponent[] = (
         await MicroFrontendComponent.find({
           _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
-        });
+        })
+      ).map((m) => m.toObject());
 
       return microFrontends;
     },

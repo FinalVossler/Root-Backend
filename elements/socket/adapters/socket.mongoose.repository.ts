@@ -53,9 +53,11 @@ const socketMongooseRepository: ISocketRepository = {
     onlineUsersIds: string[];
     onlineUsersSockets: ISocket[];
   }> => {
-    const onlineUsersSockets = await SocketModel.find({
-      socketIds: { $exists: true, $ne: [] },
-    }).populate("user");
+    const onlineUsersSockets = (
+      await SocketModel.find({
+        socketIds: { $exists: true, $ne: [] },
+      }).populate("user")
+    ).map((s) => s.toObject());
 
     return {
       onlineUsersIds: onlineUsersSockets
@@ -64,12 +66,14 @@ const socketMongooseRepository: ISocketRepository = {
       onlineUsersSockets: onlineUsersSockets,
     };
   },
-  getUserSocket: async (userId: string): Promise<ISocket | null> => {
-    const socket: ISocket | null = await SocketModel.findOne({
-      user: new mongoose.Types.ObjectId(userId),
-    })
-      .populate("user")
-      .exec();
+  getUserSocket: async (userId: string) => {
+    const socket: ISocket | null | undefined = (
+      await SocketModel.findOne({
+        user: new mongoose.Types.ObjectId(userId),
+      })
+        .populate("user")
+        .exec()
+    )?.toObject();
 
     return socket;
   },

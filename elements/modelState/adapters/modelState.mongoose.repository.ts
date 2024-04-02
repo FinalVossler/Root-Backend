@@ -10,11 +10,14 @@ const modelStateMongooseRepository: IModelStateRepository = {
   createOne: async (
     command: IModelStateCreateCommand
   ): Promise<IModelState> => {
-    const modelState: IModelState = await ModelState.create({
-      name: [{ language: command.language, text: command.name }],
-      stateType: command.stateType,
-      exlusive: command.exclusive,
-    });
+    const modelState: IModelState = (
+      await ModelState.create({
+        name: [{ language: command.language, text: command.name }],
+        stateType: command.stateType,
+        exlusive: command.exclusive,
+      })
+    ).toObject();
+
     return modelState;
   },
   updateOne: async (
@@ -28,23 +31,22 @@ const modelStateMongooseRepository: IModelStateRepository = {
       throw new Error("Model state doesn't exist");
     }
 
-    await ModelState.updateOne(
-      { _id: command._id },
-      {
-        $set: {
-          name: getNewTranslatedTextsForUpdate({
-            language: command.language,
-            newText: command.name,
-            oldValue: oldModelState.name,
-          }),
-          exlusive: command.exclusive,
+    const modelState = (
+      await ModelState.findOneAndUpdate(
+        { _id: command._id },
+        {
+          $set: {
+            name: getNewTranslatedTextsForUpdate({
+              language: command.language,
+              newText: command.name,
+              oldValue: oldModelState.name,
+            }),
+            exlusive: command.exclusive,
+          },
         },
-      }
-    ).exec();
-
-    const modelState: IModelState | null = await ModelState.findById(
-      command._id
-    );
+        { new: true }
+      ).exec()
+    )?.toObject();
 
     if (!modelState) {
       throw new Error("Model state not found");

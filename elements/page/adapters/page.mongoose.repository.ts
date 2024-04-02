@@ -11,7 +11,9 @@ import IPageRepository from "../ports/interfaces/IPageRepository";
 
 const pageMongooseRepository: IPageRepository = {
   get: async (): Promise<IPage[]> => {
-    const pages: IPage[] = await Page.find().populate(populationOptions);
+    const pages: IPage[] = (await Page.find().populate(populationOptions)).map(
+      (p) => p.toObject()
+    );
 
     return pages;
   },
@@ -24,36 +26,35 @@ const pageMongooseRepository: IPageRepository = {
       showInSideMenu: command.showInSideMenu,
     });
 
-    const page = await query.populate(populationOptions);
+    const page = (await query.populate(populationOptions)).toObject();
 
     return page;
   },
   update: async (command: IPageUpdateCommand): Promise<IPage> => {
     const page = await pageMongooseRepository.getById(command._id);
 
-    await Page.updateOne(
-      { _id: command._id },
-      {
-        $set: {
-          posts: command.posts.map(
-            (postId) => new mongoose.Types.ObjectId(postId)
-          ),
-          title: getNewTranslatedTextsForUpdate({
-            oldValue: page?.title,
-            language: command.language,
-            newText: command.title,
-          }),
-          slug: command.slug,
-          // The slug is managed in the onCreate mongoose middleware
-          showInHeader: command.showInHeader,
-          showInSideMenu: command.showInSideMenu,
+    const updatedPage = (
+      await Page.findOneAndUpdate(
+        { _id: command._id },
+        {
+          $set: {
+            posts: command.posts.map(
+              (postId) => new mongoose.Types.ObjectId(postId)
+            ),
+            title: getNewTranslatedTextsForUpdate({
+              oldValue: page?.title,
+              language: command.language,
+              newText: command.title,
+            }),
+            slug: command.slug,
+            // The slug is managed in the onCreate mongoose middleware
+            showInHeader: command.showInHeader,
+            showInSideMenu: command.showInSideMenu,
+          },
         },
-      }
-    );
-
-    const updatedPage: IPage | null = await pageMongooseRepository.getById(
-      command._id
-    );
+        { new: true }
+      ).populate(populationOptions)
+    )?.toObject();
 
     if (!updatedPage) {
       throw new Error("Page not found");
@@ -61,12 +62,10 @@ const pageMongooseRepository: IPageRepository = {
 
     return updatedPage;
   },
-  getById: async (
-    id: mongoose.Types.ObjectId | string
-  ): Promise<IPage | null> => {
-    const page: IPage | null = await Page.findById(id).populate(
-      populationOptions
-    );
+  getById: async (id: mongoose.Types.ObjectId | string) => {
+    const page = (
+      await Page.findById(id).populate(populationOptions)
+    )?.toObject();
 
     return page;
   },

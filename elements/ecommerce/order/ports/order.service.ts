@@ -248,7 +248,7 @@ const createOrderService = (
         (value) => value === newOrderStatus
       );
 
-      const order: IOrder | null = await orderRepository.updateOrderStatus(
+      const order = await orderRepository.updateOrderStatus(
         orderId,
         newOrderStatus,
         isNegative
@@ -265,7 +265,7 @@ const createOrderService = (
       currentUser: IUser,
       orderFromCreation?: IOrder
     ) {
-      let order: IOrder | null =
+      let order =
         orderFromCreation ||
         (await orderRepository.getOrderById(command.orderId));
 
@@ -366,9 +366,7 @@ const createOrderService = (
       )) as IOrder;
     },
     isPaymentSuccessful: async function (orderId: string, currentUser: IUser) {
-      let order: IOrder | null = await (this as IOrderService).getOrderById(
-        orderId
-      );
+      let order = await (this as IOrderService).getOrderById(orderId);
 
       if (!order) {
         throw new Error("Order not found");
@@ -406,9 +404,7 @@ const createOrderService = (
       orderId: string,
       currentUser: IUser
     ) {
-      const order: IOrder | null = await (this as IOrderService).getOrderById(
-        orderId
-      );
+      const order = await (this as IOrderService).getOrderById(orderId);
 
       if (!order) throw new Error("Order not found");
 

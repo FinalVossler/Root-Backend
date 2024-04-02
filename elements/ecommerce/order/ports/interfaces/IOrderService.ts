@@ -23,7 +23,7 @@ interface IOrderService {
     userId: string,
     currentUser: IUser
   ) => Promise<IPaginationResponse<IOrder>>;
-  getOrderById: (orderId: string) => Promise<IOrder | null>;
+  getOrderById: (orderId: string) => Promise<IOrder | null | undefined>;
   generateUniqueOrderNumber: () => string;
   getOrderTotal: (
     params: {

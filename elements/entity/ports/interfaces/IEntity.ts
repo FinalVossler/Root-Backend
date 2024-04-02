@@ -31,7 +31,7 @@ export interface IEntityYearTableFieldRowValues {
 
 export default interface IEntity {
   _id: string;
-  model: IModel;
+  model: IModel | string;
   entityFieldValues: IEntityFieldValue[];
   assignedUsers?: (IUser | string)[];
   customData?: string;
