@@ -49,6 +49,10 @@ type IEntityController = {
     req: IRequest<{ modelId: string; entitiesIds: string[] }>,
     currentUser: IUser
   ) => Promise<IResponseDto<IEntityReadDto[]>>;
+  generateVariations: (
+    req: IRequest<{ entityId: string }>,
+    currentUser: IUser
+  ) => Promise<IResponseDto<IEntityReadDto[]>>;
 };
 
 export default IEntityController;

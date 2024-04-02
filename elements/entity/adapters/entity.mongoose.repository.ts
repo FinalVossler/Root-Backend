@@ -85,6 +85,13 @@ const entityMongooseRepository: IEntityRepository = {
 
     return (await entity.populate(entityPopulationOptions)).toObject();
   },
+  bulkCreate: async function (entity: IEntity): Promise<IEntity> {
+    const createdEntity = (
+      await (await Entity.create(entity)).populate(entityPopulationOptions)
+    ).toObject();
+
+    return createdEntity;
+  },
   update: async function (command: IEntityUpdateCommand): Promise<IEntity> {
     const entity: IEntity | null = await Entity.findById(command._id).populate(
       entityPopulationOptions

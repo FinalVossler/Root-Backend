@@ -15,6 +15,7 @@ const {
   searchEntities,
   setCustomDataKeyValue,
   copyEntities,
+  generateVariations,
 } = entityExpressController;
 
 router.get("/getEntity", protectMiddleware, getEntity);
@@ -30,5 +31,6 @@ router.delete("/", protectMiddleware, deleteEntities);
 router.post("/search", protectMiddleware, searchEntities);
 router.post("/setCustomDataKeyValue", protectMiddleware, setCustomDataKeyValue);
 router.post("/copy", protectMiddleware, copyEntities);
+router.post("/generateVariations", protectMiddleware, generateVariations);
 
 export default router;

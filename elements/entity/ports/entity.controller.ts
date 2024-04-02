@@ -143,6 +143,20 @@ const createEntityController = (
       data: copiedEntities.map((e) => entityToReadDto(e)),
     };
   },
+  generateVariations: async (
+    req: IRequest<{ entityId: string }>,
+    currentUser: IUser
+  ) => {
+    const variations = await entityService.generateVariations(
+      req.body.entityId,
+      currentUser
+    );
+
+    return {
+      success: true,
+      data: variations.map((e) => entityToReadDto(e)),
+    };
+  },
 });
 
 export default createEntityController;

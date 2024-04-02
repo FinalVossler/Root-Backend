@@ -10,8 +10,9 @@ import {
   EntityStaticPermissionEnum,
   SuperRoleEnum,
 } from "roottypes";
+import _ from "lodash";
 
-import { IField } from "../../field/ports/interfaces/IField";
+import { IField, IFieldOption } from "../../field/ports/interfaces/IField";
 import IRoleService from "../../role/ports/interfaces/IRoleService";
 import IEntityRepository from "./interfaces/IEntityRepository";
 import IModelService from "../../model/ports/interfaces/IModelService";
@@ -19,7 +20,7 @@ import IUserService from "../../user/ports/interfaces/IUserService";
 import IUser from "../../user/ports/interfaces/IUser";
 import IModel, { IModelField } from "../../model/ports/interfaces/IModel";
 import IRole from "../../role/ports/interfaces/IRole";
-import IEntity from "./interfaces/IEntity";
+import IEntity, { IEntityFieldValue } from "./interfaces/IEntity";
 import IEntityService from "./interfaces/IEntityService";
 import IEntityEventNotificationService from "../../entityEventNotification/ports/interfaces/IEntityEventNotificationService";
 import IEntityPermission from "../../entityPermission/ports/interfaces/IEntityPermission";
@@ -548,7 +549,78 @@ const createEntityService = (
       })
       .map((modelField) => getElement(modelField.field));
 
-    return [entity];
+    let allPossibilities: { option: IFieldOption; field: IField }[][] = [];
+
+    variationFields.forEach((variationField) => {
+      const getPossibilitiesFromField = (
+        field: IField,
+        allPossibilities: { option: IFieldOption; field: IField }[][]
+      ) => {
+        let newAllPossibilities = allPossibilities.map((possibility) =>
+          possibility.map((el) => ({ ...el }))
+        );
+
+        if (newAllPossibilities.length === 0) {
+          newAllPossibilities =
+            field.options?.map((option) => [{ option, field }]) || [];
+        } else {
+          allPossibilities.forEach((possibility, i) => {
+            field.options?.forEach((option, optionIndex) => {
+              if (optionIndex === 0) {
+                newAllPossibilities[i].push({ field, option });
+              } else {
+                newAllPossibilities.push([...possibility, { field, option }]);
+              }
+            });
+          });
+        }
+
+        return newAllPossibilities;
+      };
+
+      allPossibilities = getPossibilitiesFromField(
+        variationField,
+        allPossibilities
+      );
+    });
+
+    const createPromises: Promise<IEntity>[] = allPossibilities.map(
+      (possibility) => {
+        const clonedEntity: IEntity = _.cloneDeep(entity);
+        //@ts-ignore
+        delete clonedEntity._id;
+        possibility.forEach((optionConfig) => {
+          const fieldValue: IEntityFieldValue | undefined =
+            clonedEntity.entityFieldValues.find(
+              (efv) => getElementId(efv.field) === optionConfig.field._id
+            );
+          if (fieldValue) {
+            fieldValue.value = fieldValue.value.map((v) => ({
+              ...v,
+              text: optionConfig.option.value,
+            }));
+          }
+        });
+
+        return new Promise(async (resolve) => {
+          const entity: IEntity = await entityRepository.bulkCreate(
+            clonedEntity
+          );
+
+          resolve(entity);
+        });
+      }
+    );
+
+    const entities = await Promise.all(createPromises);
+
+    console.log(
+      "all possibilities",
+      allPossibilities.map((possibility) =>
+        possibility.map((el) => ({ option: el.option.value }))
+      )
+    );
+    return entities;
   },
 });
 
