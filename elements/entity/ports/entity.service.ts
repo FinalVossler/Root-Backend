@@ -594,11 +594,18 @@ const createEntityService = (
             clonedEntity.entityFieldValues.find(
               (efv) => getElementId(efv.field) === optionConfig.field._id
             );
+
           if (fieldValue) {
-            fieldValue.value = fieldValue.value.map((v) => ({
-              ...v,
+            fieldValue.value = fieldValue?.value.map((v) => ({
+              language: v.language,
               text: optionConfig.option.value,
             }));
+          } else {
+            clonedEntity.entityFieldValues.push({
+              field: optionConfig.field._id,
+              files: [],
+              value: [{ language: "en", text: optionConfig.option.value }],
+            });
           }
         });
 
