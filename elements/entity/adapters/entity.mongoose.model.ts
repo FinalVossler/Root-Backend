@@ -80,6 +80,10 @@ const EntitySchema = new mongoose.Schema<IEntity>(
       orderId: { type: mongoose.SchemaTypes.String },
       productId: { type: mongoose.SchemaTypes.String },
     },
+    parentEntity: {
+      type: mongoose.SchemaTypes.String,
+      required: false,
+    },
   },
   {
     timestamps: true,

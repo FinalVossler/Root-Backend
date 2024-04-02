@@ -364,6 +364,23 @@ const entityMongooseRepository: IEntityRepository = {
 
     return copiedEntities;
   },
+  getEntityChildren: async (entityId: string) => {
+    const entities = (
+      await Entity.find({
+        parentEntity: new mongoose.Types.ObjectId(entityId),
+      }).populate(entityPopulationOptions)
+    ).map((e) => e.toObject());
+
+    return entities;
+  },
+  updateEntitiesParents: async (entitiesIds: string[], parentEntityId) => {
+    await Entity.updateMany(
+      {
+        _id: { $in: entitiesIds.map((id) => new mongoose.Types.ObjectId(id)) },
+      },
+      { $set: { parentEntity: parentEntityId } }
+    );
+  },
 };
 
 export const entityPopulationOptions = [
@@ -425,6 +442,7 @@ export const entityPopulationOptions = [
   },
   { path: "owner", model: "user" },
   { path: "availableShippingMethods", model: "shippingMethod" },
+  { path: "parentEntity", model: "entity" },
 ];
 
 export default entityMongooseRepository;

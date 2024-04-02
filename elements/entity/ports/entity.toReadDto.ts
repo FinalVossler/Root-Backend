@@ -10,7 +10,13 @@ import { fileToReadDto } from "../../file/ports/file.toReadDto";
 import IEntity, { IEntityFieldValue } from "./interfaces/IEntity";
 import shippingMethodToReadDto from "../../ecommerce/shippingMethod/ports/shippingMethod.toReadDto";
 
-export const entityToReadDto = (entity: IEntity): IEntityReadDto => {
+export const entityToReadDto = (
+  entity: IEntity | string
+): IEntityReadDto | string => {
+  if (typeof entity === "string" || Object.keys(entity).length === 0) {
+    return entity.toString();
+  }
+
   return {
     _id: entity._id.toString(),
     assignedUsers: entity.assignedUsers
@@ -29,6 +35,10 @@ export const entityToReadDto = (entity: IEntity): IEntityReadDto => {
       [],
 
     orderAssociationConfig: entity.orderAssociationConfig,
+
+    parentEntity: entity.parentEntity
+      ? entityToReadDto(entity.parentEntity)
+      : undefined,
   };
 };
 

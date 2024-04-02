@@ -75,6 +75,7 @@ interface IEntityService {
     entityId: string,
     currentUser: IUser
   ) => Promise<IEntity[]>;
+  getEntityChildren: (entityId: string) => Promise<IEntity[]>;
 }
 
 export default IEntityService;

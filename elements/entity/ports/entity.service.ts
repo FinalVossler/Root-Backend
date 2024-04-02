@@ -357,6 +357,36 @@ const createEntityService = (
         ownerPermission: EntityStaticPermissionEnum.DeleteOwn,
       });
 
+      // Update the parent of children entities which parent is set to one of the entities we are about to delete.
+      for (let i = 0; i < entities.length; i++) {
+        const entity = entities[i];
+
+        const children: IEntity[] = await (
+          this as IEntityService
+        ).getEntityChildren(entity._id.toString());
+
+        // Find a child that doesn't belong to the list of entities we are about to delete
+        const safeChild: IEntity | undefined = children.find(
+          (e) => entitiesIds.indexOf(e._id.toString()) === -1
+        );
+
+        if (safeChild) {
+          // Set the parent of other children to the safe child
+          await entityRepository.updateEntitiesParents(
+            children
+              .filter((c) => c._id.toString() !== safeChild._id.toString())
+              .map((e) => e._id.toString()),
+            safeChild._id.toString()
+          );
+
+          // Set the safe child parent to undefined, because it's itself a parent now
+          await entityRepository.updateEntitiesParents(
+            [safeChild._id.toString()],
+            undefined
+          );
+        }
+      }
+
       await entityRepository.deleteEntities(entitiesIds);
     }
   },
@@ -609,6 +639,7 @@ const createEntityService = (
           }
         });
 
+        clonedEntity.parentEntity = entityId;
         return new Promise(async (resolve) => {
           const entity: IEntity = await entityRepository.bulkCreate(
             clonedEntity
@@ -621,13 +652,12 @@ const createEntityService = (
 
     const entities = await Promise.all(createPromises);
 
-    console.log(
-      "all possibilities",
-      allPossibilities.map((possibility) =>
-        possibility.map((el) => ({ option: el.option.value }))
-      )
-    );
     return entities;
+  },
+  getEntityChildren: async (entityId: string) => {
+    const children = await entityRepository.getEntityChildren(entityId);
+
+    return children;
   },
 });
 

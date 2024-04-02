@@ -3,6 +3,7 @@ import {
   IEntitiesSearchCommand,
   IEntitiesSetCustomDataKeyValueCommand,
   IEntityCreateCommand,
+  IEntityReadDto,
   IEntityUpdateCommand,
 } from "roottypes";
 
@@ -27,7 +28,7 @@ const createEntityController = (
 
     return {
       success: true,
-      data: entityToReadDto(entity),
+      data: entityToReadDto(entity) as IEntityReadDto,
     };
   },
   createEntity: async (
@@ -41,7 +42,7 @@ const createEntityController = (
 
     return {
       success: true,
-      data: entityToReadDto(entity),
+      data: entityToReadDto(entity) as IEntityReadDto,
     };
   },
   updateEntity: async (
@@ -55,7 +56,7 @@ const createEntityController = (
 
     return {
       success: true,
-      data: entityToReadDto(entity),
+      data: entityToReadDto(entity) as IEntityReadDto,
     };
   },
   getEntitiesByModel: async (
@@ -70,7 +71,7 @@ const createEntityController = (
     return {
       success: true,
       data: {
-        data: entities.map((e) => entityToReadDto(e)),
+        data: entities.map((e) => entityToReadDto(e) as IEntityReadDto),
         total,
       },
     };
@@ -87,7 +88,7 @@ const createEntityController = (
     return {
       success: true,
       data: {
-        data: entities.map((e) => entityToReadDto(e)),
+        data: entities.map((e) => entityToReadDto(e) as IEntityReadDto),
         total,
       },
     };
@@ -112,7 +113,7 @@ const createEntityController = (
     return {
       success: true,
       data: {
-        data: entities.map((p) => entityToReadDto(p)),
+        data: entities.map((p) => entityToReadDto(p) as IEntityReadDto),
         total,
       },
     };
@@ -140,7 +141,7 @@ const createEntityController = (
 
     return {
       success: true,
-      data: copiedEntities.map((e) => entityToReadDto(e)),
+      data: copiedEntities.map((e) => entityToReadDto(e) as IEntityReadDto),
     };
   },
   generateVariations: async (
@@ -154,7 +155,7 @@ const createEntityController = (
 
     return {
       success: true,
-      data: variations.map((e) => entityToReadDto(e)),
+      data: variations.map((e) => entityToReadDto(e) as IEntityReadDto),
     };
   },
 });

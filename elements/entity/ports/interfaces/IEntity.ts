@@ -43,6 +43,8 @@ export default interface IEntity {
     productId?: string;
   };
 
+  parentEntity?: IEntity | string;
+
   createdAt: string;
   updatedAt: string;
 }

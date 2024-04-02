@@ -37,6 +37,11 @@ interface IEntityRepository {
   ) => Promise<void>;
   deleteByModel: (modelId: string) => Promise<void>;
   copyEntities: (ids: string[]) => Promise<IEntity[]>;
+  getEntityChildren: (entityId: string) => Promise<IEntity[]>;
+  updateEntitiesParents: (
+    entitiesIds: string[],
+    parentEntityId: string | undefined
+  ) => Promise<void>;
 }
 
 export default IEntityRepository;

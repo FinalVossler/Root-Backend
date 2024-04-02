@@ -1,4 +1,5 @@
 import {
+  IEntityReadDto,
   IOrderCheckoutCommand,
   IOrderCreateCommand,
   IPaginationCommand,
@@ -114,7 +115,7 @@ const createOrderController = (
 
       return {
         success: true,
-        data: entities.map((e) => entityToReadDto(e)),
+        data: entities.map((e) => entityToReadDto(e) as IEntityReadDto),
       };
     },
   };
