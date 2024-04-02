@@ -78,7 +78,7 @@ const createFieldService = (
         const { fields, total } = await fieldRepository.getFields(command);
         return { fields, total };
       } else {
-        const { fields, total } = await fieldRepository.getOwnFields(
+        const { fields, total } = await fieldRepository.getFields(
           command,
           currentUser._id.toString()
         );

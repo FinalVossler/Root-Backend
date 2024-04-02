@@ -7,8 +7,7 @@ import {
   IEntityCreateCommand,
   IEntityFieldValueCommand,
   IEntityUpdateCommand,
-  PermissionEnum,
-  StaticPermissionEnum,
+  EntityStaticPermissionEnum,
   SuperRoleEnum,
 } from "roottypes";
 
@@ -152,7 +151,7 @@ const createEntityService = (
   ): Promise<IEntity> {
     roleService.checkEntityPermission({
       user: currentUser,
-      staticPermission: StaticPermissionEnum.Create,
+      staticPermission: EntityStaticPermissionEnum.Create,
       modelId: command.modelId.toString(),
     });
 
@@ -206,16 +205,20 @@ const createEntityService = (
     command: IEntityUpdateCommand,
     currentUser: IUser
   ): Promise<IEntity> {
-    roleService.checkEntityPermission({
-      user: currentUser,
-      staticPermission: StaticPermissionEnum.Update,
-      modelId: command.modelId.toString(),
-    });
-
     const oldEntity: IEntity = await this.getById(
       command._id.toString(),
       currentUser
     );
+
+    roleService.checkEntityPermission({
+      user: currentUser,
+      staticPermission: EntityStaticPermissionEnum.Update,
+      modelId: command.modelId.toString(),
+
+      entitiesOwners: [oldEntity.owner],
+      ownerPermission: EntityStaticPermissionEnum.UpdateOwn,
+    });
+
     const oldAssignedUsers = [...(oldEntity.assignedUsers || [])];
 
     const newlyAssignedUsersIds = command.assignedUsersIds.filter(
@@ -267,15 +270,32 @@ const createEntityService = (
   ): Promise<{ entities: IEntity[]; total: number }> => {
     roleService.checkEntityPermission({
       user: currentUser,
-      staticPermission: StaticPermissionEnum.Read,
+      staticPermission: EntityStaticPermissionEnum.Read,
       modelId: command.modelId.toString(),
+
+      ownerPermission: EntityStaticPermissionEnum.ReadOwn,
     });
 
-    const { entities, total } = await entityRepository.getEntitiesByModel(
-      command
-    );
+    if (
+      roleService.hasEntityPermission({
+        user: currentUser,
+        staticPermission: EntityStaticPermissionEnum.Read,
+        modelId: command.modelId.toString(),
+      })
+    ) {
+      const { entities, total } = await entityRepository.getEntitiesByModel(
+        command
+      );
 
-    return { entities, total };
+      return { entities, total };
+    } else {
+      const { entities, total } = await entityRepository.getEntitiesByModel(
+        command,
+        currentUser._id.toString()
+      );
+
+      return { entities, total };
+    }
   },
   getAssignedEntitiesByModel: async (
     command: IEntitiesGetCommand,
@@ -283,31 +303,52 @@ const createEntityService = (
   ): Promise<{ entities: IEntity[]; total: number }> => {
     roleService.checkEntityPermission({
       user: currentUser,
-      staticPermission: StaticPermissionEnum.Read,
+      staticPermission: EntityStaticPermissionEnum.Read,
       modelId: command.modelId.toString(),
-    });
-    const { entities, total } =
-      await entityRepository.getAssignedEntitiesByModel(command);
 
-    return { entities, total };
+      ownerPermission: EntityStaticPermissionEnum.ReadOwn,
+    });
+
+    if (
+      roleService.hasEntityPermission({
+        user: currentUser,
+        staticPermission: EntityStaticPermissionEnum.Read,
+        modelId: command.modelId.toString(),
+      })
+    ) {
+      const { entities, total } =
+        await entityRepository.getAssignedEntitiesByModel(command);
+
+      return { entities, total };
+    } else {
+      const { entities, total } =
+        await entityRepository.getAssignedEntitiesByModel(
+          command,
+          currentUser._id.toString()
+        );
+
+      return { entities, total };
+    }
   },
   deleteEntities: async function (
     entitiesIds: string[],
     currentUser: IUser
   ): Promise<void> {
     if (entitiesIds.length > 0) {
-      const entity: IEntity | undefined = await entityRepository.getById(
-        entitiesIds[0].toString()
+      const entities: IEntity[] = await entityRepository.getUnpopulatedByIds(
+        entitiesIds
       );
-
-      if (!entity) {
-        throw new Error("Entity not found");
-      }
 
       roleService.checkEntityPermission({
         user: currentUser,
-        staticPermission: StaticPermissionEnum.Read,
-        modelId: entity.model._id.toString(),
+        staticPermission: EntityStaticPermissionEnum.Delete,
+        modelId:
+          typeof entities[0].model === "string"
+            ? entities[0].model
+            : entities[0].model._id.toString(),
+
+        entitiesOwners: entities.map((e) => e.owner),
+        ownerPermission: EntityStaticPermissionEnum.DeleteOwn,
       });
 
       await entityRepository.deleteEntities(entitiesIds);
@@ -324,8 +365,11 @@ const createEntityService = (
 
     roleService.checkEntityPermission({
       user: currentUser,
-      staticPermission: StaticPermissionEnum.Read,
+      staticPermission: EntityStaticPermissionEnum.Read,
       modelId: entity.model._id.toString(),
+
+      ownerPermission: EntityStaticPermissionEnum.Read,
+      entitiesOwners: [entity.owner],
     });
 
     return entity;
@@ -350,12 +394,27 @@ const createEntityService = (
   ): Promise<{ entities: IEntity[]; total: number }> => {
     roleService.checkEntityPermission({
       user: currentUser,
-      staticPermission: StaticPermissionEnum.Read,
+      staticPermission: EntityStaticPermissionEnum.Read,
       modelId: command.modelId.toString(),
     });
-    const { entities, total } = await entityRepository.search(command);
+    if (
+      roleService.hasEntityPermission({
+        user: currentUser,
+        staticPermission: EntityStaticPermissionEnum.Read,
+        modelId: command.modelId.toString(),
+      })
+    ) {
+      const { entities, total } = await entityRepository.search(command);
 
-    return { entities, total };
+      return { entities, total };
+    } else {
+      const { entities, total } = await entityRepository.search(
+        command,
+        currentUser._id.toString()
+      );
+
+      return { entities, total };
+    }
   },
   setCustomDataKeyValue: async (
     command: IEntitiesSetCustomDataKeyValueCommand
@@ -446,7 +505,7 @@ const createEntityService = (
     roleService.checkEntityPermission({
       user: currentUser,
       modelId,
-      staticPermission: StaticPermissionEnum.Create,
+      staticPermission: EntityStaticPermissionEnum.Create,
     });
 
     const copiedEntities = await entityRepository.copyEntities(entitiesIds);

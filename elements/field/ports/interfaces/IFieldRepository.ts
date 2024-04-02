@@ -12,11 +12,8 @@ interface IFieldRepository {
   update: (command: IFieldUpdateCommand) => Promise<IField>;
   getById: (id: string) => Promise<IField>;
   getFields: (
-    command: IFieldsGetCommand
-  ) => Promise<{ total: number; fields: IField[] }>;
-  getOwnFields: (
     command: IFieldsGetCommand,
-    ownerId: string
+    ownerId?: string
   ) => Promise<{ total: number; fields: IField[] }>;
   deleteFields: (fieldsIds: string[]) => Promise<void>;
   search: (

@@ -177,26 +177,13 @@ const modelMongooseRepository: IModelRepository = {
     return newModel;
   },
   getModels: async (
-    command: IModelsGetCommand
-  ): Promise<{ total: number; models: IModel[] }> => {
-    const models: IModel[] = (await Model.find({})
-      .sort({ createAt: -1 })
-      .skip(
-        (command.paginationCommand.page - 1) * command.paginationCommand.limit
-      )
-      .limit(command.paginationCommand.limit)
-      .populate(populationOptions)
-      .exec()) as IModel[];
-
-    const total: number = await Model.find({}).count();
-
-    return { models, total };
-  },
-  getOwnModels: async (
     command: IModelsGetCommand,
-    ownerId: string
+    ownerId?: string
   ): Promise<{ total: number; models: IModel[] }> => {
-    const conditionsQuery = { owner: new mongoose.Types.ObjectId(ownerId) };
+    const conditionsQuery = {
+      ...(ownerId ? { owner: new mongoose.Types.ObjectId(ownerId) } : {}),
+    };
+
     const models: IModel[] = (await Model.find(conditionsQuery)
       .sort({ createAt: -1 })
       .skip(
@@ -233,11 +220,14 @@ const modelMongooseRepository: IModelRepository = {
     await Model.deleteOne({ _id: new mongoose.Types.ObjectId(modelId) });
   },
   search: async (
-    command: IModelsSearchCommand
+    command: IModelsSearchCommand,
+    ownerId?: string
   ): Promise<{ models: IModel[]; total: number }> => {
-    const query = Model.find({
+    const conditionsQuery = {
       name: { $elemMatch: { text: { $regex: command.name } } },
-    });
+      ...(ownerId ? { owner: new mongoose.Types.ObjectId(ownerId) } : {}),
+    };
+    const query = Model.find(conditionsQuery);
 
     const models: IModel[] = await query
       .skip(
@@ -246,9 +236,7 @@ const modelMongooseRepository: IModelRepository = {
       .limit(command.paginationCommand.limit)
       .populate(populationOptions);
 
-    const total = await Model.find({
-      name: { $elemMatch: { text: { $regex: command.name } } },
-    }).count();
+    const total = await Model.find(conditionsQuery).count();
 
     return { models, total };
   },

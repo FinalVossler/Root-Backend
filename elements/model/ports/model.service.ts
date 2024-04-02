@@ -4,7 +4,7 @@ import {
   IModelsGetCommand,
   IModelsSearchCommand,
   PermissionEnum,
-  StaticPermissionEnum,
+  EntityStaticPermissionEnum,
 } from "roottypes";
 
 import IModelService from "./interfaces/IModelService";
@@ -81,7 +81,9 @@ const createModelService = (
         ((currentUser?.role as IRole)?.entityPermissions as IEntityPermission[])
           ?.filter(
             (ePermission) =>
-              ePermission.permissions.indexOf(StaticPermissionEnum.Read) !== -1
+              ePermission.permissions.indexOf(
+                EntityStaticPermissionEnum.Read
+              ) !== -1
           )
           .map((ePermission) => (ePermission.model as IModel)._id.toString()) ||
           []
@@ -103,7 +105,7 @@ const createModelService = (
 
       return { models, total };
     } else {
-      const { models, total } = await modelRepository.getOwnModels(
+      const { models, total } = await modelRepository.getModels(
         command,
         currentUser._id.toString()
       );

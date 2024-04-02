@@ -4,7 +4,7 @@ import {
   IRolesGetCommand,
   IRolesSearchCommand,
   PermissionEnum,
-  StaticPermissionEnum,
+  EntityStaticPermissionEnum,
   SuperRoleEnum,
 } from "roottypes";
 
@@ -87,10 +87,15 @@ const createRoleService = (
     user,
     modelId,
     staticPermission,
+    entitiesOwners,
+    ownerPermission,
   }: {
     user: IUser;
     modelId: string;
-    staticPermission: StaticPermissionEnum;
+    staticPermission: EntityStaticPermissionEnum;
+
+    entitiesOwners?: (IUser | string | undefined)[];
+    ownerPermission?: EntityStaticPermissionEnum;
   }): boolean {
     if (user.superRole === SuperRoleEnum.SuperAdmin) {
       return true;
@@ -105,22 +110,52 @@ const createRoleService = (
         ?.permissions.find((p) => p === staticPermission)
     );
 
+    if (!hasAccess) {
+      if (entitiesOwners && entitiesOwners.length > 0 && ownerPermission) {
+        const isOwner = entitiesOwners.every(
+          (owner) =>
+            (typeof owner === "string" ? owner : owner?._id.toString()) ===
+            user._id.toString()
+        );
+
+        return isOwner;
+      }
+      if (
+        ownerPermission &&
+        (!entitiesOwners || entitiesOwners?.length === 0)
+      ) {
+        return (this as IRoleService).hasEntityPermission({
+          user,
+          modelId,
+          staticPermission: ownerPermission,
+        });
+      }
+
+      return false;
+    }
+
     return hasAccess;
   },
   checkEntityPermission: function ({
     user,
     modelId,
     staticPermission,
+    entitiesOwners,
+    ownerPermission,
   }: {
     user: IUser;
     modelId: string;
-    staticPermission: StaticPermissionEnum;
+    staticPermission: EntityStaticPermissionEnum;
+    entitiesOwners?: (IUser | string | undefined)[];
+    ownerPermission?: EntityStaticPermissionEnum;
   }): never | void {
     if (
       !(this as IRoleService).hasEntityPermission({
         user,
         modelId,
         staticPermission,
+        entitiesOwners,
+        ownerPermission,
       })
     ) {
       throw new Error("Permission denied");

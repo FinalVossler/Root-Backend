@@ -1,4 +1,4 @@
-import { StaticPermissionEnum } from "roottypes";
+import { EntityStaticPermissionEnum } from "roottypes";
 
 import IModel from "../../../model/ports/interfaces/IModel";
 import IEntityEventNotification from "../../../entityEventNotification/ports/interfaces/IEntityEventNotification";
@@ -8,7 +8,7 @@ import IRole from "../../../role/ports/interfaces/IRole";
 export default interface IEntityPermission {
   _id: string;
   model: IModel | string;
-  permissions: StaticPermissionEnum[];
+  permissions: EntityStaticPermissionEnum[];
   entityFieldPermissions: IFieldPermission[];
   entityEventNotifications: IEntityEventNotification[];
   entityUserAssignmentPermissionsByRole?: IEntityUserAssignmentPermissionsByRole;
@@ -16,7 +16,7 @@ export default interface IEntityPermission {
 
 export interface IFieldPermission {
   field: IField | string;
-  permissions: StaticPermissionEnum[];
+  permissions: EntityStaticPermissionEnum[];
 }
 
 export interface IEntityUserAssignmentPermissionsByRole {

@@ -15,7 +15,7 @@ import {
   ModelFieldConditionTypeEnum,
   ModelStateTypeEnum,
   PermissionEnum,
-  StaticPermissionEnum,
+  EntityStaticPermissionEnum,
   SuperRoleEnum,
 } from "roottypes";
 
@@ -813,8 +813,8 @@ const createTestsPreparationService = (
             modelId: model._id.toString(),
             language: "en",
             permissions: [
-              StaticPermissionEnum.Read,
-              StaticPermissionEnum.Update,
+              EntityStaticPermissionEnum.Read,
+              EntityStaticPermissionEnum.Update,
             ],
             entityUserAssignmentPermissionsByRole: {
               canAssignToUserFromSameRole: true,
@@ -823,21 +823,21 @@ const createTestsPreparationService = (
             entityFieldPermissions: [
               {
                 fieldId: caseNameField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
               {
                 fieldId: productNameField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
 
               {
                 fieldId: countryField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
 
               {
                 fieldId: numberOfYearsOfForecastField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
 
               {
@@ -848,14 +848,14 @@ const createTestsPreparationService = (
               {
                 fieldId: priceField._id.toString(),
                 permissions: [
-                  StaticPermissionEnum.Read,
-                  StaticPermissionEnum.Update,
+                  EntityStaticPermissionEnum.Read,
+                  EntityStaticPermissionEnum.Update,
                 ],
               },
 
               {
                 fieldId: inMarketSalesDataField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
               {
                 fieldId: medicalInsightPPTemplateField._id.toString(),
@@ -896,8 +896,8 @@ const createTestsPreparationService = (
             modelId: model._id.toString(),
             language: "en",
             permissions: [
-              StaticPermissionEnum.Read,
-              StaticPermissionEnum.Update,
+              EntityStaticPermissionEnum.Read,
+              EntityStaticPermissionEnum.Update,
             ],
             entityUserAssignmentPermissionsByRole: {
               canAssignToUserFromSameRole: true,
@@ -906,28 +906,28 @@ const createTestsPreparationService = (
             entityFieldPermissions: [
               {
                 fieldId: caseNameField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
               {
                 fieldId: productNameField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
 
               {
                 fieldId: countryField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
 
               {
                 fieldId: numberOfYearsOfForecastField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
 
               {
                 fieldId: costField._id.toString(),
                 permissions: [
-                  StaticPermissionEnum.Read,
-                  StaticPermissionEnum.Update,
+                  EntityStaticPermissionEnum.Read,
+                  EntityStaticPermissionEnum.Update,
                 ],
               },
 
@@ -938,7 +938,7 @@ const createTestsPreparationService = (
 
               {
                 fieldId: inMarketSalesDataField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
               {
                 fieldId: medicalInsightPPTemplateField._id.toString(),
@@ -979,8 +979,8 @@ const createTestsPreparationService = (
             modelId: model._id.toString(),
             language: "en",
             permissions: [
-              StaticPermissionEnum.Read,
-              StaticPermissionEnum.Update,
+              EntityStaticPermissionEnum.Read,
+              EntityStaticPermissionEnum.Update,
             ],
             entityUserAssignmentPermissionsByRole: {
               canAssignToUserFromSameRole: true,
@@ -989,21 +989,21 @@ const createTestsPreparationService = (
             entityFieldPermissions: [
               {
                 fieldId: caseNameField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
               {
                 fieldId: productNameField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
 
               {
                 fieldId: countryField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
 
               {
                 fieldId: numberOfYearsOfForecastField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
 
               {
@@ -1018,13 +1018,13 @@ const createTestsPreparationService = (
 
               {
                 fieldId: inMarketSalesDataField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
               {
                 fieldId: medicalInsightPPTemplateField._id.toString(),
                 permissions: [
-                  StaticPermissionEnum.Read,
-                  StaticPermissionEnum.Update,
+                  EntityStaticPermissionEnum.Read,
+                  EntityStaticPermissionEnum.Update,
                 ],
               },
               {
@@ -1062,10 +1062,10 @@ const createTestsPreparationService = (
             modelId: model._id.toString(),
             language: "en",
             permissions: [
-              StaticPermissionEnum.Read,
-              StaticPermissionEnum.Update,
-              StaticPermissionEnum.Create,
-              StaticPermissionEnum.Delete,
+              EntityStaticPermissionEnum.Read,
+              EntityStaticPermissionEnum.Update,
+              EntityStaticPermissionEnum.Create,
+              EntityStaticPermissionEnum.Delete,
             ],
             entityUserAssignmentPermissionsByRole: {
               canAssignToUserFromSameRole: true,
@@ -1075,76 +1075,76 @@ const createTestsPreparationService = (
               {
                 fieldId: caseNameField._id.toString(),
                 permissions: [
-                  StaticPermissionEnum.Read,
-                  StaticPermissionEnum.Update,
+                  EntityStaticPermissionEnum.Read,
+                  EntityStaticPermissionEnum.Update,
                 ],
               },
               {
                 fieldId: productNameField._id.toString(),
                 permissions: [
-                  StaticPermissionEnum.Read,
-                  StaticPermissionEnum.Update,
+                  EntityStaticPermissionEnum.Read,
+                  EntityStaticPermissionEnum.Update,
                 ],
               },
 
               {
                 fieldId: countryField._id.toString(),
                 permissions: [
-                  StaticPermissionEnum.Read,
-                  StaticPermissionEnum.Update,
+                  EntityStaticPermissionEnum.Read,
+                  EntityStaticPermissionEnum.Update,
                 ],
               },
 
               {
                 fieldId: numberOfYearsOfForecastField._id.toString(),
                 permissions: [
-                  StaticPermissionEnum.Read,
-                  StaticPermissionEnum.Update,
+                  EntityStaticPermissionEnum.Read,
+                  EntityStaticPermissionEnum.Update,
                 ],
               },
 
               {
                 fieldId: costField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
 
               {
                 fieldId: priceField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
 
               {
                 fieldId: inMarketSalesDataField._id.toString(),
                 permissions: [
-                  StaticPermissionEnum.Read,
-                  StaticPermissionEnum.Update,
+                  EntityStaticPermissionEnum.Read,
+                  EntityStaticPermissionEnum.Update,
                 ],
               },
               {
                 fieldId: medicalInsightPPTemplateField._id.toString(),
-                permissions: [StaticPermissionEnum.Read],
+                permissions: [EntityStaticPermissionEnum.Read],
               },
               {
                 fieldId: kpiDashboardButtonField._id.toString(),
                 permissions: [
-                  StaticPermissionEnum.Read,
-                  StaticPermissionEnum.Update,
+                  EntityStaticPermissionEnum.Read,
+                  EntityStaticPermissionEnum.Update,
                 ],
               },
 
               {
                 fieldId: pestelButtonField._id.toString(),
                 permissions: [
-                  StaticPermissionEnum.Read,
-                  StaticPermissionEnum.Update,
+                  EntityStaticPermissionEnum.Read,
+                  EntityStaticPermissionEnum.Update,
                 ],
               },
 
               {
                 fieldId: forecastButtonField._id.toString(),
                 permissions: [
-                  StaticPermissionEnum.Read,
-                  StaticPermissionEnum.Update,
+                  EntityStaticPermissionEnum.Read,
+                  EntityStaticPermissionEnum.Update,
                 ],
               },
             ],

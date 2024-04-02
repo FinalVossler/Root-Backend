@@ -244,26 +244,13 @@ const fieldMongooseRepository: IFieldRepository = {
     return field;
   },
   getFields: async (
-    command: IFieldsGetCommand
-  ): Promise<{ total: number; fields: IField[] }> => {
-    const fields: IField[] = await Field.find({})
-      .sort({ createdAt: -1 })
-      .skip(
-        (command.paginationCommand.page - 1) * command.paginationCommand.limit
-      )
-      .limit(command.paginationCommand.limit)
-      .populate(populationOptions)
-      .exec();
-
-    const total: number = await Field.find({}).count();
-
-    return { fields, total };
-  },
-  getOwnFields: async (
     command: IFieldsGetCommand,
-    ownerId: string
+    ownerId?: string
   ): Promise<{ total: number; fields: IField[] }> => {
-    const queryCondition = { owner: new mongoose.Types.ObjectId(ownerId) };
+    const queryCondition = {
+      ...(ownerId ? { owner: new mongoose.Types.ObjectId(ownerId) } : {}),
+    };
+
     const fields: IField[] = await Field.find(queryCondition)
       .sort({ createdAt: -1 })
       .skip(

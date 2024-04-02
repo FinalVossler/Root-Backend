@@ -11,19 +11,17 @@ interface IModelRepository {
   create: (command: IModelCreateCommand, ownerId?: string) => Promise<IModel>;
   update: (command: IModelUpdateCommand) => Promise<IModel>;
   getModels: (
-    command: IModelsGetCommand
+    command: IModelsGetCommand,
+    ownerId?: string
   ) => Promise<{ total: number; models: IModel[] }>;
 
-  getOwnModels: (
-    command: IModelsGetCommand,
-    ownerId: string
-  ) => Promise<{ total: number; models: IModel[] }>;
   getById: (id: string) => Promise<IModel>;
   getModelsContainingField: (fieldId: string) => Promise<IModel[]>;
   deleteModel: (modelId: string) => Promise<void>;
   deleteModels: (modelsIds: string[]) => Promise<void>;
   search: (
-    command: IModelsSearchCommand
+    command: IModelsSearchCommand,
+    ownerId?: string
   ) => Promise<{ models: IModel[]; total: number }>;
   getModelsByIds: (
     command: IModelsGetCommand,

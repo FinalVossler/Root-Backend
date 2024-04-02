@@ -21,7 +21,7 @@ import {
   IRolesGetCommand,
   IRolesSearchCommand,
   PermissionEnum,
-  StaticPermissionEnum,
+  EntityStaticPermissionEnum,
 } from "roottypes";
 import { IField } from "../../elements/field/ports/interfaces/IField";
 import {
@@ -57,7 +57,7 @@ describe("Roles", () => {
           entityFieldPermissions: [
             {
               fieldId: (field1 as IField)?._id.toString(),
-              permissions: [StaticPermissionEnum.Read],
+              permissions: [EntityStaticPermissionEnum.Read],
             },
           ],
           entityUserAssignmentPermissionsByRole: {
@@ -66,7 +66,10 @@ describe("Roles", () => {
           },
           language: "en",
           modelId: model?._id.toString() || "",
-          permissions: [StaticPermissionEnum.Read, StaticPermissionEnum.Update],
+          permissions: [
+            EntityStaticPermissionEnum.Read,
+            EntityStaticPermissionEnum.Update,
+          ],
         },
       ],
       language: "en",
@@ -233,8 +236,8 @@ describe("Roles", () => {
             {
               fieldId: (field1 as IField)?._id.toString(),
               permissions: [
-                StaticPermissionEnum.Read,
-                StaticPermissionEnum.Update,
+                EntityStaticPermissionEnum.Read,
+                EntityStaticPermissionEnum.Update,
               ],
             },
           ],
@@ -245,8 +248,8 @@ describe("Roles", () => {
           language: "en",
           modelId: model?._id.toString() || "",
           permissions: [
-            StaticPermissionEnum.Create,
-            StaticPermissionEnum.Update,
+            EntityStaticPermissionEnum.Create,
+            EntityStaticPermissionEnum.Update,
           ],
         },
       ],

@@ -4,7 +4,7 @@ import {
   IRolesGetCommand,
   IRolesSearchCommand,
   PermissionEnum,
-  StaticPermissionEnum,
+  EntityStaticPermissionEnum,
 } from "roottypes";
 
 import IRole from "./IRole";
@@ -31,12 +31,16 @@ export default interface IRoleService {
   hasEntityPermission: (command: {
     user: IUser;
     modelId: string;
-    staticPermission: StaticPermissionEnum;
+    staticPermission: EntityStaticPermissionEnum;
+    entitiesOwners?: (IUser | string | undefined)[];
+    ownerPermission?: EntityStaticPermissionEnum;
   }) => boolean;
   checkEntityPermission: (command: {
     user: IUser;
     modelId: string;
-    staticPermission: StaticPermissionEnum;
+    staticPermission: EntityStaticPermissionEnum;
+    entitiesOwners?: (IUser | string | undefined)[];
+    ownerPermission?: EntityStaticPermissionEnum;
   }) => never | void;
   checkPermission: (command: {
     user?: IUser;

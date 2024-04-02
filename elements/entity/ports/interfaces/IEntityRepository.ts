@@ -16,16 +16,20 @@ interface IEntityRepository {
   create: (command: IEntityCreateCommand, ownerId?: string) => Promise<IEntity>;
   update: (command: IEntityUpdateCommand) => Promise<IEntity>;
   getEntitiesByModel: (
-    command: IEntitiesGetCommand
+    command: IEntitiesGetCommand,
+    ownerId?: string
   ) => Promise<{ total: number; entities: IEntity[] }>;
   deleteEntities: (entitiesIds: string[]) => Promise<void>;
   getById: (entityId: string) => Promise<IEntity | undefined>;
   getUnpopulatedByIds: (ids: string[]) => Promise<IEntity[]>;
   getAssignedEntitiesByModel: (
-    command: IEntitiesGetCommand
+    command: IEntitiesGetCommand,
+    ownerId?: string
   ) => Promise<{ total: number; entities: IEntity[] }>;
+
   search: (
-    command: IEntitiesSearchCommand
+    command: IEntitiesSearchCommand,
+    ownerId?: string
   ) => Promise<{ entities: IEntity[]; total: number }>;
   setCustomDataKeyValue: (
     command: IEntitiesSetCustomDataKeyValueCommand

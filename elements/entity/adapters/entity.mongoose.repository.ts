@@ -194,9 +194,15 @@ const entityMongooseRepository: IEntityRepository = {
     return newEntity;
   },
   getEntitiesByModel: async (
-    command: IEntitiesGetCommand
+    command: IEntitiesGetCommand,
+    ownerId?: string
   ): Promise<{ total: number; entities: IEntity[] }> => {
-    const entities: IEntity[] = await Entity.find({ model: command.modelId })
+    const conditionsQuery = {
+      model: command.modelId,
+      ...(ownerId ? { owner: new mongoose.Types.ObjectId(ownerId) } : {}),
+    };
+
+    const entities: IEntity[] = await Entity.find(conditionsQuery)
       .sort({ createAt: -1 })
       .skip(
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
@@ -205,7 +211,7 @@ const entityMongooseRepository: IEntityRepository = {
       .populate(entityPopulationOptions)
       .exec();
 
-    const total: number = await Entity.find({ model: command.modelId }).count();
+    const total: number = await Entity.find(conditionsQuery).count();
 
     return { entities, total };
   },
@@ -233,11 +239,13 @@ const entityMongooseRepository: IEntityRepository = {
     return entities;
   },
   getAssignedEntitiesByModel: async (
-    command: IEntitiesGetCommand
+    command: IEntitiesGetCommand,
+    ownerId?: string
   ): Promise<{ total: number; entities: IEntity[] }> => {
     const findCondition = {
       assignedUsers: { $exists: true, $ne: [] },
       model: command.modelId,
+      ...(ownerId ? { owner: new mongoose.Types.ObjectId(ownerId) } : {}),
     };
 
     const entities: IEntity[] = await Entity.find(findCondition)
@@ -254,7 +262,8 @@ const entityMongooseRepository: IEntityRepository = {
     return { entities, total };
   },
   search: async (
-    command: IEntitiesSearchCommand
+    command: IEntitiesSearchCommand,
+    ownerId: string
   ): Promise<{ entities: IEntity[]; total: number }> => {
     const query = Entity.find({
       model: { _id: command.modelId },
@@ -263,6 +272,7 @@ const entityMongooseRepository: IEntityRepository = {
           $or: [{ value: { $elemMatch: { text: { $regex: command.name } } } }],
         },
       },
+      ...(ownerId ? { owner: new mongoose.Types.ObjectId(ownerId) } : {}),
     });
 
     const entities: IEntity[] = await query
