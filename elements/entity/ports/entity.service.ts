@@ -29,6 +29,8 @@ import IFile from "../../file/ports/interfaces/IFile";
 import IFieldTableElement from "../../fieldTableElement/ports/IFieldTableElement";
 import { getElement, getElementId } from "../../../utils/getElement";
 import IOrderRepository from "../../ecommerce/order/ports/interfaces/IOrderRepository";
+import { orderService } from "../../../ioc";
+import IOrderService from "../../ecommerce/order/ports/interfaces/IOrderService";
 
 const createEntityService = (
   roleService: IRoleService,
@@ -137,6 +139,7 @@ const createEntityService = (
               (currentUser.role as IRole)?._id.toString()
           )
         ) {
+          console.log("damned here");
           hasPermission = false;
         } else if (
           (user.role as IRole)?._id.toString() !==
@@ -164,14 +167,20 @@ const createEntityService = (
       modelId: command.modelId.toString(),
     });
 
-    const assignmentPermissionGranted: boolean =
-      await this.usersEntityAssignmentPermissionGranted({
+    // Only check user assignment permissions when aren't adding an entity that concerns orders;
+    // Because we are using the user assignment functonality to send notifications when an order information is created or updated.
+    const model = await modelService.getById(command.modelId);
+    if (!model?.isForOrders) {
+      const assignmentPermissionGranted: boolean = await (
+        this as IEntityService
+      ).usersEntityAssignmentPermissionGranted({
         currentUser,
         assignedUsersIds: command.assignedUsersIds,
         modelId: command.modelId.toString(),
       });
-    if (!assignmentPermissionGranted) {
-      throw new Error("Some user assignments are not allowed");
+      if (!assignmentPermissionGranted) {
+        throw new Error("Some user assignments are not allowed");
+      }
     }
 
     // Required fields validation
@@ -423,7 +432,7 @@ const createEntityService = (
       await entityRepository.deleteEntities(entitiesIds);
     }
   },
-  getById: async (entityId: string, currentUser: IUser): Promise<IEntity> => {
+  getById: async (entityId: string, currentUser: IUser) => {
     const entity: IEntity | undefined = await entityRepository.getById(
       entityId
     );
@@ -441,7 +450,13 @@ const createEntityService = (
       entitiesOwners: [entity.owner],
     });
 
-    return entity;
+    const concernedOrder =
+      getElement(entity.model).isForOrders &&
+      entity.orderAssociationConfig?.orderId
+        ? await orderService.getOrderById(entity.orderAssociationConfig.orderId)
+        : undefined;
+
+    return { entity, concernedOrder };
   },
 
   getByIdWithUncheckedPermissions: async (

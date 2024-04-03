@@ -5,6 +5,7 @@ import {
   IEntityCreateCommand,
   IEntityReadDto,
   IEntityUpdateCommand,
+  IOrderReadDto,
 } from "roottypes";
 
 import IRequest from "../../../../globalTypes/IRequest";
@@ -16,7 +17,12 @@ type IEntityController = {
   getEntity: (
     req: IRequest<any, any, { entityId: string }>,
     currentUser: IUser
-  ) => Promise<IResponseDto<IEntityReadDto>>;
+  ) => Promise<
+    IResponseDto<{
+      entity: IEntityReadDto;
+      concernedOrder: undefined | IOrderReadDto | null;
+    }>
+  >;
   createEntity: (
     req: IRequest<IEntityCreateCommand>,
     currentUser: IUser

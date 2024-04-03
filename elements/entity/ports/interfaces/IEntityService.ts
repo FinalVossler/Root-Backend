@@ -10,6 +10,7 @@ import {
 import IUser from "../../../user/ports/interfaces/IUser";
 import IEntity from "./IEntity";
 import IModel, { IModelField } from "../../../model/ports/interfaces/IModel";
+import IOrder from "../../../ecommerce/order/ports/interfaces/IOrder";
 
 interface IEntityService {
   verifyRequiredFields: (
@@ -52,7 +53,10 @@ interface IEntityService {
     currentUser: IUser
   ) => Promise<{ entities: IEntity[]; total: number }>;
   deleteEntities: (entitiesIds: string[], currentUser: IUser) => Promise<void>;
-  getById: (entityId: string, currentUser: IUser) => Promise<IEntity>;
+  getById: (
+    entityId: string,
+    currentUser: IUser
+  ) => Promise<{ entity: IEntity; concernedOrder: IOrder | undefined | null }>;
   getByIdWithUncheckedPermissions: (entityId: string) => Promise<IEntity>;
   searchEntities: (
     command: IEntitiesSearchCommand,

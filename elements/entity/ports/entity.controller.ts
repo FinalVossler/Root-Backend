@@ -13,6 +13,7 @@ import IEntity from "./interfaces/IEntity";
 import IEntityService from "./interfaces/IEntityService";
 import IEntityController from "./interfaces/IEntityController";
 import IRequest from "../../../globalTypes/IRequest";
+import orderToReadDto from "../../ecommerce/order/ports/order.toReadDto";
 
 const createEntityController = (
   entityService: IEntityService
@@ -21,14 +22,19 @@ const createEntityController = (
     req: IRequest<any, any, { entityId: string }>,
     currentUser: IUser
   ) => {
-    const entity: IEntity = await entityService.getById(
+    const { entity, concernedOrder } = await entityService.getById(
       req.query.entityId,
       currentUser
     );
 
     return {
       success: true,
-      data: entityToReadDto(entity) as IEntityReadDto,
+      data: {
+        entity: entityToReadDto(entity) as IEntityReadDto,
+        concernedOrder: concernedOrder
+          ? orderToReadDto(concernedOrder)
+          : undefined,
+      },
     };
   },
   createEntity: async (
