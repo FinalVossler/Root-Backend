@@ -27,13 +27,15 @@ import IEntityPermission from "../../entityPermission/ports/interfaces/IEntityPe
 import IFile from "../../file/ports/interfaces/IFile";
 import IFieldTableElement from "../../fieldTableElement/ports/IFieldTableElement";
 import { getElement, getElementId } from "../../../utils/getElement";
+import IOrderRepository from "../../ecommerce/order/ports/interfaces/IOrderRepository";
 
 const createEntityService = (
   roleService: IRoleService,
   entityRepository: IEntityRepository,
   modelService: IModelService,
   userService: IUserService,
-  entityEventNotificationService: IEntityEventNotificationService
+  entityEventNotificationService: IEntityEventNotificationService,
+  orderRepository: IOrderRepository
 ): IEntityService => ({
   verifyRequiredFields: async function (
     {
@@ -357,8 +359,18 @@ const createEntityService = (
         ownerPermission: EntityStaticPermissionEnum.DeleteOwn,
       });
 
-      // Update the parent of children entities which parent is set to one of the entities we are about to delete.
+      //#region If an entity is used for an order, then prevent deleting it
+      const numberOfOrdersWithEntitiesWeAreAboutToDelete =
+        await orderRepository.getNumberOfOrdersWithEntities(entitiesIds);
+      if (numberOfOrdersWithEntitiesWeAreAboutToDelete > 0) {
+        throw new Error(
+          "Some orders have been created created based on these entities"
+        );
+      }
+      //#region If an entity is used for an order, then prevent deleting it
+
       for (let i = 0; i < entities.length; i++) {
+        //#region Update the parent of children entities which parent is set to one of the entities we are about to delete.
         const entity = entities[i];
 
         const children: IEntity[] = await (
@@ -385,6 +397,7 @@ const createEntityService = (
             null
           );
         }
+        //#endregion Update the parent of children entities which parent is set to one of the entities we are about to delete.
       }
 
       await entityRepository.deleteEntities(entitiesIds);

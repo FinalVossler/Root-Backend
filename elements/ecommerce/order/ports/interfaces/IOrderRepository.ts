@@ -36,6 +36,7 @@ interface IOrderRepository {
   ) => Promise<IOrder | null | undefined>;
   deleteOrders: (orderIds: string[]) => Promise<void>;
   getOrderAssociatedEntities: (orderId: string) => Promise<IEntity[]>;
+  getNumberOfOrdersWithEntities: (entitiesIds: string[]) => Promise<number>;
 }
 
 export default IOrderRepository;

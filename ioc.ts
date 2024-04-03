@@ -163,7 +163,8 @@ export const entityService: IEntityService = createEntityService(
   entityMongooseRepository,
   modelService,
   userService,
-  entityEventNotificationService
+  entityEventNotificationService,
+  orderMongooseRepository
 );
 
 export const cartService: ICartService = createCartService(

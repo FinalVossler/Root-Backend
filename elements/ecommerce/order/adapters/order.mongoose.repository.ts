@@ -132,6 +132,15 @@ const orderMongooseRepository: IOrderRepository = {
 
     return entities.map((e) => e.toObject());
   },
+  getNumberOfOrdersWithEntities: async (entitiesIds: string[]) => {
+    const numberOfOrdersWithEntity = await Order.find({
+      "products.product": {
+        $in: entitiesIds.map((id) => new mongoose.Types.ObjectId(id)),
+      },
+    }).count();
+
+    return numberOfOrdersWithEntity;
+  },
 };
 
 const populationOptions = [
