@@ -139,7 +139,6 @@ const createEntityService = (
               (currentUser.role as IRole)?._id.toString()
           )
         ) {
-          console.log("damned here");
           hasPermission = false;
         } else if (
           (user.role as IRole)?._id.toString() !==
