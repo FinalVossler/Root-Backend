@@ -2,15 +2,13 @@ import mongoose from "mongoose";
 import {
   IOrderCreateCommand,
   IPaginationCommand,
-  OrderStatusEnum,
+  OrderPaymentStatusEnum,
 } from "roottypes";
 
 import IOrderRepository from "../ports/interfaces/IOrderRepository";
 import Order from "./order.mongoose.model";
 import { entityPopulationOptions } from "../../../entity/adapters/entity.mongoose.repository";
-import IOrder from "../ports/interfaces/IOrder";
 import Entity from "../../../entity/adapters/entity.mongoose.model";
-import IEntity from "../../../entity/ports/interfaces/IEntity";
 
 const orderMongooseRepository: IOrderRepository = {
   getUserOrders: async (command: IPaginationCommand, userId: string) => {
@@ -73,7 +71,7 @@ const orderMongooseRepository: IOrderRepository = {
           shippingMethod: productInfo.shippingMethodId,
         })),
         total,
-        status: command.status,
+        paymentStatus: command.paymentStatus,
         user: command.userId,
         checkoutSessionId: undefined,
         ...(command.paymentMethodId
@@ -107,14 +105,13 @@ const orderMongooseRepository: IOrderRepository = {
 
     return order?.toObject();
   },
-  updateOrderStatus: async (
+  updateOrderPaymentStatus: async (
     orderId: string,
-    status: OrderStatusEnum,
-    isNegative: boolean
+    paymentStatus: OrderPaymentStatusEnum
   ) => {
     const order = await Order.findOneAndUpdate(
       { _id: new mongoose.Types.ObjectId(orderId) },
-      { $set: isNegative ? { negativeStatus: status } : { status } },
+      { $set: { paymentStatus } },
       { new: true }
     ).populate(populationOptions);
 

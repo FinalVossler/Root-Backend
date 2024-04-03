@@ -3,8 +3,7 @@ import {
   IOrderCheckoutCommand,
   IOrderCreateCommand,
   IPaginationCommand,
-  OrderNegativeStatusEnum,
-  OrderStatusEnum,
+  OrderPaymentStatusEnum,
   SuperRoleEnum,
 } from "roottypes";
 
@@ -144,11 +143,9 @@ const createOrderService = (
       // Take each product in the order and take off products that don't belong to the user (for security purposes)
       // A user doesn't need to see a client's other produts within a simple order. He only needs to see his owns products
       const filteredData = data.map((order) => {
-        //@ts-ignore
-        const plainOrder = order.toObject();
         return {
-          ...plainOrder,
-          products: (plainOrder as IOrder).products.filter(
+          ...order,
+          products: (order as IOrder).products.filter(
             (p) =>
               ((p.product as IEntityReadDto).owner as IUser)._id.toString() ===
               userId
@@ -240,18 +237,13 @@ const createOrderService = (
         order
       );
     },
-    updateOrderStatus: async (
+    updateOrderPaymentStatus: async (
       orderId: string,
-      newOrderStatus: OrderStatusEnum | OrderNegativeStatusEnum
+      newOrderPaymentStatus: OrderPaymentStatusEnum
     ) => {
-      const isNegative = Object.values(OrderNegativeStatusEnum).some(
-        (value) => value === newOrderStatus
-      );
-
-      const order = await orderRepository.updateOrderStatus(
+      const order = await orderRepository.updateOrderPaymentStatus(
         orderId,
-        newOrderStatus,
-        isNegative
+        newOrderPaymentStatus
       );
 
       if (!order) {
@@ -269,7 +261,7 @@ const createOrderService = (
         orderFromCreation ||
         (await orderRepository.getOrderById(command.orderId));
 
-      if (order?.status !== OrderStatusEnum.Pending) {
+      if (order?.paymentStatus !== OrderPaymentStatusEnum.Pending) {
         throw new Error("Order is already paid");
       }
 
@@ -284,9 +276,9 @@ const createOrderService = (
       }
 
       // Set order to pending
-      order = await (this as IOrderService).updateOrderStatus(
+      order = await (this as IOrderService).updateOrderPaymentStatus(
         command.orderId,
-        OrderStatusEnum.Pending
+        OrderPaymentStatusEnum.Pending
       );
 
       // Find the payment method
@@ -388,10 +380,10 @@ const createOrderService = (
       const isPaymentSuccessful: boolean =
         await paymentService.isPaymentSuccessful(order.checkoutSessionId);
 
-      if (order.status === OrderStatusEnum.Pending) {
-        order = await (this as IOrderService).updateOrderStatus(
+      if (order.paymentStatus === OrderPaymentStatusEnum.Pending) {
+        order = await (this as IOrderService).updateOrderPaymentStatus(
           order._id,
-          OrderStatusEnum.Paid
+          OrderPaymentStatusEnum.Paid
         );
       }
 

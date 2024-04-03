@@ -108,6 +108,7 @@ const createFieldService = (
               fieldId
             );
 
+            // Delete model fields that are using the field
             const promises: Promise<unknown>[] = [];
             models.forEach((model) => {
               const promise = new Promise(async (resolve, reject) => {

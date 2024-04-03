@@ -4,10 +4,9 @@ import {
   IEntityFieldValueCommand,
   IEntityReadDto,
   IFieldReadDto,
-  IOrderCheckoutCommand,
   IOrderCreateCommand,
   IOrderReadDto,
-  OrderStatusEnum,
+  OrderPaymentStatusEnum,
 } from "roottypes";
 
 import IEntity from "../../elements/entity/ports/interfaces/IEntity";
@@ -133,7 +132,7 @@ describe("Orders", () => {
         region: "2",
       },
       paymentMethodId: paymentMethod._id.toString(),
-      status: OrderStatusEnum.Pending,
+      paymentStatus: OrderPaymentStatusEnum.Pending,
       userId: adminUser._id.toString(),
     };
 
@@ -200,7 +199,7 @@ describe("Orders", () => {
         region: "2",
       },
       paymentMethodId: paymentMethod?._id.toString() || "",
-      status: OrderStatusEnum.Pending,
+      paymentStatus: OrderPaymentStatusEnum.Pending,
       userId: adminUser._id.toString(),
     };
 
@@ -220,7 +219,9 @@ describe("Orders", () => {
         expect(result.data?.products.length).toEqual(
           createOrderCommand.products.length
         );
-        expect(result.data?.status).toEqual(createOrderCommand.status);
+        expect(result.data?.paymentStatus).toEqual(
+          createOrderCommand.paymentStatus
+        );
         expect(result.data?.checkoutSessionId).not.toBeUndefined;
         expect(result.data?.checkoutSessionId.length).toBeGreaterThan(0);
 
@@ -245,20 +246,20 @@ describe("Orders", () => {
       });
   });
 
-  it("should update order status", () => {
+  it("should update order payment status", () => {
     return request(app)
       .put("/orders/updateOrderStatus")
       .set("Authorization", "Bearer " + adminToken)
       .send({
         orderId: orderToUpdateAndCheckout?._id.toString(),
-        status: OrderStatusEnum.OutForDelivery,
+        status: OrderPaymentStatusEnum.Paid,
       })
       .expect(200)
       .then((res) => {
         const result: IResponseDto<IOrderReadDto> = res.body;
 
         expect(result.success).toBeTruthy();
-        expect(result.data?.status).toEqual(OrderStatusEnum.OutForDelivery);
+        expect(result.data?.paymentStatus).toEqual(OrderPaymentStatusEnum.Paid);
       });
   });
 });

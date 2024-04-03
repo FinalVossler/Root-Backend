@@ -56,13 +56,9 @@ const OrderSchema = new mongoose.Schema<IOrder>(
       region: { type: mongoose.SchemaTypes.String },
       city: { type: mongoose.SchemaTypes.String },
     },
-    status: {
+    paymentStatus: {
       type: mongoose.SchemaTypes.String,
       required: true,
-    },
-    negativeStatus: {
-      type: mongoose.SchemaTypes.String,
-      required: false,
     },
   },
   { timestamps: true }

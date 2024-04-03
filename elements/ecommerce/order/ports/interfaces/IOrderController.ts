@@ -4,8 +4,7 @@ import {
   IOrderCreateCommand,
   IOrderReadDto,
   IPaginationCommand,
-  OrderNegativeStatusEnum,
-  OrderStatusEnum,
+  OrderPaymentStatusEnum,
 } from "roottypes";
 
 import IRequest from "../../../../../globalTypes/IRequest";
@@ -26,10 +25,10 @@ type IOrderController = {
     req: IRequest<IOrderCreateCommand>,
     currentUser: IUser
   ) => Promise<IResponseDto<IOrderReadDto>>;
-  updateOrderStatus: (
+  updateOrderPaymentStatus: (
     req: IRequest<{
       orderId: string;
-      status: OrderStatusEnum | OrderNegativeStatusEnum;
+      status: OrderPaymentStatusEnum;
     }>
   ) => Promise<IResponseDto<IOrderReadDto>>;
   checkout: (

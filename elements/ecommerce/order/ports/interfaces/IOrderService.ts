@@ -2,8 +2,7 @@ import {
   IOrderCheckoutCommand,
   IOrderCreateCommand,
   IPaginationCommand,
-  OrderNegativeStatusEnum,
-  OrderStatusEnum,
+  OrderPaymentStatusEnum,
 } from "roottypes";
 
 import IUser from "../../../../user/ports/interfaces/IUser";
@@ -36,9 +35,9 @@ interface IOrderService {
     command: IOrderCreateCommand,
     currentUser: IUser
   ) => Promise<IOrder>;
-  updateOrderStatus: (
+  updateOrderPaymentStatus: (
     orderId: string,
-    newOrderStatus: OrderStatusEnum | OrderNegativeStatusEnum
+    newOrderStatus: OrderPaymentStatusEnum
   ) => Promise<IOrder>;
   checkout: (
     command: IOrderCheckoutCommand,

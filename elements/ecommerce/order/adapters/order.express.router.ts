@@ -19,9 +19,9 @@ orderRouter.post(
 
 orderRouter.post("/", protectMiddleware, orderExpressController.createOrder);
 orderRouter.put(
-  "/updateOrderStatus",
+  "/updateOrderPaymentStatus",
   protectMiddleware,
-  orderExpressController.updateOrderStatus
+  orderExpressController.updateOrderPaymentStatus
 );
 orderRouter.post(
   "/checkout",

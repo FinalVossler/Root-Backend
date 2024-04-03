@@ -3,7 +3,7 @@ import {
   IOrderCheckoutCommand,
   IOrderCreateCommand,
   IPaginationCommand,
-  OrderStatusEnum,
+  OrderPaymentStatusEnum,
 } from "roottypes";
 
 import IRequest from "../../../../globalTypes/IRequest";
@@ -68,10 +68,10 @@ const createOrderController = (
         data: orderToReadDto(order),
       };
     },
-    updateOrderStatus: async (
-      req: IRequest<{ orderId: string; status: OrderStatusEnum }>
+    updateOrderPaymentStatus: async (
+      req: IRequest<{ orderId: string; status: OrderPaymentStatusEnum }>
     ) => {
-      const order: IOrder = await orderService.updateOrderStatus(
+      const order: IOrder = await orderService.updateOrderPaymentStatus(
         req.body.orderId,
         req.body.status
       );

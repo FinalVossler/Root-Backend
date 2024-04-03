@@ -24,7 +24,7 @@ const orderToReadDto = (order: IOrder): IOrderReadDto => {
     paymentMethod: order.paymentMethod
       ? paymentMethodToReadDto(order.paymentMethod)
       : "",
-    status: order.status,
+    paymentStatus: order.paymentStatus,
     total: order.total,
     user: userToReadDto(order.user),
     checkoutSessionId: order.checkoutSessionId,

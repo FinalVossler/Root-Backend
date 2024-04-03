@@ -1,8 +1,7 @@
 import {
   IOrderCreateCommand,
   IPaginationCommand,
-  OrderNegativeStatusEnum,
-  OrderStatusEnum,
+  OrderPaymentStatusEnum,
 } from "roottypes";
 
 import IOrder from "./IOrder";
@@ -24,10 +23,9 @@ interface IOrderRepository {
     total: number,
     number: string
   ) => Promise<IOrder>;
-  updateOrderStatus: (
+  updateOrderPaymentStatus: (
     orderId: string,
-    status: OrderStatusEnum | OrderNegativeStatusEnum,
-    isNegativeStatus: boolean
+    status: OrderPaymentStatusEnum
   ) => Promise<IOrder | null | undefined>;
   setCheckoutSessionIdAndUrl: (
     orderId: string,
