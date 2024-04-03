@@ -9,6 +9,7 @@ import {
   IEntityUpdateCommand,
   EntityStaticPermissionEnum,
   SuperRoleEnum,
+  IUserReadDto,
 } from "roottypes";
 import _ from "lodash";
 
@@ -257,7 +258,15 @@ const createEntityService = (
       throw new Error(errorText);
     }
 
-    // Now send the onAssigned event notificatiosn (email + inapp notifications)
+    // Now send the onUpdate event notifications
+    entityEventNotificationService.notifyUsers(
+      command.modelId.toString(),
+      EntityEventNotificationTriggerEnum.OnUpdate,
+      entity,
+      currentUser
+    );
+
+    // Now send the onAssigned event notifications (email + inapp notifications)
     if (newlyAssignedUsersIds.length > 0) {
       if (command.assignedUsersIds.length > 0) {
         entityEventNotificationService.notifyUsers(
@@ -268,6 +277,17 @@ const createEntityService = (
           newlyAssignedUsersIds
         );
       }
+    }
+
+    // send the onUpdateWhenAssigned event notifications to old assigned users
+    if (oldAssignedUsers.length > 0) {
+      entityEventNotificationService.notifyUsers(
+        command.modelId.toString(),
+        EntityEventNotificationTriggerEnum.OnUpdateWhenAssigned,
+        entity,
+        currentUser,
+        oldAssignedUsers.map((el) => getElementId(el))
+      );
     }
 
     return entity;
