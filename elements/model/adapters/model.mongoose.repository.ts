@@ -108,71 +108,70 @@ const modelMongooseRepository: IModelRepository = {
     const modelSubstates: IModelState[] =
       await modelStateMongooseRepository.updateMany(command.subStates);
 
-    const newModel = (
-      await Model.findOneAndUpdate(
-        { _id: command._id },
-        {
-          $set: {
-            name: getNewTranslatedTextsForUpdate({
-              language: command.language,
-              newText: command.name,
-              oldValue: model.name,
-            }),
-            modelFields: command.modelFields.map((modelField) => ({
-              field: modelField.fieldId,
-              required: modelField.required,
-              conditions:
-                modelField.conditions?.map((condition) => {
-                  return {
-                    value: condition.value,
-                    conditionType: condition.conditionType,
-                    field: condition.fieldId || undefined,
-                    modelState: condition.modelStateId,
-                  };
-                }) || [],
-              states: modelField.modelStatesIds,
-              mainField: modelField.mainField,
-              stickInTable: modelField.stickInTable,
-              isVariation: modelField.isVariation,
-            })),
-            modelEvents: command.modelEvents.map<IEventCommand>(
-              (modelEvent: IEventCommand) => ({
-                eventTrigger: modelEvent.eventTrigger,
-                eventType: modelEvent.eventType,
-                redirectionToSelf: modelEvent.redirectionToSelf,
-                redirectionUrl: modelEvent.redirectionUrl,
-                requestData: modelEvent.requestData,
-                requestDataIsCreatedEntity:
-                  modelEvent.requestDataIsCreatedEntity,
-                requestMethod: modelEvent.requestMethod,
-                requestUrl: modelEvent.requestUrl,
-                requestHeaders:
-                  modelEvent.requestHeaders.map<IEventRequestHeader>(
-                    (header: IEventRequestHeader) => ({
-                      key: header.key,
-                      value: header.value,
-                    })
-                  ),
-                microFrontend: modelEvent.microFrontendId,
-                microFrontendComponentId: modelEvent.microFrontendComponentId,
-              })
-            ),
-            states: modelStates.map((el) => el._id),
-            subStates: modelSubstates.map((el) => el._id),
+    const newModel = await Model.findOneAndUpdate(
+      { _id: command._id },
+      {
+        $set: {
+          name: getNewTranslatedTextsForUpdate({
+            language: command.language,
+            newText: command.name,
+            oldValue: model.name,
+          }),
+          modelFields: command.modelFields.map((modelField) => ({
+            field: modelField.fieldId,
+            required: modelField.required,
+            conditions:
+              modelField.conditions?.map((condition) => {
+                return {
+                  value: condition.value,
+                  conditionType: condition.conditionType,
+                  field: condition.fieldId || undefined,
+                  modelState: condition.modelStateId,
+                };
+              }) || [],
+            states: modelField.modelStatesIds,
+            mainField: modelField.mainField,
+            stickInTable: modelField.stickInTable,
+            isVariation: modelField.isVariation,
+          })),
+          modelEvents: command.modelEvents.map<IEventCommand>(
+            (modelEvent: IEventCommand) => ({
+              eventTrigger: modelEvent.eventTrigger,
+              eventType: modelEvent.eventType,
+              redirectionToSelf: modelEvent.redirectionToSelf,
+              redirectionUrl: modelEvent.redirectionUrl,
+              requestData: modelEvent.requestData,
+              requestDataIsCreatedEntity: modelEvent.requestDataIsCreatedEntity,
+              requestMethod: modelEvent.requestMethod,
+              requestUrl: modelEvent.requestUrl,
+              requestHeaders:
+                modelEvent.requestHeaders.map<IEventRequestHeader>(
+                  (header: IEventRequestHeader) => ({
+                    key: header.key,
+                    value: header.value,
+                  })
+                ),
+              microFrontend: modelEvent.microFrontendId,
+              microFrontendComponentId: modelEvent.microFrontendComponentId,
+            })
+          ),
+          states: modelStates.map((el) => el._id),
+          subStates: modelSubstates.map((el) => el._id),
 
-            isForSale: Boolean(command.isForSale),
-            quantityField: command.quantityFieldId,
-            priceField: command.priceFieldId,
-            imageField: command.imageFieldId,
+          isForSale: Boolean(command.isForSale),
+          quantityField: command.quantityFieldId,
+          priceField: command.priceFieldId,
+          imageField: command.imageFieldId,
 
-            isForOrders: command.isForOrders,
-            showInSideMenu: command.showInSideMenu,
-            orderAssociationConfig: command.orderAssociationConfig,
-          },
+          isForOrders: command.isForOrders,
+          showInSideMenu: command.showInSideMenu,
+          orderAssociationConfig: command.orderAssociationConfig,
         },
-        { new: true }
-      ).populate(populationOptions)
-    )?.toObject();
+      },
+      { new: true }
+    )
+      .populate(populationOptions)
+      .lean();
 
     if (!newModel) {
       throw new Error("Model not found");
@@ -188,34 +187,34 @@ const modelMongooseRepository: IModelRepository = {
       ...(ownerId ? { owner: new mongoose.Types.ObjectId(ownerId) } : {}),
     };
 
-    const models: IModel[] = (
-      await Model.find(conditionsQuery)
-        .sort({ createAt: -1 })
-        .skip(
-          (command.paginationCommand.page - 1) * command.paginationCommand.limit
-        )
-        .limit(command.paginationCommand.limit)
-        .populate(populationOptions)
-        .exec()
-    ).map((m) => m.toObject());
+    const models: IModel[] = await Model.find(conditionsQuery)
+      .sort({ createAt: -1 })
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
+      .lean()
+      .exec();
 
     const total: number = await Model.find(conditionsQuery).count();
 
     return { models, total };
   },
   getById: async (id: string) => {
-    const model = (
-      await Model.findById(id).populate(populationOptions).exec()
-    )?.toObject();
+    const model = await Model.findById(id)
+      .populate(populationOptions)
+      .lean()
+      .exec();
 
     return model;
   },
   getModelsContainingField: async (fieldId: string): Promise<IModel[]> => {
-    const models: IModel[] = (
-      await Model.find({
-        modelFields: { $elemMatch: { field: { _id: fieldId } } },
-      }).populate(populationOptions)
-    ).map((m) => m.toObject());
+    const models: IModel[] = await Model.find({
+      modelFields: { $elemMatch: { field: { _id: fieldId } } },
+    })
+      .populate(populationOptions)
+      .lean();
 
     return models;
   },
@@ -237,14 +236,13 @@ const modelMongooseRepository: IModelRepository = {
     };
     const query = Model.find(conditionsQuery);
 
-    const models: IModel[] = (
-      await query
-        .skip(
-          (command.paginationCommand.page - 1) * command.paginationCommand.limit
-        )
-        .limit(command.paginationCommand.limit)
-        .populate(populationOptions)
-    ).map((m) => m.toObject());
+    const models: IModel[] = await query
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
+      .lean();
 
     const total = await Model.find(conditionsQuery).count();
 
@@ -258,16 +256,15 @@ const modelMongooseRepository: IModelRepository = {
       _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
     };
 
-    const models: IModel[] = (
-      await Model.find(queryConditions)
-        .sort({ createAt: -1 })
-        .skip(
-          (command.paginationCommand.page - 1) * command.paginationCommand.limit
-        )
-        .limit(command.paginationCommand.limit)
-        .populate(populationOptions)
-        .exec()
-    ).map((m) => m.toObject());
+    const models: IModel[] = await Model.find(queryConditions)
+      .sort({ createAt: -1 })
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
+      .lean()
+      .exec();
 
     const total: number = await Model.find(queryConditions).count();
 

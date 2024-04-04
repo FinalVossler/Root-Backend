@@ -31,22 +31,22 @@ const modelStateMongooseRepository: IModelStateRepository = {
       throw new Error("Model state doesn't exist");
     }
 
-    const modelState = (
-      await ModelState.findOneAndUpdate(
-        { _id: command._id },
-        {
-          $set: {
-            name: getNewTranslatedTextsForUpdate({
-              language: command.language,
-              newText: command.name,
-              oldValue: oldModelState.name,
-            }),
-            exlusive: command.exclusive,
-          },
+    const modelState = await ModelState.findOneAndUpdate(
+      { _id: command._id },
+      {
+        $set: {
+          name: getNewTranslatedTextsForUpdate({
+            language: command.language,
+            newText: command.name,
+            oldValue: oldModelState.name,
+          }),
+          exlusive: command.exclusive,
         },
-        { new: true }
-      ).exec()
-    )?.toObject();
+      },
+      { new: true }
+    )
+      .lean()
+      .exec();
 
     if (!modelState) {
       throw new Error("Model state not found");

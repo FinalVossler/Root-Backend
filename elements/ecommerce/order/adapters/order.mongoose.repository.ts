@@ -19,13 +19,14 @@ const orderMongooseRepository: IOrderRepository = {
       .skip((command.page - 1) * command.limit)
       .limit(command.limit)
       .populate(populationOptions)
+      .lean()
       .exec();
 
     const total: number = await Order.find({
       user: new mongoose.Types.ObjectId(userId),
     }).count();
 
-    return { data: orders.map((o) => o.toObject()), total };
+    return { data: orders, total };
   },
   getUserSales: async (
     paginationCommand: IPaginationCommand,
@@ -49,11 +50,12 @@ const orderMongooseRepository: IOrderRepository = {
       .skip((paginationCommand.page - 1) * paginationCommand.limit)
       .limit(paginationCommand.limit)
       .populate(populationOptions)
+      .lean()
       .exec();
 
     const total = await Order.find(queryParams).count();
 
-    return { data: orders.map((o) => o.toObject()), total };
+    return { data: orders, total };
   },
   createOrder: async (
     command: IOrderCreateCommand,
@@ -86,11 +88,11 @@ const orderMongooseRepository: IOrderRepository = {
   },
 
   getOrderById: async (orderId: string) => {
-    const order = await Order.findById(
-      new mongoose.Types.ObjectId(orderId)
-    ).populate(populationOptions);
+    const order = await Order.findById(new mongoose.Types.ObjectId(orderId))
+      .populate(populationOptions)
+      .lean();
 
-    return order?.toObject();
+    return order;
   },
   setCheckoutSessionIdAndUrl: async (
     orderId: string,
@@ -101,9 +103,11 @@ const orderMongooseRepository: IOrderRepository = {
       { _id: new mongoose.Types.ObjectId(orderId) },
       { $set: { checkoutSessionId, checkoutSessionUrl } },
       { new: true }
-    ).populate(populationOptions);
+    )
+      .populate(populationOptions)
+      .lean();
 
-    return order?.toObject();
+    return order;
   },
   updateOrderPaymentStatus: async (
     orderId: string,
@@ -113,9 +117,11 @@ const orderMongooseRepository: IOrderRepository = {
       { _id: new mongoose.Types.ObjectId(orderId) },
       { $set: { paymentStatus } },
       { new: true }
-    ).populate(populationOptions);
+    )
+      .populate(populationOptions)
+      .lean();
 
-    return order?.toObject();
+    return order;
   },
   deleteOrders: async (ordersIds: string[]) => {
     await Order.deleteMany({
@@ -125,9 +131,11 @@ const orderMongooseRepository: IOrderRepository = {
   getOrderAssociatedEntities: async (orderId: string) => {
     const entities = await Entity.find({
       "orderAssociationConfig.orderId": orderId,
-    }).populate(entityPopulationOptions);
+    })
+      .populate(entityPopulationOptions)
+      .lean();
 
-    return entities.map((e) => e.toObject());
+    return entities;
   },
   getNumberOfOrdersWithEntities: async (entitiesIds: string[]) => {
     const numberOfOrdersWithEntity = await Order.find({

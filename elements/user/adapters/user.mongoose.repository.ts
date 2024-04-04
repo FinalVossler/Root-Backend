@@ -21,17 +21,16 @@ const userMongooseRepository: IUserRepository = {
     command: IChatGetContactsCommand,
     currentUser: IUser
   ): Promise<{ users: IUser[]; total: number }> => {
-    const users = (
-      await User.find({
-        _id: { $nin: [currentUser._id] },
-      })
-        .skip(
-          (command.paginationCommand.page - 1) * command.paginationCommand.limit
-        )
-        .limit(command.paginationCommand.limit)
-        .populate(populationOptions)
-        .exec()
-    ).map((u) => u.toObject());
+    const users = await User.find({
+      _id: { $nin: [currentUser._id] },
+    })
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
+      .lean()
+      .exec();
 
     const total: number = await User.find({
       _id: { $nin: [currentUser._id] },
@@ -55,20 +54,18 @@ const userMongooseRepository: IUserRepository = {
     return user;
   },
   getById: async (id: string) => {
-    const user = (
-      await User.findById(new mongoose.Types.ObjectId(id)).populate(
-        populationOptions
-      )
-    )?.toObject();
+    const user = await User.findById(new mongoose.Types.ObjectId(id))
+      .populate(populationOptions)
+      .lean();
 
     return user;
   },
   getContactsByIds: async (usersIds: string[]): Promise<IUser[]> => {
-    const users = (
-      await User.find({
-        _id: { $in: usersIds.map((id) => new mongoose.Types.ObjectId(id)) },
-      }).populate(populationOptions)
-    ).map((u) => u.toObject());
+    const users = await User.find({
+      _id: { $in: usersIds.map((id) => new mongoose.Types.ObjectId(id)) },
+    })
+      .populate(populationOptions)
+      .lean();
 
     return users;
   },
@@ -83,26 +80,24 @@ const userMongooseRepository: IUserRepository = {
     await User.deleteOne({ email }).exec();
   },
   update: async (command: IUserUpdateCommand) => {
-    const updatedUser = (
-      await (
-        await User.findOneAndUpdate(
-          { _id: command._id },
-          {
-            $set: {
-              firstName: command.firstName,
-              lastName: command.lastName,
-              email: command.email,
-              role: command.roleId,
-              superRole: command.superRole,
-              hasMessagingEmailsActivated: command.hasMessagingEmailsActivated,
-            },
-          },
-          {
-            new: true,
-          }
-        ).exec()
-      )?.populate(populationOptions)
-    )?.toObject();
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: command._id },
+      {
+        $set: {
+          firstName: command.firstName,
+          lastName: command.lastName,
+          email: command.email,
+          role: command.roleId,
+          superRole: command.superRole,
+          hasMessagingEmailsActivated: command.hasMessagingEmailsActivated,
+        },
+      },
+      {
+        new: true,
+      }
+    )
+      .populate(populationOptions)
+      .lean();
 
     return updatedUser;
   },
@@ -116,15 +111,13 @@ const userMongooseRepository: IUserRepository = {
       picture = await fileRepository.create(command.picture, currentUser);
     }
 
-    const updatedUser = (
-      await (
-        await User.findOneAndUpdate(
-          { _id: command.userId },
-          { $set: { profilePicture: picture ? picture._id : command.picture } },
-          { new: true }
-        )
-      )?.populate(populationOptions)
-    )?.toObject();
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: command.userId },
+      { $set: { profilePicture: picture ? picture._id : command.picture } },
+      { new: true }
+    )
+      .populate(populationOptions)
+      .lean();
 
     return updatedUser;
   },
@@ -171,29 +164,27 @@ const userMongooseRepository: IUserRepository = {
     const findQuery = command.roleId
       ? { role: new mongoose.Types.ObjectId(command.roleId) }
       : {};
-    const users: IUser[] = (
-      await User.find(findQuery)
-        .sort({ createdAt: -1 })
-        .skip(
-          (command.paginationCommand.page - 1) * command.paginationCommand.limit
-        )
-        .limit(command.paginationCommand.limit)
-        .populate(populationOptions)
-        .exec()
-    ).map((u) => u.toObject());
+    const users: IUser[] = await User.find(findQuery)
+      .sort({ createdAt: -1 })
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
+      .lean()
+      .exec();
 
     const total: number = await User.find(findQuery).count();
 
     return { users, total };
   },
   getByIds: async (usersIds: string[]): Promise<IUser[]> => {
-    const users: IUser[] = (
-      await User.find({
-        _id: { $in: usersIds.map((id) => new mongoose.Types.ObjectId(id)) },
-      })
-        .populate(populationOptions)
-        .exec()
-    ).map((u) => u.toObject());
+    const users: IUser[] = await User.find({
+      _id: { $in: usersIds.map((id) => new mongoose.Types.ObjectId(id)) },
+    })
+      .populate(populationOptions)
+      .lean()
+      .exec();
 
     return users;
   },
@@ -215,14 +206,13 @@ const userMongooseRepository: IUserRepository = {
       ...additionalConditions,
     });
 
-    const users: IUser[] = (
-      await query
-        .skip(
-          (command.paginationCommand.page - 1) * command.paginationCommand.limit
-        )
-        .limit(command.paginationCommand.limit)
-        .populate(populationOptions)
-    ).map((u) => u.toObject());
+    const users: IUser[] = await query
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
+      .lean();
 
     const total = await User.find({
       $text: {
@@ -234,11 +224,11 @@ const userMongooseRepository: IUserRepository = {
     return { users, total };
   },
   getRoleUsers: async (roleId: string): Promise<IUser[]> => {
-    const users: IUser[] = (
-      await User.find({
-        role: { _id: new mongoose.Types.ObjectId(roleId) },
-      }).exec()
-    ).map((u) => u.toObject());
+    const users: IUser[] = await User.find({
+      role: { _id: new mongoose.Types.ObjectId(roleId) },
+    })
+      .lean()
+      .exec();
 
     return users;
   },

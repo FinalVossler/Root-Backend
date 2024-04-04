@@ -209,16 +209,15 @@ const entityMongooseRepository: IEntityRepository = {
       ...(ownerId ? { owner: new mongoose.Types.ObjectId(ownerId) } : {}),
     };
 
-    const entities = (
-      await Entity.find(conditionsQuery)
-        .sort({ createAt: -1 })
-        .skip(
-          (command.paginationCommand.page - 1) * command.paginationCommand.limit
-        )
-        .limit(command.paginationCommand.limit)
-        .populate(entityPopulationOptions)
-        .exec()
-    ).map((el) => el.toObject());
+    const entities = await Entity.find(conditionsQuery)
+      .sort({ createAt: -1 })
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(entityPopulationOptions)
+      .lean()
+      .exec();
 
     const total: number = await Entity.find(conditionsQuery).count();
 
@@ -234,18 +233,16 @@ const entityMongooseRepository: IEntityRepository = {
     });
   },
   getById: async (entityId: string): Promise<IEntity | undefined> => {
-    const entity = await (
-      await Entity.findById(new mongoose.Types.ObjectId(entityId))
-    )?.populate(entityPopulationOptions);
+    const entity = await Entity.findById(new mongoose.Types.ObjectId(entityId))
+      .lean()
+      .populate(entityPopulationOptions);
 
-    return entity?.toObject();
+    return entity as IEntity | undefined;
   },
   getUnpopulatedByIds: async (ids: string[]): Promise<IEntity[]> => {
-    const entities = (
-      await Entity.find({
-        _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
-      })
-    ).map((e) => e.toObject());
+    const entities = await Entity.find({
+      _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
+    }).lean();
 
     return entities;
   },
@@ -266,11 +263,12 @@ const entityMongooseRepository: IEntityRepository = {
       )
       .limit(command.paginationCommand.limit)
       .populate(entityPopulationOptions)
+      .lean()
       .exec();
 
     const total: number = await Entity.find(findCondition).count();
 
-    return { entities: entities.map((e) => e.toObject()), total };
+    return { entities: entities, total };
   },
   search: async (
     command: IEntitiesSearchCommand,
@@ -291,7 +289,8 @@ const entityMongooseRepository: IEntityRepository = {
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
       .limit(command.paginationCommand.limit)
-      .populate(entityPopulationOptions);
+      .populate(entityPopulationOptions)
+      .lean();
 
     const total = await Entity.find({
       model: { _id: command.modelId },
@@ -302,17 +301,19 @@ const entityMongooseRepository: IEntityRepository = {
       },
     }).count();
 
-    return { entities: entities.map((e) => e.toObject()), total };
+    return { entities: entities, total };
   },
   setCustomDataKeyValue: async function (
     command: IEntitiesSetCustomDataKeyValueCommand
   ): Promise<void> {
-    const entity: IEntity | undefined = await this.getById(
-      command.entityId.toString()
-    );
+    const entity: IEntity | undefined = await (
+      this as IEntityRepository
+    ).getById(command.entityId.toString());
+
     if (!entity) {
       throw new Error("Entity not found");
     }
+
     let oldCustomData;
     try {
       oldCustomData = JSON.parse(entity.customData || "{}");
@@ -365,11 +366,11 @@ const entityMongooseRepository: IEntityRepository = {
     return copiedEntities;
   },
   getEntityChildren: async (entityId: string) => {
-    const entities = (
-      await Entity.find({
-        parentEntity: new mongoose.Types.ObjectId(entityId),
-      }).populate(entityPopulationOptions)
-    ).map((e) => e.toObject());
+    const entities = await Entity.find({
+      parentEntity: new mongoose.Types.ObjectId(entityId),
+    })
+      .populate(entityPopulationOptions)
+      .lean();
 
     return entities;
   },

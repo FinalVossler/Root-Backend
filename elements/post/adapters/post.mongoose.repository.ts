@@ -62,19 +62,18 @@ const postMongooseRepository: IPostRepository = {
       );
     }
 
-    const posts: IPost[] = (
-      await Post.find({
-        posterId: command.userId,
-        visibility: { $in: visibilities },
-      })
-        .populate(populationOptions)
-        .sort({ createdAt: -1 })
-        .skip(
-          (command.paginationCommand.page - 1) * command.paginationCommand.limit
-        )
-        .limit(command.paginationCommand.limit)
-        .exec()
-    ).map((p) => p.toObject());
+    const posts: IPost[] = await Post.find({
+      posterId: command.userId,
+      visibility: { $in: visibilities },
+    })
+      .populate(populationOptions)
+      .sort({ createdAt: -1 })
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .lean()
+      .exec();
 
     const total: number = await Post.find({
       posterId: command.userId,
@@ -92,14 +91,13 @@ const postMongooseRepository: IPostRepository = {
       posterId: command.posterId,
     }).populate(populationOptions);
 
-    const posts: IPost[] = (
-      await query
-        .skip(
-          (command.paginationCommand.page - 1) * command.paginationCommand.limit
-        )
-        .limit(command.paginationCommand.limit)
-        .populate(populationOptions)
-    ).map((p) => p.toObject());
+    const posts: IPost[] = await query
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
+      .lean();
 
     const total = await Post.find({
       title: { $elemMatch: { text: { $regex: command.title } } },
@@ -110,11 +108,10 @@ const postMongooseRepository: IPostRepository = {
     return { posts, total };
   },
   getById: async (postId: string) => {
-    return (
-      await Post.findById(new mongoose.Types.ObjectId(postId))
-        .populate(populationOptions)
-        .exec()
-    )?.toObject();
+    return await Post.findById(new mongoose.Types.ObjectId(postId))
+      .populate(populationOptions)
+      .lean()
+      .exec();
   },
   update: async (
     command: IPostUpdateCommand,
@@ -130,36 +127,36 @@ const postMongooseRepository: IPostRepository = {
       (command.files as IFile[]).filter((el) => el._id)
     );
 
-    const updatedPost = (
-      await Post.findOneAndUpdate(
-        { _id: command._id },
-        {
-          $set: {
-            title: getNewTranslatedTextsForUpdate({
-              oldValue: oldPost.title,
-              language: command.language,
-              newText: command.title || "",
-            }),
-            children: command.children,
-            content: getNewTranslatedTextsForUpdate({
-              oldValue: oldPost.content,
-              language: command.language,
-              newText: command.content || "",
-            }),
-            design: command.design,
-            files: allFiles.map((el) => el._id),
-            subTitle: getNewTranslatedTextsForUpdate({
-              oldValue: oldPost.subTitle,
-              language: command.language,
-              newText: command.subTitle || "",
-            }),
-            code: command.code,
-            visibility: command.visibility,
-          },
+    const updatedPost = await Post.findOneAndUpdate(
+      { _id: command._id },
+      {
+        $set: {
+          title: getNewTranslatedTextsForUpdate({
+            oldValue: oldPost.title,
+            language: command.language,
+            newText: command.title || "",
+          }),
+          children: command.children,
+          content: getNewTranslatedTextsForUpdate({
+            oldValue: oldPost.content,
+            language: command.language,
+            newText: command.content || "",
+          }),
+          design: command.design,
+          files: allFiles.map((el) => el._id),
+          subTitle: getNewTranslatedTextsForUpdate({
+            oldValue: oldPost.subTitle,
+            language: command.language,
+            newText: command.subTitle || "",
+          }),
+          code: command.code,
+          visibility: command.visibility,
         },
-        { new: true }
-      ).populate(populationOptions)
-    )?.toObject();
+      },
+      { new: true }
+    )
+      .populate(populationOptions)
+      .lean();
 
     return updatedPost;
   },

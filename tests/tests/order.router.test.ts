@@ -230,10 +230,13 @@ describe("Orders", () => {
           .query({ entityId: sellableEntity?._id.toString() })
           .set("Authorization", "Bearer " + adminToken)
           .then((res) => {
-            const result: IResponseDto<IEntityReadDto> = res.body;
+            const result: IResponseDto<{
+              entity: IEntityReadDto;
+              concernedOrder: undefined | IOrderReadDto | null;
+            }> = res.body;
 
             expect(
-              result.data?.entityFieldValues
+              result.data?.entity.entityFieldValues
                 .find(
                   (f) =>
                     (f.field as IFieldReadDto)._id.toString() ===
@@ -248,7 +251,7 @@ describe("Orders", () => {
 
   it("should update order payment status", () => {
     return request(app)
-      .put("/orders/updateOrderStatus")
+      .put("/orders/updateOrderPaymentStatus")
       .set("Authorization", "Bearer " + adminToken)
       .send({
         orderId: orderToUpdateAndCheckout?._id.toString(),

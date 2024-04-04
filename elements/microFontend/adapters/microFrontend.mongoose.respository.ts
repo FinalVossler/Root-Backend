@@ -143,9 +143,9 @@ const microFrontendMongooseRepository = {
     return newMicroFrontend;
   },
   getById: async (id: string): Promise<IMicroFrontend> => {
-    const microFrontend = (
-      await MicroFrontend.findById(id)?.populate(populationOptions)
-    )?.toObject();
+    const microFrontend = await MicroFrontend.findById(id)
+      ?.populate(populationOptions)
+      .lean();
 
     if (!microFrontend) {
       throw new Error("MicroFrontend not found");
@@ -156,16 +156,15 @@ const microFrontendMongooseRepository = {
   getMicroFrontends: async (
     command: IMicroFrontendsGetCommand
   ): Promise<{ total: number; microFrontends: IMicroFrontend[] }> => {
-    const microFrontends: IMicroFrontend[] = (
-      await MicroFrontend.find({})
-        .sort({ createdAt: -1 })
-        .skip(
-          (command.paginationCommand.page - 1) * command.paginationCommand.limit
-        )
-        .limit(command.paginationCommand.limit)
-        .populate(populationOptions)
-        .exec()
-    ).map((el) => el.toObject());
+    const microFrontends: IMicroFrontend[] = await MicroFrontend.find({})
+      .sort({ createdAt: -1 })
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
+      .lean()
+      .exec();
 
     const total: number = await MicroFrontend.find({}).count();
 
@@ -209,17 +208,17 @@ const microFrontendMongooseRepository = {
       }
 
       // Deleting the events created on the basis of this microFrontend for models
-      const models: IModel[] = (
-        await Model.find({
-          modelEvents: {
-            $elemMatch: {
-              microFrontend: {
-                _id: new mongoose.Types.ObjectId(microFrontend._id),
-              },
+      const models: IModel[] = await Model.find({
+        modelEvents: {
+          $elemMatch: {
+            microFrontend: {
+              _id: new mongoose.Types.ObjectId(microFrontend._id),
             },
           },
-        }).populate(populationOptions)
-      ).map((m) => m.toObject());
+        },
+      })
+        .populate(populationOptions)
+        .lean();
 
       for (let i = 0; i < models.length; i++) {
         const model: IModel = models[i];
@@ -248,14 +247,13 @@ const microFrontendMongooseRepository = {
       name: { $regex: command.name },
     });
 
-    const microFrontends: IMicroFrontend[] = (
-      await query
-        .skip(
-          (command.paginationCommand.page - 1) * command.paginationCommand.limit
-        )
-        .limit(command.paginationCommand.limit)
-        .populate(populationOptions)
-    ).map((m) => m.toObject());
+    const microFrontends: IMicroFrontend[] = await query
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
+      .lean();
 
     const total = await MicroFrontend.find({
       name: { $regex: command.name },
@@ -264,11 +262,11 @@ const microFrontendMongooseRepository = {
     return { microFrontends, total };
   },
   getByIds: async (ids: string[]): Promise<IMicroFrontend[]> => {
-    const microFrontends: IMicroFrontend[] = (
-      await MicroFrontend.find({
-        _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
-      }).populate(populationOptions)
-    ).map((m) => m.toObject());
+    const microFrontends: IMicroFrontend[] = await MicroFrontend.find({
+      _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
+    })
+      .populate(populationOptions)
+      .lean();
 
     return microFrontends;
   },

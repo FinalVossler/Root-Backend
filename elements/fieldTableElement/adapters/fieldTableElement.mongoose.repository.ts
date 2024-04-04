@@ -31,7 +31,7 @@ const fieldTableElementRepository: IFieldTableElementRepository = {
       throw new Error("Old field table element not found");
     }
 
-    await FieldTableElement.updateOne(
+    const updatedTableElement = await FieldTableElement.findOneAndUpdate(
       { _id: command._id },
       {
         $set: {
@@ -41,18 +41,17 @@ const fieldTableElementRepository: IFieldTableElementRepository = {
             oldValue: oldFieldTableElement?.name,
           }),
         },
+      },
+      {
+        new: true,
       }
-    );
-
-    const updatedTableElement = await FieldTableElement.findById(
-      command._id
-    ).exec();
+    ).lean();
 
     if (!updatedTableElement) {
       throw new Error("Table element not found");
     }
 
-    return updatedTableElement.toObject();
+    return updatedTableElement;
   },
   createMany: async (
     commands: IFieldTableElementCreateCommand[]

@@ -19,6 +19,7 @@ import {
   IEntityReadDto,
   IEntityUpdateCommand,
   IModelReadDto,
+  IOrderReadDto,
   IUserCreateCommand,
   IUserReadDto,
   SuperRoleEnum,
@@ -277,24 +278,33 @@ describe("Entities", () => {
       .query({ entityId: entityToGetByIdAndToUseForModel1?._id.toString() })
       .set("Authorization", "Bearer " + adminToken)
       .then((res) => {
-        const result: IResponseDto<IEntityReadDto> = res.body;
+        const result: IResponseDto<{
+          entity: IEntityReadDto;
+          concernedOrder: undefined | IOrderReadDto | null;
+        }> = res.body;
 
         expect(result.success).toBeTruthy();
-        expect(result.data?._id.toString()).toEqual(
+        expect(result.data?.entity._id.toString()).toEqual(
           entityToGetByIdAndToUseForModel1?._id.toString()
         );
-        expect(result.data?.entityFieldValues.length).toEqual(
+        expect(result.data?.entity.entityFieldValues.length).toEqual(
           entityToGetByIdAndToUseForModel1?.entityFieldValues.length
         );
-        expect(result.data?.entityFieldValues[0].value.at(0)?.text).toEqual(
+        expect(
+          result.data?.entity.entityFieldValues[0].value.at(0)?.text
+        ).toEqual(
           entityToGetByIdAndToUseForModel1?.entityFieldValues[0].value.at(0)
             ?.text
         );
-        expect(result.data?.entityFieldValues[1].value.at(0)?.text).toEqual(
+        expect(
+          result.data?.entity.entityFieldValues[1].value.at(0)?.text
+        ).toEqual(
           entityToGetByIdAndToUseForModel1?.entityFieldValues[1].value.at(0)
             ?.text
         );
-        expect((result.data?.model as IModelReadDto)._id.toString()).toEqual(
+        expect(
+          (result.data?.entity.model as IModelReadDto)._id.toString()
+        ).toEqual(
           getElement(entityToGetByIdAndToUseForModel1?.model)._id.toString()
         );
       });
@@ -667,11 +677,14 @@ describe("Entities", () => {
       })
       .set("Authorization", "Bearer " + adminToken)
       .then((res) => {
-        const result: IResponseDto<IEntityReadDto> = res.body;
+        const result: IResponseDto<{
+          entity: IEntityReadDto;
+          concernedOrder: undefined | IOrderReadDto | null;
+        }> = res.body;
 
         expect(result.success).toBeTruthy();
-        expect(result.data?.customData).toBeDefined();
-        expect(result.data?.customData).toEqual(
+        expect(result.data?.entity.customData).toBeDefined();
+        expect(result.data?.entity.customData).toEqual(
           JSON.stringify({ [command.key]: command.value })
         );
       });

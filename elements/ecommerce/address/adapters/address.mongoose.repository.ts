@@ -9,17 +9,17 @@ const addressMongooseRepository: IAddressRepository = {
   getAddressById: async (addressId: string) => {
     const address = await Address.findById(
       new mongoose.Types.ObjectId(addressId)
-    );
+    ).lean();
 
-    return address?.toObject() || null;
+    return address;
   },
   getAddresses: async () => {
-    return (await Address.find({})).map((a) => a.toObject());
+    return await Address.find({}).lean();
   },
   getUserAddresses: async (userId: string) => {
-    return (
-      await Address.find({ user: new mongoose.Types.ObjectId(userId) })
-    ).map((a) => a.toObject());
+    return await Address.find({
+      user: new mongoose.Types.ObjectId(userId),
+    }).lean();
   },
   createAddress: async (command: IAddressCreateCommand) => {
     const address = await Address.create({
@@ -56,9 +56,9 @@ const addressMongooseRepository: IAddressRepository = {
         },
       },
       { new: true }
-    );
+    ).lean();
 
-    return newAddress?.toObject() as IAddress;
+    return newAddress as IAddress;
   },
   deleteAddresses: async (addressesIds: string[]) => {
     await Address.deleteMany({
@@ -70,13 +70,11 @@ const addressMongooseRepository: IAddressRepository = {
     });
   },
   setIsDefault: async (addressId: string, isDefault: boolean) => {
-    return (
-      await Address.findOneAndUpdate(
-        { _id: new mongoose.Types.ObjectId(addressId) },
-        { $set: { isDefault: Boolean(isDefault) } },
-        { new: true }
-      )
-    )?.toObject();
+    return await Address.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(addressId) },
+      { $set: { isDefault: Boolean(isDefault) } },
+      { new: true }
+    ).lean();
   },
 };
 

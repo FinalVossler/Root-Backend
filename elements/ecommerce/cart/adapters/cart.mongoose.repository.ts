@@ -20,10 +20,11 @@ const cartMongooseRepository: ICartRepository = {
       user: new mongoose.Types.ObjectId(userId),
     })
       .populate(populationOptions)
+      .lean()
       .exec();
 
     if (res.length > 0) {
-      return res[0].toObject();
+      return res[0];
     } else {
       return null;
     }
@@ -43,13 +44,15 @@ const cartMongooseRepository: ICartRepository = {
         },
       },
       { new: true }
-    ).populate(populationOptions);
+    )
+      .populate(populationOptions)
+      .lean();
 
     if (!cart) {
       throw new Error("Cart not found");
     }
 
-    return cart.toObject();
+    return cart;
   },
   deleteUserCart: async (userId: string) => {
     await Cart.deleteOne({ user: new mongoose.Types.ObjectId(userId) });

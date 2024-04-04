@@ -41,7 +41,7 @@ const microFrontendComponentMongooseRepository: IMicroFrontendComponentRepositor
     },
     getById: async (id: string): Promise<IMicroFrontendComponent> => {
       const microFrontendComponent: IMicroFrontendComponent | null | undefined =
-        (await MicroFrontendComponent.findById(id))?.toObject();
+        await MicroFrontendComponent.findById(id).lean();
 
       if (!microFrontendComponent) {
         throw new Error("MicroFrontend not found");
@@ -58,11 +58,10 @@ const microFrontendComponentMongooseRepository: IMicroFrontendComponentRepositor
       return;
     },
     getByIds: async (ids: string[]): Promise<IMicroFrontendComponent[]> => {
-      const microFrontends: IMicroFrontendComponent[] = (
+      const microFrontends: IMicroFrontendComponent[] =
         await MicroFrontendComponent.find({
           _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
-        })
-      ).map((m) => m.toObject());
+        }).lean();
 
       return microFrontends;
     },

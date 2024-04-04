@@ -103,9 +103,9 @@ const roleMongooseRepository = {
     return createdRole;
   },
   update: async function (command: IRoleUpdateCommand) {
-    const role = (
-      await Role.findById(command._id).populate(populationOptions)
-    )?.toObject();
+    const role = await Role.findById(command._id)
+      .populate(populationOptions)
+      .lean();
 
     if (!role) {
       throw new Error("Role not found");
@@ -161,44 +161,41 @@ const roleMongooseRepository = {
       await this.createEntityPermissions(entityPermissionsToCreate);
     // End entity permissions to create
 
-    const updatedRole = (
-      await (
-        await Role.findOneAndUpdate(
-          { _id: command._id },
-          {
-            $set: {
-              name: getNewTranslatedTextsForUpdate({
-                language: command.language,
-                newText: command.name,
-                oldValue: role.name,
-              }),
-              permissions: command.permissions,
-              entityPermissions: [
-                ...updatedEntityPermissions.map((el) => el._id),
-                ...createdEntityPermissions.map((el) => el._id),
-              ],
-            },
-          },
-          { new: true }
-        )
-      )?.populate(populationOptions)
-    )?.toObject();
+    const updatedRole = await Role.findOneAndUpdate(
+      { _id: command._id },
+      {
+        $set: {
+          name: getNewTranslatedTextsForUpdate({
+            language: command.language,
+            newText: command.name,
+            oldValue: role.name,
+          }),
+          permissions: command.permissions,
+          entityPermissions: [
+            ...updatedEntityPermissions.map((el) => el._id),
+            ...createdEntityPermissions.map((el) => el._id),
+          ],
+        },
+      },
+      { new: true }
+    )
+      .populate(populationOptions)
+      .lean();
 
     return updatedRole;
   },
   getRoles: async (
     command: IRolesGetCommand
   ): Promise<{ total: number; roles: IRole[] }> => {
-    const roles: IRole[] = (
-      await Role.find({})
-        .sort({ createdAt: -1 })
-        .skip(
-          (command.paginationCommand.page - 1) * command.paginationCommand.limit
-        )
-        .limit(command.paginationCommand.limit)
-        .populate(populationOptions)
-        .exec()
-    ).map((r) => r.toObject());
+    const roles: IRole[] = await Role.find({})
+      .sort({ createdAt: -1 })
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
+      .lean()
+      .exec();
 
     const total: number = await Role.find({}).count();
 
@@ -234,14 +231,13 @@ const roleMongooseRepository = {
       name: { $elemMatch: { text: { $regex: command.name } } },
     });
 
-    const roles: IRole[] = (
-      await query
-        .skip(
-          (command.paginationCommand.page - 1) * command.paginationCommand.limit
-        )
-        .limit(command.paginationCommand.limit)
-        .populate(populationOptions)
-    ).map((r) => r.toObject());
+    const roles: IRole[] = await query
+      .skip(
+        (command.paginationCommand.page - 1) * command.paginationCommand.limit
+      )
+      .limit(command.paginationCommand.limit)
+      .populate(populationOptions)
+      .lean();
 
     const total = await Role.find({
       name: { $elemMatch: { text: { $regex: command.name } } },
@@ -252,15 +248,13 @@ const roleMongooseRepository = {
   getRolesWithEntityPermissions: async (
     entityPermissionsIds: string[]
   ): Promise<IRole[]> => {
-    const roles: IRole[] = (
-      await Role.find({
-        entityPermissions: {
-          $in: entityPermissionsIds.map(
-            (id) => new mongoose.Types.ObjectId(id)
-          ),
-        },
-      }).populate(populationOptions)
-    ).map((r) => r.toObject());
+    const roles: IRole[] = await Role.find({
+      entityPermissions: {
+        $in: entityPermissionsIds.map((id) => new mongoose.Types.ObjectId(id)),
+      },
+    })
+      .populate(populationOptions)
+      .lean();
 
     return roles;
   },

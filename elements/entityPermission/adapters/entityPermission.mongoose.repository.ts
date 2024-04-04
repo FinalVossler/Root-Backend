@@ -185,13 +185,15 @@ const entityPermissionMongooseRepository: IEntityPermissionRepository = {
       }
     ).exec();
 
-    const entityPermission = await EntityPermission.findById(command._id);
+    const entityPermission = await EntityPermission.findById(
+      command._id
+    ).lean();
 
     if (!entityPermission) {
       throw new Error("Entity permission not found");
     }
 
-    return entityPermission.toObject();
+    return entityPermission;
   },
   deleteByIds: async (ids: string[]): Promise<void> => {
     for (let i = 0; i < ids.length; i++) {
@@ -250,9 +252,9 @@ const entityPermissionMongooseRepository: IEntityPermissionRepository = {
   ): Promise<IEntityPermission[]> => {
     const entityPermissions = await EntityPermission.find({
       model: new mongoose.Types.ObjectId(modelId),
-    });
+    }).lean();
 
-    return entityPermissions.map((e) => e.toObject());
+    return entityPermissions;
   },
 };
 

@@ -30,34 +30,34 @@ const entityEventNotificationMongooseRepository: IEntityEventNotificatonReposito
         throw new Error("upating an event notification with no idea");
       }
 
-      await EntityEventNotification.updateOne(
-        { _id: command._id },
-        {
-          $set: {
-            title: getNewTranslatedTextsForUpdate({
-              language: command.language,
-              newText: command.title,
-              oldValue: oldEntityEventNotification.title,
-            }),
-            text: getNewTranslatedTextsForUpdate({
-              language: command.language,
-              newText: command.text,
-              oldValue: oldEntityEventNotification.text,
-            }),
-            trigger: command.trigger,
+      const entityEventNotification =
+        await EntityEventNotification.findOneAndUpdate(
+          { _id: command._id },
+          {
+            $set: {
+              title: getNewTranslatedTextsForUpdate({
+                language: command.language,
+                newText: command.title,
+                oldValue: oldEntityEventNotification.title,
+              }),
+              text: getNewTranslatedTextsForUpdate({
+                language: command.language,
+                newText: command.text,
+                oldValue: oldEntityEventNotification.text,
+              }),
+              trigger: command.trigger,
+            },
           },
-        }
-      ).exec();
-
-      const entityEventNotification = await EntityEventNotification.findById(
-        command._id
-      );
+          { new: true }
+        )
+          .lean()
+          .exec();
 
       if (!entityEventNotification) {
         throw new Error("entity event notification not found");
       }
 
-      return entityEventNotification.toObject();
+      return entityEventNotification;
     },
     deleteByIds: async (ids: string[]): Promise<void> => {
       await EntityEventNotification.deleteMany({
