@@ -213,7 +213,10 @@ const createRoleService = (
       // If the owner isn't defined, but we passed the ownerPermission, then we are trying to only read one's own elements.
       // Check if one's own elements are permitted.
       if ((!elementsOwners || elementsOwners.length === 0) && ownerPermission) {
-        return (this as IRoleService).hasPermission({ user, permission });
+        return (this as IRoleService).hasPermission({
+          user,
+          permission: ownerPermission,
+        });
       }
 
       return false;

@@ -131,13 +131,17 @@ const createModelService = (
     modelsIds: string[],
     currentUser: IUser
   ): Promise<void> => {
+    const models = await modelRepository.getAllModelsByIds(modelsIds);
+
     roleService.checkPermission({
       user: currentUser,
       permission: PermissionEnum.DeleteModel,
+      elementsOwners: models.map((model) => model.owner),
+      ownerPermission: PermissionEnum.DeleteOwnModel,
     });
 
-    for (let i = 0; i < modelsIds.length; i++) {
-      const model = await modelRepository.getById(modelsIds[i]);
+    for (let i = 0; i < models.length; i++) {
+      const model = models[i];
 
       if (model) {
         // Deleting the entities created based on the deleted model
@@ -165,7 +169,7 @@ const createModelService = (
         }
       }
 
-      await modelRepository.deleteModel(modelsIds[i]);
+      await modelRepository.deleteModel(model._id.toString());
     }
   },
   searchModels: async (

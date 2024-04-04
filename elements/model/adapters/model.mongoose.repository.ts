@@ -270,6 +270,19 @@ const modelMongooseRepository: IModelRepository = {
 
     return { models, total };
   },
+  getAllModelsByIds: async (ids: string[]) => {
+    const queryConditions = {
+      _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
+    };
+
+    const models: IModel[] = await Model.find(queryConditions)
+      .sort({ createAt: -1 })
+      .populate(populationOptions)
+      .lean()
+      .exec();
+
+    return models;
+  },
   updateModelFields: async (params: {
     modelId: string;
     newModelFields: IModelField[];

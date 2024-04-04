@@ -27,6 +27,7 @@ interface IModelRepository {
     command: IModelsGetCommand,
     ids: string[]
   ) => Promise<{ total: number; models: IModel[] }>;
+  getAllModelsByIds: (ids: string[]) => Promise<IModel[]>;
   updateModelFields: (params: {
     modelId: string;
     newModelFields: IModelField[];

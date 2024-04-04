@@ -8,6 +8,7 @@ import { fieldToReadDto } from "../../field/ports/field.toReadDto";
 import { eventToReadDto } from "../../event/ports/event.toReadDto";
 import { modelStateToReadDto } from "../../modelState/ports/modelState.toReadDto";
 import IModel, { IModelField, IModelFieldCondition } from "./interfaces/IModel";
+import { userToReadDto } from "../../user/ports/user.toReadDto";
 
 export const modelToReadDto = (
   model: IModel | string
@@ -45,6 +46,8 @@ export const modelToReadDto = (
         : undefined,
     isForOrders: Boolean(model.isForOrders),
     orderAssociationConfig: model.orderAssociationConfig,
+
+    owner: model.owner ? userToReadDto(model.owner) : undefined,
 
     createdAt: model.createdAt,
     updatedAt: model.updatedAt,
