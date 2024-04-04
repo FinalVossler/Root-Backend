@@ -130,7 +130,6 @@ const createRoleService = (
         ownerPermission &&
         (!entitiesOwners || entitiesOwners?.length === 0)
       ) {
-        console.log("ownerPemrission", ownerPermission);
         return (this as IRoleService).hasEntityPermission({
           user,
           modelId,

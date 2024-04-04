@@ -1,8 +1,4 @@
 import mongoose from "mongoose";
-
-import Model from "./model.mongoose.model";
-import getNewTranslatedTextsForUpdate from "../../../utils/getNewTranslatedTextsForUpdate";
-import modelStateMongooseRepository from "../../modelState/adapters/modelState.mongoose.repository";
 import {
   IEventCommand,
   IModelCreateCommand,
@@ -10,6 +6,10 @@ import {
   IModelsGetCommand,
   IModelsSearchCommand,
 } from "roottypes";
+
+import Model from "./model.mongoose.model";
+import getNewTranslatedTextsForUpdate from "../../../utils/getNewTranslatedTextsForUpdate";
+import modelStateMongooseRepository from "../../modelState/adapters/modelState.mongoose.repository";
 import IModel, { IModelField } from "../ports/interfaces/IModel";
 import IModelRepository from "../ports/interfaces/IModelRepository";
 import { IEventRequestHeader } from "../../event/ports/interfaces/IEvent";
@@ -67,6 +67,7 @@ const modelMongooseRepository: IModelRepository = {
       states: modelStates.map((el) => el._id),
       subStates: modelSubstates.map((el) => el._id),
 
+      showInSideMenu: Boolean(command.showInSideMenu),
       isForSale: Boolean(command.isForSale),
       quantityField: command.quantityFieldId,
       priceField: command.priceFieldId,
@@ -165,6 +166,7 @@ const modelMongooseRepository: IModelRepository = {
             imageField: command.imageFieldId,
 
             isForOrders: command.isForOrders,
+            showInSideMenu: command.showInSideMenu,
             orderAssociationConfig: command.orderAssociationConfig,
           },
         },

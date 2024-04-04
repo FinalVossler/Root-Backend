@@ -29,6 +29,7 @@ export const modelToReadDto = (
       modelStateToReadDto(subState)
     ),
 
+    showInSideMenu: model.showInSideMenu,
     isForSale: Boolean(model.isForSale),
     quantityField:
       model.quantityField !== undefined

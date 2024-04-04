@@ -10,12 +10,10 @@ import IWebsiteConfigurationRepository from "../ports/interfaces/IWebsiteConfigu
 const websiteConfigurationMongooseRepository: IWebsiteConfigurationRepository =
   {
     get: async (): Promise<IWebsiteConfiguration> => {
-      const configurations: IWebsiteConfiguration[] = (
+      const configurations: IWebsiteConfiguration[] =
         await WebsiteConfiguration.find()
-          .populate("tabIcon")
-          .populate("logo1")
-          .populate("logo2")
-      ).map((w) => w.toObject());
+          .populate(websiteConfigurationPopulationOptions)
+          .lean();
 
       if (configurations.length === 0) {
         const newConfiguration: IWebsiteConfiguration =
@@ -46,7 +44,7 @@ const websiteConfigurationMongooseRepository: IWebsiteConfigurationRepository =
         logo2 = await fileRepository.create(command.logo2);
       }
 
-      await WebsiteConfiguration.updateOne(
+      return await WebsiteConfiguration.findOneAndUpdate(
         { _id: configuration._id },
         {
           $set: {
@@ -72,10 +70,11 @@ const websiteConfigurationMongooseRepository: IWebsiteConfigurationRepository =
             automaticallyAssignedRoleAtRegistration:
               command.automaticallyAssignedRoleIdAtRegistration,
           },
-        }
-      );
-
-      return await websiteConfigurationMongooseRepository.get();
+        },
+        { new: true }
+      )
+        .populate(websiteConfigurationPopulationOptions)
+        .lean();
     },
     create: async (): Promise<IWebsiteConfiguration> => {
       const configuration: IWebsiteConfiguration = (
@@ -100,5 +99,14 @@ const websiteConfigurationMongooseRepository: IWebsiteConfigurationRepository =
       return configuration;
     },
   };
+
+const websiteConfigurationPopulationOptions = [
+  {
+    path: "tabIcon",
+    model: "file",
+  },
+  { path: "logo1", model: "file" },
+  { path: "logo2", model: "file" },
+];
 
 export default websiteConfigurationMongooseRepository;

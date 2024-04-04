@@ -21,7 +21,7 @@ import IUserService from "../../user/ports/interfaces/IUserService";
 import IUser from "../../user/ports/interfaces/IUser";
 import IModel, { IModelField } from "../../model/ports/interfaces/IModel";
 import IRole from "../../role/ports/interfaces/IRole";
-import IEntity, { IEntityFieldValue } from "./interfaces/IEntity";
+import IEntity from "./interfaces/IEntity";
 import IEntityService from "./interfaces/IEntityService";
 import IEntityEventNotificationService from "../../entityEventNotification/ports/interfaces/IEntityEventNotificationService";
 import IEntityPermission from "../../entityPermission/ports/interfaces/IEntityPermission";
@@ -30,7 +30,6 @@ import IFieldTableElement from "../../fieldTableElement/ports/IFieldTableElement
 import { getElement, getElementId } from "../../../utils/getElement";
 import IOrderRepository from "../../ecommerce/order/ports/interfaces/IOrderRepository";
 import { orderService } from "../../../ioc";
-import IOrderService from "../../ecommerce/order/ports/interfaces/IOrderService";
 
 const createEntityService = (
   roleService: IRoleService,

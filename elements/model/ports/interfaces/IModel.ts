@@ -13,6 +13,7 @@ export interface IModel {
   states?: IModelState[];
   subStates?: IModelState[];
 
+  showInSideMenu?: boolean;
   isForSale?: boolean;
   quantityField?: IField | string;
   priceField?: IField | string;

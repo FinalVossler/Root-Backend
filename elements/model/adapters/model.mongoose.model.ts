@@ -75,6 +75,10 @@ const ModelSchema = new mongoose.Schema<IModel>(
         ref: "modelState",
       },
     ],
+    showInSideMenu: {
+      type: mongoose.SchemaTypes.Boolean,
+      required: false,
+    },
     isForSale: {
       type: mongoose.SchemaTypes.Boolean,
       required: false,
