@@ -51,6 +51,7 @@ describe("Orders", () => {
   let paymentMethod: IPaymentMethod | undefined;
 
   let orderToUpdateAndCheckout: IOrder | undefined;
+  let createdOrder: IOrderReadDto | null;
 
   beforeAll(async () => {
     const promises: Promise<IField>[] = [];
@@ -177,6 +178,10 @@ describe("Orders", () => {
         orderToUpdateAndCheckout._id.toString(),
       ]);
     }
+
+    if (createdOrder) {
+      orderMongooseRepository.deleteOrders([createdOrder._id.toString()]);
+    }
   });
 
   it("should create an order and make sure the checkout session id and url are generated and that the quantity was modified", () => {
@@ -211,6 +216,7 @@ describe("Orders", () => {
       .then((res) => {
         const result: IResponseDto<IOrderReadDto> = res.body;
 
+        createdOrder = result.data;
         expect(result.success).toBeTruthy();
         expect(result.data?.shippingAddress.city).toEqual(
           createOrderCommand.shippingAddress.city

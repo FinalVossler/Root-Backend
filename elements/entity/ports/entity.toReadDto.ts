@@ -11,8 +11,10 @@ import IEntity, { IEntityFieldValue } from "./interfaces/IEntity";
 import shippingMethodToReadDto from "../../ecommerce/shippingMethod/ports/shippingMethod.toReadDto";
 
 export const entityToReadDto = (
-  entity: IEntity | string
+  entity: IEntity | string | undefined | null
 ): IEntityReadDto | string => {
+  if (!entity) return "";
+
   if (typeof entity === "string" || Object.keys(entity).length === 0) {
     return entity.toString();
   }
