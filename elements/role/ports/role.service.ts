@@ -15,6 +15,7 @@ import IUser from "../../user/ports/interfaces/IUser";
 import IEntityPermission from "../../entityPermission/ports/interfaces/IEntityPermission";
 import IModel from "../../model/ports/interfaces/IModel";
 import IEntityPermissionService from "../../entityPermission/ports/interfaces/IEntityPermissionService";
+import { getElementId } from "../../../utils/getElement";
 
 const createRoleService = (
   roleRepository: IRoleRepository,
@@ -112,17 +113,24 @@ const createRoleService = (
     if (!hasAccess) {
       if (entitiesOwners && entitiesOwners.length > 0 && ownerPermission) {
         const isOwner = entitiesOwners.every(
-          (owner) =>
-            (typeof owner === "string" ? owner : owner?._id.toString()) ===
-            user._id.toString()
+          (owner) => getElementId(owner) === user._id.toString()
         );
 
-        return isOwner;
+        if (isOwner) {
+          return (this as IRoleService).hasEntityPermission({
+            user,
+            modelId,
+            staticPermission: ownerPermission,
+          });
+        } else {
+          return false;
+        }
       }
       if (
         ownerPermission &&
         (!entitiesOwners || entitiesOwners?.length === 0)
       ) {
+        console.log("ownerPemrission", ownerPermission);
         return (this as IRoleService).hasEntityPermission({
           user,
           modelId,

@@ -222,7 +222,7 @@ const createEntityService = (
     command: IEntityUpdateCommand,
     currentUser: IUser
   ): Promise<IEntity> {
-    const oldEntity: IEntity = await this.getById(
+    const { entity: oldEntity } = await (this as IEntityService).getById(
       command._id.toString(),
       currentUser
     );
