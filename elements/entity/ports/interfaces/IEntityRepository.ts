@@ -36,7 +36,7 @@ interface IEntityRepository {
     command: IEntitiesSetCustomDataKeyValueCommand
   ) => Promise<void>;
   deleteByModel: (modelId: string) => Promise<void>;
-  copyEntities: (ids: string[]) => Promise<IEntity[]>;
+  copyEntities: (ids: string[], ownerId: string) => Promise<IEntity[]>;
   getEntityChildren: (entityId: string) => Promise<IEntity[]>;
   updateEntitiesParents: (
     entitiesIds: string[],

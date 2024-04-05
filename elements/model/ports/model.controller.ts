@@ -79,6 +79,21 @@ const createModelController = (
       },
     };
   },
+
+  copyModels: async (
+    req: IRequest<{ modelsIds: string[] }>,
+    currentUser: IUser
+  ) => {
+    const copiedEntities = await modelService.copyModels(
+      req.body.modelsIds,
+      currentUser
+    );
+
+    return {
+      success: true,
+      data: copiedEntities.map((e) => modelToReadDto(e) as IModelReadDto),
+    };
+  },
 });
 
 export default createModelController;

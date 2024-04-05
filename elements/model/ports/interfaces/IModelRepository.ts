@@ -32,6 +32,8 @@ interface IModelRepository {
     modelId: string;
     newModelFields: IModelField[];
   }) => Promise<void>;
+  getUnpopulatedByIds: (ids: string[]) => Promise<IModel[]>;
+  copyModels: (ids: string[], ownerId: string) => Promise<IModel[]>;
 }
 
 export default IModelRepository;

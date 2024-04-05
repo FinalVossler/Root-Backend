@@ -14,6 +14,7 @@ import IModel, { IModelField } from "../ports/interfaces/IModel";
 import IModelRepository from "../ports/interfaces/IModelRepository";
 import { IEventRequestHeader } from "../../event/ports/interfaces/IEvent";
 import IModelState from "../../modelState/ports/interfaces/IModelState";
+import _ from "lodash";
 
 const modelMongooseRepository: IModelRepository = {
   create: async (
@@ -79,11 +80,11 @@ const modelMongooseRepository: IModelRepository = {
       owner: new mongoose.Types.ObjectId(ownerId),
     });
 
-    return (await model.populate(populationOptions)).toObject();
+    return (await model.populate(modelPopulationOptions)).toObject();
   },
   update: async (command: IModelUpdateCommand): Promise<IModel> => {
     const model: IModel | null = (await Model.findById(command._id).populate(
-      populationOptions
+      modelPopulationOptions
     )) as IModel;
 
     if (!model) throw new Error("Model doesn't exist");
@@ -170,7 +171,7 @@ const modelMongooseRepository: IModelRepository = {
       },
       { new: true }
     )
-      .populate(populationOptions)
+      .populate(modelPopulationOptions)
       .lean();
 
     if (!newModel) {
@@ -193,7 +194,7 @@ const modelMongooseRepository: IModelRepository = {
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
       .limit(command.paginationCommand.limit)
-      .populate(populationOptions)
+      .populate(modelPopulationOptions)
       .lean()
       .exec();
 
@@ -203,7 +204,7 @@ const modelMongooseRepository: IModelRepository = {
   },
   getById: async (id: string) => {
     const model = await Model.findById(id)
-      .populate(populationOptions)
+      .populate(modelPopulationOptions)
       .lean()
       .exec();
 
@@ -213,7 +214,7 @@ const modelMongooseRepository: IModelRepository = {
     const models: IModel[] = await Model.find({
       modelFields: { $elemMatch: { field: { _id: fieldId } } },
     })
-      .populate(populationOptions)
+      .populate(modelPopulationOptions)
       .lean();
 
     return models;
@@ -241,7 +242,7 @@ const modelMongooseRepository: IModelRepository = {
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
       .limit(command.paginationCommand.limit)
-      .populate(populationOptions)
+      .populate(modelPopulationOptions)
       .lean();
 
     const total = await Model.find(conditionsQuery).count();
@@ -262,7 +263,7 @@ const modelMongooseRepository: IModelRepository = {
         (command.paginationCommand.page - 1) * command.paginationCommand.limit
       )
       .limit(command.paginationCommand.limit)
-      .populate(populationOptions)
+      .populate(modelPopulationOptions)
       .lean()
       .exec();
 
@@ -277,7 +278,7 @@ const modelMongooseRepository: IModelRepository = {
 
     const models: IModel[] = await Model.find(queryConditions)
       .sort({ createAt: -1 })
-      .populate(populationOptions)
+      .populate(modelPopulationOptions)
       .lean()
       .exec();
 
@@ -292,9 +293,44 @@ const modelMongooseRepository: IModelRepository = {
       { $set: { modelFields: params.newModelFields } }
     );
   },
+  getUnpopulatedByIds: async (ids: string[]) => {
+    return await Model.find({
+      _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
+    }).lean();
+  },
+  copyModels: async function (ids: string[], ownerId: string) {
+    const modelsToCopy = await (this as IModelRepository).getUnpopulatedByIds(
+      ids
+    );
+
+    const copyPromises: Promise<IModel>[] = [];
+
+    modelsToCopy.forEach((model) => {
+      const promise = new Promise<IModel>(async (resolve, reject) => {
+        const newModelObject = _.cloneDeep(model);
+        // @ts-ignore
+        delete newModelObject._id;
+        newModelObject.owner = ownerId;
+
+        const copiedModel = (
+          await (
+            await Model.create(newModelObject)
+          ).populate(modelPopulationOptions)
+        ).toObject();
+
+        resolve(copiedModel);
+
+        copyPromises.push(promise);
+      });
+    });
+
+    const copiedModels = await Promise.all(copyPromises);
+
+    return copiedModels;
+  },
 };
 
-export const populationOptions = [
+export const modelPopulationOptions = [
   {
     path: "modelFields",
     populate: [
@@ -386,6 +422,10 @@ export const populationOptions = [
   {
     path: "imageField",
     model: "field",
+  },
+  {
+    path: "owner",
+    model: "user",
   },
 ];
 

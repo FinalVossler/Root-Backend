@@ -9,5 +9,6 @@ router.put("/", protectMiddleware, modelExpressController.updateModel);
 router.post("/getModels", protectMiddleware, modelExpressController.getModels);
 router.delete("/", protectMiddleware, modelExpressController.deleteModels);
 router.post("/search", protectMiddleware, modelExpressController.searchModels);
+router.post("/copy", protectMiddleware, modelExpressController.copyModels);
 
 export default router;

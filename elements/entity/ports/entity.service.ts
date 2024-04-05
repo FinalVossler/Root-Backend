@@ -594,7 +594,10 @@ const createEntityService = (
       staticPermission: EntityStaticPermissionEnum.Create,
     });
 
-    const copiedEntities = await entityRepository.copyEntities(entitiesIds);
+    const copiedEntities = await entityRepository.copyEntities(
+      entitiesIds,
+      currentUser._id.toString()
+    );
 
     return copiedEntities;
   },

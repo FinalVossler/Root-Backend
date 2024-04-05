@@ -32,6 +32,7 @@ interface IModelService {
     command: IModelsSearchCommand,
     currentUser: IUser
   ) => Promise<{ models: IModel[]; total: number }>;
+  copyModels: (modelsIds: string[], currentUser: IUser) => Promise<IModel[]>;
 }
 
 export default IModelService;

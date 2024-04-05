@@ -185,6 +185,19 @@ const createModelService = (
 
     return { models, total };
   },
+  copyModels: async function (modelsIds: string[], currentUser: IUser) {
+    roleService.checkPermission({
+      user: currentUser,
+      permission: PermissionEnum.CreateModel,
+    });
+
+    const copiedModels = await modelRepository.copyModels(
+      modelsIds,
+      currentUser._id.toString()
+    );
+
+    return copiedModels;
+  },
 });
 
 export default createModelService;

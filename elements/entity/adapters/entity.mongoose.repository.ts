@@ -341,7 +341,7 @@ const entityMongooseRepository: IEntityRepository = {
   deleteByModel: async (modelId: string) => {
     await Entity.deleteMany({ model: new mongoose.Types.ObjectId(modelId) });
   },
-  copyEntities: async function (ids: string[]) {
+  copyEntities: async function (ids: string[], ownerId: string) {
     const entitiesToCopy = await (
       this as IEntityRepository
     ).getUnpopulatedByIds(ids);
@@ -353,6 +353,8 @@ const entityMongooseRepository: IEntityRepository = {
         const newEntityObject = { ...entity };
         // @ts-ignore
         delete newEntityObject._id;
+        newEntityObject.owner = ownerId;
+
         const copiedEntity = await Entity.create(newEntityObject);
 
         resolve(copiedEntity.populate(entityPopulationOptions));

@@ -32,6 +32,11 @@ type IModelController = {
     req: IRequest<IModelsSearchCommand>,
     currentUser: IUser
   ) => Promise<IResponseDto<IPaginationResponse<IModelReadDto>>>;
+
+  copyModels: (
+    req: IRequest<{ modelsIds: string[] }>,
+    currentUser: IUser
+  ) => Promise<IResponseDto<IModelReadDto[]>>;
 };
 
 export default IModelController;
