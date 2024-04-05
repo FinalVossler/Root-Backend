@@ -15,7 +15,7 @@ import IUser from "../../user/ports/interfaces/IUser";
 import IEntityPermission from "../../entityPermission/ports/interfaces/IEntityPermission";
 import IModel from "../../model/ports/interfaces/IModel";
 import IEntityPermissionService from "../../entityPermission/ports/interfaces/IEntityPermissionService";
-import { getElementId } from "../../../utils/getElement";
+import { getElement, getElementId } from "../../../utils/getElement";
 
 const createRoleService = (
   roleRepository: IRoleRepository,
@@ -89,6 +89,7 @@ const createRoleService = (
     staticPermission,
     entitiesOwners,
     ownerPermission,
+    modelOwner,
   }: {
     user: IUser;
     modelId: string;
@@ -96,8 +97,14 @@ const createRoleService = (
 
     entitiesOwners?: (IUser | string | undefined)[];
     ownerPermission?: EntityStaticPermissionEnum;
+    modelOwner?: IUser | string | undefined;
   }): boolean {
     if (user.superRole === SuperRoleEnum.SuperAdmin) {
+      return true;
+    }
+
+    // A model owner has all the permissions on its entities
+    if (modelOwner && user._id.toString() === getElementId(modelOwner)) {
       return true;
     }
 
@@ -148,13 +155,16 @@ const createRoleService = (
     staticPermission,
     entitiesOwners,
     ownerPermission,
+    modelOwner,
   }: {
     user: IUser;
     modelId: string;
     staticPermission: EntityStaticPermissionEnum;
     entitiesOwners?: (IUser | string | undefined)[];
     ownerPermission?: EntityStaticPermissionEnum;
+    modelOwner?: IUser | string | undefined;
   }): never | void {
+    console.log("model owner here", modelOwner);
     if (
       !(this as IRoleService).hasEntityPermission({
         user,
@@ -162,6 +172,7 @@ const createRoleService = (
         staticPermission,
         entitiesOwners,
         ownerPermission,
+        modelOwner,
       })
     ) {
       throw new Error("Permission denied");

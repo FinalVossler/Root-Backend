@@ -172,7 +172,7 @@ const createFieldService = (
         permission: PermissionEnum.CreateField,
       });
 
-      const fields: IField[] = await fieldRepository.copy(ids);
+      const fields: IField[] = await fieldRepository.copy(ids, currentUser._id);
 
       return fields;
     },

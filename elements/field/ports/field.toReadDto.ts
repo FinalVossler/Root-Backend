@@ -8,6 +8,7 @@ import {
 import { eventToReadDto } from "../../event/ports/event.toReadDto";
 import { IField, IFieldOption } from "./interfaces/IField";
 import IFieldTableElement from "../../fieldTableElement/ports/IFieldTableElement";
+import { userToReadDto } from "../../user/ports/user.toReadDto";
 
 export const fieldToReadDto = (
   field: IField | string
@@ -33,6 +34,7 @@ export const fieldToReadDto = (
       yearTable: Boolean(field.tableOptions?.yearTable),
       name: field.tableOptions?.name,
     },
+    owner: field.owner ? userToReadDto(field.owner) : undefined,
     createdAt: field.createdAt,
     updatedAt: field.updatedAt,
   };

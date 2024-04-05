@@ -9,7 +9,6 @@ import {
   IEntityUpdateCommand,
   EntityStaticPermissionEnum,
   SuperRoleEnum,
-  IUserReadDto,
 } from "roottypes";
 import _ from "lodash";
 
@@ -159,15 +158,17 @@ const createEntityService = (
     command: IEntityCreateCommand,
     currentUser: IUser
   ): Promise<IEntity> {
+    const model = await modelService.getById(command.modelId);
+
     roleService.checkEntityPermission({
       user: currentUser,
       staticPermission: EntityStaticPermissionEnum.Create,
       modelId: command.modelId.toString(),
+      modelOwner: model?.owner,
     });
 
     // Only check user assignment permissions when aren't adding an entity that concerns orders;
     // Because we are using the user assignment functonality to send notifications when an order information is created or updated.
-    const model = await modelService.getById(command.modelId);
     if (!model?.isForOrders) {
       const assignmentPermissionGranted: boolean = await (
         this as IEntityService
@@ -226,6 +227,10 @@ const createEntityService = (
       currentUser
     );
 
+    if (!oldEntity) {
+      throw new Error("Entity not found");
+    }
+
     roleService.checkEntityPermission({
       user: currentUser,
       staticPermission: EntityStaticPermissionEnum.Update,
@@ -233,6 +238,7 @@ const createEntityService = (
 
       entitiesOwners: [oldEntity.owner],
       ownerPermission: EntityStaticPermissionEnum.UpdateOwn,
+      modelOwner: (oldEntity.model as IModel).owner,
     });
 
     const oldAssignedUsers = [...(oldEntity.assignedUsers || [])];
@@ -303,12 +309,19 @@ const createEntityService = (
     command: IEntitiesGetCommand,
     currentUser: IUser
   ): Promise<{ entities: IEntity[]; total: number }> => {
+    const model = await modelService.getById(command.modelId);
+
+    if (!model) {
+      throw new Error("Model not found");
+    }
+
     roleService.checkEntityPermission({
       user: currentUser,
       staticPermission: EntityStaticPermissionEnum.Read,
       modelId: command.modelId.toString(),
 
       ownerPermission: EntityStaticPermissionEnum.ReadOwn,
+      modelOwner: model.owner,
     });
 
     if (
@@ -443,8 +456,9 @@ const createEntityService = (
       user: currentUser,
       staticPermission: EntityStaticPermissionEnum.Read,
       modelId: getElementId(entity.model),
+      modelOwner: (entity.model as IModel).owner,
 
-      ownerPermission: EntityStaticPermissionEnum.Read,
+      ownerPermission: EntityStaticPermissionEnum.ReadOwn,
       entitiesOwners: [entity.owner],
     });
 

@@ -302,7 +302,7 @@ const fieldMongooseRepository: IFieldRepository = {
 
     return fields;
   },
-  copy: async function (ids: string[]): Promise<IField[]> {
+  copy: async function (ids: string[], ownerId: string): Promise<IField[]> {
     const fieldsToCopy: IField[] = await this.getByIds(ids);
 
     const promises: Promise<IField>[] = [];
@@ -367,6 +367,7 @@ const fieldMongooseRepository: IFieldRepository = {
                   ...fieldEvent,
                 })),
               },
+              owner: ownerId,
             });
 
             const populatedNewField = await this.getById(
@@ -416,6 +417,7 @@ export const populationOptions = [
       },
     ],
   },
+  { path: "owner", model: "user" },
 ];
 
 export default fieldMongooseRepository;

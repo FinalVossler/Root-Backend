@@ -20,7 +20,7 @@ interface IFieldRepository {
     command: IFieldsSearchCommand
   ) => Promise<{ fields: IField[]; total: number }>;
   getByIds: (ids: string[]) => Promise<IField[]>;
-  copy: (ids: string[]) => Promise<IField[]>;
+  copy: (ids: string[], ownerId: string) => Promise<IField[]>;
 }
 
 export default IFieldRepository;

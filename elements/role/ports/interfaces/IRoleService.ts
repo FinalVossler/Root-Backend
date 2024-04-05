@@ -34,6 +34,7 @@ export default interface IRoleService {
     staticPermission: EntityStaticPermissionEnum;
     entitiesOwners?: (IUser | string | undefined)[];
     ownerPermission?: EntityStaticPermissionEnum;
+    modelOwner?: IUser | string | undefined;
   }) => boolean;
   checkEntityPermission: (command: {
     user: IUser;
@@ -41,6 +42,7 @@ export default interface IRoleService {
     staticPermission: EntityStaticPermissionEnum;
     entitiesOwners?: (IUser | string | undefined)[];
     ownerPermission?: EntityStaticPermissionEnum;
+    modelOwner?: IUser | string | undefined;
   }) => never | void;
   checkPermission: (command: {
     user?: IUser;
