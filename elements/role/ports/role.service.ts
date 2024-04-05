@@ -164,7 +164,6 @@ const createRoleService = (
     ownerPermission?: EntityStaticPermissionEnum;
     modelOwner?: IUser | string | undefined;
   }): never | void {
-    console.log("model owner here", modelOwner);
     if (
       !(this as IRoleService).hasEntityPermission({
         user,

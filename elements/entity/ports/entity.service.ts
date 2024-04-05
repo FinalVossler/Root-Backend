@@ -349,12 +349,18 @@ const createEntityService = (
     command: IEntitiesGetCommand,
     currentUser: IUser
   ): Promise<{ entities: IEntity[]; total: number }> => {
+    const model = await modelService.getById(command.modelId);
+    if (!model) {
+      throw new Error("Model not found");
+    }
+
     roleService.checkEntityPermission({
       user: currentUser,
       staticPermission: EntityStaticPermissionEnum.Read,
       modelId: command.modelId.toString(),
 
       ownerPermission: EntityStaticPermissionEnum.ReadOwn,
+      modelOwner: model.owner,
     });
 
     if (
@@ -387,6 +393,12 @@ const createEntityService = (
         entitiesIds
       );
 
+      const model = await modelService.getById(getElementId(entities[0].model));
+
+      if (!model) {
+        throw new Error("Model not found");
+      }
+
       roleService.checkEntityPermission({
         user: currentUser,
         staticPermission: EntityStaticPermissionEnum.Delete,
@@ -397,6 +409,7 @@ const createEntityService = (
 
         entitiesOwners: entities.map((e) => e.owner),
         ownerPermission: EntityStaticPermissionEnum.DeleteOwn,
+        modelOwner: model.owner,
       });
 
       //#region If an entity is used for an order, then prevent deleting it
@@ -488,16 +501,24 @@ const createEntityService = (
     command: IEntitiesSearchCommand,
     currentUser: IUser
   ): Promise<{ entities: IEntity[]; total: number }> => {
+    const model = await modelService.getById(command.modelId);
+
+    if (!model) {
+      throw new Error("Model not found");
+    }
+
     roleService.checkEntityPermission({
       user: currentUser,
       staticPermission: EntityStaticPermissionEnum.Read,
       modelId: command.modelId.toString(),
+      modelOwner: model.owner,
     });
     if (
       roleService.hasEntityPermission({
         user: currentUser,
         staticPermission: EntityStaticPermissionEnum.Read,
         modelId: command.modelId.toString(),
+        modelOwner: model.owner,
       })
     ) {
       const { entities, total } = await entityRepository.search(command);
@@ -621,17 +642,19 @@ const createEntityService = (
     if (!entity) {
       throw new Error("Entity not found");
     }
-    roleService.checkEntityPermission({
-      user: currentUser,
-      modelId: getElementId(entity.model),
-      staticPermission: EntityStaticPermissionEnum.Create,
-    });
 
     const model = await modelService.getById(getElementId(entity.model));
 
     if (!model) {
       throw new Error("Entity model not found");
     }
+
+    roleService.checkEntityPermission({
+      user: currentUser,
+      modelId: getElementId(entity.model),
+      staticPermission: EntityStaticPermissionEnum.Create,
+      modelOwner: model.owner,
+    });
 
     const variationFields: IField[] = model.modelFields
       .filter((modelField) => {
