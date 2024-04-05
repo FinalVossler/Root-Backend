@@ -36,5 +36,6 @@ export const websiteConfigurationToReadDto = (
             websiteConfiguration.automaticallyAssignedRoleAtRegistration
           )
         : undefined,
+    isSideMenuOpenByDefault: websiteConfiguration.isSideMenuOpenByDefault,
   };
 };

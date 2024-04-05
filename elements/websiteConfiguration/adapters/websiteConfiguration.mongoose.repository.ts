@@ -69,6 +69,7 @@ const websiteConfigurationMongooseRepository: IWebsiteConfigurationRepository =
             staticText: command.staticText,
             automaticallyAssignedRoleAtRegistration:
               command.automaticallyAssignedRoleIdAtRegistration,
+            isSideMenuOpenByDefault: command.isSideMenuOpenByDefault,
           },
         },
         { new: true }
@@ -92,6 +93,8 @@ const websiteConfigurationMongooseRepository: IWebsiteConfigurationRepository =
           withChat: false,
           withRegistration: false,
           withTaskManagement: false,
+          withEcommerce: false,
+          isSideMenuOpenByDefault: true,
           mainLanguages: ["en", "fr"],
         })
       ).toObject();

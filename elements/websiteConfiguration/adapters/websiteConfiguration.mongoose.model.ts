@@ -99,6 +99,10 @@ const WebsiteConfigurationSchema = new mongoose.Schema<IWebsiteConfiguration>(
       type: mongoose.SchemaTypes.ObjectId,
       ref: "role",
     },
+    isSideMenuOpenByDefault: {
+      type: mongoose.SchemaTypes.Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,

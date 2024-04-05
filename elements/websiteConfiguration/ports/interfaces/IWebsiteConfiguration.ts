@@ -20,6 +20,7 @@ export default interface IWebsiteConfiguration {
   logo1?: IFile | string;
   logo2?: IFile | string;
   automaticallyAssignedRoleAtRegistration?: IRole | string;
+  isSideMenuOpenByDefault?: boolean;
 
   staticText?: any;
 }
