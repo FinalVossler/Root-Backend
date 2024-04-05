@@ -319,9 +319,9 @@ const modelMongooseRepository: IModelRepository = {
         ).toObject();
 
         resolve(copiedModel);
-
-        copyPromises.push(promise);
       });
+
+      copyPromises.push(promise);
     });
 
     const copiedModels = await Promise.all(copyPromises);

@@ -9,6 +9,7 @@ import {
 
 import IRole from "./IRole";
 import IUser from "../../../user/ports/interfaces/IUser";
+import IModel from "../../../model/ports/interfaces/IModel";
 
 export default interface IRoleService {
   createRole: (
@@ -20,8 +21,7 @@ export default interface IRoleService {
     currentUser: IUser
   ) => Promise<IRole | null | undefined>;
   getRoles: (
-    command: IRolesGetCommand,
-    currentUser: IUser
+    command: IRolesGetCommand
   ) => Promise<{ roles: IRole[]; total: number }>;
   deleteRoles: (rolesIds: string[], currentUser: IUser) => Promise<void>;
   searchRoles: (
@@ -57,4 +57,7 @@ export default interface IRoleService {
     ownerPermission?: PermissionEnum;
   }) => boolean;
   getRolesWithEntityPermissionsForModel: (modelId: string) => Promise<IRole[]>;
+  addReadPermissionToAllRolesForANewlyCreatedModel: (
+    model: IModel
+  ) => Promise<IRole[]>;
 }

@@ -13,8 +13,9 @@ import {
 import IRole from "../ports/interfaces/IRole";
 import Role from "./role.mongoose.model";
 import IEntityPermission from "../../entityPermission/ports/interfaces/IEntityPermission";
+import IRoleRepository from "../ports/interfaces/IRoleRepository";
 
-const roleMongooseRepository = {
+const roleMongooseRepository: IRoleRepository = {
   createEntityPermissions: async (
     command: IEntityPermissionCreateCommand[]
   ): Promise<IEntityPermission[]> => {
@@ -257,6 +258,27 @@ const roleMongooseRepository = {
       .lean();
 
     return roles;
+  },
+  addEntityPermissionToRoles: async function (
+    command: IEntityPermissionCreateCommand,
+    rolesIds: string[]
+  ) {
+    const roles: (IRole | null)[] = [];
+
+    for (let i = 0; i < rolesIds.length; i++) {
+      const createdEntityPermissions: IEntityPermission[] = await (
+        this as IRoleRepository
+      ).createEntityPermissions([command]);
+      roles.push(
+        await Role.findOneAndUpdate(
+          { _id: new mongoose.Types.ObjectId(rolesIds[i]) },
+          { $push: { entityPermissions: createdEntityPermissions[0]._id } },
+          { new: true }
+        ).populate(populationOptions)
+      );
+    }
+
+    return roles.filter((r) => r !== null) as IRole[];
   },
 };
 

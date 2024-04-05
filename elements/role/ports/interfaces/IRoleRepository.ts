@@ -30,6 +30,10 @@ interface IRoleRepository {
   getRolesWithEntityPermissions: (
     entityPermissionsIds: string[]
   ) => Promise<IRole[]>;
+  addEntityPermissionToRoles: (
+    entityPermissionCommand: IEntityPermissionCreateCommand,
+    rolesIds: string[]
+  ) => Promise<IRole[]>;
 }
 
 export default IRoleRepository;

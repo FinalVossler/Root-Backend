@@ -358,9 +358,8 @@ const entityMongooseRepository: IEntityRepository = {
         const copiedEntity = await Entity.create(newEntityObject);
 
         resolve(copiedEntity.populate(entityPopulationOptions));
-
-        copyPromises.push(promise);
       });
+      copyPromises.push(promise);
     });
 
     const copiedEntities = await Promise.all(copyPromises);

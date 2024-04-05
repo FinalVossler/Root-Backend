@@ -27,10 +27,7 @@ const createModelService = (
   modelStateRepository: IModelStateRepository,
   entityRepository: IEntityRepository
 ): IModelService => ({
-  createModel: async (
-    command: IModelCreateCommand,
-    currentUser: IUser
-  ): Promise<IModel> => {
+  createModel: async (command: IModelCreateCommand, currentUser: IUser) => {
     roleService.checkPermission({
       user: currentUser,
       permission: PermissionEnum.CreateModel,
@@ -40,6 +37,9 @@ const createModelService = (
       command,
       currentUser._id.toString()
     );
+
+    // Now make all available roles able to read this model
+    await roleService.addReadPermissionToAllRolesForANewlyCreatedModel(model);
 
     return model;
   },
@@ -195,6 +195,12 @@ const createModelService = (
       modelsIds,
       currentUser._id.toString()
     );
+
+    for (let i = 0; i < copiedModels.length; i++) {
+      await roleService.addReadPermissionToAllRolesForANewlyCreatedModel(
+        copiedModels[i]
+      );
+    }
 
     return copiedModels;
   },

@@ -32,7 +32,7 @@ const createRoleController = (roleService: IRoleService): IRoleController => ({
   },
   getRoles: async (req: IRequest<IRolesGetCommand>, currentUser: IUser) => {
     const command: IRolesGetCommand = req.body;
-    const { roles, total } = await roleService.getRoles(command, currentUser);
+    const { roles, total } = await roleService.getRoles(command);
 
     return {
       success: true,

@@ -46,8 +46,7 @@ const createRoleService = (
     return role;
   },
   getRoles: async function (
-    command: IRolesGetCommand,
-    currentUser: IUser
+    command: IRolesGetCommand
   ): Promise<{ roles: IRole[]; total: number }> {
     // Code commented. Roles should always be activated. We need to get the roles when assigning entities to users by roles
     // roleService.checkPermission({
@@ -266,6 +265,32 @@ const createRoleService = (
       entityPermissions.map((el) => el._id.toString())
     );
     return roles;
+  },
+  addReadPermissionToAllRolesForANewlyCreatedModel: async function (
+    model: IModel
+  ) {
+    const roles = (
+      await (this as IRoleService).getRoles({
+        paginationCommand: { limit: 9999, page: 1 },
+      })
+    ).roles;
+
+    const updatedRoles = await roleRepository.addEntityPermissionToRoles(
+      {
+        entityEventNotifications: [],
+        entityFieldPermissions: [],
+        entityUserAssignmentPermissionsByRole: {
+          canAssignToUserFromSameRole: true,
+          otherRolesIds: [],
+        },
+        language: "en",
+        modelId: model._id.toString(),
+        permissions: [EntityStaticPermissionEnum.Read],
+      },
+      roles.map((r) => r._id.toString())
+    );
+
+    return updatedRoles;
   },
 });
 
