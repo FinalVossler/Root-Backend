@@ -62,10 +62,12 @@ const postMongooseRepository: IPostRepository = {
       );
     }
 
-    const posts: IPost[] = await Post.find({
-      posterId: command.userId,
+    const conditionsQuery = {
+      poster: new mongoose.Types.ObjectId(command.userId),
       visibility: { $in: visibilities },
-    })
+    };
+
+    const posts: IPost[] = await Post.find(conditionsQuery)
       .populate(populationOptions)
       .sort({ createdAt: -1 })
       .skip(
@@ -75,10 +77,7 @@ const postMongooseRepository: IPostRepository = {
       .lean()
       .exec();
 
-    const total: number = await Post.find({
-      posterId: command.userId,
-      visibility: { $in: command.visibilities },
-    }).count();
+    const total: number = await Post.find(conditionsQuery).count();
 
     return { posts, total };
   },
