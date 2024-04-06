@@ -2,6 +2,7 @@ import {
   FieldTypeEnum,
   IModelCreateCommand,
   ModelStateTypeEnum,
+  ModelViewTypeEnum,
   SuperRoleEnum,
 } from "roottypes";
 import { IField } from "../elements/field/ports/interfaces/IField";
@@ -45,6 +46,8 @@ export const createCreateModelCommand = (
   isForSale: true,
   language: "en",
   modelEvents: [],
+  viewType: ModelViewTypeEnum.LinearView,
+  sections: [],
   modelFields: fields.map((field) => ({
     fieldId: field?._id.toString() || "",
     mainField: true,

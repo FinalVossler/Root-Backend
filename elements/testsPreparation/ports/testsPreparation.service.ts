@@ -17,6 +17,7 @@ import {
   PermissionEnum,
   EntityStaticPermissionEnum,
   SuperRoleEnum,
+  ModelViewTypeEnum,
 } from "roottypes";
 
 import Field from "../../field/adapters/field.mongoose.model";
@@ -452,7 +453,8 @@ const createTestsPreparationService = (
         name: "Case",
         modelFields: [],
         isForOrders: false,
-
+        viewType: ModelViewTypeEnum.LinearView,
+        sections: [],
         states: [
           {
             exclusive: false,
@@ -534,6 +536,9 @@ const createTestsPreparationService = (
         modelEvents: [],
         name: model.name?.at(0)?.text || "",
         isForOrders: false,
+
+        viewType: ModelViewTypeEnum.LinearView,
+        sections: [],
 
         states:
           model.states?.map((s) => ({
@@ -1477,6 +1482,8 @@ const createTestsPreparationService = (
     const productModelCreateCommand: IModelCreateCommand = {
       isForSale: true,
       language: "en",
+      viewType: ModelViewTypeEnum.LinearView,
+      sections: [],
       modelEvents: [],
       modelFields: [
         {

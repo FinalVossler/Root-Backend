@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import {
   IEventCommand,
   IModelCreateCommand,
+  IModelSection,
   IModelUpdateCommand,
   IModelsGetCommand,
   IModelsSearchCommand,
@@ -76,6 +77,17 @@ const modelMongooseRepository: IModelRepository = {
 
       isForOrders: command.isForOrders,
       orderAssociationConfig: command.orderAssociationConfig,
+      viewType: command.viewType,
+      sections: command.sections.map((el) => {
+        const section: IModelSection = {
+          direction: el.direction,
+          uuid: el.uuid,
+          customData: el.customData,
+          children: el.children,
+        };
+
+        return section;
+      }),
 
       owner: new mongoose.Types.ObjectId(ownerId),
     });
@@ -167,6 +179,17 @@ const modelMongooseRepository: IModelRepository = {
           isForOrders: command.isForOrders,
           showInSideMenu: command.showInSideMenu,
           orderAssociationConfig: command.orderAssociationConfig,
+          viewType: command.viewType,
+          sections: command.sections.map((el) => {
+            const section: IModelSection = {
+              direction: el.direction,
+              uuid: el.uuid,
+              customData: el.customData,
+              children: el.children,
+            };
+
+            return section;
+          }),
         },
       },
       { new: true }

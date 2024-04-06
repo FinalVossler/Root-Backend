@@ -3,6 +3,7 @@ import { ICartReadDto } from "roottypes";
 import ICart from "./interfaces/ICart";
 import { entityToReadDto } from "../../../entity/ports/entity.toReadDto";
 import IEntity from "../../../entity/ports/interfaces/IEntity";
+import { userToReadDto } from "../../../user/ports/user.toReadDto";
 
 const cartToReadDto = (cart: ICart): ICartReadDto => {
   return {
@@ -14,7 +15,7 @@ const cartToReadDto = (cart: ICart): ICartReadDto => {
         sided: productInformation.sided,
       };
     }),
-    user: cart.user,
+    user: cart.user ? userToReadDto(cart.user) : cart.user,
   };
 };
 

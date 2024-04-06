@@ -1,4 +1,9 @@
-import { IModelOrderAssociationConfig, ITranslatedText } from "roottypes";
+import {
+  IModelOrderAssociationConfig,
+  IModelSection,
+  ITranslatedText,
+  ModelViewTypeEnum,
+} from "roottypes";
 
 import { IEvent } from "../../../event/ports/interfaces/IEvent";
 import { IField } from "../../../field/ports/interfaces/IField";
@@ -23,6 +28,8 @@ export interface IModel {
   orderAssociationConfig?: IModelOrderAssociationConfig;
 
   owner?: IUser | string;
+  viewType?: ModelViewTypeEnum;
+  sections?: IModelSection[];
 
   createdAt: string;
   updatedAt: string;

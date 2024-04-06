@@ -48,6 +48,8 @@ export const modelToReadDto = (
     orderAssociationConfig: model.orderAssociationConfig,
 
     owner: model.owner ? userToReadDto(model.owner) : undefined,
+    sections: model.sections || [],
+    viewType: model.viewType,
 
     createdAt: model.createdAt,
     updatedAt: model.updatedAt,

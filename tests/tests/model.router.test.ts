@@ -19,6 +19,7 @@ import {
   IModelsGetCommand,
   IModelsSearchCommand,
   ModelStateTypeEnum,
+  ModelViewTypeEnum,
 } from "roottypes";
 import { IField } from "../../elements/field/ports/interfaces/IField";
 import IModel from "../../elements/model/ports/interfaces/IModel";
@@ -91,6 +92,8 @@ describe("Models", () => {
       language: "en",
       isForSale: false,
       modelEvents: [],
+      viewType: ModelViewTypeEnum.LinearView,
+      sections: [],
       modelFields: [
         {
           fieldId: field1?._id.toString() || "",
@@ -154,6 +157,9 @@ describe("Models", () => {
       _id: modelToUpdate?._id.toString() || "",
       language: "en",
       isForSale: false,
+
+      viewType: ModelViewTypeEnum.LinearView,
+      sections: [],
       modelEvents: [
         {
           eventTrigger: EventTriggerEnum.OnCreate,

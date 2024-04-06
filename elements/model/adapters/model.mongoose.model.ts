@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import IModel from "../ports/interfaces/IModel";
 import translatedTextSchema from "../../translatedText/adapters/translatedText.mongooseSchema";
 import EventSchema from "../../event/adapters/event.mongoose.model";
+import { ModelSectionSchema } from "./model.section.mongoose.model";
 
 interface IModelModel extends mongoose.Model<IModel> {}
 
@@ -116,6 +117,10 @@ const ModelSchema = new mongoose.Schema<IModel>(
       type: mongoose.SchemaTypes.ObjectId,
       ref: "user",
     },
+    viewType: {
+      type: mongoose.SchemaTypes.String,
+    },
+    sections: [ModelSectionSchema],
   },
   {
     timestamps: true,
