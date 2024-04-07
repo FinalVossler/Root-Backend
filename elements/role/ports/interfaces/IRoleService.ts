@@ -57,7 +57,7 @@ export default interface IRoleService {
     ownerPermission?: PermissionEnum;
   }) => boolean;
   getRolesWithEntityPermissionsForModel: (modelId: string) => Promise<IRole[]>;
-  addReadPermissionToAllRolesForANewlyCreatedModel: (
+  addPermissionsToAllRolesForANewlyCreatedModel: (
     model: IModel
   ) => Promise<IRole[]>;
 }

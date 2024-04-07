@@ -39,7 +39,7 @@ const createModelService = (
     );
 
     // Now make all available roles able to read this model
-    await roleService.addReadPermissionToAllRolesForANewlyCreatedModel(model);
+    await roleService.addPermissionsToAllRolesForANewlyCreatedModel(model);
 
     return model;
   },
@@ -197,7 +197,7 @@ const createModelService = (
     );
 
     for (let i = 0; i < copiedModels.length; i++) {
-      await roleService.addReadPermissionToAllRolesForANewlyCreatedModel(
+      await roleService.addPermissionsToAllRolesForANewlyCreatedModel(
         copiedModels[i]
       );
     }

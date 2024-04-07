@@ -7,6 +7,7 @@ export const ModelSectionSchema = new mongoose.Schema({
   uuid: { type: mongoose.SchemaTypes.String },
   customData: {
     fieldId: { type: mongoose.SchemaTypes.String },
+    specialField: { type: mongoose.SchemaTypes.String },
     required: false,
   },
 });

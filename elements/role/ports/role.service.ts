@@ -266,7 +266,7 @@ const createRoleService = (
     );
     return roles;
   },
-  addReadPermissionToAllRolesForANewlyCreatedModel: async function (
+  addPermissionsToAllRolesForANewlyCreatedModel: async function (
     model: IModel
   ) {
     const roles = (
@@ -285,7 +285,10 @@ const createRoleService = (
         },
         language: "en",
         modelId: model._id.toString(),
-        permissions: [EntityStaticPermissionEnum.Read],
+        permissions: [
+          EntityStaticPermissionEnum.Create,
+          EntityStaticPermissionEnum.Read,
+        ],
       },
       roles.map((r) => r._id.toString())
     );

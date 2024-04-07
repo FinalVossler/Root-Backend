@@ -63,6 +63,8 @@ import fileMongooseRepository from "../../file/adapters/file.mongoose.repository
 import Address from "../../ecommerce/address/adapters/address.mongoose.model";
 import entityMongooseRepository from "../../entity/adapters/entity.mongoose.repository";
 import WebsiteConfiguration from "../../websiteConfiguration/adapters/websiteConfiguration.mongoose.model";
+import ShippingMethod from "../../ecommerce/shippingMethod/adapters/shippingMethod.mongoose.model";
+import PaymentMethod from "../../ecommerce/paymentMethod/adapters/paymentMethod.mongoose.model";
 
 const createTestsPreparationService = (
   fieldRepository: IFieldRepository
@@ -104,6 +106,9 @@ const createTestsPreparationService = (
     await Cart.deleteMany({});
 
     await Address.deleteMany({});
+
+    await ShippingMethod.deleteMany({});
+    await PaymentMethod.deleteMany({});
 
     await WebsiteConfiguration.updateMany(
       {},
