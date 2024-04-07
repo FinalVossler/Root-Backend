@@ -62,6 +62,7 @@ import Order from "../../ecommerce/order/adapters/order.mongoose.model";
 import fileMongooseRepository from "../../file/adapters/file.mongoose.repository";
 import Address from "../../ecommerce/address/adapters/address.mongoose.model";
 import entityMongooseRepository from "../../entity/adapters/entity.mongoose.repository";
+import WebsiteConfiguration from "../../websiteConfiguration/adapters/websiteConfiguration.mongoose.model";
 
 const createTestsPreparationService = (
   fieldRepository: IFieldRepository
@@ -103,6 +104,11 @@ const createTestsPreparationService = (
     await Cart.deleteMany({});
 
     await Address.deleteMany({});
+
+    await WebsiteConfiguration.updateMany(
+      {},
+      { $set: { isSideMenuOpenByDefault: true } }
+    );
   },
   createFile: async (url: string, currentUser: IUser): Promise<IFile> => {
     const file: IFileCommand = {

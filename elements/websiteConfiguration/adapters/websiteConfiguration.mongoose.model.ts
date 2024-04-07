@@ -109,7 +109,9 @@ const WebsiteConfigurationSchema = new mongoose.Schema<IWebsiteConfiguration>(
   }
 );
 
-export default mongoose.model<
+const WebsiteConfiguration = mongoose.model<
   IWebsiteConfiguration,
   IWebsiteConfigurationModel
 >("websiteConfiguration", WebsiteConfigurationSchema);
+
+export default WebsiteConfiguration;
