@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "docker": "docker-compose -f ./docker-compose.yml up -d",
     "dev": "nodemon server.ts",
     "dev:marketMaven": "jest -t \"MarketMaven\" && nodemon server.ts",
     "start": "NODE_ENV=production&&node dist/server.js",
