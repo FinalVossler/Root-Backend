@@ -1,5 +1,6 @@
 import { Response, Request, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
+
 import IConnectedExpressRequest from "../globalTypes/IConnectedExpressRequest";
 import IUser from "../elements/user/ports/interfaces/IUser";
 import { userService } from "../ioc";

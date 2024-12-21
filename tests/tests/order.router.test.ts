@@ -16,9 +16,9 @@ import modelMongooseRepository from "../../elements/model/adapters/model.mongoos
 import IModel from "../../elements/model/ports/interfaces/IModel";
 import { modelService, orderService, userService } from "../../ioc";
 import {
-  adminUser,
   createCreateFieldCommand,
   createCreateModelCommand,
+  getAdminUser,
 } from "../fixtures";
 import entityMongooseRepository from "../../elements/entity/adapters/entity.mongoose.repository";
 import IOrder from "../../elements/ecommerce/order/ports/interfaces/IOrder";
@@ -30,10 +30,12 @@ import app from "../../server";
 import IResponseDto from "../../globalTypes/IResponseDto";
 import IPaymentMethod from "../../elements/ecommerce/paymentMethod/ports/interfaces/IPaymentMethod";
 import paymentMethodMongooseRepository from "../../elements/ecommerce/paymentMethod/adapters/paymentMethod.mongoose.repository";
+import IUser from "../../elements/user/ports/interfaces/IUser";
 
 jest.setTimeout(150000);
 describe("Orders", () => {
-  const adminToken: string = userService.generateToken(adminUser);
+  let adminUser: IUser
+  let adminToken: string = ''
 
   const quantity: number = 10;
   const price: number = 0.001;
@@ -54,6 +56,9 @@ describe("Orders", () => {
   let createdOrder: IOrderReadDto | null;
 
   beforeAll(async () => {
+    adminUser = await getAdminUser();
+    adminToken = userService.generateToken(adminUser);
+
     const promises: Promise<IField>[] = [];
     promises.push(
       fieldMongooseRepository.create(createCreateFieldCommand("Price")),

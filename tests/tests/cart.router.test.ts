@@ -10,9 +10,9 @@ import {
 
 import { modelService, userService } from "../../ioc";
 import {
-  adminUser,
   createCreateFieldCommand,
   createCreateModelCommand,
+  getAdminUser,
 } from "../fixtures";
 import app from "../../server";
 import IResponseDto from "../../globalTypes/IResponseDto";
@@ -23,10 +23,13 @@ import entityMongooseRepository from "../../elements/entity/adapters/entity.mong
 import IModel from "../../elements/model/ports/interfaces/IModel";
 import IEntity from "../../elements/entity/ports/interfaces/IEntity";
 import cartMongooseRepository from "../../elements/ecommerce/cart/adapters/cart.mongoose.repository";
+import IUser from "../../elements/user/ports/interfaces/IUser";
 
 jest.setTimeout(50000);
 describe("Carts", () => {
-  const adminToken: string = userService.generateToken(adminUser);
+
+  let adminUser: IUser
+  let adminToken: string = ''
 
   let field1: IField | undefined;
   let field2: IField | undefined;
@@ -36,6 +39,10 @@ describe("Carts", () => {
   let sellableEntity: IEntity | undefined;
 
   beforeAll(async () => {
+    adminUser = await getAdminUser();
+    adminToken = userService.generateToken(adminUser);
+
+
     const promises: Promise<IField>[] = [];
     promises.push(
       fieldMongooseRepository.create(

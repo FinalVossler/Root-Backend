@@ -6,15 +6,23 @@ import {
   IWebsiteConfigurationUpdateCommand,
 } from "roottypes";
 import IResponseDto from "../../globalTypes/IResponseDto";
-import { adminUser } from "../fixtures";
+import { getAdminUser } from "../fixtures";
 import websiteConfigurationMongooseRepository from "../../elements/websiteConfiguration/adapters/websiteConfiguration.mongoose.repository";
 import { userService } from "../../ioc";
 import IWebsiteConfiguration from "../../elements/websiteConfiguration/ports/interfaces/IWebsiteConfiguration";
+import IUser from "../../elements/user/ports/interfaces/IUser";
 
-const adminToken: string = userService.generateToken(adminUser);
 
 jest.setTimeout(50000);
 describe("WebsiteConfiguration", () => {
+  let adminUser: IUser
+  let adminToken: string = ''
+  
+  beforeAll(async () => {
+    adminUser = await getAdminUser();
+    adminToken = userService.generateToken(adminUser);
+  })
+
   it("should get website configuration", () => {
     return request(app)
       .get("/websiteConfigurations/")

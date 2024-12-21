@@ -8,7 +8,7 @@ import {
 
 import addressMongooseRepository from "../../elements/ecommerce/address/adapters/address.mongoose.repository";
 import { userService } from "../../ioc";
-import { adminUser } from "../fixtures";
+import { getAdminUser } from "../fixtures";
 import IResponseDto from "../../globalTypes/IResponseDto";
 import app from "../../server";
 import IAddress from "../../elements/ecommerce/address/ports/interfaces/IAddress";
@@ -17,7 +17,9 @@ import userMongooseRepository from "../../elements/user/adapters/user.mongoose.r
 
 jest.setTimeout(50000);
 describe("Addresses", () => {
-  const adminToken: string = userService.generateToken(adminUser);
+  let adminUser: IUser
+  let adminToken: string = ''
+
   let otherUserToken: string = "";
   let addressToGet: IAddress | undefined;
   let addressToUpdate: IAddress | undefined;
@@ -27,6 +29,9 @@ describe("Addresses", () => {
   let otherUserAddress: IAddress | null;
 
   beforeAll(async () => {
+    adminUser = await getAdminUser();
+    adminToken = userService.generateToken(adminUser);
+
     addressToGet = await addressMongooseRepository.createAddress({
       addressLine1: "13 Rue Beauregard to get",
       addressLine2: "",
@@ -57,6 +62,7 @@ describe("Addresses", () => {
       userId: adminUser._id,
     });
 
+    await userMongooseRepository.deleteByEmail('otherUser@gmailTest.com')
     otherUser = await userMongooseRepository.create({
       email: "otherUser@gmailTest.com",
       firstName: "Other",
@@ -79,7 +85,7 @@ describe("Addresses", () => {
   });
 
   afterAll(async () => {
-    const ids: string[] = [
+    const addressesIds: string[] = [
       addressToDelete,
       addressToGet,
       addressToUpdate,
@@ -89,7 +95,7 @@ describe("Addresses", () => {
       .filter((el) => Boolean(el))
       .map((el) => el?._id.toString()) as string[];
 
-    await addressMongooseRepository.deleteAddresses(ids);
+    await addressMongooseRepository.deleteAddresses(addressesIds);
     if (otherUser?._id) {
       await userService.deleteUsers([otherUser?._id.toString()], adminUser);
     }

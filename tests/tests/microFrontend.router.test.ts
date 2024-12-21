@@ -8,15 +8,18 @@ import {
   IMicroFrontendsSearchCommand,
 } from "roottypes";
 import IResponseDto from "../../globalTypes/IResponseDto";
-import { adminUser } from "../fixtures";
+import { getAdminUser } from "../fixtures";
 import microFrontendMongooseRepository from "../../elements/microFontend/adapters/microFrontend.mongoose.respository";
 import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import { userService } from "../../ioc";
 import IMicroFrontend from "../../elements/microFontend/ports/interfaces/IMicroFrontend";
+import IUser from "../../elements/user/ports/interfaces/IUser";
 
 jest.setTimeout(50000);
 describe("MicroFrontends", () => {
-  const adminToken: string = userService.generateToken(adminUser);
+  let adminUser: IUser
+  let adminToken: string = ''
+
   let createdMicroFrontend: IMicroFrontendReadDto | undefined;
   let microFrontendToUpdate: IMicroFrontend | undefined;
   let microFrontendToGet: IMicroFrontend | undefined;
@@ -25,6 +28,9 @@ describe("MicroFrontends", () => {
   let microFrontendToNotFindInSearch: IMicroFrontend | undefined;
 
   beforeAll(async () => {
+    adminUser = await getAdminUser();
+    adminToken = userService.generateToken(adminUser);
+
     const command: IMicroFrontendCreateCommand = {
       components: [
         {

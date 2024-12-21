@@ -131,6 +131,8 @@ const createUserService = (
       );
     }
 
+    // SHOULD NOT UPDATE THE PASSWORD HERE! ONLY USED IN TESTS
+    delete command.password;
     const user = await userRepository.update(command);
 
     if (!user) {

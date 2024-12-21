@@ -1,15 +1,23 @@
 import request from "supertest";
-import { adminUser } from "../fixtures";
+import { getAdminUser } from "../fixtures";
 import app from "../../server";
 import IResponseDto from "../../globalTypes/IResponseDto";
 import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import { IUserReadDto, IUsersGetCommand } from "roottypes";
 import { userService } from "../../ioc";
+import IUser from "../../elements/user/ports/interfaces/IUser";
 
 // Attention!!! This test suite should be skipped. It's only used as preparation for E2E tests
 jest.setTimeout(50000);
 describe.skip("Clean", function () {
-  const adminToken = userService.generateToken(adminUser);
+
+  let adminUser: IUser
+  let adminToken: string = ''
+
+  beforeAll(async () => {
+    adminUser = await getAdminUser();
+    adminToken = userService.generateToken(adminUser);
+  })
 
   it("should be able to clean by deleting everything", async () => {
     await request(app)

@@ -125,7 +125,6 @@ export const createSocketService = (
     // Get online users and their sockets
     const { onlineUsersIds, onlineUsersSockets } =
       await socketRepository.getOnlineUsers();
-
     // Find online concerned users amongst all online users (Todo: need to do this )
     const onlineConcernedUsersIds: string[] = userIds
       .map((userId) => userId.toString())

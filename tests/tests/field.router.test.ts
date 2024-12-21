@@ -3,7 +3,7 @@ import request from "supertest";
 import app from "../../server";
 import IResponseDto from "../../globalTypes/IResponseDto";
 import IPaginationResponse from "../../globalTypes/IPaginationResponse";
-import { adminUser } from "../fixtures";
+import { getAdminUser } from "../fixtures";
 import {
   FieldTypeEnum,
   IFieldCreateCommand,
@@ -17,11 +17,14 @@ import { IField } from "../../elements/field/ports/interfaces/IField";
 import fieldMongooseRepository from "../../elements/field/adapters/field.mongoose.repository";
 import { userService } from "../../ioc";
 import IFieldTableElement from "../../elements/fieldTableElement/ports/IFieldTableElement";
+import IUser from "../../elements/user/ports/interfaces/IUser";
 
 jest.setTimeout(50000);
 
 describe("fieldRouter", () => {
-  const adminToken = userService.generateToken(adminUser);
+  let adminUser: IUser
+  let adminToken: string = ''
+
   let createdField: IFieldReadDto | null;
   let fieldToUpdate: IField | null;
   let fieldToDelete: IField | null;
@@ -29,6 +32,9 @@ describe("fieldRouter", () => {
   let fieldToCopy: IField | null;
 
   beforeAll(async () => {
+    adminUser = await getAdminUser();
+    adminToken = userService.generateToken(adminUser);
+
     fieldToUpdate = await fieldMongooseRepository.create({
       canChooseFromExistingFiles: false,
       fieldEvents: [],

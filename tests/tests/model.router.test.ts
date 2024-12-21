@@ -2,9 +2,9 @@ import request from "supertest";
 
 import app from "../../server";
 import {
-  adminUser,
   createCreateFieldCommand,
   createCreateModelCommand,
+  getAdminUser,
 } from "../fixtures";
 import IResponseDto from "../../globalTypes/IResponseDto";
 import IPaginationResponse from "../../globalTypes/IPaginationResponse";
@@ -26,19 +26,26 @@ import IModel from "../../elements/model/ports/interfaces/IModel";
 import fieldMongooseRepository from "../../elements/field/adapters/field.mongoose.repository";
 import { modelService, userService } from "../../ioc";
 import modelMongooseRepository from "../../elements/model/adapters/model.mongoose.repository";
+import IUser from "../../elements/user/ports/interfaces/IUser";
 
 jest.setTimeout(50000);
 describe("Models", () => {
+
+  let adminUser: IUser
+  let adminToken: string = ''
+
   let createdModelId: string | undefined;
   let field1: IField | undefined;
   let field2: IField | undefined;
   let modelToUpdate: IModel | undefined;
   let modelToDelete: IModel | undefined;
   let modelToSearch: IModel | undefined;
-  const adminToken = userService.generateToken(adminUser);
   const modelToSearchName = "model to search";
 
   beforeAll(async () => {
+    adminUser = await getAdminUser();
+    adminToken = userService.generateToken(adminUser);
+
     field1 = await fieldMongooseRepository.create(
       createCreateFieldCommand("Field 1")
     );

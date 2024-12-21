@@ -1,5 +1,5 @@
 import request from "supertest";
-import { adminUser } from "../fixtures";
+import { getAdminUser } from "../fixtures";
 import app from "../../server";
 import IResponseDto from "../../globalTypes/IResponseDto";
 import postMongooseRepository from "../../elements/post/adapters/post.mongoose.repository";
@@ -15,10 +15,13 @@ import {
 } from "roottypes";
 import { userService } from "../../ioc";
 import IPost from "../../elements/post/ports/interfaces/IPost";
+import IUser from "../../elements/user/ports/interfaces/IUser";
 
 jest.setTimeout(50000);
-const adminToken: string = userService.generateToken(adminUser);
 describe("Posts", () => {
+  let adminUser: IUser
+  let adminToken: string = ''
+
   let createdPost: IPostReadDto | undefined;
   let postToUpdate: IPost | undefined;
   let postToDelete: IPost | undefined;
@@ -26,6 +29,9 @@ describe("Posts", () => {
   let postToNotFindInSearch: IPost | undefined;
 
   beforeAll(async () => {
+    adminUser = await getAdminUser();
+    adminToken = userService.generateToken(adminUser);
+
     const command: IPostCreateCommand = {
       children: [],
       design: PostDesignEnum.Default,

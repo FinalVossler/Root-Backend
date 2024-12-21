@@ -9,19 +9,25 @@ import shippingMethodMongooseRepository from "../../elements/ecommerce/shippingM
 
 import IShippingMethod from "../../elements/ecommerce/shippingMethod/ports/interfaces/IShippingMethod";
 import { userService } from "../../ioc";
-import { adminUser } from "../fixtures";
 import IResponseDto from "../../globalTypes/IResponseDto";
 import app from "../../server";
+import IUser from "../../elements/user/ports/interfaces/IUser";
+import { getAdminUser } from "../fixtures";
 
 jest.setTimeout(50000);
 describe("ShippingMethods", () => {
-  const adminToken: string = userService.generateToken(adminUser);
+  let adminUser: IUser
+  let adminToken: string = ''
+
   let shippingMethodToGet: IShippingMethod | undefined;
   let shippingMethodToUpdate: IShippingMethod | undefined;
   let shippingMethodToDelete: IShippingMethod | undefined;
   let createdShippingMethod: IShippingMethod | null;
 
   beforeAll(async () => {
+    adminUser = await getAdminUser();
+    adminToken = userService.generateToken(adminUser);
+
     shippingMethodToGet =
       await shippingMethodMongooseRepository.createShippingMethod({
         language: "en",

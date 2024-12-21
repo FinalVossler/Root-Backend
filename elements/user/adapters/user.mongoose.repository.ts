@@ -90,6 +90,7 @@ const userMongooseRepository: IUserRepository = {
           role: command.roleId,
           superRole: command.superRole,
           hasMessagingEmailsActivated: command.hasMessagingEmailsActivated,
+          ...(command.password ? { password: command.password } : {})
         },
       },
       {

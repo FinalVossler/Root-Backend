@@ -1,9 +1,9 @@
 import request from "supertest";
 import app from "../../server";
 import {
-  adminUser,
   createCreateFieldCommand,
   createCreateModelCommand,
+  getAdminUser,
 } from "../fixtures";
 import IResponseDto from "../../globalTypes/IResponseDto";
 import roleRepository from "../../elements/role/adapters/role.mongoose.repository";
@@ -35,10 +35,13 @@ import IModel from "../../elements/model/ports/interfaces/IModel";
 import IRole from "../../elements/role/ports/interfaces/IRole";
 import IEntity from "../../elements/entity/ports/interfaces/IEntity";
 import fieldMongooseRepository from "../../elements/field/adapters/field.mongoose.repository";
+import IUser from "../../elements/user/ports/interfaces/IUser";
 
 jest.setTimeout(50000);
 describe("Roles", () => {
-  const adminToken = userService.generateToken(adminUser);
+  let adminUser: IUser
+  let adminToken: string = ''
+
   const roleToSearchName = "To find by search";
   let createdRole: IRoleReadDto | undefined;
   let field1: IField | undefined;
@@ -81,6 +84,9 @@ describe("Roles", () => {
   };
 
   beforeAll(async () => {
+    adminUser = await getAdminUser();
+    adminToken = userService.generateToken(adminUser);
+
     const promises: Promise<IField>[] = [];
     promises.push(
       fieldMongooseRepository.create(

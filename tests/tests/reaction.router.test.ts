@@ -2,7 +2,7 @@ import request from "supertest";
 
 import Message from "../../elements/chat/message/adapters/message.mongoose.model";
 import userMongooseRepository from "../../elements/user/adapters/user.mongoose.repository";
-import { adminUser } from "../fixtures";
+import { getAdminUser } from "../fixtures";
 import messageRepository from "../../elements/chat/message/adapters/message.mongoose.repository";
 import Reaction from "../../elements/chat/reaction/adapters/reaction.mongoose.model";
 import app from "../../server";
@@ -25,15 +25,20 @@ import { userService } from "../../ioc";
 
 jest.setTimeout(50000);
 describe("reactions", () => {
+  let adminUser: IUser
+  let adminToken: string = ''
+
   let user: IUser | undefined;
   let fetchedAdminUser: IUser | undefined;
   let message: IPopulatedMessage | undefined;
   let messageToReactToTwice: IPopulatedMessage | undefined;
   let createdReaction: IReaction | undefined;
   let reactionToUpdate: IReaction | undefined;
-  const adminToken = userService.generateToken(adminUser);
 
   beforeAll(async () => {
+    adminUser = await getAdminUser();
+    adminToken = userService.generateToken(adminUser);
+
     const userCreateCommand: IUserCreateCommand = {
       email: "reactionUser@gmail.com",
       firstName: "reactionUserFirstName",

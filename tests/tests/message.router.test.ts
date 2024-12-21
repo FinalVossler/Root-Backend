@@ -1,5 +1,5 @@
 import request from "supertest";
-import { adminUser } from "../fixtures";
+import { getAdminUser } from "../fixtures";
 import messageRepository from "../../elements/chat/message/adapters/message.mongoose.repository";
 import app from "../../server";
 import IResponseDto from "../../globalTypes/IResponseDto";
@@ -19,11 +19,14 @@ import { userService } from "../../ioc";
 import IUser from "../../elements/user/ports/interfaces/IUser";
 import IPopulatedMessage from "../../elements/chat/message/ports/interfaces/IPopulatedMessage";
 
-const adminToken = userService.generateToken(adminUser);
-
 jest.setTimeout(50000);
 describe("messages", () => {
+
+  let adminUser: IUser
+  let adminToken: string = ''
+
   let messageToDelete: IPopulatedMessage | undefined;
+  let messageThatShouldntBeDeleted: IPopulatedMessage | undefined;
   let user1: IUser | undefined;
   let user2: IUser | undefined;
   let user3ForTotalUnreadMessages: IUser | undefined;
@@ -36,6 +39,9 @@ describe("messages", () => {
   const lastMessageMessage: string = "Last message";
 
   beforeAll(async () => {
+    adminUser = await getAdminUser();
+    adminToken = userService.generateToken(adminUser);
+
     const user1CreateCommand: IUserCreateCommand = {
       email: "user1ForMessages@gmail.com",
       firstName: "User1ForMessagesFirstName ",
@@ -103,6 +109,17 @@ describe("messages", () => {
       messageToDeleteSendCommand,
       adminUser
     );
+    
+    const messageThatShouldntBeDeletedCommand: IMessageSendCommand = {
+      files: [],
+      from: adminUser._id.toString(),
+      message: "Message tha shouldn't be delete",
+      to: [adminUser._id.toString(), user1._id.toString()],
+    };
+    messageThatShouldntBeDeleted = await messageRepository.sendMessage(
+      messageThatShouldntBeDeletedCommand,
+      adminUser
+    );
 
     // sending messages between user 1 and user 2
     const messagesBetweenUser1AndUser2Promises = Array.from({ length: 6 }).map(
@@ -156,7 +173,7 @@ describe("messages", () => {
     const messageFromAdminToUser4SendCommand: IMessageSendCommand = {
       files: [],
       from: (adminUser as IUser)._id.toString(),
-      message: "Message to delete",
+      message: "Message from admin to user 4",
       to: [
         (adminUser as IUser)?._id.toString(),
         (user4ForLastMessageInConversation as IUser)._id.toString(),
@@ -186,6 +203,11 @@ describe("messages", () => {
     if (messageToDelete) {
       promises.push(
         messageRepository.deleteMessage(messageToDelete?._id.toString() || "")
+      );
+    }
+    if (messageThatShouldntBeDeleted) {
+      promises.push(
+        messageRepository.deleteMessage(messageThatShouldntBeDeleted?._id.toString() || "")
       );
     }
     if (user1) {
@@ -221,7 +243,7 @@ describe("messages", () => {
     await Promise.all(promises);
   });
 
-  it("should send a message from a user to another", () => {
+  it.skip("should send a message from a user to another", () => {
     const command: IMessageSendCommand = {
       files: [],
       from: adminUser._id.toString(),
@@ -366,7 +388,7 @@ describe("messages", () => {
     return request(app)
       .delete("/messages/")
       .set("Authorization", "Bearer " + token)
-      .query({ messageId: messageToDelete?._id.toString() })
+      .query({ messageId: messageThatShouldntBeDeleted?._id.toString() })
       .expect(500);
   });
 

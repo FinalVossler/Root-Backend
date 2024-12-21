@@ -7,7 +7,7 @@ import IPaginationResponse from "../../globalTypes/IPaginationResponse";
 import userMongooseRepository from "../../elements/user/adapters/user.mongoose.repository";
 import roleRepository from "../../elements/role/adapters/role.mongoose.repository";
 import doNothing from "../../utils/doNothing";
-import { adminUser } from "../fixtures";
+import { getAdminUser } from "../fixtures";
 import {
   IChatGetContactsCommand,
   IRoleCreateCommand,
@@ -30,7 +30,8 @@ import IRole from "../../elements/role/ports/interfaces/IRole";
 
 jest.setTimeout(50000);
 describe("Users", () => {
-  const adminToken = userService.generateToken(adminUser);
+  let adminUser: IUser
+  let adminToken: string = ''
 
   let userToUpdate: IUser | undefined;
   let userToCreate: IUserReadDto | undefined;
@@ -52,6 +53,9 @@ describe("Users", () => {
   };
 
   beforeAll(async () => {
+    adminUser = await getAdminUser();
+    adminToken = userService.generateToken(adminUser);
+
     try {
       // Create a role to use in the search user by role route
       const roleCreateCommand: IRoleCreateCommand = {

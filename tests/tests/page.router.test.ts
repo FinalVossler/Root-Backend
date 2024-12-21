@@ -1,6 +1,6 @@
 import request from "supertest";
 import pageMongooseRepository from "../../elements/page/adapters/page.mongoose.repository";
-import { adminUser } from "../fixtures";
+import { getAdminUser } from "../fixtures";
 import postMongooseRepository from "../../elements/post/adapters/post.mongoose.repository";
 import app from "../../server";
 import IResponseDto from "../../globalTypes/IResponseDto";
@@ -15,10 +15,13 @@ import {
 import { userService } from "../../ioc";
 import IPost from "../../elements/post/ports/interfaces/IPost";
 import IPage from "../../elements/page/ports/interfaces/IPage";
+import IUser from "../../elements/user/ports/interfaces/IUser";
 
 jest.setTimeout(50000);
-const adminToken = userService.generateToken(adminUser);
 describe("Pages", () => {
+  let adminUser: IUser
+  let adminToken: string = ''
+
   let post1: IPost | undefined;
   let post2: IPost | undefined;
   let createdPage: IPageReadDto | undefined;
@@ -28,6 +31,9 @@ describe("Pages", () => {
   let page4ToDelete: IPage | undefined;
 
   beforeAll(async () => {
+    adminUser = await getAdminUser();
+    adminToken = userService.generateToken(adminUser);
+
     // Posts creation
     const postCreateCommand: IPostCreateCommand = {
       children: [],

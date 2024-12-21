@@ -4,7 +4,7 @@ import modelMongooseRepository from "../../elements/model/adapters/model.mongoos
 import {
   createCreateFieldCommand,
   createCreateModelCommand,
-  adminUser,
+  getAdminUser,
 } from "../fixtures";
 import app from "../../server";
 import IResponseDto from "../../globalTypes/IResponseDto";
@@ -34,7 +34,8 @@ import { getElement } from "../../utils/getElement";
 
 jest.setTimeout(100000);
 describe("Entities", () => {
-  const adminToken: string = userService.generateToken(adminUser);
+  let adminUser: IUser
+  let adminToken: string = ''
 
   let field1: IField | undefined;
   let field2: IField | undefined;
@@ -60,6 +61,9 @@ describe("Entities", () => {
   let searchByText: string = "Found";
 
   beforeAll(async () => {
+    adminUser = await getAdminUser();
+    adminToken = userService.generateToken(adminUser);
+
     const promises: Promise<IField>[] = [];
     promises.push(
       fieldMongooseRepository.create(

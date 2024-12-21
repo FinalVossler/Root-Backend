@@ -40,7 +40,6 @@ import File from "../../file/adapters/file.mongoose.model";
 
 import microFrontendMongooseRepository from "../../microFontend/adapters/microFrontend.mongoose.respository";
 import modelRepository from "../../model/adapters/model.mongoose.repository";
-import { adminUser } from "../../../tests/fixtures";
 import roleRepository from "../../role/adapters/role.mongoose.repository";
 import fileRepository from "../../file/adapters/file.mongoose.repository";
 import entityRepository from "../../entity/adapters/entity.mongoose.repository";
@@ -1231,7 +1230,7 @@ const createTestsPreparationService = (
         url: "https://www.africau.edu/images/default/sample.pdf",
         uuid: "random",
         name: "Case molecules",
-        ownerId: adminUser._id,
+        ownerId: currentUser._id,
       };
       const caseFile: IFile = await fileRepository.create(command);
       const medicalInsightFile: IFile = await fileRepository.create({
@@ -1368,14 +1367,14 @@ const createTestsPreparationService = (
         };
 
         promises.push(
-          entityRepository.create(command, adminUser._id.toString())
+          entityRepository.create(command, currentUser._id.toString())
         );
       });
 
       await Promise.all(promises);
     };
 
-    await this.clean(currentUser || adminUser);
+    await this.clean(currentUser);
 
     const {
       caseNameField,
@@ -1670,8 +1669,8 @@ const createTestsPreparationService = (
       ],
     };
 
-    await entityMongooseRepository.create(product1CreateCommand, adminUser._id);
-    await entityMongooseRepository.create(product2CreateCommand, adminUser._id);
+    await entityMongooseRepository.create(product1CreateCommand, currentUser._id);
+    await entityMongooseRepository.create(product2CreateCommand, currentUser._id);
   },
 });
 

@@ -8,19 +8,25 @@ import {
 import paymentMethodMongooseRepository from "../../elements/ecommerce/paymentMethod/adapters/paymentMethod.mongoose.repository";
 import IPaymentMethod from "../../elements/ecommerce/paymentMethod/ports/interfaces/IPaymentMethod";
 import { userService } from "../../ioc";
-import { adminUser } from "../fixtures";
+import { getAdminUser } from "../fixtures";
 import IResponseDto from "../../globalTypes/IResponseDto";
 import app from "../../server";
+import IUser from "../../elements/user/ports/interfaces/IUser";
 
 jest.setTimeout(50000);
 describe("PaymentMethods", () => {
-  const adminToken: string = userService.generateToken(adminUser);
+  let adminUser: IUser
+  let adminToken: string = ''
+
   let paymentMethodToGet: IPaymentMethod | undefined;
   let paymentMethodToUpdate: IPaymentMethod | undefined;
   let paymentMethodToDelete: IPaymentMethod | undefined;
   let createdPaymentMethod: IPaymentMethod | null;
 
   beforeAll(async () => {
+    adminUser = await getAdminUser();
+    adminToken = userService.generateToken(adminUser);
+
     paymentMethodToGet =
       await paymentMethodMongooseRepository.createPaymentMethod({
         language: "en",
